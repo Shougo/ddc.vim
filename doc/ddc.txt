@@ -1,0 +1,140 @@
+*ddc.txt*	Dark deno powered completion framework for neovim/Vim8
+
+Version: 0.0
+Author: Shougo <Shougo.Matsu at gmail.com>
+License: MIT license
+
+CONTENTS						*ddc-contents*
+
+Introduction		|ddc-introduction|
+Install			|ddc-install|
+Interface		|ddc-interface|
+  Options		  |ddc-options|
+  Key mappings		  |ddc-key-mappings|
+  Functions		  |ddc-functions|
+  Custom Functions	  |ddc-custom-functions|
+Examples		|ddc-examples|
+Sources			|ddc-sources|
+Create source		|ddc-create-source|
+  Source attributes       |ddc-source-attributes|
+  Candidate attributes    |ddc-candidate-attributes|
+Create filter		|ddc-create-filter|
+FILTERS			|ddc-filters|
+FAQ			|ddc-faq|
+Compatibility		|ddc-compatibility|
+
+
+==============================================================================
+INTRODUCTION						*ddc-introduction*
+
+*ddc* is the abbreviation of "dark deno powered completion".  It provides an
+asynchronous keyword completion system in the current buffer.
+
+
+==============================================================================
+INSTALL							*ddc-install*
+
+Note: ddc requires Neovim (0.4.0+) or Vim8.2+ (latest is recommended).
+
+Please install both Deno and "denops.vim".
+
+https://deno.land/
+https://github.com/vim-denops/denops.vim
+
+
+==============================================================================
+INTERFACE						*ddc-interface*
+
+------------------------------------------------------------------------------
+OPTIONS	 						*ddc-options*
+
+Options can be toggled through the use of |ddc#custom#global()|.
+
+For example:
+
+>
+    " Set a single option
+    call ddc#custom#global('auto_complete_delay', 200)
+
+    " Pass a dictionary to set multiple options
+    call ddc#custom#global({
+    \ 'auto_complete_delay': 200,
+    \ 'smart_case': v:true,
+    \ })
+<
+
+The set of available options follows.
+
+
+------------------------------------------------------------------------------
+FUNCTIONS 						*ddc-functions*
+
+							*ddc#disable()*
+ddc#disable()
+		Disable ddc auto completion.
+		Note: It changes the global state.
+
+							*ddc#enable()*
+ddc#enable()
+		Enable ddc auto completion.
+		Note: It changes the global state.
+
+
+CUSTOM FUNCTIONS 					*ddc-custom-functions*
+
+							*ddc#custom#global()*
+ddc#custom#global({option-name}, {value})
+ddc#custom#global({dict})
+		Set {option-name} option to {value}.
+		If {dict} is available, the key is {option-name} and the value
+		is {value}.
+
+					*ddc#custom#local()*
+ddc#custom#local({option-name}, {value})
+ddc#custom#local({dict})
+		The buffer local version of |ddc#custom#option()|.
+
+
+------------------------------------------------------------------------------
+KEY MAPPINGS 						*ddc-key-mappings*
+
+==============================================================================
+EXAMPLES						*ddc-examples*
+>
+	" Use ddc.
+	call ddc#enable()
+<
+
+==============================================================================
+SOURCES							*ddc-sources*
+
+==============================================================================
+FILTERS							*ddc-filters*
+
+Once candidates have been supplied by one or more sources, they are passed
+through the filters, which are matchers, converters or sorters. Sources can
+have specific filters.
+
+
+------------------------------------------------------------------------------
+SOURCE ATTRIBUTES				*ddc-source-attributes*
+
+
+==============================================================================
+CREATE FILTER						*ddc-create-filter*
+
+
+------------------------------------------------------------------------------
+FILTER ATTRIBUTES				*ddc-filter-attributes*
+
+
+==============================================================================
+FREQUENTLY ASKED QUESTIONS (FAQ)			*ddc-faq*
+
+
+==============================================================================
+COMPATIBILITY						*ddc-compatibility*
+
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:
