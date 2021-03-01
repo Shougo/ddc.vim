@@ -6,9 +6,8 @@
 
 Please read [help](doc/ddc.txt) for details.
 
-DDC is the abbreviation of "dark deno powered completion".  It
-provides an extensible and asynchronous completion framework for
-neovim/Vim8.
+DDC is the abbreviation of "dark deno powered completion". It provides an
+extensible and asynchronous completion framework for neovim/Vim8.
 
 ddc will display completions via `complete()` by default.
 
@@ -21,12 +20,11 @@ ddc will display completions via `complete()` by default.
 
 <!-- vim-markdown-toc -->
 
-
 ## Install
 
-**Note:** ddc requires Neovim (0.4.0+ and of course, **latest** is
-recommended) or Vim8.2.  See [requirements](#requirements) if you aren't sure
-whether you have this.
+**Note:** ddc requires Neovim (0.4.0+ and of course, **latest** is recommended)
+or Vim8.2. See [requirements](#requirements) if you aren't sure whether you have
+this.
 
 For vim-plug
 
@@ -52,15 +50,12 @@ call dein#end()
 call ddc#enable()
 ```
 
-
 ### Requirements
 
 deoplete requires both Deno and denops.vim.
 
-
 - <https://deno.land/>
 - <https://github.com/vim-denops/denops.vim>
-
 
 ## Configuration
 
@@ -71,6 +66,4 @@ call ddc#enable()
 
 See `:help ddc-options` for a complete list of options.
 
-
 ## Screenshots
-
