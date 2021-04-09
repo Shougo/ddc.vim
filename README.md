@@ -1,5 +1,7 @@
 # ddc.vim
 
+Note: It is vaporware!!  You should not use it.
+
 > Dark deno powered completion framework for neovim/Vim8
 
 [![Doc](https://img.shields.io/badge/doc-%3Ah%20ddc-orange.svg)](doc/ddc.txt)
@@ -43,7 +45,7 @@ For dein.vim
 ```viml
 call dein#begin()
 
-call dein#add('Shougo/deoplete.nvim')
+call dein#add('Shougo/ddc.vim')
 
 call dein#end()
 
