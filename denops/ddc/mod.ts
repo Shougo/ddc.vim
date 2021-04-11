@@ -1,30 +1,20 @@
-import { start } from "https://deno.land/x/denops_std@v0.3/mod.ts";
+import { start } from "https://deno.land/x/denops_std@v0.5/mod.ts";
 
 start(async (vim) => {
     vim.register({
-        async gatherCandidates(isAll: boolean): Promise<void> {
+        async gatherCandidates(): Promise<void> {
             const candidates = [];
             let lines = [];
-            if (isAll) {
+
+            const count = 500;
+            for (let i = 1; i <= await vim.call("line", "$"); i += count) {
                 lines = await vim.call(
-                    "getline", 1, await vim.call("line", "$")) as string[];
+                    "getline", i, i + count) as string[];
                 lines.forEach(line => {
                     [...line.matchAll(/[a-zA-Z0-9_]+/g)].forEach(match => {
                         candidates.push(match[0]);
                     });
                 });
-            } else {
-                const count = 500;
-                //for (let i = 1; i <= await vim.call("line", "$"); i += count) {
-                for (let i = 1; i <= 2000; i += count) {
-                    lines = await vim.call(
-                        "getline", i, i + count) as string[];
-                    lines.forEach(line => {
-                        [...line.matchAll(/[a-zA-Z0-9_]+/g)].forEach(match => {
-                            candidates.push(match[0]);
-                        });
-                    });
-                }
             }
             await vim.g.set("ddc#_candidates", candidates);
         }
@@ -40,7 +30,7 @@ start(async (vim) => {
         helper.define(
             "TextChanged,TextChangedI",
             "*",
-            `call denops#request('${vim.name}', 'gatherCandidates', [v:false])`,
+            `call denops#request('${vim.name}', 'gatherCandidates', [])`,
         );
     });
 
