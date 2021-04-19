@@ -1,6 +1,6 @@
-import { start } from "https://deno.land/x/denops_std@v0.5/mod.ts";
+import { main } from "https://deno.land/x/denops_std@v0.8/mod.ts";
 
-start(async (vim) => {
+main(async ({ vim }) => {
     vim.register({
         async gatherCandidates(): Promise<void> {
             const candidates = [];

@@ -4,7 +4,11 @@
 " License: MIT license
 "=============================================================================
 
+let s:script = fnamemodify(expand('<sfile>'), ':h:h')
+
 function! ddc#enable() abort
+  call denops#plugin#register('ddc',
+        \ denops#util#join_path(s:script, 'denops', 'ddc', 'mod.ts'))
 endfunction
 
 function! ddc#complete() abort
