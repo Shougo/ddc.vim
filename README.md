@@ -15,12 +15,33 @@ ddc will display completions via `complete()` by default.
 
 <!-- vim-markdown-toc GFM -->
 
+- [Introduction](#introduction)
 - [Install](#install)
   - [Requirements](#requirements)
 - [Configuration](#configuration)
 - [Screenshots](#screenshots)
 
 <!-- vim-markdown-toc -->
+
+## Introduction
+
+I have chosen denops.vim framework to create new auto completion plugin.
+Because denops.vim is better than neovim Python interface.
+
+* Easy to setup
+
+* Minimal dependency
+
+* Stability
+
+* neovim/Vim8 compatibility
+
+* Speed
+
+* Library
+
+* Easy to hack
+
 
 ## Install
 
