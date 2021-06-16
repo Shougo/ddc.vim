@@ -1,22 +1,11 @@
 import { main } from "https://deno.land/x/denops_std@v0.13/mod.ts";
+import { Source } from "./sources/around.ts";
 
 main(async ({ vim }) => {
     vim.register({
         async gatherCandidates(): Promise<void> {
-            const candidates = [];
-            let lines = [];
-
-            const count = 500;
-            for (let i = 1; i <= await vim.call("line", "$"); i += count) {
-                lines = await vim.call(
-                    "getline", i, i + count) as string[];
-                lines.forEach(line => {
-                    [...line.matchAll(/[a-zA-Z0-9_]+/g)].forEach(match => {
-                        candidates.push(match[0]);
-                    });
-                });
-            }
-            await vim.g.set("ddc#_candidates", candidates);
+            source = Source()
+            await vim.g.set("ddc#_candidates", source.gather_candidates(vim));
         }
     });
 
