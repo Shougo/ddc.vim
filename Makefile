@@ -1,6 +1,6 @@
 lint:
-	deno fmt --check
-	deno lint --unstable
+	deno fmt --check denops/ddc/*/*.ts
+	deno lint --unstable denops/ddc/*/*.ts
 
 test:
 	deno test
