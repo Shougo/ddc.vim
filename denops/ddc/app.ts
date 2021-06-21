@@ -1,8 +1,11 @@
-import { main, ensureRecord } from "https://deno.land/x/denops_std@v0.13/mod.ts";
+import {
+  ensureRecord,
+  main,
+} from "https://deno.land/x/denops_std@v0.13/mod.ts";
 import { Source } from "./sources/around.ts";
 
 main(async ({ vim }) => {
-  let sources: Source[] = [];
+  const _sources: Source[] = [];
 
   vim.register({
     async gatherCandidates(): Promise<void> {
@@ -11,7 +14,7 @@ main(async ({ vim }) => {
       await vim.g.set("ddc#_candidates", candidates);
     },
     async registerSource(source: unknown): Promise<void> {
-      ensureRecord(source, "source");
+      await ensureRecord(source, "source");
     },
   });
 
