@@ -1,13 +1,13 @@
 import { Base } from "../base/source.ts";
 
 export class Source implements Base {
-  name = "around";
-  gather_candidates(vim: Any): AsyncIterableIterator<string> {
+  async gather_candidates(vim: Any): string[] {
     const candidates = [];
     let lines = [];
 
     const count = 500;
-    for (let i = 1; i <= await vim.call("line", "$"); i += count) {
+    const maxLines = await vim.call("line", "$");
+    for (let i = 1; i <= maxLines; i += count) {
       lines = await vim.call(
         "getline",
         i,
