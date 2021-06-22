@@ -2,38 +2,42 @@ import {
   ensureRecord,
   main,
 } from "https://deno.land/x/denops_std@v0.13/mod.ts";
-import { Source } from "./sources/around.ts";
+import { BaseSource } from "./base/source.ts";
 
 main(async ({ vim }) => {
-  const _sources: Source[] = [];
+  const _sources: BaseSource[] = [];
 
   vim.register({
-    async gatherCandidates(): Promise<void> {
-      const source = new Source();
-      const candidates = await source.gather_candidates(vim);
-      await vim.g.set("ddc#_candidates", candidates);
+    async registerSource(dict: unknown): Promise<void> {
+      await ensureRecord(dict, "dict");
+      const source = await import(dict["path"]);
+      _sources.push(new source.Source());
     },
-    async registerSource(source: unknown): Promise<void> {
-      await ensureRecord(source, "source");
+    async gatherCandidates(): Promise<void> {
+      let candidates = [];
+      for (const i in _sources) {
+        candidates = candidates.concat(
+          await _sources[i].gatherCandidates(vim),
+        );
+      }
+
+      await vim.g.set("ddc#_candidates", candidates);
+      await vim.call("ddc#complete");
     },
   });
 
   await vim.autocmd("ddc", (helper) => {
-    helper.remove("*", "");
     helper.define(
-      "InsertEnter,TextChangedI",
+      "InsertEnter,TextChangedI,TextChangedP",
       "*",
-      "call ddc#complete()",
-    );
-    helper.define(
-      "TextChanged,TextChangedI",
-      "*",
-      `call denops#request('${vim.name}', 'gatherCandidates', [])`,
+      `call denops#notify('${vim.name}', 'gatherCandidates', [])`,
     );
   });
 
   await vim.g.set("ddc#_candidates", []);
   await vim.g.set("ddc#_initialized", 1);
+
+  await vim.cmd("doautocmd <nomodeline> User DDCReady");
 
   console.log(`${vim.name} has loaded`);
 });

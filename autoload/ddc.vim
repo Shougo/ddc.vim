@@ -26,3 +26,12 @@ function! ddc#_complete() abort
   call complete(match(getline('.'), '\h\w\+$') + 1, g:ddc#_candidates)
   return ''
 endfunction
+
+function! ddc#register_source(dict) abort
+  if !exists('g:ddc#_initialized')
+    execute printf('autocmd User DDCReady call ' .
+    \ 'denops#request("ddc", "registerSource", [%s])', a:dict)
+  else
+    call denops#request('ddc', 'registerSource', [a:dict])
+  endif
+endfunction

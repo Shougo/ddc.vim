@@ -1,4 +1,4 @@
-export class Base {
+export class BaseSource {
   name: string;
-  abstract gather_candidates(vim: Any): AsyncIterableIterator<string>;
+  abstract gatherCandidates(vim: Any): string[];
 }

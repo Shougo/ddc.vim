@@ -1,7 +1,7 @@
-import { Base } from "../base/source.ts";
+import { BaseSource } from "../base/source.ts";
 
-export class Source implements Base {
-  async gather_candidates(vim: Any): string[] {
+export class Source implements BaseSource {
+  async gatherCandidates(vim: Any): string[] {
     const candidates = [];
     let lines = [];
 
