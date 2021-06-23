@@ -1,7 +1,8 @@
 import { BaseSource } from "../base/source.ts";
+import { Candidate } from "../types.ts";
 
 export class Source implements BaseSource {
-  async gatherCandidates(vim: Any): string[] {
+  async gatherCandidates(vim: Any): Candidate[] {
     const candidates = [];
     let lines = [];
 
@@ -15,7 +16,7 @@ export class Source implements BaseSource {
       ) as string[];
       lines.forEach((line) => {
         [...line.matchAll(/[a-zA-Z0-9_]+/g)].forEach((match) => {
-          candidates.push(match[0]);
+          candidates.push({ word: match[0] });
         });
       });
     }

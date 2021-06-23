@@ -5,19 +5,21 @@ import {
 import { BaseSource } from "./base/source.ts";
 
 main(async ({ vim }) => {
-  const _sources: BaseSource[] = [];
+  const _sources: Record<string, BaseSource> = [];
 
   vim.register({
     async registerSource(dict: unknown): Promise<void> {
       await ensureRecord(dict, "dict");
       const source = await import(dict["path"]);
-      _sources.push(new source.Source());
+      const name = dict["name"];
+      _sources[name] = new source.Source();
+      _sources[name].name = name;
     },
     async gatherCandidates(): Promise<void> {
-      let candidates = [];
-      for (const i in _sources) {
+      let candidates: Candidate[] = [];
+      for (const key in _sources) {
         candidates = candidates.concat(
-          await _sources[i].gatherCandidates(vim),
+          await _sources[key].gatherCandidates(vim),
         );
       }
 
