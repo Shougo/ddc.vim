@@ -3,11 +3,20 @@ import {
   main,
 } from "https://deno.land/x/denops_std@v0.13/mod.ts";
 import { BaseSource } from "./base/source.ts";
+import { BaseFilter } from "./base/filter.ts";
 
 main(async ({ vim }) => {
   const _sources: Record<string, BaseSource> = [];
+  const _filters: Record<string, BaseFilter> = [];
 
   vim.register({
+    async registerFilter(dict: unknown): Promise<void> {
+      await ensureRecord(dict, "dict");
+      const filter = await import(dict["path"]);
+      const name = dict["name"];
+      _filters[name] = new filter.Filter();
+      _filters[name].name = name;
+    },
     async registerSource(dict: unknown): Promise<void> {
       await ensureRecord(dict, "dict");
       const source = await import(dict["path"]);

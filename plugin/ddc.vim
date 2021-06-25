@@ -14,3 +14,8 @@ call ddc#register_source({
       \ 'path': fnamemodify(expand('<sfile>'), ':h:h')
       \         . '/denops/ddc/sources/around.ts',
       \ })
+call ddc#register_filter({
+      \ 'name': 'matcher_head',
+      \ 'path': fnamemodify(expand('<sfile>'), ':h:h')
+      \         . '/denops/ddc/filters/matcher_head.ts',
+      \ })
