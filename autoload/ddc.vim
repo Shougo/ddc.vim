@@ -43,3 +43,17 @@ function! ddc#register_filter(dict) abort
     call denops#request('ddc', 'registerFilter', [a:dict])
   endif
 endfunction
+
+function! ddc#get_input(event) abort
+  let mode = mode()
+  if a:event ==# 'InsertEnter'
+    let mode = 'i'
+  endif
+  let input = (mode ==# 'i' ? (col('.')-1) : col('.')) >= len(getline('.')) ?
+        \      getline('.') :
+        \      matchstr(getline('.'),
+        \         '^.*\%' . (mode ==# 'i' ? col('.') : col('.') - 1)
+        \         . 'c' . (mode ==# 'i' ? '' : '.'))
+
+  return input
+endfunction
