@@ -4,8 +4,8 @@ export interface Candidate {
   menu?: string;
   info?: string;
   kind?: string;
-  dup?: bool;
-  userData?: Any;
+  dup?: boolean;
+  userData?: unknown;
 }
 
 export interface Context {

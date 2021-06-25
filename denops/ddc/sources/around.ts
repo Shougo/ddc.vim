@@ -1,8 +1,9 @@
 import { BaseSource } from "../base/source.ts";
 import { Candidate } from "../types.ts";
+import { Vim } from "../deps.ts";
 
 export class Source implements BaseSource {
-  async gatherCandidates(vim: Any): Candidate[] {
+  async gatherCandidates(vim: Vim): Candidate[] {
     const candidates = [];
     let lines = [];
 

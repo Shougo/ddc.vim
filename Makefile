@@ -6,6 +6,6 @@ lint:
 	deno lint --unstable denops
 
 test:
-	deno test
+	deno test --unstable --no-run denops/**/*.ts
 
 .PHONY: lint test

@@ -1,23 +1,24 @@
-import {
-  ensureRecord,
-  main,
-} from "https://deno.land/x/denops_std@v0.13/mod.ts";
+import { ensureRecord, main } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 
 main(async ({ vim }) => {
   const ddc: Ddc = new Ddc();
 
   vim.register({
-    async registerFilter(dict: unknown): Promise<void> {
-      await ensureRecord(dict, "dict");
+    async registerFilter(arg: unknown): Promise<void> {
+      await ensureRecord(arg, "dict");
+
+      const dict = arg as Record<string, string>;
       const filter = await import(dict["path"]);
       const name = dict["name"];
 
       ddc.filters[name] = new filter.Filter();
       ddc.filters[name].name = name;
     },
-    async registerSource(dict: unknown): Promise<void> {
-      await ensureRecord(dict, "dict");
+    async registerSource(arg: unknown): Promise<void> {
+      await ensureRecord(arg, "dict");
+
+      const dict = arg as Record<string, string>;
       const source = await import(dict["path"]);
       const name = dict["name"];
 
@@ -36,9 +37,10 @@ main(async ({ vim }) => {
     },
   });
 
-  await vim.autocmd("ddc", (helper) => {
+  // deno-lint-ignore no-explicit-any
+  await vim.autocmd("ddc", (helper: any) => {
     helper.define(
-      "InsertEnter,TextChangedI,TextChangedP",
+      ["InsertEnter", "TextChangedI", "TextChangedP"],
       "*",
       `call denops#notify('${vim.name}', 'start', [])`,
     );

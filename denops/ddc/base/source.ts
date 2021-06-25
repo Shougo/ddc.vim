@@ -1,6 +1,8 @@
 import { Candidate } from "../types.ts";
+import { Vim } from "../deps.ts";
 
-export class BaseSource {
-  name: string;
-  abstract gatherCandidates(vim: Any): Candidate[];
+export abstract class BaseSource {
+  name = "";
+
+  abstract gatherCandidates(vim: Vim): Candidate[];
 }

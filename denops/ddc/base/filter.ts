@@ -1,6 +1,8 @@
 import { Candidate, Context } from "../types.ts";
+import { Vim } from "../deps.ts";
 
-export class BaseFilter {
-  name: string;
-  abstract filter(vim: Any, context: Context): Candidate[];
+export abstract class BaseFilter {
+  name = "";
+
+  abstract filter(vim: Vim, context: Context): Candidate[];
 }
