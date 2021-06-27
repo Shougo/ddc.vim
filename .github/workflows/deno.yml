@@ -50,15 +50,15 @@ jobs:
         run: |
           deno fmt --check denops
 
-  test:
-    runs-on: ubuntu-20.04
+  #test:
+  #  runs-on: ubuntu-20.04
 
-    steps:
-      - uses: actions/checkout@v2
-      - uses: denoland/setup-deno@main
-        with:
-          deno-version: ${{ env.DENO_VERSION }}
-      - name: Test
-        run: |
-          deno test --unstable -A
-        timeout-minutes: 5
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    - uses: denoland/setup-deno@main
+  #      with:
+  #        deno-version: ${{ env.DENO_VERSION }}
+  #    - name: Test
+  #      run: |
+  #        deno test --unstable -A
+  #      timeout-minutes: 5
