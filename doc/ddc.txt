@@ -108,6 +108,11 @@ EXAMPLES						*ddc-examples*
 ==============================================================================
 SOURCES							*ddc-sources*
 
+around							*ddc-source-around*
+		This source collects candidates around the cursor, namely
+		inside current buffer.
+
+
 ==============================================================================
 FILTERS							*ddc-filters*
 
