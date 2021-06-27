@@ -7,6 +7,12 @@
 let s:script = fnamemodify(expand('<sfile>'), ':h:h')
 
 function! ddc#enable() abort
+  if v:version < 802 && !has('nvim-0.5')
+    call ddc#util#print_error(
+          \ 'ddc requires Vim 8.2+ or neovim 0.5.0+.')
+    return
+  endif
+
   call denops#plugin#register('ddc',
         \ denops#util#join_path(s:script, 'denops', 'ddc', 'mod.ts'))
 endfunction

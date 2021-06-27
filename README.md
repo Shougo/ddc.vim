@@ -45,7 +45,7 @@ Because denops.vim is better than neovim Python interface.
 
 ## Install
 
-**Note:** ddc requires Neovim (0.4.0+ and of course, **latest** is recommended)
+**Note:** ddc requires Neovim (0.5.0+ and of course, **latest** is recommended)
 or Vim8.2. See [requirements](#requirements) if you aren't sure whether you have
 this.
 
@@ -55,6 +55,7 @@ For vim-plug
 call plug#begin()
 
 Plug 'Shougo/ddc.vim'
+Plug 'vim-denops/denops.vim'
 
 call plug#end()
 
@@ -67,6 +68,7 @@ For dein.vim
 call dein#begin()
 
 call dein#add('Shougo/ddc.vim')
+call dein#add('vim-denops/denops.vim')
 
 call dein#end()
 
