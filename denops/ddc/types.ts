@@ -1,17 +1,13 @@
-export class Candidate {
-  word = "";
-  abbr = "";
-  menu = "";
-  info = "";
-  kind = "";
-  dup = false;
+export interface Candidate {
+  word: string;
+  abbr?: string;
+  menu?: string;
+  info?: string;
+  kind?: string;
+  dup?: boolean;
   userData?: unknown;
-  icase = true;
-  equal = true;
-
-  constructor(init?: Partial<Candidate>) {
-    Object.assign(this, init);
-  }
+  icase?: boolean;
+  equal?: boolean;
 }
 
 export interface Context {

@@ -25,7 +25,10 @@ export class Ddc {
       candidates = await this.filters[key].filter(vim, context);
     }
 
-    console.log(candidates);
+    for (const key in candidates) {
+      candidates[key].icase = true;
+      candidates[key].equal = true;
+    }
     return candidates;
   }
 }

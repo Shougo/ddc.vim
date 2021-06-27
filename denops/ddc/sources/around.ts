@@ -17,7 +17,7 @@ export class Source implements BaseSource {
       ) as string[];
       lines.forEach((line) => {
         [...line.matchAll(/[a-zA-Z0-9_]+/g)].forEach((match) => {
-          candidates.push(new Candidate({ word: match[0] }));
+          candidates.push({ word: match[0] });
         });
       });
     }
