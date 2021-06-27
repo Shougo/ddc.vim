@@ -4,8 +4,8 @@ import { Vim } from "../deps.ts";
 
 export class Source implements BaseSource {
   async gatherCandidates(vim: Vim): Candidate[] {
-    const candidates = [];
-    let lines = [];
+    const candidates: Candidate[] = [];
+    let lines: stirng[] = [];
 
     const count = 500;
     const maxLines = await vim.call("line", "$");
@@ -17,7 +17,7 @@ export class Source implements BaseSource {
       ) as string[];
       lines.forEach((line) => {
         [...line.matchAll(/[a-zA-Z0-9_]+/g)].forEach((match) => {
-          candidates.push({ word: match[0] });
+          candidates.push(new Candidate({ word: match[0] }));
         });
       });
     }

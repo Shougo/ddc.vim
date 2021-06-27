@@ -25,6 +25,7 @@ export class Ddc {
       candidates = await this.filters[key].filter(vim, context);
     }
 
+    console.log(candidates);
     return candidates;
   }
 }
