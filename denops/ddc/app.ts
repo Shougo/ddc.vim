@@ -6,7 +6,7 @@ main(async ({ vim }) => {
 
   vim.register({
     async registerFilter(arg: unknown): Promise<void> {
-      await ensureRecord(arg, "dict");
+      ensureRecord(arg, "dict");
 
       const dict = arg as Record<string, string>;
       const filter = await import(dict["path"]);
@@ -16,7 +16,7 @@ main(async ({ vim }) => {
       ddc.filters[name].name = name;
     },
     async registerSource(arg: unknown): Promise<void> {
-      await ensureRecord(arg, "dict");
+      ensureRecord(arg, "dict");
 
       const dict = arg as Record<string, string>;
       const source = await import(dict["path"]);

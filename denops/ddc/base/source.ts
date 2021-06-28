@@ -4,5 +4,5 @@ import { Vim } from "../deps.ts";
 export abstract class BaseSource {
   name = "";
 
-  abstract gatherCandidates(vim: Vim): Candidate[];
+  abstract gatherCandidates(vim: Vim): Promise<Candidate[]>;
 }
