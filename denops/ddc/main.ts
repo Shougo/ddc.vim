@@ -1,12 +1,12 @@
-import { ensureRecord, main } from "./deps.ts";
+import { autocmd, Denops, ensureObject, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 
-main(async ({ vim }) => {
+export async function main(denops: Denops) {
   const ddc: Ddc = new Ddc();
 
-  vim.register({
+  denops.dispatcher = {
     async registerFilter(arg: unknown): Promise<void> {
-      ensureRecord(arg, "dict");
+      await ensureObject(arg);
 
       const dict = arg as Record<string, string>;
       const filter = await import(dict["path"]);
@@ -16,7 +16,7 @@ main(async ({ vim }) => {
       ddc.filters[name].name = name;
     },
     async registerSource(arg: unknown): Promise<void> {
-      ensureRecord(arg, "dict");
+      await ensureObject(arg);
 
       const dict = arg as Record<string, string>;
       const source = await import(dict["path"]);
@@ -29,27 +29,27 @@ main(async ({ vim }) => {
     },
     async start(): Promise<void> {
       const candidates = await ddc.filterCandidates(
-        vim,
-        await ddc.gatherCandidates(vim),
+        denops,
+        await ddc.gatherCandidates(denops),
       );
-      await vim.g.set("ddc#_candidates", candidates);
-      await vim.call("ddc#complete");
+      await vars.g.set(denops, "ddc#_candidates", candidates);
+      await denops.call("ddc#complete");
     },
-  });
+  };
 
-  // deno-lint-ignore no-explicit-any
-  await vim.autocmd("ddc", (helper: any) => {
+  await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
+    helper.remove("*");
     helper.define(
       ["InsertEnter", "TextChangedI", "TextChangedP"],
       "*",
-      `call denops#notify('${vim.name}', 'start', [])`,
+      `call denops#notify('${denops.name}', 'start', [])`,
     );
   });
 
-  await vim.g.set("ddc#_candidates", []);
-  await vim.g.set("ddc#_initialized", 1);
+  await vars.g.set(denops, "ddc#_candidates", []);
+  await vars.g.set(denops, "ddc#_initialized", 1);
 
-  await vim.cmd("doautocmd <nomodeline> User DDCReady");
+  await denops.cmd("doautocmd <nomodeline> User DDCReady");
 
-  console.log(`${vim.name} has loaded`);
-});
+  console.log(`${denops.name} has loaded`);
+}
