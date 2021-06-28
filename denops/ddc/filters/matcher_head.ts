@@ -21,7 +21,10 @@ export class Filter extends BaseFilter {
 Deno.test("lastWord", () => {
   assertEquals(lastWord(""), "");
   assertEquals(lastWord("a"), "a");
-  assertEquals(lastWord("as df"), "df");
-  assertEquals(lastWord("as dfあ"), "");
-  assertEquals(lastWord("as dfあwer"), "wer");
+  assertEquals(lastWord("foo bar"), "bar");
+  assertEquals(lastWord("foo barあ"), "");
+  assertEquals(lastWord("foo barあhoge"), "hoge");
+  assertEquals(lastWord("あ_1A"), "_1A");
+  assertEquals(lastWord("あ1A_"), "1A_");
+  assertEquals(lastWord("あA_1"), "A_1");
 });
