@@ -5,11 +5,12 @@ import { imap, range } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
 import { assertEquals } from "https://deno.land/std@0.98.0/testing/asserts.ts";
 
 function splitPages(
+  minLines: number,
   maxLines: number,
   size: number,
 ): Iterable<[number, number]> {
   return imap(
-    range(1, /* < */ maxLines + 1, size),
+    range(minLines, /* < */ maxLines + 1, size),
     (lnum: number) => [lnum, /* <= */ lnum + size - 1],
   );
 }
@@ -22,10 +23,16 @@ function allWords(lines: string[]): string[] {
 export class Source extends BaseSource {
   async gatherCandidates(denops: Denops): Promise<Candidate[]> {
     const pageSize = 500;
-    const maxLines = (await denops.call("line", "$")) as number;
+    const maxSize = 200;
+    const currentLine = (await denops.call("line", ".")) as number;
+    const minLines = Math.max(1, currentLine - maxSize);
+    const maxLines = Math.min(
+      (await denops.call("line", "$")) as number,
+      currentLine + maxSize,
+    );
     const pages = (await Promise.all(
       imap(
-        splitPages(maxLines, pageSize),
+        splitPages(minLines, maxLines, pageSize),
         ([start, end]: [number, number]) => denops.call("getline", start, end),
       ),
     )) as string[][];
@@ -37,10 +44,10 @@ export class Source extends BaseSource {
 }
 
 Deno.test("pages", () => {
-  assertEquals(Array.from(splitPages(600, 500)), [[1, 500], [501, 1000]]);
-  assertEquals(Array.from(splitPages(1, 500)), [[1, 500]]);
-  assertEquals(Array.from(splitPages(500, 500)), [[1, 500]]);
-  assertEquals(Array.from(splitPages(501, 500)), [[1, 500], [501, 1000]]);
+  assertEquals(Array.from(splitPages(1, 600, 500)), [[1, 500], [501, 1000]]);
+  assertEquals(Array.from(splitPages(1, 1, 500)), [[1, 500]]);
+  assertEquals(Array.from(splitPages(1, 500, 500)), [[1, 500]]);
+  assertEquals(Array.from(splitPages(1, 501, 500)), [[1, 500], [501, 1000]]);
 });
 
 Deno.test("allWords", () => {
