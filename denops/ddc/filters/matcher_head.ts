@@ -1,13 +1,30 @@
 import { BaseFilter } from "../base/filter.ts";
 import { Candidate, Context } from "../types.ts";
-import { Vim } from "../deps.ts";
+import { Denops } from "../deps.ts";
+import { assertEquals } from "https://deno.land/std@0.98.0/testing/asserts.ts";
 
-export class Filter implements BaseFilter {
-  async filter(_vim: Vim, context: Context): Candidate[] {
-    const completeStr = context.input.match(/\w*$/);
+function lastWord(input: string): string {
+  const match = input.match(/\w*$/);
+  return match ? match[0] : "";
+}
+
+export class Filter extends BaseFilter {
+  filter(_denops: Denops, context: Context): Promise<Candidate[]> {
+    const completeStr = lastWord(context.input);
     const candidates = context.candidates.filter(
-      (candidate) => candidate.word.indexOf(completeStr) == 0,
+      (candidate) => candidate.word.startsWith(completeStr),
     );
-    return await candidates;
+    return Promise.resolve(candidates);
   }
 }
+
+Deno.test("lastWord", () => {
+  assertEquals(lastWord(""), "");
+  assertEquals(lastWord("a"), "a");
+  assertEquals(lastWord("foo bar"), "bar");
+  assertEquals(lastWord("foo barあ"), "");
+  assertEquals(lastWord("foo barあhoge"), "hoge");
+  assertEquals(lastWord("あ_1A"), "_1A");
+  assertEquals(lastWord("あ1A_"), "1A_");
+  assertEquals(lastWord("あA_1"), "A_1");
+});

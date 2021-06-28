@@ -6,7 +6,7 @@ export async function main(denops: Denops) {
 
   denops.dispatcher = {
     async registerFilter(arg: unknown): Promise<void> {
-      await ensureObject(arg);
+      ensureObject(arg);
 
       const dict = arg as Record<string, string>;
       const filter = await import(dict["path"]);
@@ -16,7 +16,7 @@ export async function main(denops: Denops) {
       ddc.filters[name].name = name;
     },
     async registerSource(arg: unknown): Promise<void> {
-      await ensureObject(arg);
+      ensureObject(arg);
 
       const dict = arg as Record<string, string>;
       const source = await import(dict["path"]);
