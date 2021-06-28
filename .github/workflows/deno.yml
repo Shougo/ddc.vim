@@ -15,50 +15,54 @@ on:
       - main
 
 jobs:
-  typecheck:
-    runs-on: ubuntu-20.04
-
+  deno-lint:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: denoland/setup-deno@main
         with:
           deno-version: ${{ env.DENO_VERSION }}
-      - name: Type check
+
+      - name: Check Type
         run: |
-          deno test --unstable --no-run denops/**/*.ts
+          find denops -name "*.ts"| xargs deno test --unstable --no-run -A
 
-  lint:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: denoland/setup-deno@main
-        with:
-          deno-version: ${{ env.DENO_VERSION }}
-      - name: Lint
+      - name: Check with deno lint
         run: deno lint denops
 
-  format:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: denoland/setup-deno@main
-        with:
-          deno-version: ${{ env.DENO_VERSION }}
-      - name: Format
+      - name: Check Format
         run: |
           deno fmt --check denops
 
-  #test:
-  #  runs-on: ubuntu-20.04
+  deno-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: denoland/setup-deno@main
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
 
-  #  steps:
-  #    - uses: actions/checkout@v2
-  #    - uses: denoland/setup-deno@main
-  #      with:
-  #        deno-version: ${{ env.DENO_VERSION }}
-  #    - name: Test
-  #      run: |
-  #        deno test --unstable -A
-  #      timeout-minutes: 5
+      - name: Test
+        run: |
+          grep -rl Deno.test denops| xargs deno test --unstable -A
+        timeout-minutes: 5
+
+  vim-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install vim-vint
+
+      - name: Check with vint
+        run: |
+          vint --version && vint plugin autoload
