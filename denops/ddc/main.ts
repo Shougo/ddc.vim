@@ -22,10 +22,8 @@ export async function main(denops: Denops) {
       const source = await import(dict["path"]);
       const name = dict["name"];
 
-      console.log(ddc);
       ddc.sources[name] = new source.Source();
       ddc.sources[name].name = name;
-      console.log(ddc.sources);
     },
     async start(): Promise<void> {
       const candidates = await ddc.filterCandidates(
