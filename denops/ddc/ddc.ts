@@ -10,9 +10,15 @@ export class Ddc {
   async gatherCandidates(denops: Denops): Promise<Candidate[]> {
     let candidates: Candidate[] = [];
     for (const key in this.sources) {
-      candidates = candidates.concat(
-        await this.sources[key].gatherCandidates(denops),
-      );
+      const source = this.sources[key];
+      const sourceCandidates = await source.gatherCandidates(denops);
+
+      // Set source name
+      for (const key in sourceCandidates) {
+        sourceCandidates[key].source = source.name;
+      }
+
+      candidates = candidates.concat(sourceCandidates);
     }
 
     return candidates;
@@ -29,8 +35,12 @@ export class Ddc {
     }
 
     for (const key in candidates) {
-      candidates[key].icase = true;
-      candidates[key].equal = true;
+      const candidate = candidates[key];
+      candidate.icase = true;
+      candidate.equal = true;
+      candidate.menu = candidate.menu
+        ? `[${candidate.source}] ${candidate.menu}`
+        : `[${candidate.source}]`;
     }
     return candidates;
   }

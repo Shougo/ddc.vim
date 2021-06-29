@@ -8,6 +8,7 @@ export interface Candidate {
   userData?: unknown;
   icase?: boolean;
   equal?: boolean;
+  source?: string;
 }
 
 export interface Context {
