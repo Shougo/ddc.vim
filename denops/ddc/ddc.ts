@@ -1,4 +1,4 @@
-import { Candidate, Context } from "./types.ts";
+import { Candidate, Context, defaultDdcOptions } from "./types.ts";
 import { Denops } from "./deps.ts";
 import { BaseSource } from "./base/source.ts";
 import { BaseFilter } from "./base/filter.ts";
@@ -30,7 +30,11 @@ export class Ddc {
     const input = await denops.call("ddc#get_input", "") as string;
     let candidates = cdd;
     for (const key in this.filters) {
-      const context: Context = { input: input, candidates: candidates };
+      const context: Context = {
+        input: input,
+        candidates: candidates,
+        options: defaultDdcOptions,
+      };
       candidates = await this.filters[key].filter(denops, context);
     }
 

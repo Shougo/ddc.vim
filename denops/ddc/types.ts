@@ -11,7 +11,28 @@ export interface Candidate {
   source?: string;
 }
 
+export interface DdcOptions {
+  sources: string[];
+}
+
+export const defaultDdcOptions: DdcOptions = {
+  sources: [],
+};
+
 export interface Context {
   candidates: Candidate[];
   input: string;
+  options: DdcOptions;
 }
+
+export interface SourceOptions {
+  matchers: string[];
+  sorters: string[];
+  converters: string[];
+}
+
+export const defaultSourceOptions: SourceOptions = {
+  matchers: [],
+  sorters: [],
+  converters: [],
+};
