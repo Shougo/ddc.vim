@@ -1,6 +1,6 @@
 # ddc.vim
 
-Note: It is vaporware!!  You should not use it.
+Note: It is alpha version!!  You should not use it.
 
 > Dark deno powered completion framework for neovim/Vim8
 
@@ -92,3 +92,9 @@ call ddc#enable()
 See `:help ddc-options` for a complete list of options.
 
 ## Screenshots
+
+## Plans
+
+* [ ] Custom ddc options support
+* [ ] Custom source options support
+* [ ] Implement sorter_rank
