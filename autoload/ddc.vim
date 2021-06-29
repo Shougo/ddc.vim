@@ -13,8 +13,8 @@ function! ddc#enable() abort
     return
   endif
 
-  call denops#plugin#register('ddc',
-        \ denops#util#join_path(s:script, 'denops', 'ddc', 'mod.ts'))
+  "call denops#plugin#register('ddc',
+  "      \ denops#util#join_path(s:script, 'denops', 'ddc', 'main.ts'))
 endfunction
 
 function! ddc#complete() abort
