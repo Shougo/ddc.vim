@@ -77,7 +77,7 @@ call ddc#enable()
 
 ### Requirements
 
-deoplete requires both Deno and denops.vim.
+ddc requires both Deno and denops.vim.
 
 - <https://deno.land/>
 - <https://github.com/vim-denops/denops.vim>
