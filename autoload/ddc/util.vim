@@ -23,3 +23,8 @@ endfunction
 function! ddc#util#string(expr) abort
   return type(a:expr) ==# v:t_string ? a:expr : string(a:expr)
 endfunction
+
+function! ddc#util#split(string) abort
+  return split(a:string, '\s*,\s*')
+endfunction
+

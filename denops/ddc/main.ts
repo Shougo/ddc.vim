@@ -20,11 +20,21 @@ export async function main(denops: Denops) {
       ensureObject(arg);
 
       const dict = arg as Record<string, string>;
-      const source = await import(dict["path"]);
       const name = dict["name"];
 
-      ddc.sources[name] = new source.Source();
-      ddc.sources[name].name = name;
+      const source = await import(dict["path"]);
+
+      const custom = await denops.call("ddc#custom#_get") as Custom;
+      const currentOptions = "_" in custom.source ? custom.source._ : {};
+
+      const newSource = new source.Source();
+      newSource.name = name;
+      newSource.options = Object.assign(
+        newSource.options,
+        currentOptions,
+      );
+
+      ddc.sources[name] = newSource;
     },
     async start(): Promise<void> {
       const input = await denops.call("ddc#get_input", "") as string;
@@ -61,5 +71,5 @@ export async function main(denops: Denops) {
 
   await denops.cmd("doautocmd <nomodeline> User DDCReady");
 
-  console.log(`${denops.name} has loaded`);
+  //console.log(`${denops.name} has loaded`);
 }

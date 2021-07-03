@@ -1,5 +1,5 @@
 export interface Custom {
-  source: SourceOptions;
+  source: Record<string, SourceOptions>;
   option: DdcOptions;
 }
 
@@ -37,7 +37,7 @@ export interface SourceOptions {
 }
 
 export const defaultSourceOptions: SourceOptions = {
-  matchers: ["matcher_head"],
+  matchers: [],
   sorters: [],
   converters: [],
 };

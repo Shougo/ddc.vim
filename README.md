@@ -83,6 +83,8 @@ ddc requires both Deno and denops.vim.
 ```vim
 " Use around source.
 call ddc#custom#global('sources', { '_': ['around] })
+" Enable default matcher.
+call ddc#custom#source('_', 'matchers', ['matcher_head'])
 
 " Use ddc.
 call ddc#enable()
