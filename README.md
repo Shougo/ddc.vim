@@ -58,8 +58,6 @@ Plug 'Shougo/ddc.vim'
 Plug 'vim-denops/denops.vim'
 
 call plug#end()
-
-call ddc#enable()
 ```
 
 For dein.vim
@@ -71,8 +69,6 @@ call dein#add('Shougo/ddc.vim')
 call dein#add('vim-denops/denops.vim')
 
 call dein#end()
-
-call ddc#enable()
 ```
 
 ### Requirements
@@ -85,6 +81,9 @@ ddc requires both Deno and denops.vim.
 ## Configuration
 
 ```vim
+" Use around source.
+call ddc#custom#global('sources', { '_': ['around] })
+
 " Use ddc.
 call ddc#enable()
 ```

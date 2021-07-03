@@ -13,8 +13,11 @@ export class Ddc {
     context: Context,
   ): Promise<Candidate[]> {
     let candidates: Candidate[] = [];
+    const currentSources: string[] = "_" in context.options.sources
+      ? context.options.sources._
+      : [];
     for (const key in this.sources) {
-      if (!(this.options.sources.includes(key))) {
+      if (!(currentSources.includes(key))) {
         continue;
       }
 

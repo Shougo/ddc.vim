@@ -65,6 +65,21 @@ For example:
 
 The set of available options follows.
 
+					*ddc-options-sources*
+sources
+		It is a dictionary to specify source names.  The key is
+		filetype and the value is a list of source names.  If the key
+		is "_", the value will be used for default filetypes.  For
+		example, you can load some sources in C++ filetype.  If the
+		value is [], it will not load any sources.
+
+		Default value: {}
+>
+		" Example:
+		call ddc#custom#global('sources', {
+		\ '_': ['around'],
+		\})
+<
 
 ------------------------------------------------------------------------------
 FUNCTIONS 						*ddc-functions*
@@ -92,7 +107,7 @@ ddc#custom#global({dict})
 					*ddc#custom#local()*
 ddc#custom#local({option-name}, {value})
 ddc#custom#local({dict})
-		The buffer local version of |ddc#custom#option()|.
+		The buffer local version of |ddc#custom#global()|.
 
 
 ------------------------------------------------------------------------------

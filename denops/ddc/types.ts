@@ -1,3 +1,8 @@
+export interface Custom {
+  source: SourceOptions;
+  option: DdcOptions;
+}
+
 export interface Candidate {
   word: string;
   abbr?: string;
@@ -12,11 +17,11 @@ export interface Candidate {
 }
 
 export interface DdcOptions {
-  sources: string[];
+  sources: Record<string, string[]>;
 }
 
 export const defaultDdcOptions: DdcOptions = {
-  sources: ["around"],
+  sources: {},
 };
 
 export interface Context {
