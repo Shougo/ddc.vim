@@ -36,9 +36,12 @@ endfunction
 function! ddc#register_source(dict) abort
   if !exists('g:ddc#_initialized')
     execute printf('autocmd User DDCReady call ' .
-          \ 'denops#request("ddc", "registerSource", [%s])', a:dict)
+          \ 'denops#request_async("ddc", "registerSource", [%s], '.
+          \ '{-> v:null}, {-> v:null})', a:dict
+          \ )
   else
-    call denops#request('ddc', 'registerSource', [a:dict])
+    call denops#request_async(
+    \ 'ddc', 'registerSource', [a:dict], {-> v:null}, {-> v:null})
   endif
 endfunction
 function! ddc#register_filter(dict) abort
