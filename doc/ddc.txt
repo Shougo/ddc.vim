@@ -104,11 +104,22 @@ ddc#custom#global({dict})
 		If {dict} is available, the key is {option-name} and the value
 		is {value}.
 
-					*ddc#custom#local()*
+							*ddc#custom#local()*
 ddc#custom#local({option-name}, {value})
 ddc#custom#local({dict})
 		The buffer local version of |ddc#custom#global()|.
 
+							*ddc#custom#source()*
+ddc#custom#source({source-name}, {option-name}, {value})
+ddc#custom#source({source-name}, {dict})
+		Set {source-name} source specialized {option-name}
+		to {value}. You may specify multiple sources with
+		separating "," in {source-name}.
+		If {source-name} is "_", sources default option will be
+		change.
+		If {dict} is available, the key is {option-name} and the value
+		is {value}.
+		Note: You must call it before using ddc.
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
