@@ -1,5 +1,6 @@
 import { autocmd, Denops, ensureObject, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
+import { Context, defaultDdcOptions } from "./types.ts";
 
 export async function main(denops: Denops) {
   const ddc: Ddc = new Ddc();
@@ -26,9 +27,15 @@ export async function main(denops: Denops) {
       ddc.sources[name].name = name;
     },
     async start(): Promise<void> {
-      const candidates = await ddc.filterCandidates(
+      const input = await denops.call("ddc#get_input", "") as string;
+      const context: Context = {
+        input: input,
+        candidates: [],
+        options: defaultDdcOptions,
+      };
+      const candidates = await ddc.gatherCandidates(
         denops,
-        await ddc.gatherCandidates(denops),
+        context,
       );
       await vars.g.set(denops, "ddc#_candidates", candidates);
       await denops.call("ddc#complete");

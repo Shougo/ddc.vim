@@ -8,7 +8,10 @@ export class Ddc {
   filters: Record<string, BaseFilter> = {};
   options: DdcOptions = defaultDdcOptions;
 
-  async gatherCandidates(denops: Denops): Promise<Candidate[]> {
+  async gatherCandidates(
+    denops: Denops,
+    context: Context,
+  ): Promise<Candidate[]> {
     let candidates: Candidate[] = [];
     for (const key in this.sources) {
       if (!(this.options.sources.includes(key))) {
@@ -18,39 +21,42 @@ export class Ddc {
       const source = this.sources[key];
       const sourceCandidates = await source.gatherCandidates(denops);
 
-      // Set source name
-      for (const key in sourceCandidates) {
-        sourceCandidates[key].source = source.name;
-      }
-
-      candidates = candidates.concat(sourceCandidates);
+      candidates = candidates.concat(
+        await this.filterCandidates(
+          denops,
+          context,
+          source,
+          sourceCandidates,
+        ),
+      );
     }
 
     return candidates;
   }
   async filterCandidates(
     denops: Denops,
+    context: Context,
+    source: BaseSource,
     cdd: Candidate[],
   ): Promise<Candidate[]> {
-    const input = await denops.call("ddc#get_input", "") as string;
-    let candidates = cdd;
+    const ctx: Context = Object.assign(context, { candidates: cdd });
     for (const key in this.filters) {
-      const context: Context = {
-        input: input,
-        candidates: candidates,
-        options: this.options,
-      };
-      candidates = await this.filters[key].filter(denops, context);
+      if (!(source.options.matchers.includes(key))) {
+        continue;
+      }
+
+      ctx.candidates = await this.filters[key].filter(denops, ctx);
     }
 
-    for (const key in candidates) {
-      const candidate = candidates[key];
+    for (const key in ctx.candidates) {
+      const candidate = ctx.candidates[key];
+      candidate.source = source.name;
       candidate.icase = true;
       candidate.equal = true;
       candidate.menu = candidate.menu
         ? `[${candidate.source}] ${candidate.menu}`
         : `[${candidate.source}]`;
     }
-    return candidates;
+    return ctx.candidates;
   }
 }
