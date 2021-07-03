@@ -13,10 +13,16 @@ export interface Candidate {
 
 export interface DdcOptions {
   sources: string[];
+  matchers: string[];
+  sorters: string[];
+  filters: string[];
 }
 
 export const defaultDdcOptions: DdcOptions = {
-  sources: [],
+  sources: ["around"],
+  matchers: [],
+  sorters: [],
+  filters: [],
 };
 
 export interface Context {

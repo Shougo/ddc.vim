@@ -1,4 +1,4 @@
-import { Candidate, Context, defaultDdcOptions } from "./types.ts";
+import { Candidate, Context, DdcOptions, defaultDdcOptions } from "./types.ts";
 import { Denops } from "./deps.ts";
 import { BaseSource } from "./base/source.ts";
 import { BaseFilter } from "./base/filter.ts";
@@ -6,10 +6,15 @@ import { BaseFilter } from "./base/filter.ts";
 export class Ddc {
   sources: Record<string, BaseSource> = {};
   filters: Record<string, BaseFilter> = {};
+  options: DdcOptions = defaultDdcOptions;
 
   async gatherCandidates(denops: Denops): Promise<Candidate[]> {
     let candidates: Candidate[] = [];
     for (const key in this.sources) {
+      if (!(this.options.sources.includes(key))) {
+        continue;
+      }
+
       const source = this.sources[key];
       const sourceCandidates = await source.gatherCandidates(denops);
 
@@ -33,7 +38,7 @@ export class Ddc {
       const context: Context = {
         input: input,
         candidates: candidates,
-        options: defaultDdcOptions,
+        options: this.options,
       };
       candidates = await this.filters[key].filter(denops, context);
     }
