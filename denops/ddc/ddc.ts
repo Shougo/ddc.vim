@@ -48,8 +48,28 @@ export class Ddc {
     cdd: Candidate[],
   ): Promise<Candidate[]> {
     const ctx: Context = Object.assign(context, { candidates: cdd });
+
+    // Matchers
     for (const key in this.filters) {
       if (!(source.options.matchers.includes(key))) {
+        continue;
+      }
+
+      ctx.candidates = await this.filters[key].filter(denops, ctx);
+    }
+
+    // Sorters
+    for (const key in this.filters) {
+      if (!(source.options.sorters.includes(key))) {
+        continue;
+      }
+
+      ctx.candidates = await this.filters[key].filter(denops, ctx);
+    }
+
+    // Converters
+    for (const key in this.filters) {
+      if (!(source.options.converters.includes(key))) {
         continue;
       }
 
