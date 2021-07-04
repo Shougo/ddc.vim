@@ -96,6 +96,7 @@ See `:help ddc-options` for a complete list of options.
 
 ## Plans
 
-* [ ] Custom ddc options support
-* [ ] Custom source options support
+* [x] Custom ddc options support
+* [x] Custom source options support
 * [ ] Implement sorter_rank
+* [ ] Use ReadableStream
