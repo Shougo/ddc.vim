@@ -1,5 +1,4 @@
-import { BaseSource } from "../base/source.ts";
-import { Candidate } from "../types.ts";
+import { BaseSource, Candidate } from "../types.ts";
 import { Denops } from "../deps.ts";
 import { imap, range } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
 import { assertEquals } from "https://deno.land/std@0.98.0/testing/asserts.ts";

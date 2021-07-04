@@ -1,7 +1,12 @@
-import { Candidate, Context, DdcOptions, defaultDdcOptions } from "./types.ts";
+import {
+  BaseFilter,
+  BaseSource,
+  Candidate,
+  Context,
+  DdcOptions,
+  defaultDdcOptions,
+} from "./types.ts";
 import { Denops } from "./deps.ts";
-import { BaseSource } from "./base/source.ts";
-import { BaseFilter } from "./base/filter.ts";
 
 export class Ddc {
   sources: Record<string, BaseSource> = {};

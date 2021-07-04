@@ -1,3 +1,6 @@
+export { BaseSource } from "./base/source.ts";
+export { BaseFilter } from "./base/filter.ts";
+
 export interface Custom {
   source: Record<string, SourceOptions>;
   option: DdcOptions;

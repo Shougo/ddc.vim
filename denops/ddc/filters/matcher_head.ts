@@ -1,5 +1,4 @@
-import { BaseFilter } from "../base/filter.ts";
-import { Candidate, Context } from "../types.ts";
+import { BaseFilter, Candidate, Context } from "../types.ts";
 import { Denops } from "../deps.ts";
 import { assertEquals } from "https://deno.land/std@0.98.0/testing/asserts.ts";
 
@@ -22,9 +21,9 @@ Deno.test("lastWord", () => {
   assertEquals(lastWord(""), "");
   assertEquals(lastWord("a"), "a");
   assertEquals(lastWord("foo bar"), "bar");
-  assertEquals(lastWord("foo barあ"), "");
-  assertEquals(lastWord("foo barあhoge"), "hoge");
-  assertEquals(lastWord("あ_1A"), "_1A");
-  assertEquals(lastWord("あ1A_"), "1A_");
-  assertEquals(lastWord("あA_1"), "A_1");
+  assertEquals(lastWord("foo bar?"), "");
+  assertEquals(lastWord("foo bar!hoge"), "hoge");
+  assertEquals(lastWord("~_1A"), "_1A");
+  assertEquals(lastWord("!1A_"), "1A_");
+  assertEquals(lastWord("'A_1"), "A_1");
 });
