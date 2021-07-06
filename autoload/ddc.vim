@@ -13,8 +13,9 @@ function! ddc#enable() abort
     return
   endif
 
-  "call denops#plugin#register('ddc',
-  "      \ denops#util#join_path(s:script, 'denops', 'ddc', 'main.ts'))
+  " Note: ddc.vim must be registered manually.
+  autocmd User DenopsReady call denops#plugin#register('ddc',
+        \ denops#util#join_path(s:script, 'denops', 'ddc', 'app.ts'))
 endfunction
 
 function! ddc#complete() abort
@@ -23,13 +24,13 @@ function! ddc#complete() abort
   set completeopt-=longest
   set completeopt+=menuone
   set completeopt-=menu
-  set completeopt+=noinsert
+  set completeopt+=noselect
 
   call feedkeys("\<Plug>_", 'i')
 endfunction
 
 function! ddc#_complete() abort
-  call complete(match(getline('.'), '\h\w\+$') + 1, g:ddc#_candidates)
+  call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   return ''
 endfunction
 

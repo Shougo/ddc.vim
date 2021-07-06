@@ -27,4 +27,3 @@ endfunction
 function! ddc#util#split(string) abort
   return split(a:string, '\s*,\s*')
 endfunction
-

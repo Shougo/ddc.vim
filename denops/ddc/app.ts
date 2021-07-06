@@ -4,6 +4,7 @@ import { Context, Custom, defaultDdcOptions } from "./types.ts";
 
 export async function main(denops: Denops) {
   const ddc: Ddc = new Ddc();
+  let lastInput = "";
 
   denops.dispatcher = {
     async registerFilter(arg: unknown): Promise<void> {
@@ -36,8 +37,23 @@ export async function main(denops: Denops) {
 
       ddc.sources[name] = newSource;
     },
-    async start(): Promise<void> {
+    async start(arg: unknown): Promise<void> {
+      const event = arg as string;
       const input = await denops.call("ddc#get_input", "") as string;
+      const completedItem = await vars.v.get(
+        denops,
+        "completed_item",
+      ) as Record<string, unknown>;
+
+      if (
+        input == lastInput ||
+        (event == "TextChangedP" && Object.keys(completedItem).length != 0)
+      ) {
+        return;
+      }
+
+      lastInput = input;
+
       const custom = await denops.call("ddc#custom#_get") as Custom;
       const userOptions = custom.option;
       const context: Context = {
@@ -52,6 +68,14 @@ export async function main(denops: Denops) {
         denops,
         context,
       );
+
+      const matchPos = context.input.search(/\w*$/);
+
+      await vars.g.set(
+        denops,
+        "ddc#_complete_pos",
+        matchPos != null ? matchPos : -1,
+      );
       await vars.g.set(denops, "ddc#_candidates", candidates);
       await denops.call("ddc#complete");
     },
@@ -60,12 +84,23 @@ export async function main(denops: Denops) {
   await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
     helper.remove("*");
     helper.define(
-      ["InsertEnter", "TextChangedI", "TextChangedP"],
+      "InsertEnter",
       "*",
-      `call denops#notify('${denops.name}', 'start', [])`,
+      `call denops#notify('${denops.name}', 'start', ["InsertEnter"])`,
+    );
+    helper.define(
+      "TextChangedI",
+      "*",
+      `call denops#notify('${denops.name}', 'start', ["TextChangedI"])`,
+    );
+    helper.define(
+      "TextChangedP",
+      "*",
+      `call denops#notify('${denops.name}', 'start', ["TextChangedP"])`,
     );
   });
 
+  await vars.g.set(denops, "ddc#_complete_pos", -1);
   await vars.g.set(denops, "ddc#_candidates", []);
   await vars.g.set(denops, "ddc#_initialized", 1);
 
