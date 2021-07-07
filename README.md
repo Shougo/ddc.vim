@@ -98,5 +98,6 @@ See `:help ddc-options` for a complete list of options.
 
 * [x] Custom ddc options support
 * [x] Custom source options support
+* [x] Implement source orders
 * [ ] Implement sorter_rank
 * [ ] Use ReadableStream

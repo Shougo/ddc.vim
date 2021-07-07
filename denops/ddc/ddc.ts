@@ -21,12 +21,12 @@ export class Ddc {
     const currentSources: string[] = "_" in context.options.sources
       ? context.options.sources._
       : [];
-    for (const key in this.sources) {
-      if (!(currentSources.includes(key))) {
+    for (const key in currentSources) {
+      if (!(currentSources[key] in this.sources)) {
         continue;
       }
 
-      const source = this.sources[key];
+      const source = this.sources[currentSources[key]];
       const sourceCandidates = await source.gatherCandidates(denops);
 
       candidates = candidates.concat(

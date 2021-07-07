@@ -14,8 +14,11 @@ function! ddc#enable() abort
   endif
 
   " Note: ddc.vim must be registered manually.
-  autocmd User DenopsReady call denops#plugin#register('ddc',
-        \ denops#util#join_path(s:script, 'denops', 'ddc', 'app.ts'))
+  augroup ddc
+    autocmd!
+    autocmd User DenopsReady call denops#plugin#register('ddc',
+          \ denops#util#join_path(s:script, 'denops', 'ddc', 'app.ts'))
+  augroup END
 endfunction
 
 function! ddc#complete() abort
