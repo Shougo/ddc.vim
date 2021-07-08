@@ -14,4 +14,4 @@ test:
 format:
 	deno fmt denops
 
-.PHONY: lint test
+.PHONY: lint test format
