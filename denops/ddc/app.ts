@@ -2,11 +2,7 @@ import { autocmd, Denops, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { Context, Custom, defaultDdcOptions } from "./types.ts";
 
-interface FilterArg {
-  path: string;
-  name: string;
-}
-interface SourceArg {
+interface RegisterArg {
   path: string;
   name: string;
 }
@@ -17,7 +13,7 @@ export async function main(denops: Denops) {
 
   denops.dispatcher = {
     async registerFilter(arg1: unknown): Promise<void> {
-      const arg = arg1 as FilterArg;
+      const arg = arg1 as RegisterArg;
       const filter = await import(arg.path);
       const name = arg.name;
 
@@ -25,7 +21,7 @@ export async function main(denops: Denops) {
       ddc.filters[name].name = name;
     },
     async registerSource(arg1: unknown): Promise<void> {
-      const arg = arg1 as SourceArg;
+      const arg = arg1 as RegisterArg;
       const source = await import(arg.path);
       const name = arg.name;
 
