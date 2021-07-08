@@ -4,5 +4,9 @@ import { Denops } from "../deps.ts";
 export abstract class BaseFilter {
   name = "";
 
-  abstract filter(denops: Denops, context: Context): Promise<Candidate[]>;
+  abstract filter(
+    denops: Denops,
+    context: Context,
+    candidates: Candidate[],
+  ): Promise<Candidate[]>;
 }

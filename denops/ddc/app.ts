@@ -1,29 +1,33 @@
-import { autocmd, Denops, ensureObject, vars } from "./deps.ts";
+import { autocmd, Denops, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { Context, Custom, defaultDdcOptions } from "./types.ts";
+
+interface FilterArg {
+  path: string;
+  name: string;
+}
+interface SourceArg {
+  path: string;
+  name: string;
+}
 
 export async function main(denops: Denops) {
   const ddc: Ddc = new Ddc();
   let lastInput = "";
 
   denops.dispatcher = {
-    async registerFilter(arg: unknown): Promise<void> {
-      ensureObject(arg);
-
-      const dict = arg as Record<string, string>;
-      const filter = await import(dict["path"]);
-      const name = dict["name"];
+    async registerFilter(arg1: unknown): Promise<void> {
+      const arg = arg1 as FilterArg;
+      const filter = await import(arg.path);
+      const name = arg.name;
 
       ddc.filters[name] = new filter.Filter();
       ddc.filters[name].name = name;
     },
-    async registerSource(arg: unknown): Promise<void> {
-      ensureObject(arg);
-
-      const dict = arg as Record<string, string>;
-      const name = dict["name"];
-
-      const source = await import(dict["path"]);
+    async registerSource(arg1: unknown): Promise<void> {
+      const arg = arg1 as SourceArg;
+      const source = await import(arg.path);
+      const name = arg.name;
 
       const custom = await denops.call("ddc#custom#_get") as Custom;
       const currentOptions = "_" in custom.source ? custom.source._ : {};
@@ -58,7 +62,6 @@ export async function main(denops: Denops) {
       const userOptions = custom.option;
       const context: Context = {
         input: input,
-        candidates: [],
         options: Object.assign(
           defaultDdcOptions,
           userOptions,

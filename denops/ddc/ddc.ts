@@ -47,15 +47,14 @@ export class Ddc {
     source: BaseSource,
     cdd: Candidate[],
   ): Promise<Candidate[]> {
-    const ctx: Context = Object.assign(context, { candidates: cdd });
-
+    let cs = cdd;
     // Matchers
     for (const key in this.filters) {
       if (!(source.options.matchers.includes(key))) {
         continue;
       }
 
-      ctx.candidates = await this.filters[key].filter(denops, ctx);
+      cs = await this.filters[key].filter(denops, context, cs);
     }
 
     // Sorters
@@ -64,7 +63,7 @@ export class Ddc {
         continue;
       }
 
-      ctx.candidates = await this.filters[key].filter(denops, ctx);
+      cs = await this.filters[key].filter(denops, context, cs);
     }
 
     // Converters
@@ -73,11 +72,10 @@ export class Ddc {
         continue;
       }
 
-      ctx.candidates = await this.filters[key].filter(denops, ctx);
+      cs = await this.filters[key].filter(denops, context, cs);
     }
 
-    for (const key in ctx.candidates) {
-      const candidate = ctx.candidates[key];
+    for (const candidate of cs) {
       candidate.source = source.name;
       candidate.icase = true;
       candidate.equal = true;
@@ -85,6 +83,6 @@ export class Ddc {
         ? `[${candidate.source}] ${candidate.menu}`
         : `[${candidate.source}]`;
     }
-    return ctx.candidates;
+    return cs;
   }
 }
