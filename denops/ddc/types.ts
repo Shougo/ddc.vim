@@ -1,8 +1,10 @@
 export { BaseSource } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
 
+export type SourceName = string;
+
 export interface Custom {
-  source: Record<string, SourceOptions>;
+  source: Record<SourceName, SourceOptions>;
   option: DdcOptions;
 }
 
@@ -16,11 +18,11 @@ export interface Candidate {
   userData?: unknown;
   icase?: boolean;
   equal?: boolean;
-  source?: string;
+  source?: SourceName;
 }
 
 export interface DdcOptions {
-  sources: Record<string, string[]>;
+  sources: Record<string, SourceName[]>;
 }
 
 export const defaultDdcOptions: DdcOptions = {
@@ -28,7 +30,6 @@ export const defaultDdcOptions: DdcOptions = {
 };
 
 export interface Context {
-  candidates: Candidate[];
   input: string;
   options: DdcOptions;
 }

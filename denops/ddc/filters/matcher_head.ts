@@ -8,12 +8,16 @@ function lastWord(input: string): string {
 }
 
 export class Filter extends BaseFilter {
-  filter(_denops: Denops, context: Context): Promise<Candidate[]> {
+  filter(
+    _denops: Denops,
+    context: Context,
+    candidates: Candidate[],
+  ): Promise<Candidate[]> {
     const completeStr = lastWord(context.input);
-    const candidates = context.candidates.filter(
+    const filtered = candidates.filter(
       (candidate) => candidate.word.startsWith(completeStr),
     );
-    return Promise.resolve(candidates);
+    return Promise.resolve(filtered);
   }
 }
 
