@@ -11,4 +11,7 @@ lint:
 test:
 	deno test --unstable -A ${TS}
 
+format:
+	deno fmt denops
+
 .PHONY: lint test
