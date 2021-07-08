@@ -52,6 +52,12 @@ export async function main(denops: Denops) {
         return;
       }
 
+      // Skip for iminsert
+      const iminsert = await denops.call('getbufvar', '%', '&iminsert');
+      if (iminsert == 1) {
+        return;
+      }
+
       lastInput = input;
 
       const custom = await denops.call("ddc#custom#_get") as Custom;
