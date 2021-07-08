@@ -3,6 +3,7 @@ import {
   BaseSource,
   Candidate,
   Context,
+  DdcCandidate,
   DdcOptions,
   defaultDdcOptions,
 } from "./types.ts";
@@ -16,8 +17,8 @@ export class Ddc {
   async gatherCandidates(
     denops: Denops,
     context: Context,
-  ): Promise<Candidate[]> {
-    let candidates: Candidate[] = [];
+  ): Promise<DdcCandidate[]> {
+    let candidates: DdcCandidate[] = [];
     const currentSources: string[] = "_" in context.options.sources
       ? context.options.sources._
       : [];
@@ -46,8 +47,9 @@ export class Ddc {
     context: Context,
     source: BaseSource,
     cdd: Candidate[],
-  ): Promise<Candidate[]> {
+  ): Promise<DdcCandidate[]> {
     let cs = cdd;
+
     // Matchers
     for (const key in this.filters) {
       if (!(source.options.matchers.includes(key))) {
@@ -75,14 +77,18 @@ export class Ddc {
       cs = await this.filters[key].filter(denops, context, cs);
     }
 
+    const candidates: DdcCandidate[] = [];
     for (const candidate of cs) {
-      candidate.source = source.name;
-      candidate.icase = true;
-      candidate.equal = true;
-      candidate.menu = candidate.menu
-        ? `[${candidate.source}] ${candidate.menu}`
-        : `[${candidate.source}]`;
+      candidates.push(Object.assign(candidate, {
+        source: source.name,
+        icase: true,
+        equal: true,
+        menu: candidate.menu
+          ? `[${source.name}] ${candidate.menu}`
+          : `[${source.name}]`,
+      }));
     }
-    return cs;
+
+    return candidates;
   }
 }

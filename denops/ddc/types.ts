@@ -16,9 +16,13 @@ export interface Candidate {
   kind?: string;
   dup?: boolean;
   userData?: unknown;
-  icase?: boolean;
-  equal?: boolean;
-  source?: SourceName;
+}
+
+// For internal type
+export interface DdcCandidate extends Candidate {
+  icase: boolean;
+  equal: boolean;
+  source: SourceName;
 }
 
 export interface DdcOptions {
