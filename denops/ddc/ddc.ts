@@ -9,6 +9,15 @@ import {
 } from "./types.ts";
 import { Denops } from "./deps.ts";
 
+function formatMenu(prefix: string, menu: string | undefined): string {
+  menu = menu ? menu : "";
+  return prefix == ""
+    ? menu
+    : menu == ""
+    ? `[${prefix}]`
+    : `[${prefix}] ${menu}`;
+}
+
 export class Ddc {
   sources: Record<string, BaseSource> = {};
   filters: Record<string, BaseFilter> = {};
@@ -83,9 +92,7 @@ export class Ddc {
         source: source.name,
         icase: true,
         equal: true,
-        menu: candidate.menu
-          ? `[${source.name}] ${candidate.menu}`
-          : `[${source.name}]`,
+        menu: formatMenu(source.options.mark, candidate.menu),
       }));
     }
 

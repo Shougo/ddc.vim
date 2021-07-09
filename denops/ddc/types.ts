@@ -39,12 +39,14 @@ export interface Context {
 }
 
 export interface SourceOptions {
+  mark: string;
   matchers: string[];
   sorters: string[];
   converters: string[];
 }
 
 export const defaultSourceOptions: SourceOptions = {
+  mark: "",
   matchers: [],
   sorters: [],
   converters: [],

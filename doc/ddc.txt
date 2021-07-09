@@ -15,6 +15,7 @@ Interface		|ddc-interface|
   Custom Functions	  |ddc-custom-functions|
 Examples		|ddc-examples|
 Sources			|ddc-sources|
+  Source options       |ddc-source-options|
 Create source		|ddc-create-source|
   Source attributes       |ddc-source-attributes|
   Candidate attributes    |ddc-candidate-attributes|
@@ -142,6 +143,24 @@ around							*ddc-source-around*
 		This source collects candidates around the cursor, namely
 		inside current buffer.
 
+------------------------------------------------------------------------------
+SOURCE OPTIONS						*ddc-source-options*
+
+mark		(String)			(Optional)
+		The mark of a source.
+		Note: If the source set candidate menu, the source must set
+		it.  If the attribute is empty string, the candidate menu will
+		be disabled.
+
+		Default: same with source name
+
+==============================================================================
+CREATE SOURCE						*ddc-create-source*
+
+
+------------------------------------------------------------------------------
+SOURCE ATTRIBUTES					*ddc-source-attributes*
+
 
 ==============================================================================
 FILTERS							*ddc-filters*
@@ -151,16 +170,12 @@ through the filters, which are matchers, converters or sorters. Sources can
 have specific filters.
 
 
-------------------------------------------------------------------------------
-SOURCE ATTRIBUTES				*ddc-source-attributes*
-
-
 ==============================================================================
 CREATE FILTER						*ddc-create-filter*
 
 
 ------------------------------------------------------------------------------
-FILTER ATTRIBUTES				*ddc-filter-attributes*
+FILTER ATTRIBUTES					*ddc-filter-attributes*
 
 
 ==============================================================================

@@ -26,10 +26,13 @@ export async function main(denops: Denops) {
       const name = arg.name;
 
       const custom = await denops.call("ddc#custom#_get") as Custom;
-      const currentOptions = "_" in custom.source ? custom.source._ : {};
+      const currentOptions = name in custom.source
+        ? custom.source[name]
+        : custom.source._;
 
       const newSource = new source.Source();
       newSource.name = name;
+      newSource.options.mark = name;
       newSource.options = Object.assign(
         newSource.options,
         currentOptions,
@@ -53,7 +56,7 @@ export async function main(denops: Denops) {
       }
 
       // Skip for iminsert
-      const iminsert = await denops.call('getbufvar', '%', '&iminsert');
+      const iminsert = await denops.call("getbufvar", "%", "&iminsert");
       if (iminsert == 1) {
         return;
       }
