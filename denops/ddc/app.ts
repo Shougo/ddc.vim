@@ -26,9 +26,10 @@ export async function main(denops: Denops) {
       const name = arg.name;
 
       const custom = await denops.call("ddc#custom#_get") as Custom;
-      const currentOptions = name in custom.source
-        ? custom.source[name]
-        : custom.source._;
+      const currentOptions = Object.assign(
+        custom.source._,
+        name in custom.source ? custom.source[name] : {},
+      );
 
       const newSource = new source.Source();
       newSource.name = name;
