@@ -1,4 +1,4 @@
-import { BaseSource, Candidate } from "../types.ts";
+import { BaseSource, Candidate, Context, SourceOptions } from "../types.ts";
 import { Denops } from "../deps.ts";
 import { imap, range } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
 import { assertEquals } from "https://deno.land/std@0.98.0/testing/asserts.ts";
@@ -19,10 +19,22 @@ function allWords(lines: string[]): string[] {
     .map((match) => match[0]);
 }
 
+interface Params {
+  maxSize: number;
+}
+
 export class Source extends BaseSource {
-  async gatherCandidates(denops: Denops): Promise<Candidate[]> {
+  name = "around";
+
+  async gatherCandidates(
+    denops: Denops,
+    _context: Context,
+    _options: SourceOptions,
+    params: Record<string, unknown>,
+  ): Promise<Candidate[]> {
     const pageSize = 500;
-    const maxSize = 200;
+    const p = params as unknown as Params;
+    const maxSize = p.maxSize;
     const currentLine = (await denops.call("line", ".")) as number;
     const minLines = Math.max(1, currentLine - maxSize);
     const maxLines = Math.min(
@@ -39,6 +51,13 @@ export class Source extends BaseSource {
 
     const candidates: Candidate[] = allWords(lines).map((word) => ({ word }));
     return candidates;
+  }
+
+  params(): Record<string, unknown> {
+    const params: Params = {
+      maxSize: 200,
+    };
+    return params as unknown as Record<string, unknown>;
   }
 }
 
