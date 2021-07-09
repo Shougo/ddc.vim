@@ -101,3 +101,4 @@ See `:help ddc-options` for a complete list of options.
 * [x] Implement source orders
 * [ ] Implement sorter_rank
 * [ ] Use ReadableStream
+* [ ] LSP support
