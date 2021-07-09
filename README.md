@@ -86,6 +86,9 @@ call ddc#custom#global('sources', { '_': ['around'] })
 " Enable default matcher.
 call ddc#custom#source('_', 'matchers', ['matcher_head'])
 
+" Change source mark.
+call ddc#custom#source('around', 'mark', ['A'])
+
 " Use ddc.
 call ddc#enable()
 ```
