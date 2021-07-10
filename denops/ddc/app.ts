@@ -62,11 +62,6 @@ export async function main(denops: Denops) {
         return;
       }
 
-      // Check input queue
-      if (await denops.call("getchar", 1) != 0) {
-        return;
-      }
-
       lastInput = input;
 
       const custom = await denops.call("ddc#custom#_get") as Custom;
