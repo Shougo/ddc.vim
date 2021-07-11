@@ -1,7 +1,6 @@
-import { Denops, vars } from "./deps.ts";
+import { assertEquals, Denops, vars } from "./deps.ts";
 import { Context, DdcOptions } from "./types.ts";
 import { reduce } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
-import { assertEquals } from "https://deno.land/std@0.98.0/testing/asserts.ts";
 
 // where
 // T: Object
@@ -144,23 +143,29 @@ class Custom {
     ]);
   }
 
-  setGlobal(options: Partial<DdcOptions>) {
+  setGlobal(options: Partial<DdcOptions>): Custom {
     this.global = options;
+    return this;
   }
-  setFiletype(ft: string, options: Partial<DdcOptions>) {
+  setFiletype(ft: string, options: Partial<DdcOptions>): Custom {
     this.filetype[ft] = options;
+    return this;
   }
-  setBuffer(bufnr: number, options: Partial<DdcOptions>) {
+  setBuffer(bufnr: number, options: Partial<DdcOptions>): Custom {
     this.buffer[bufnr] = options;
+    return this;
   }
-  patchGlobal(options: Partial<DdcOptions>) {
+  patchGlobal(options: Partial<DdcOptions>): Custom {
     this.global = patchDdcOptions(this.global, options);
+    return this;
   }
-  patchFiletype(ft: string, options: Partial<DdcOptions>) {
+  patchFiletype(ft: string, options: Partial<DdcOptions>): Custom {
     this.filetype[ft] = patchDdcOptions(this.filetype[ft] || {}, options);
+    return this;
   }
-  patchBuffer(bufnr: number, options: Partial<DdcOptions>) {
+  patchBuffer(bufnr: number, options: Partial<DdcOptions>): Custom {
     this.buffer[bufnr] = patchDdcOptions(this.buffer[bufnr] || {}, options);
+    return this;
   }
 }
 
@@ -269,23 +274,30 @@ export class ContextBuilder {
 }
 
 Deno.test("patchDdcOptions", () => {
-  const custom = new Custom();
-  custom.setGlobal({
-    sources: ["around"],
-    sourceParams: {
-      "around": {
-        maxSize: 300,
+  const custom = (new Custom())
+    .setGlobal({
+      sources: ["around"],
+      sourceParams: {
+        "around": {
+          maxSize: 300,
+        },
       },
-    },
-  });
-  custom.patchGlobal({
-    sources: ["around", "baz"],
-    sourceParams: {
-      "baz": {
-        foo: "bar",
+    })
+    .patchGlobal({
+      sources: ["around", "baz"],
+      sourceParams: {
+        "baz": {
+          foo: "bar",
+        },
       },
-    },
-  });
+    })
+    .patchFiletype("markdown", {
+      filterParams: {
+        "hoge": {
+          foo: "bar",
+        },
+      },
+    });
   assertEquals(custom.global, {
     sources: ["around", "baz"],
     sourceParams: {
@@ -293,13 +305,6 @@ Deno.test("patchDdcOptions", () => {
         maxSize: 300,
       },
       "baz": {
-        foo: "bar",
-      },
-    },
-  });
-  custom.patchFiletype("markdown", {
-    filterParams: {
-      "hoge": {
         foo: "bar",
       },
     },
@@ -316,35 +321,35 @@ Deno.test("patchDdcOptions", () => {
 });
 
 Deno.test("mergeDdcOptions", () => {
-  const custom = new Custom();
-  custom.setGlobal({
-    sources: ["around"],
-    sourceParams: {
-      "around": {
-        maxSize: 300,
+  const custom = (new Custom())
+    .setGlobal({
+      sources: ["around"],
+      sourceParams: {
+        "around": {
+          maxSize: 300,
+        },
       },
-    },
-  });
-  custom.setFiletype("typescript", {
-    sources: [],
-    filterParams: {
-      "matcher_head": {
-        foo: 2,
+    })
+    .setFiletype("typescript", {
+      sources: [],
+      filterParams: {
+        "matcher_head": {
+          foo: 2,
+        },
       },
-    },
-  });
-  custom.setBuffer(1, {
-    sources: ["around", "foo"],
-    filterParams: {
-      "matcher_head": {
-        foo: 3,
+    })
+    .setBuffer(1, {
+      sources: ["around", "foo"],
+      filterParams: {
+        "matcher_head": {
+          foo: 3,
+        },
+        "foo": {
+          max: 200,
+        },
       },
-      "foo": {
-        max: 200,
-      },
-    },
-  });
-  custom.patchBuffer(2, {});
+    })
+    .patchBuffer(2, {});
   assertEquals(custom.get("typescript", 1), {
     sources: ["around", "foo"],
     sourceOptions: {},

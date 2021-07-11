@@ -24,7 +24,7 @@ import {
   defaultFilterOptions,
   defaultFilterParams,
 } from "./base/filter.ts";
-import { Denops } from "./deps.ts";
+import { assertEquals, Denops } from "./deps.ts";
 
 function formatMenu(prefix: string, menu: string | undefined): string {
   menu = menu ? menu : "";
@@ -57,20 +57,6 @@ function sourceArgs(
   return [o, p];
 }
 
-function filtersUsed(options: DdcOptions, sourceName: string): FiltersUsed {
-  const mergeFiltersUsed = overwrite;
-  const defaultFiltersUsed = (): FiltersUsed => ({
-    matchers: [],
-    sorters: [],
-    converters: [],
-  });
-  const filtersUsed = foldMerge(mergeFiltersUsed, defaultFiltersUsed, [
-    options.sourceOptions["_"],
-    options.sourceOptions[sourceName],
-  ]);
-  return filtersUsed;
-}
-
 function filterArgs(
   filterOptions: Record<string, Partial<FilterOptions>>,
   filterParams: Record<string, Partial<Record<string, unknown>>>,
@@ -84,6 +70,20 @@ function filterArgs(
       filterParams[filter.name],
     ]);
   return [optionsOf(filter), paramsOf(filter)];
+}
+
+function filtersUsed(options: DdcOptions, sourceName: string): FiltersUsed {
+  const mergeFiltersUsed = overwrite;
+  const defaultFiltersUsed = (): FiltersUsed => ({
+    matchers: [],
+    sorters: [],
+    converters: [],
+  });
+  const filtersUsed = foldMerge(mergeFiltersUsed, defaultFiltersUsed, [
+    options.sourceOptions["_"],
+    options.sourceOptions[sourceName],
+  ]);
+  return filtersUsed;
 }
 
 export class Ddc {
@@ -172,3 +172,15 @@ export class Ddc {
     return cdd;
   }
 }
+
+Deno.test("sourceArgs", () => {
+  assertEquals(0, 1);
+});
+
+Deno.test("filterArgs", () => {
+  assertEquals(0, 1);
+});
+
+Deno.test("filtersUsed", () => {
+  assertEquals(0, 1);
+});
