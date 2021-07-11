@@ -83,11 +83,15 @@ export class Ddc {
         sourceParams,
       );
       const mergeFiltersUsed = overwrite;
-      const filtersUsed = foldMerge(mergeFiltersUsed, () => ({
-        matchers: options.defaultMatchers,
-        sorters: options.defaultSorters,
-        converters: options.defaultConverters,
-      }), [options.sourceOptions[source.name]]);
+      const defaultFiltersUsed = (): FiltersUsed => ({
+        matchers: [],
+        sorters: [],
+        converters: [],
+      });
+      const filtersUsed = foldMerge(mergeFiltersUsed, defaultFiltersUsed, [
+        options.sourceOptions["_"],
+        options.sourceOptions[source.name],
+      ]);
       const filterCandidates = await this.filterCandidates(
         denops,
         context,

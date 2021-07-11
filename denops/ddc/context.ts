@@ -39,9 +39,6 @@ export function foldMerge<T>(
 export function defaultDdcOptions(): DdcOptions {
   return {
     sources: [],
-    defaultMatchers: [],
-    defaultSorters: [],
-    defaultConverters: [],
     sourceOptions: {},
     sourceParams: {},
     filterOptions: {},
@@ -84,9 +81,6 @@ export function mergeDdcOptions(
   const partialMergeFilterParams = partialOverwrite;
   return {
     sources: overwritten.sources,
-    defaultMatchers: overwritten.defaultMatchers,
-    defaultSorters: overwritten.defaultSorters,
-    defaultConverters: overwritten.defaultConverters,
     sourceOptions: migrateEachKeys(
       partialMergeSourceOptions,
       a.sourceOptions,
@@ -352,10 +346,6 @@ Deno.test("mergeDdcOptions", () => {
   });
   custom.patchBuffer(2, {});
   assertEquals(custom.get("typescript", 1), {
-    defaultMatchers: [],
-    defaultSorters: [],
-    defaultConverters: [],
-
     sources: ["around", "foo"],
     sourceOptions: {},
     filterOptions: {},
@@ -374,10 +364,6 @@ Deno.test("mergeDdcOptions", () => {
     },
   });
   assertEquals(custom.get("typescript", 2), {
-    defaultMatchers: [],
-    defaultSorters: [],
-    defaultConverters: [],
-
     sources: [],
     sourceOptions: {},
     filterOptions: {},
@@ -393,10 +379,6 @@ Deno.test("mergeDdcOptions", () => {
     },
   });
   assertEquals(custom.get("cpp", 1), {
-    defaultMatchers: [],
-    defaultSorters: [],
-    defaultConverters: [],
-
     sources: ["around", "foo"],
     sourceOptions: {},
     filterOptions: {},

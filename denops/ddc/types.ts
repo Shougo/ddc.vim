@@ -14,9 +14,6 @@ export interface Context {
 
 export interface DdcOptions {
   sources: SourceName[];
-  defaultMatchers: string[];
-  defaultSorters: string[];
-  defaultConverters: string[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;
   filterOptions: Record<string, Partial<FilterOptions>>;
