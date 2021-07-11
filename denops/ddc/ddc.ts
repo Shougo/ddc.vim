@@ -125,27 +125,24 @@ export class Ddc {
     const sorters = foundFilters(filtersUsed.sorters);
     const converters = foundFilters(filtersUsed.converters);
 
-    const filterOptionsOf = (filter: BaseFilter) =>
+    const optionsOf = (filter: BaseFilter) =>
       mergeFilterOptions(defaultFilterOptions(), filterOptions[filter.name]);
-    const foldParamsOf = (filter: BaseFilter) =>
+    const paramsOf = (filter: BaseFilter) =>
       foldMerge(mergeFilterParams, defaultFilterParams, [
         filter.params(),
         filterParams[filter.name],
       ]);
 
     for (const matcher of matchers) {
-      const o = filterOptionsOf(matcher);
-      const p = foldParamsOf(matcher);
+      const [o, p] = [optionsOf(matcher), paramsOf(matcher)];
       cdd = await matcher.filter(denops, context, o, p, cdd);
     }
     for (const sorter of sorters) {
-      const o = filterOptionsOf(sorter);
-      const p = foldParamsOf(sorter);
+      const [o, p] = [optionsOf(sorter), paramsOf(sorter)];
       cdd = await sorter.filter(denops, context, o, p, cdd);
     }
     for (const converter of converters) {
-      const o = filterOptionsOf(converter);
-      const p = foldParamsOf(converter);
+      const [o, p] = [optionsOf(converter), paramsOf(converter)];
       cdd = await converter.filter(denops, context, o, p, cdd);
     }
     return cdd;

@@ -41,6 +41,9 @@ export async function main(denops: Denops) {
       contextBuilder.patchBuffer(bufnr, options);
       return Promise.resolve();
     },
+    async _cacheWorld(arg1: unknown): Promise<unknown> {
+      return await contextBuilder.cacheWorld(denops, arg1 as string);
+    },
     getGlobal(): Promise<Partial<DdcOptions>> {
       return Promise.resolve(contextBuilder.getGlobal());
     },

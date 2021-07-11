@@ -1,6 +1,7 @@
 import { Denops, vars } from "./deps.ts";
 import { Context, DdcOptions } from "./types.ts";
 import { reduce } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
+import { assertEquals } from "https://deno.land/std@0.98.0/testing/asserts.ts";
 
 // where
 // T: Object
@@ -48,20 +49,25 @@ export function defaultDdcOptions(): DdcOptions {
   };
 }
 
-function mergeEachKeys<T>(
+function migrateEachKeys<T>(
   merge: PartialMerge<T>,
-  a: Record<string, Partial<T>>,
-  b: Record<string, Partial<T>>,
-): Record<string, Partial<T>> {
+  a: null | undefined | Record<string, Partial<T>>,
+  b: null | undefined | Record<string, Partial<T>>,
+): null | Record<string, Partial<T>> {
+  if (!a && !b) return null;
   const ret: Record<string, Partial<T>> = {};
-  for (const key in a) {
-    ret[key] = a[key];
+  if (a) {
+    for (const key in a) {
+      ret[key] = a[key];
+    }
   }
-  for (const key in b) {
-    if (key in ret) {
-      ret[key] = merge(ret[key], b[key]);
-    } else {
-      ret[key] = b[key];
+  if (b) {
+    for (const key in b) {
+      if (key in ret) {
+        ret[key] = merge(ret[key], b[key]);
+      } else {
+        ret[key] = b[key];
+      }
     }
   }
   return ret;
@@ -81,27 +87,51 @@ export function mergeDdcOptions(
     defaultMatchers: overwritten.defaultMatchers,
     defaultSorters: overwritten.defaultSorters,
     defaultConverters: overwritten.defaultConverters,
-    sourceOptions: mergeEachKeys(
+    sourceOptions: migrateEachKeys(
       partialMergeSourceOptions,
       a.sourceOptions,
-      b.sourceOptions || {},
-    ),
-    filterOptions: mergeEachKeys(
+      b.sourceOptions,
+    ) || {},
+    filterOptions: migrateEachKeys(
       partialMergeFilterOptions,
       a.filterOptions,
-      b.filterOptions || {},
-    ),
-    sourceParams: mergeEachKeys(
+      b.filterOptions,
+    ) || {},
+    sourceParams: migrateEachKeys(
       partialMergeSourceParams,
       a.sourceParams,
-      b.sourceParams || {},
-    ),
-    filterParams: mergeEachKeys(
+      b.sourceParams,
+    ) || {},
+    filterParams: migrateEachKeys(
       partialMergeFilterParams,
       a.filterParams,
-      b.filterParams || {},
-    ),
+      b.filterParams,
+    ) || {},
   };
+}
+
+function patchDdcOptions(
+  a: Partial<DdcOptions>,
+  b: Partial<DdcOptions>,
+): Partial<DdcOptions> {
+  const overwritten: Partial<DdcOptions> = { ...a, ...b };
+  const so = migrateEachKeys(
+    partialOverwrite,
+    a.sourceOptions,
+    b.sourceOptions,
+  );
+  if (so) overwritten.sourceOptions = so;
+  const fo = migrateEachKeys(
+    partialOverwrite,
+    a.filterOptions,
+    b.filterOptions,
+  );
+  if (fo) overwritten.filterOptions = fo;
+  const sp = migrateEachKeys(partialOverwrite, a.sourceParams, b.sourceParams);
+  if (sp) overwritten.sourceParams = sp;
+  const fp = migrateEachKeys(partialOverwrite, a.filterParams, b.filterParams);
+  if (fp) overwritten.filterParams = fp;
+  return overwritten;
 }
 
 // Customization by end users
@@ -130,13 +160,13 @@ class Custom {
     this.buffer[bufnr] = options;
   }
   patchGlobal(options: Partial<DdcOptions>) {
-    Object.assign(this.global, options);
+    this.global = patchDdcOptions(this.global, options);
   }
   patchFiletype(ft: string, options: Partial<DdcOptions>) {
-    Object.assign(this.filetype[ft] || {}, options);
+    this.filetype[ft] = patchDdcOptions(this.filetype[ft] || {}, options);
   }
   patchBuffer(bufnr: number, options: Partial<DdcOptions>) {
-    Object.assign(this.buffer[bufnr] || {}, options);
+    this.buffer[bufnr] = patchDdcOptions(this.buffer[bufnr] || {}, options);
   }
 }
 
@@ -202,11 +232,15 @@ export class ContextBuilder {
     };
   }
 
+  async cacheWorld(denops: Denops, event: string): Promise<World> {
+    return await cacheWorld(denops, event);
+  }
+
   async createContext(
     denops: Denops,
     event: string,
   ): Promise<null | [Context, DdcOptions]> {
-    const world = await cacheWorld(denops, event);
+    const world = await this.cacheWorld(denops, event);
     if (this.lastWorld == world) return null;
     this.lastWorld = world;
     if (world.isLmap || world.changedByCompletion) {
@@ -239,3 +273,145 @@ export class ContextBuilder {
     this.custom.patchBuffer(bufnr, options);
   }
 }
+
+Deno.test("patchDdcOptions", () => {
+  const custom = new Custom();
+  custom.setGlobal({
+    sources: ["around"],
+    sourceParams: {
+      "around": {
+        maxSize: 300,
+      },
+    },
+  });
+  custom.patchGlobal({
+    sources: ["around", "baz"],
+    sourceParams: {
+      "baz": {
+        foo: "bar",
+      },
+    },
+  });
+  assertEquals(custom.global, {
+    sources: ["around", "baz"],
+    sourceParams: {
+      "around": {
+        maxSize: 300,
+      },
+      "baz": {
+        foo: "bar",
+      },
+    },
+  });
+  custom.patchFiletype("markdown", {
+    filterParams: {
+      "hoge": {
+        foo: "bar",
+      },
+    },
+  });
+  assertEquals(custom.filetype, {
+    markdown: {
+      filterParams: {
+        "hoge": {
+          foo: "bar",
+        },
+      },
+    },
+  });
+});
+
+Deno.test("mergeDdcOptions", () => {
+  const custom = new Custom();
+  custom.setGlobal({
+    sources: ["around"],
+    sourceParams: {
+      "around": {
+        maxSize: 300,
+      },
+    },
+  });
+  custom.setFiletype("typescript", {
+    sources: [],
+    filterParams: {
+      "matcher_head": {
+        foo: 2,
+      },
+    },
+  });
+  custom.setBuffer(1, {
+    sources: ["around", "foo"],
+    filterParams: {
+      "matcher_head": {
+        foo: 3,
+      },
+      "foo": {
+        max: 200,
+      },
+    },
+  });
+  custom.patchBuffer(2, {});
+  assertEquals(custom.get("typescript", 1), {
+    defaultMatchers: [],
+    defaultSorters: [],
+    defaultConverters: [],
+
+    sources: ["around", "foo"],
+    sourceOptions: {},
+    filterOptions: {},
+    sourceParams: {
+      "around": {
+        maxSize: 300,
+      },
+    },
+    filterParams: {
+      "matcher_head": {
+        foo: 3,
+      },
+      "foo": {
+        max: 200,
+      },
+    },
+  });
+  assertEquals(custom.get("typescript", 2), {
+    defaultMatchers: [],
+    defaultSorters: [],
+    defaultConverters: [],
+
+    sources: [],
+    sourceOptions: {},
+    filterOptions: {},
+    sourceParams: {
+      "around": {
+        maxSize: 300,
+      },
+    },
+    filterParams: {
+      "matcher_head": {
+        foo: 2,
+      },
+    },
+  });
+  assertEquals(custom.get("cpp", 1), {
+    defaultMatchers: [],
+    defaultSorters: [],
+    defaultConverters: [],
+
+    sources: ["around", "foo"],
+    sourceOptions: {},
+    filterOptions: {},
+    sourceParams: {
+      "around": {
+        maxSize: 300,
+      },
+    },
+    filterParams: {
+      "matcher_head": {
+        foo: 3,
+      },
+      "foo": {
+        max: 200,
+      },
+    },
+  });
+});
