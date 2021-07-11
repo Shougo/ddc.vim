@@ -73,6 +73,7 @@ sources
 		is "_", the value will be used for default filetypes.  For
 		example, you can load some sources in C++ filetype.  If the
 		value is [], it will not load any sources.
+		The order is used as source candidates rank.
 
 		Default value: {}
 >
@@ -88,12 +89,29 @@ FUNCTIONS 						*ddc-functions*
 							*ddc#disable()*
 ddc#disable()
 		Disable ddc auto completion.
+		It should be used when ddc is broken.
 		Note: It changes the global state.
 
 							*ddc#enable()*
 ddc#enable()
 		Enable ddc auto completion.
 		Note: It changes the global state.
+
+							*ddc#register_filter()*
+ddc#register_filter({dict})
+		Register filter.
+		The {dict} must have following keys.
+
+		name: The filter name
+		path: The filter path
+
+							*ddc#register_source()*
+ddc#register_source({dict})
+		Register source.
+		The {dict} must have following keys.
+
+		name: The source name
+		path: The source path
 
 
 CUSTOM FUNCTIONS 					*ddc-custom-functions*
@@ -162,6 +180,14 @@ mark		(String)			(Optional)
 ==============================================================================
 CREATE SOURCE						*ddc-create-source*
 
+To create source, you should read other sources implementation.
+
+The files must be registerd by |ddc#register_source()|.
+Source class must extend the Base class.
+
+Note: The sources must be written in Typescript language.
+
+Note: If you call Vim functions in your source, it is not asynchronous.
 
 ------------------------------------------------------------------------------
 SOURCE ATTRIBUTES					*ddc-source-attributes*
@@ -174,9 +200,24 @@ Once candidates have been supplied by one or more sources, they are passed
 through the filters, which are matchers, converters or sorters. Sources can
 have specific filters.
 
+Note: The default matchers/sorters/converters are empty.  You need to
+configure them to use ddc.
+
+				    	    	*ddc-filter-matcher_head*
+matcher_head	Head matching matcher.
+
 
 ==============================================================================
 CREATE FILTER						*ddc-create-filter*
+
+To create filter, you should read other filters implementation.
+
+The files must be registerd by |ddc#register_filter()|.
+Filter class must extend the Base class.
+
+Note: The filters must be written in Typescript language.
+
+Note: If you call Vim functions in your source, it is not asynchronous.
 
 
 ------------------------------------------------------------------------------
@@ -202,6 +243,13 @@ Users use different environments/policy, etc...
 So ddc.vim should not define the defaults.
 You must define your defaults by configuration.
 ddc.vim does not conflict with your defaults.
+
+
+Q: Why ddc.vim has not source default attributes?
+
+A: Because users should config sources perfectly.  If source has the default,
+users must check the source has the default value.
+The config should work as users config.  It may increase configuration cost.
 
 
 ==============================================================================
