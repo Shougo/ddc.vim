@@ -4,7 +4,7 @@
 " License: MIT license
 "=============================================================================
 
-let s:script = fnamemodify(expand('<sfile>'), ':h:h')
+let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 
 function! ddc#enable() abort
   if v:version < 802 && !has('nvim-0.5')
@@ -17,7 +17,7 @@ function! ddc#enable() abort
   augroup ddc
     autocmd!
     autocmd User DenopsReady call denops#plugin#register('ddc',
-          \ denops#util#join_path(s:script, 'denops', 'ddc', 'app.ts'))
+          \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'))
   augroup END
 endfunction
 

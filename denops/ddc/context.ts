@@ -159,14 +159,23 @@ class Custom {
     return ret;
   }
 
-  set_global(options: Partial<DdcOptions>) {
+  setGlobal(options: Partial<DdcOptions>) {
     this.global = options;
   }
-  set_filetype(ft: string, options: Partial<DdcOptions>) {
+  setFiletype(ft: string, options: Partial<DdcOptions>) {
     this.filetype[ft] = options;
   }
-  set_buffer(bufnr: number, options: Partial<DdcOptions>) {
+  setBuffer(bufnr: number, options: Partial<DdcOptions>) {
     this.buffer[bufnr] = options;
+  }
+  patchGlobal(options: Partial<DdcOptions>) {
+    Object.assign(this.global, options);
+  }
+  patchFiletype(ft: string, options: Partial<DdcOptions>) {
+    Object.assign(this.filetype[ft] || {}, options);
+  }
+  patchBuffer(bufnr: number, options: Partial<DdcOptions>) {
+    Object.assign(this.buffer[bufnr] || {}, options);
   }
 }
 
@@ -249,13 +258,23 @@ export class ContextBuilder {
     return [context, userOptions];
   }
 
-  customizeGlobal(options: Partial<DdcOptions>) {
-    this.custom.set_global(options);
+  getGlobal(): Partial<DdcOptions> {
+    return this.custom.global;
   }
-  customizeFiletype(ft: string, options: Partial<DdcOptions>) {
-    this.custom.set_filetype(ft, options);
+  getFiletype(): Record<string, Partial<DdcOptions>> {
+    return this.custom.filetype;
   }
-  customizeBuffer(bufnr: number, options: Partial<DdcOptions>) {
-    this.custom.set_buffer(bufnr, options);
+  getBuffer(): Record<number, Partial<DdcOptions>> {
+    return this.custom.buffer;
+  }
+
+  patchGlobal(options: Partial<DdcOptions>) {
+    this.custom.patchGlobal(options);
+  }
+  patchFiletype(ft: string, options: Partial<DdcOptions>) {
+    this.custom.patchFiletype(ft, options);
+  }
+  patchBuffer(bufnr: number, options: Partial<DdcOptions>) {
+    this.custom.patchBuffer(bufnr, options);
   }
 }

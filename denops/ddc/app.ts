@@ -1,6 +1,7 @@
 import { autocmd, Denops, ensureObject, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
+import { DdcOptions } from "./types.ts";
 
 type RegisterArg = {
   path: string;
@@ -20,25 +21,34 @@ export async function main(denops: Denops) {
       const arg = arg1 as RegisterArg;
       await ddc.registerSource(arg.path, arg.name);
     },
-    customizeGlobal(arg1: unknown): Promise<void> {
+    patchGlobal(arg1: unknown): Promise<void> {
       ensureObject(arg1);
       const options = arg1 as Record<string, unknown>;
-      contextBuilder.customizeGlobal(options);
+      contextBuilder.patchGlobal(options);
       return Promise.resolve();
     },
-    customizeFiletype(arg1: unknown, arg2: unknown): Promise<void> {
+    patchFiletype(arg1: unknown, arg2: unknown): Promise<void> {
       const filetype = arg1 as string;
       ensureObject(arg2);
       const options = arg2 as Record<string, unknown>;
-      contextBuilder.customizeFiletype(filetype, options);
+      contextBuilder.patchFiletype(filetype, options);
       return Promise.resolve();
     },
-    customizeBuffer(arg1: unknown, arg2: unknown): Promise<void> {
+    patchBuffer(arg1: unknown, arg2: unknown): Promise<void> {
       const bufnr = arg1 as number;
       ensureObject(arg2);
       const options = arg2 as Record<string, unknown>;
-      contextBuilder.customizeBuffer(bufnr, options);
+      contextBuilder.patchBuffer(bufnr, options);
       return Promise.resolve();
+    },
+    getGlobal(): Promise<Partial<DdcOptions>> {
+      return Promise.resolve(contextBuilder.getGlobal());
+    },
+    getFiletype(): Promise<Record<string, Partial<DdcOptions>>> {
+      return Promise.resolve(contextBuilder.getFiletype());
+    },
+    getBuffer(): Promise<Record<number, Partial<DdcOptions>>> {
+      return Promise.resolve(contextBuilder.getFiletype());
     },
     async onEvent(arg1: unknown): Promise<void> {
       const event = arg1 as string;
