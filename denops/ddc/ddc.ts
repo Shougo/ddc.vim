@@ -4,6 +4,7 @@ import {
   DdcCandidate,
   DdcOptions,
   FilterOptions,
+  SourceOptions,
 } from "./types.ts";
 import {
   foldMerge,
@@ -40,6 +41,51 @@ interface FiltersUsed {
   converters: string[];
 }
 
+function sourceArgs(
+  options: DdcOptions,
+  source: BaseSource,
+): [SourceOptions, Record<string, unknown>] {
+  const o = foldMerge(
+    mergeSourceOptions,
+    defaultSourceOptions,
+    [options.sourceOptions[source.name]],
+  );
+  const p = foldMerge(mergeSourceParams, defaultSourceParams, [
+    source.params(),
+    options.sourceParams[source.name],
+  ]);
+  return [o, p];
+}
+
+function filtersUsed(options: DdcOptions, sourceName: string): FiltersUsed {
+  const mergeFiltersUsed = overwrite;
+  const defaultFiltersUsed = (): FiltersUsed => ({
+    matchers: [],
+    sorters: [],
+    converters: [],
+  });
+  const filtersUsed = foldMerge(mergeFiltersUsed, defaultFiltersUsed, [
+    options.sourceOptions["_"],
+    options.sourceOptions[sourceName],
+  ]);
+  return filtersUsed;
+}
+
+function filterArgs(
+  filterOptions: Record<string, Partial<FilterOptions>>,
+  filterParams: Record<string, Partial<Record<string, unknown>>>,
+  filter: BaseFilter,
+): [FilterOptions, Record<string, unknown>] {
+  const optionsOf = (filter: BaseFilter) =>
+    mergeFilterOptions(defaultFilterOptions(), filterOptions[filter.name]);
+  const paramsOf = (filter: BaseFilter) =>
+    foldMerge(mergeFilterParams, defaultFilterParams, [
+      filter.params(),
+      filterParams[filter.name],
+    ]);
+  return [optionsOf(filter), paramsOf(filter)];
+}
+
 export class Ddc {
   sources: Record<string, BaseSource> = {};
   filters: Record<string, BaseFilter> = {};
@@ -67,35 +113,17 @@ export class Ddc {
       .filter((x) => x);
 
     for (const source of sources) {
-      const sourceOptions = foldMerge(
-        mergeSourceOptions,
-        defaultSourceOptions,
-        [options.sourceOptions[source.name]],
-      );
-      const sourceParams = foldMerge(mergeSourceParams, defaultSourceParams, [
-        source.params(),
-        options.sourceParams[source.name],
-      ]);
+      const [sourceOptions, sourceParams] = sourceArgs(options, source);
       const sourceCandidates = await source.gatherCandidates(
         denops,
         context,
         sourceOptions,
         sourceParams,
       );
-      const mergeFiltersUsed = overwrite;
-      const defaultFiltersUsed = (): FiltersUsed => ({
-        matchers: [],
-        sorters: [],
-        converters: [],
-      });
-      const filtersUsed = foldMerge(mergeFiltersUsed, defaultFiltersUsed, [
-        options.sourceOptions["_"],
-        options.sourceOptions[source.name],
-      ]);
       const filterCandidates = await this.filterCandidates(
         denops,
         context,
-        filtersUsed,
+        filtersUsed(options, source.name),
         options.filterOptions,
         options.filterParams,
         sourceCandidates,
@@ -129,24 +157,16 @@ export class Ddc {
     const sorters = foundFilters(filtersUsed.sorters);
     const converters = foundFilters(filtersUsed.converters);
 
-    const optionsOf = (filter: BaseFilter) =>
-      mergeFilterOptions(defaultFilterOptions(), filterOptions[filter.name]);
-    const paramsOf = (filter: BaseFilter) =>
-      foldMerge(mergeFilterParams, defaultFilterParams, [
-        filter.params(),
-        filterParams[filter.name],
-      ]);
-
     for (const matcher of matchers) {
-      const [o, p] = [optionsOf(matcher), paramsOf(matcher)];
+      const [o, p] = filterArgs(filterOptions, filterParams, matcher);
       cdd = await matcher.filter(denops, context, o, p, cdd);
     }
     for (const sorter of sorters) {
-      const [o, p] = [optionsOf(sorter), paramsOf(sorter)];
+      const [o, p] = filterArgs(filterOptions, filterParams, sorter);
       cdd = await sorter.filter(denops, context, o, p, cdd);
     }
     for (const converter of converters) {
-      const [o, p] = [optionsOf(converter), paramsOf(converter)];
+      const [o, p] = filterArgs(filterOptions, filterParams, converter);
       cdd = await converter.filter(denops, context, o, p, cdd);
     }
     return cdd;

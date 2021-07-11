@@ -41,9 +41,6 @@ export async function main(denops: Denops) {
       contextBuilder.patchBuffer(bufnr, options);
       return Promise.resolve();
     },
-    async _cacheWorld(arg1: unknown): Promise<unknown> {
-      return await contextBuilder.cacheWorld(denops, arg1 as string);
-    },
     getGlobal(): Promise<Partial<DdcOptions>> {
       return Promise.resolve(contextBuilder.getGlobal());
     },
@@ -52,6 +49,9 @@ export async function main(denops: Denops) {
     },
     getBuffer(): Promise<Record<number, Partial<DdcOptions>>> {
       return Promise.resolve(contextBuilder.getFiletype());
+    },
+    async _cacheWorld(arg1: unknown): Promise<unknown> {
+      return await contextBuilder.cacheWorld(denops, arg1 as string);
     },
     async onEvent(arg1: unknown): Promise<void> {
       const event = arg1 as string;
