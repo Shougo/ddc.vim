@@ -8,8 +8,6 @@ function lastWord(input: string): string {
 }
 
 export class Filter extends BaseFilter {
-  name = "matcher_head";
-
   filter(
     _denops: Denops,
     context: Context,

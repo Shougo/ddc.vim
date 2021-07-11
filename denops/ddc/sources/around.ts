@@ -24,8 +24,6 @@ interface Params {
 }
 
 export class Source extends BaseSource {
-  name = "around";
-
   async gatherCandidates(
     denops: Denops,
     _context: Context,

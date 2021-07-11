@@ -11,18 +11,13 @@ type PartialMerge<T> = (a: Partial<T>, b: Partial<T>) => Partial<T>;
 type Merge<T> = (a: T, b: Partial<T>) => T;
 type Default<T> = () => T;
 
-export function partialOverwrite<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
+function partialOverwrite<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
   return { ...a, ...b };
 }
 
 export function overwrite<T>(a: T, b: Partial<T>): T {
   return { ...a, ...b };
 }
-
-export const partialMergeSourceOptions = partialOverwrite;
-export const partialMergeSourceParams = partialOverwrite;
-export const partialMergeFilterOptions = partialOverwrite;
-export const partialMergeFilterParams = partialOverwrite;
 export const mergeSourceOptions = overwrite;
 export const mergeSourceParams = overwrite;
 export const mergeFilterOptions = overwrite;
@@ -72,72 +67,37 @@ function mergeEachKeys<T>(
   return ret;
 }
 
-function partialMergeDdcOptions(
-  a: Partial<DdcOptions>,
-  b: Partial<DdcOptions>,
-): Partial<DdcOptions> {
-  const overwritten: Partial<DdcOptions> = { ...a, ...b };
-  const ret: Partial<DdcOptions> = {};
-  if ("sources" in overwritten) ret.sources = overwritten.sources;
-  if ("defaultMatchers" in overwritten) {
-    ret.defaultMatchers = overwritten.defaultMatchers;
-  }
-  if ("defaultSorters" in overwritten) {
-    ret.defaultSorters = overwritten.defaultSorters;
-  }
-  if ("defaultConverters" in overwritten) {
-    ret.defaultConverters = overwritten.defaultConverters;
-  }
-  ret.sourceOptions = mergeEachKeys(
-    mergeSourceOptions,
-    a.sourceOptions || {},
-    b.sourceOptions || {},
-  );
-  ret.filterOptions = mergeEachKeys(
-    mergeFilterOptions,
-    a.filterOptions || {},
-    b.filterOptions || {},
-  );
-  ret.sourceParams = mergeEachKeys(
-    mergeSourceParams,
-    a.sourceParams || {},
-    b.sourceParams || {},
-  );
-  ret.filterParams = mergeEachKeys(
-    mergeFilterParams,
-    a.filterParams || {},
-    b.filterParams || {},
-  );
-  return ret;
-}
-
 export function mergeDdcOptions(
   a: DdcOptions,
   b: Partial<DdcOptions>,
 ): DdcOptions {
-  const overwritten: DdcOptions = { ...a, ...b };
+  const overwritten: DdcOptions = overwrite(a, b);
+  const partialMergeSourceOptions = partialOverwrite;
+  const partialMergeSourceParams = partialOverwrite;
+  const partialMergeFilterOptions = partialOverwrite;
+  const partialMergeFilterParams = partialOverwrite;
   return {
     sources: overwritten.sources,
     defaultMatchers: overwritten.defaultMatchers,
     defaultSorters: overwritten.defaultSorters,
     defaultConverters: overwritten.defaultConverters,
     sourceOptions: mergeEachKeys(
-      mergeSourceOptions,
+      partialMergeSourceOptions,
       a.sourceOptions,
       b.sourceOptions || {},
     ),
     filterOptions: mergeEachKeys(
-      mergeFilterOptions,
+      partialMergeFilterOptions,
       a.filterOptions,
       b.filterOptions || {},
     ),
     sourceParams: mergeEachKeys(
-      mergeSourceParams,
+      partialMergeSourceParams,
       a.sourceParams,
       b.sourceParams || {},
     ),
     filterParams: mergeEachKeys(
-      mergeFilterParams,
+      partialMergeFilterParams,
       a.filterParams,
       b.filterParams || {},
     ),
@@ -150,13 +110,14 @@ class Custom {
   filetype: Record<string, Partial<DdcOptions>> = {};
   buffer: Record<number, Partial<DdcOptions>> = {};
 
-  get(ft: string, bufnr: number): Partial<DdcOptions> {
+  get(ft: string, bufnr: number): DdcOptions {
     const filetype = this.filetype[ft] || {};
     const buffer = this.buffer[bufnr] || {};
-    let ret = this.global;
-    ret = partialMergeDdcOptions(ret, filetype);
-    ret = partialMergeDdcOptions(ret, buffer);
-    return ret;
+    return foldMerge(mergeDdcOptions, defaultDdcOptions, [
+      this.global,
+      filetype,
+      buffer,
+    ]);
   }
 
   setGlobal(options: Partial<DdcOptions>) {
@@ -244,7 +205,7 @@ export class ContextBuilder {
   async createContext(
     denops: Denops,
     event: string,
-  ): Promise<null | [Context, Partial<DdcOptions>]> {
+  ): Promise<null | [Context, DdcOptions]> {
     const world = await cacheWorld(denops, event);
     if (this.lastWorld == world) return null;
     this.lastWorld = world;

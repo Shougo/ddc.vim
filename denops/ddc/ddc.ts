@@ -6,9 +6,7 @@ import {
   FilterOptions,
 } from "./types.ts";
 import {
-  defaultDdcOptions,
   foldMerge,
-  mergeDdcOptions,
   mergeFilterOptions,
   mergeFilterParams,
   mergeSourceOptions,
@@ -62,13 +60,9 @@ export class Ddc {
   async gatherCandidates(
     denops: Denops,
     context: Context,
-    userOptions: Partial<DdcOptions>,
+    options: DdcOptions,
   ): Promise<DdcCandidate[]> {
     let candidates: DdcCandidate[] = [];
-    const options: DdcOptions = mergeDdcOptions(
-      defaultDdcOptions(),
-      userOptions,
-    );
     const sources = options.sources.map((name) => this.sources[name])
       .filter((x) => x);
 
@@ -76,7 +70,7 @@ export class Ddc {
       const sourceOptions = foldMerge(
         mergeSourceOptions,
         defaultSourceOptions,
-        [source.options(), options.sourceOptions[source.name]],
+        [options.sourceOptions[source.name]],
       );
       const sourceParams = foldMerge(mergeSourceParams, defaultSourceParams, [
         source.params(),
@@ -89,15 +83,11 @@ export class Ddc {
         sourceParams,
       );
       const mergeFiltersUsed = overwrite;
-      const filtersUsed = foldMerge(
-        mergeFiltersUsed,
-        () => ({
-          matchers: options.defaultMatchers,
-          sorters: options.defaultSorters,
-          converters: options.defaultConverters,
-        }),
-        [source.options(), options.sourceOptions[source.name]],
-      );
+      const filtersUsed = foldMerge(mergeFiltersUsed, () => ({
+        matchers: options.defaultMatchers,
+        sorters: options.defaultSorters,
+        converters: options.defaultConverters,
+      }), [options.sourceOptions[source.name]]);
       const filterCandidates = await this.filterCandidates(
         denops,
         context,
@@ -135,44 +125,27 @@ export class Ddc {
     const sorters = foundFilters(filtersUsed.sorters);
     const converters = foundFilters(filtersUsed.converters);
 
-    const foldOptions = (
-      partials: (null | undefined | Partial<FilterOptions>)[],
-    ) => foldMerge(mergeFilterOptions, defaultFilterOptions, partials);
-    const foldParams = (
-      partials: (null | undefined | Partial<Record<string, unknown>>)[],
-    ) => foldMerge(mergeFilterParams, defaultFilterParams, partials);
+    const filterOptionsOf = (filter: BaseFilter) =>
+      mergeFilterOptions(defaultFilterOptions(), filterOptions[filter.name]);
+    const foldParamsOf = (filter: BaseFilter) =>
+      foldMerge(mergeFilterParams, defaultFilterParams, [
+        filter.params(),
+        filterParams[filter.name],
+      ]);
 
     for (const matcher of matchers) {
-      const o = foldOptions([
-        matcher.options(),
-        filterOptions[matcher.name],
-      ]);
-      const p = foldParams([
-        matcher.params(),
-        filterParams[matcher.name],
-      ]);
+      const o = filterOptionsOf(matcher);
+      const p = foldParamsOf(matcher);
       cdd = await matcher.filter(denops, context, o, p, cdd);
     }
     for (const sorter of sorters) {
-      const o = foldOptions([
-        sorter.options(),
-        filterOptions[sorter.name],
-      ]);
-      const p = foldParams([
-        sorter.params(),
-        filterParams[sorter.name],
-      ]);
+      const o = filterOptionsOf(sorter);
+      const p = foldParamsOf(sorter);
       cdd = await sorter.filter(denops, context, o, p, cdd);
     }
     for (const converter of converters) {
-      const o = foldOptions([
-        converter.options(),
-        filterOptions[converter.name],
-      ]);
-      const p = foldParams([
-        converter.params(),
-        filterParams[converter.name],
-      ]);
+      const o = filterOptionsOf(converter);
+      const p = foldParamsOf(converter);
       cdd = await converter.filter(denops, context, o, p, cdd);
     }
     return cdd;

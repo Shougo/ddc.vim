@@ -2,8 +2,7 @@ import { Candidate, Context, FilterOptions } from "../types.ts";
 import { Denops } from "../deps.ts";
 
 export abstract class BaseFilter {
-  abstract name: string;
-
+  name = "";
   abstract filter(
     denops: Denops,
     context: Context,
@@ -11,10 +10,6 @@ export abstract class BaseFilter {
     params: Record<string, unknown>,
     candidates: Candidate[],
   ): Promise<Candidate[]>;
-
-  options(): Partial<FilterOptions> {
-    return {};
-  }
 
   abstract params(): Record<string, unknown>;
 }
