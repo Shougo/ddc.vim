@@ -82,12 +82,13 @@ ddc requires both Deno and denops.vim.
 
 ```vim
 " Use around source.
-call ddc#custom#global('sources', { '_': ['around'] })
+call ddc#custom#patch_global('sources', ['around'])
 " Enable default matcher.
-call ddc#custom#source('_', 'matchers', ['matcher_head'])
-
-" Change source mark.
-call ddc#custom#source('around', 'mark', ['A'])
+call ddc#custom#patch_global('defaultMatchers', ['matcher_head'])
+" Change source options
+call ddc#custom#patch_global('sourceOptions', {
+      \ 'around': {'matchers': ['matcher_head'], 'mark': 'A'}
+      \ })
 
 " Use ddc.
 call ddc#enable()
