@@ -12,7 +12,7 @@ function! s:patch_global(dict) abort
           \ )
   else
     call denops#request_async(
-    \ 'ddc', 'patchGlobal', [a:dict], {-> v:null}, {-> v:null})
+          \ 'ddc', 'patchGlobal', [a:dict], {-> v:null}, {-> v:null})
   endif
 endfunction
 
@@ -24,7 +24,7 @@ function! s:patch_filetype(ft, dict) abort
           \ )
   else
     call denops#request_async(
-    \ 'ddc', 'patchFiletype', [a:ft, a:dict], {-> v:null}, {-> v:null})
+          \ 'ddc', 'patchFiletype', [a:ft, a:dict], {-> v:null}, {-> v:null})
   endif
 endfunction
 
@@ -36,7 +36,7 @@ function! s:patch_buffer(bufnr, dict) abort
           \ )
   else
     call denops#request_async(
-    \ 'ddc', 'patchBuffer', [a:bufnr, a:dict], {-> v:null}, {-> v:null})
+          \ 'ddc', 'patchBuffer', [a:bufnr, a:dict], {-> v:null}, {-> v:null})
   endif
 endfunction
 

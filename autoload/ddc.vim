@@ -45,7 +45,7 @@ function! ddc#register_source(dict) abort
           \ )
   else
     call denops#request_async(
-    \ 'ddc', 'registerSource', [a:dict], {-> v:null}, {-> v:null})
+          \ 'ddc', 'registerSource', [a:dict], {-> v:null}, {-> v:null})
   endif
 endfunction
 function! ddc#register_filter(dict) abort
