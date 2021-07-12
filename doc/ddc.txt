@@ -15,12 +15,16 @@ Interface		|ddc-interface|
   Custom Functions	  |ddc-custom-functions|
 Examples		|ddc-examples|
 Sources			|ddc-sources|
-  Source options       |ddc-source-options|
+  Source option	         |ddc-source-options|
+  Source params	         |ddc-source-params|
+Filters			|ddc-filters|
+  Filter options          |ddc-filter-options|
+  Filter params	   |ddc-filter-params|
 Create source		|ddc-create-source|
   Source attributes       |ddc-source-attributes|
   Candidate attributes    |ddc-candidate-attributes|
 Create filter		|ddc-create-filter|
-FILTERS			|ddc-filters|
+  filter attributes       |ddc-filter-attributes|
 FAQ			|ddc-faq|
 Compatibility		|ddc-compatibility|
 
@@ -49,39 +53,81 @@ INTERFACE						*ddc-interface*
 ------------------------------------------------------------------------------
 OPTIONS	 						*ddc-options*
 
-Options can be toggled through the use of |ddc#custom#global()|.
+Options can be toggled through the use of |ddc#custom#patch_global()|.
 
 For example:
 
 >
     " Set a single option
-    call ddc#custom#global('auto_complete_delay', 200)
+    call ddc#custom#patch_global('auto_complete_delay', 200)
 
     " Pass a dictionary to set multiple options
-    call ddc#custom#global({
+    call ddc#custom#patch_global({
     \ 'auto_complete_delay': 200,
     \ 'smart_case': v:true,
     \ })
+
+    call ddc#custom#patch_filetype(['c', 'cpp'], 'sources', ['around'])
 <
 
 The set of available options follows.
 
 					*ddc-options-sources*
 sources
-		It is a dictionary to specify source names.  The key is
-		filetype and the value is a list of source names.  If the key
-		is "_", the value will be used for default filetypes.  For
-		example, you can load some sources in C++ filetype.  If the
-		value is [], it will not load any sources.
-		The order is used as source candidates rank.
+		It is a list of registered source names.  You have to select one or more
+		sources to use completion.
+		Candidates from sources with smaller indexes will have smaller indexes.
 
-		Default value: {}
+		Default value: []
 >
-		" Example:
-		call ddc#custom#global('sources', {
-		\ '_': ['around'],
-		\})
-<
+		" e.g.
+		call ddc#custom#patch_global('sources', ['around'])
+
+					*ddc-options-sourceOptions*
+sourceOptions
+		It is a dictionary that maps source names to its options.
+		The options with the name "_" is used as the options for all sources.
+		See also |ddc-source-options|.
+		Default value: {}
+
+		" e.g.
+		call ddc#custom#patch_global('sourceOptions', {
+		    \ '_': {'matchers': ['matcher_head']},
+		    \ 'around': {'mark': 'A'},
+		    \ })
+
+					*ddc-options-sourceParams*
+sourceParams
+		It is a dictionary that maps source names to its parameters.
+		See also |ddc-source-params|.
+		Default value: {}
+
+		" e.g.
+		call ddc#custom#patch_global('sourceParams', {
+		    \ 'around': {'max': 8},
+		    \ })
+
+					*ddc-options-sourceParams*
+filterOptions
+		It is a dictionary that maps filter names to its options.
+		See also |ddc-filter-options|.
+		Default value: {}
+
+		" e.g.
+		call ddc#custom#patch_global('filterOptions', {
+		    \ 'matcher_head': {},
+		    \ })
+
+					*ddc-options-sourceParams*
+filterParams
+		It is a dictionary that maps filter names to its parameters.
+		See also |ddc-filter-params|.
+		Default value: {}
+
+		" e.g.
+		call ddc#custom#patch_global('filterParams', {
+		    \ 'matcher_head': {},
+		    \ })
 
 ------------------------------------------------------------------------------
 FUNCTIONS 						*ddc-functions*
@@ -116,47 +162,57 @@ ddc#register_source({dict})
 
 CUSTOM FUNCTIONS 					*ddc-custom-functions*
 
-							*ddc#custom#global()*
-ddc#custom#global({option-name}, {value})
-ddc#custom#global({dict})
+							*ddc#custom#patch_global()*
+ddc#custom#patch_global({option-name}, {value})
+ddc#custom#patch_global({dict})
 		Set {option-name} option to {value}.
 		If {dict} is available, the key is {option-name} and the value
-		is {value}.
+		is {value}. See |ddc-options| for available {option-name}.
 
-							*ddc#custom#local()*
-ddc#custom#local({option-name}, {value})
-ddc#custom#local({dict})
-		The buffer local version of |ddc#custom#global()|.
+							*ddc#custom#patch_filetype()*
+ddc#custom#patch_filetype({filetype}, {option-name}, {value})
+ddc#custom#patch_filetype({filetype}, {dict})
+		Set options used for filetypes. {filetype} accepts a string or
+		a list of strings. Options are {dict} or {'{option-name}': {value}}.
 
-							*ddc#custom#source()*
-ddc#custom#source({source-name}, {option-name}, {value})
-ddc#custom#source({source-name}, {dict})
-		Set {source-name} source specialized {option-name}
-		to {value}. You may specify multiple sources with
-		separating "," in {source-name}.
-		If {source-name} is "_", sources default option will be
-		change.
-		If {dict} is available, the key is {option-name} and the value
-		is {value}.
-		Note: You must call it before using ddc.
+							*ddc#custom#patch_buffer()*
+ddc#custom#patch_buffer({option-name}, {value})
+ddc#custom#patch_buffer({dict})
+		Set local options on current buffer.  The arguments are the same
+		as for |ddc#custom#patch_global|.
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
 
 ==============================================================================
 EXAMPLES						*ddc-examples*
+
 >
-	" Use around source.
-	call ddc#custom#global('sources', { '_': ['around'] })
+" Customize global settings
+" Use around source.
+call ddc#custom#patch_global('sources', ['around'])
+" Enable default matcher.
+call ddc#custom#patch_global('sourceOptions', {
+      \ '_': {'matchers': ['matcher_head']},
+      \ }
+" Change source options
+call ddc#custom#patch_global('sourceOptions', {
+      \ 'around': {'matchers': ['matcher_head'], 'mark': 'A'},
+      \ })
+call ddc#custom#patch_global('sourceParams', {
+      \ 'around': {'maxSize': 500},
+      \ })
 
-	" Enable default matcher.
-	call ddc#custom#source('_', 'matchers', ['matcher_head'])
+" Customize settings on a filetype
+call ddc#custom#patch_filetype(['c', 'cpp'], 'sources', ['around', 'clangd'])
+call ddc#custom#patch_filetype(['c', 'cpp'], 'sourceOptions', {
+      \ 'clangd': {'mark': 'C'},
+      \ }
+call ddc#custom#patch_filetype('markdown', 'sourceParams', {
+      \ 'around': {'maxSize': 100},
+      \ })
 
-	" Change source mark.
-	call ddc#custom#source('around', 'mark', ['A'])
-
-	" Use ddc.
-	call ddc#enable()
+call ddc#enable()
 <
 
 ==============================================================================
@@ -169,28 +225,34 @@ around							*ddc-source-around*
 ------------------------------------------------------------------------------
 SOURCE OPTIONS						*ddc-source-options*
 
-mark		(String)			(Optional)
-		The mark of a source.
+mark		(String)
+		A text icon indicating the source displayed with the candidate.
 		Note: If the source set candidate menu, the source must set
 		it.  If the attribute is empty string, the candidate menu will
 		be disabled.
 
-		Default: same with source name
+		Default: ""
 
-==============================================================================
-CREATE SOURCE						*ddc-create-source*
+matchers		([string])
+		It is a list of registered filter names that used with this source.
+		Candidates will be processed in the order you specify here.
+		Default: []
 
-To create source, you should read other sources implementation.
+sorters		([string])
+		It is a list of registered filter names that used with this source.
+		Candidates will be processed in the order you specify here.
+		Default: []
 
-The files must be registerd by |ddc#register_source()|.
-Source class must extend the Base class.
-
-Note: The sources must be written in Typescript language.
-
-Note: If you call Vim functions in your source, it is not asynchronous.
+converters		([string])
+		It is a list of registered filter names that used with this source.
+		Candidates will be processed in the order you specify here.
+		Default: []
 
 ------------------------------------------------------------------------------
-SOURCE ATTRIBUTES					*ddc-source-attributes*
+SOURCE PARAMS					*ddc-source-params*
+
+These are the parameters that each source can have.  You can select the
+behavior and tune the performance.
 
 
 ==============================================================================
@@ -206,6 +268,24 @@ configure them to use ddc.
 				    	    	*ddc-filter-matcher_head*
 matcher_head	Head matching matcher.
 
+==============================================================================
+CREATE SOURCE						*ddc-create-source*
+
+To create source, you should read other sources implementation.
+
+The files must be registerd by |ddc#register_source()|.
+Source class must extend the Base class.
+
+Note: The sources must be written in Typescript language.
+
+Note: If you call Vim functions in your source, it is not asynchronous.
+
+
+------------------------------------------------------------------------------
+SOURCE ATTRIBUTES					*ddc-source-attributes*
+
+------------------------------------------------------------------------------
+CANDIDATE ATTRIBUTES					*ddc-candidate-attributes*
 
 ==============================================================================
 CREATE FILTER						*ddc-create-filter*
@@ -235,7 +315,7 @@ plugins.  You can donate money to help me!
 https://github.com/sponsors/Shougo
 
 
-Q: Why ddc.vim does not include any of sources/matchers/sorters/converters?
+Q: Why does ddc.vim not include any sources/matchers/sorters/converters?
 
 A: Because I cannot determine the best default
 sources/matchers/sorters/converters.
@@ -245,11 +325,11 @@ You must define your defaults by configuration.
 ddc.vim does not conflict with your defaults.
 
 
-Q: Why ddc.vim has not source default attributes?
+Q. Why do sources have no default options?
 
-A: Because users should config sources perfectly.  If source has the default,
-users must check the source has the default value.
-The config should work as users config.  It may increase configuration cost.
+A: Because users can customize sources perfectly.  If a source has the default,
+users have to check them.  It increases configuration cost.
+The config should work as users config.
 
 
 ==============================================================================
