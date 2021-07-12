@@ -2,10 +2,10 @@ import { autocmd, Denops, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { Context, Custom, defaultDdcOptions } from "./types.ts";
 
-interface RegisterArg {
+type RegisterArg = {
   path: string;
   name: string;
-}
+};
 
 export async function main(denops: Denops) {
   const ddc: Ddc = new Ddc();
