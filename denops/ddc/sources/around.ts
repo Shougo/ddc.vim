@@ -19,9 +19,9 @@ function allWords(lines: string[]): string[] {
     .map((match) => match[0]);
 }
 
-interface Params {
+type Params = {
   maxSize: number;
-}
+};
 
 export class Source extends BaseSource {
   async gatherCandidates(

@@ -35,11 +35,11 @@ function formatMenu(prefix: string, menu: string | undefined): string {
     : `[${prefix}] ${menu}`;
 }
 
-interface FiltersUsed {
+type FiltersUsed = {
   matchers: string[];
   sorters: string[];
   converters: string[];
-}
+};
 
 function sourceArgs(
   options: DdcOptions,
@@ -87,8 +87,8 @@ function filtersUsed(options: DdcOptions, sourceName: string): FiltersUsed {
 }
 
 export class Ddc {
-  sources: Record<string, BaseSource> = {};
-  filters: Record<string, BaseFilter> = {};
+  private sources: Record<string, BaseSource> = {};
+  private filters: Record<string, BaseFilter> = {};
 
   async registerFilter(path: string, name: string) {
     const mod = await import(path);
@@ -143,7 +143,8 @@ export class Ddc {
 
     return candidates;
   }
-  async filterCandidates(
+
+  private async filterCandidates(
     denops: Denops,
     context: Context,
     filtersUsed: FiltersUsed,

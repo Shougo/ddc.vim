@@ -51,7 +51,7 @@ export async function main(denops: Denops) {
       return Promise.resolve(contextBuilder.getFiletype());
     },
     async _cacheWorld(arg1: unknown): Promise<unknown> {
-      return await contextBuilder.cacheWorld(denops, arg1 as string);
+      return await contextBuilder._cacheWorld(denops, arg1 as string);
     },
     async onEvent(arg1: unknown): Promise<void> {
       const event = arg1 as string;

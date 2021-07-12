@@ -8,17 +8,17 @@ export type Custom = {
   option: DdcOptions;
 };
 
-export interface Context {
+export type Context = {
   input: string;
-}
+};
 
-export interface DdcOptions {
+export type DdcOptions = {
   sources: SourceName[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;
   filterOptions: Record<string, Partial<FilterOptions>>;
   filterParams: Record<string, Partial<Record<string, unknown>>>;
-}
+};
 
 export type SourceOptions = {
   mark: string;
@@ -27,10 +27,10 @@ export type SourceOptions = {
   converters: string[];
 };
 
-export interface FilterOptions {
+export type FilterOptions = {
   // TODO: add options and remove placeholder
   placeholder: void;
-}
+};
 
 export type Candidate = {
   word: string;

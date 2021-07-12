@@ -169,8 +169,8 @@ class Custom {
   }
 }
 
-// Caches the state of buffers, etc. immediately after an event occurs.
-interface World {
+// Schema of the state of buffers, etc
+type World = {
   bufnr: number;
   filetype: string;
   event: string;
@@ -178,6 +178,18 @@ interface World {
   input: string;
   changedByCompletion: boolean;
   isLmap: boolean;
+};
+
+function initialWorld(): World {
+  return {
+    bufnr: 0,
+    filetype: "",
+    event: "",
+    mode: "",
+    input: "",
+    changedByCompletion: false,
+    isLmap: false,
+  };
 }
 
 // Fetchs current state
@@ -216,22 +228,11 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
 }
 
 export class ContextBuilder {
-  lastWorld: World;
-  custom: Custom = new Custom();
+  private lastWorld: World = initialWorld();
+  private custom: Custom = new Custom();
 
-  constructor() {
-    this.lastWorld = {
-      bufnr: 0,
-      filetype: "",
-      event: "",
-      mode: "",
-      input: "",
-      changedByCompletion: false,
-      isLmap: false,
-    };
-  }
-
-  async cacheWorld(denops: Denops, event: string): Promise<World> {
+  // Re-export for denops.dispatcher
+  async _cacheWorld(denops: Denops, event: string): Promise<World> {
     return await cacheWorld(denops, event);
   }
 
@@ -239,7 +240,7 @@ export class ContextBuilder {
     denops: Denops,
     event: string,
   ): Promise<null | [Context, DdcOptions]> {
-    const world = await this.cacheWorld(denops, event);
+    const world = await this._cacheWorld(denops, event);
     if (this.lastWorld == world) return null;
     this.lastWorld = world;
     if (world.isLmap || world.changedByCompletion) {
