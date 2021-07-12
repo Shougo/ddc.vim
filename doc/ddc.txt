@@ -325,7 +325,7 @@ You must define your defaults by configuration.
 ddc.vim does not conflict with your defaults.
 
 
-Q. Why do sources have no default options?
+Q: Why do sources have no default options?
 
 A: Because users can customize sources perfectly.  If a source has the default,
 users have to check them.  It increases configuration cost.
