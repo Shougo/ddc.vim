@@ -1,11 +1,10 @@
 import { assertEquals, Denops, vars } from "./deps.ts";
-import { Context, DdcOptions } from "./types.ts";
+import { Context, DdcOptions, FilterOptions, SourceOptions } from "./types.ts";
 import { reduce } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
 
 // where
 // T: Object
 // partialMerge: PartialMerge
-// merge: Merge
 // partialMerge(partialMerge(a, b), c) == partialMerge(a, partialMerge(b, c))
 type PartialMerge<T> = (a: Partial<T>, b: Partial<T>) => Partial<T>;
 type Merge<T> = (a: T, b: Partial<T>) => T;
@@ -15,13 +14,13 @@ function partialOverwrite<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
   return { ...a, ...b };
 }
 
-export function overwrite<T>(a: T, b: Partial<T>): T {
+function overwrite<T>(a: T, b: Partial<T>): T {
   return { ...a, ...b };
 }
-export const mergeSourceOptions = overwrite;
-export const mergeSourceParams = overwrite;
-export const mergeFilterOptions = overwrite;
-export const mergeFilterParams = overwrite;
+export const mergeSourceOptions: Merge<SourceOptions> = overwrite;
+export const mergeFilterOptions: Merge<FilterOptions> = overwrite;
+export const mergeSourceParams: Merge<Record<string, unknown>> = overwrite;
+export const mergeFilterParams: Merge<Record<string, unknown>> = overwrite;
 
 export function foldMerge<T>(
   merge: Merge<T>,
@@ -298,6 +297,21 @@ Deno.test("patchDdcOptions", () => {
           foo: "bar",
         },
       },
+    })
+    .patchFiletype("cpp", {
+      filterParams: {
+        "hoge": {
+          foo: "bar",
+        },
+      },
+    })
+    .patchFiletype("cpp", {
+      filterParams: {
+        "hoge": {
+          foo: "baz",
+          alice: "bob",
+        },
+      },
     });
   assertEquals(custom.global, {
     sources: ["around", "baz"],
@@ -315,6 +329,14 @@ Deno.test("patchDdcOptions", () => {
       filterParams: {
         "hoge": {
           foo: "bar",
+        },
+      },
+    },
+    cpp: {
+      filterParams: {
+        "hoge": {
+          foo: "baz",
+          alice: "bob",
         },
       },
     },

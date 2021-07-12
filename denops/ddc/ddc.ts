@@ -12,7 +12,6 @@ import {
   mergeFilterParams,
   mergeSourceOptions,
   mergeSourceParams,
-  overwrite,
 } from "./context.ts";
 import {
   BaseSource,
@@ -35,12 +34,6 @@ function formatMenu(prefix: string, menu: string | undefined): string {
     : `[${prefix}] ${menu}`;
 }
 
-type FiltersUsed = {
-  matchers: string[];
-  sorters: string[];
-  converters: string[];
-};
-
 function sourceArgs(
   options: DdcOptions,
   source: BaseSource,
@@ -48,7 +41,7 @@ function sourceArgs(
   const o = foldMerge(
     mergeSourceOptions,
     defaultSourceOptions,
-    [options.sourceOptions[source.name]],
+    [options.sourceOptions["_"], options.sourceOptions[source.name]],
   );
   const p = foldMerge(mergeSourceParams, defaultSourceParams, [
     source.params(),
@@ -62,8 +55,11 @@ function filterArgs(
   filterParams: Record<string, Partial<Record<string, unknown>>>,
   filter: BaseFilter,
 ): [FilterOptions, Record<string, unknown>] {
+  // TODO: '_'?
   const optionsOf = (filter: BaseFilter) =>
-    mergeFilterOptions(defaultFilterOptions(), filterOptions[filter.name]);
+    foldMerge(mergeFilterOptions, defaultFilterOptions, [
+      filterOptions[filter.name],
+    ]);
   const paramsOf = (filter: BaseFilter) =>
     foldMerge(mergeFilterParams, defaultFilterParams, [
       filter.params(),
@@ -72,18 +68,29 @@ function filterArgs(
   return [optionsOf(filter), paramsOf(filter)];
 }
 
+type FiltersUsed = {
+  matchers: string[];
+  sorters: string[];
+  converters: string[];
+};
+
 function filtersUsed(options: DdcOptions, sourceName: string): FiltersUsed {
-  const mergeFiltersUsed = overwrite;
-  const defaultFiltersUsed = (): FiltersUsed => ({
-    matchers: [],
-    sorters: [],
-    converters: [],
-  });
-  const filtersUsed = foldMerge(mergeFiltersUsed, defaultFiltersUsed, [
+  const filtersUsed = foldMerge(merge, empty, [
     options.sourceOptions["_"],
     options.sourceOptions[sourceName],
   ]);
   return filtersUsed;
+
+  function merge(a: FiltersUsed, b: Partial<FiltersUsed>): FiltersUsed {
+    return { ...a, ...b };
+  }
+  function empty(): FiltersUsed {
+    return {
+      matchers: [],
+      sorters: [],
+      converters: [],
+    };
+  }
 }
 
 export class Ddc {
@@ -175,13 +182,119 @@ export class Ddc {
 }
 
 Deno.test("sourceArgs", () => {
-  assertEquals(0, 1);
+  const userOptions: DdcOptions = {
+    sources: ["strength"],
+    sourceOptions: {
+      "_": {
+        mark: "A",
+        matchers: ["matcher_head"],
+      },
+      "strength": {
+        mark: "S",
+      },
+    },
+    sourceParams: {
+      "_": {
+        "by_": "bar",
+      },
+      "strength": {
+        min: 100,
+      },
+    },
+    filterOptions: {},
+    filterParams: {},
+  };
+  class S extends BaseSource {
+    params() {
+      return {
+        "min": 0,
+        "max": 999,
+      };
+    }
+    gatherCandidates(
+      _denops: Denops,
+      _context: Context,
+      _options: SourceOptions,
+      _params: Record<string, unknown>,
+    ): Promise<Candidate[]> {
+      return Promise.resolve([]);
+    }
+  }
+  const source = new S();
+  source.name = "strength";
+  const [o, p] = sourceArgs(userOptions, source);
+  assertEquals(o, {
+    mark: "S",
+    matchers: ["matcher_head"],
+    converters: [],
+    sorters: [],
+  });
+  assertEquals(p.by_, undefined);
+  assertEquals(p, {
+    min: 100,
+    max: 999,
+  });
 });
 
 Deno.test("filterArgs", () => {
-  assertEquals(0, 1);
+  const userOptions: Record<string, FilterOptions> = {
+    "/dev/null": {
+      placeholder: undefined,
+    },
+  };
+  const userParams: Record<string, Record<string, unknown>> = {
+    "/dev/null": {
+      min: 100,
+    },
+  };
+  class F extends BaseFilter {
+    params() {
+      return {
+        "min": 0,
+        "max": 999,
+      };
+    }
+    filter(
+      _denops: Denops,
+      _context: Context,
+      _options: FilterOptions,
+      _params: Record<string, unknown>,
+      _candidates: Candidate[],
+    ): Promise<Candidate[]> {
+      return Promise.resolve([]);
+    }
+  }
+  const filter = new F();
+  filter.name = "/dev/null";
+  assertEquals(filterArgs(userOptions, userParams, filter), [{
+    placeholder: undefined,
+  }, { min: 100, max: 999 }]);
 });
 
 Deno.test("filtersUsed", () => {
-  assertEquals(0, 1);
+  const userOptions: DdcOptions = {
+    sources: [],
+    sourceOptions: {
+      "_": {
+        matchers: ["matcher_head"],
+      },
+      "around": {
+        matchers: [],
+        sorters: ["O(1)"],
+      },
+    },
+    filterOptions: {},
+    sourceParams: {},
+    filterParams: {},
+  };
+  assertEquals(filtersUsed(userOptions, "around"), {
+    matchers: [],
+    sorters: ["O(1)"],
+    converters: [],
+  });
+  assertEquals(filtersUsed(userOptions, "foo"), {
+    matchers: ["matcher_head"],
+    sorters: [],
+    converters: [],
+  });
 });
