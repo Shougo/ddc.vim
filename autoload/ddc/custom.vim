@@ -41,17 +41,20 @@ function! s:patch_buffer(bufnr, dict) abort
 endfunction
 
 function! ddc#custom#patch_global(key_or_dict, ...) abort
-  let dict = s:normalize_key_or_dict({}, a:key_or_dict, get(a:000, 0, ''))
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
   call s:patch_global(dict)
 endfunction
 
 function! ddc#custom#patch_filetype(ft, key_or_dict, ...) abort
-  let dict = s:normalize_key_or_dict({}, a:key_or_dict, get(a:000, 0, ''))
-  call s:patch_filetype(a:ft, dict)
+  let filetypes = s:normalize_string_or_list(a:ft)
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  for filetype in filetypes
+    call s:patch_filetype(filetype, dict)
+  endfor
 endfunction
 
 function! ddc#custom#patch_local(bufnr, key_or_dict, ...) abort
-  let dict = s:normalize_key_or_dict({}, a:key_or_dict, get(a:000, 0, ''))
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
   let bufnr = bufnr('%')
   call s:patch_buffer(bufnr, dict)
 endfunction
@@ -69,11 +72,22 @@ function! ddc#custom#get_buffer() abort
   return denops#request('ddc', 'getBuffer', [])
 endfunction
 
-function! s:normalize_key_or_dict(base, key_or_dict, value) abort
+function! s:normalize_key_or_dict(key_or_dict, value) abort
   if type(a:key_or_dict) == v:t_dict
-    call extend(a:base, a:key_or_dict)
-  else
-    let a:base[a:key_or_dict] = a:value
+    return a:key_or_dict
+  elseif type(a:key_or_dict) == v:t_string
+    let base = {}
+    let base[a:key_or_dict] = a:value
+    return base
   endif
-  return a:base
+  return {}
+endfunction
+
+function! s:normalize_string_or_list(string_or_list) abort
+  if type(a:string_or_list) == v:t_list
+    return a:string_or_list
+  elseif type(a:string_or_list) == v:t_string
+    return [a:string_or_list]
+  endif
+  return []
 endfunction
