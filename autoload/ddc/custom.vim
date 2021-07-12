@@ -4,42 +4,90 @@
 " License: MIT license
 "=============================================================================
 
-function! ddc#custom#_get() abort
-  if !exists('s:custom')
-    call ddc#custom#_init()
+function! s:patch_global(dict) abort
+  if !exists('g:ddc#_initialized')
+    execute printf('autocmd User DDCReady call ' .
+          \ 'denops#request_async("ddc", "patchGlobal", [%s], '.
+          \ '{-> v:null}, {-> v:null})', a:dict
+          \ )
+  else
+    call denops#request_async(
+          \ 'ddc', 'patchGlobal', [a:dict], {-> v:null}, {-> v:null})
   endif
-
-  return s:custom
 endfunction
 
-function! ddc#custom#_init() abort
-  let s:custom = {}
-  let s:custom.source = {}
-  let s:custom.source._ = {}
-  let s:custom.option = {}
+function! s:patch_filetype(ft, dict) abort
+  if !exists('g:ddc#_initialized')
+    execute printf('autocmd User DDCReady call ' .
+          \ 'denops#request_async("ddc", "patchFiletype", ["%s", %s], '.
+          \ '{-> v:null}, {-> v:null})', a:ft, a:dict
+          \ )
+  else
+    call denops#request_async(
+          \ 'ddc', 'patchFiletype', [a:ft, a:dict], {-> v:null}, {-> v:null})
+  endif
 endfunction
 
-function! ddc#custom#source(source_name, name_or_dict, ...) abort
-  let custom = ddc#custom#_get().source
+function! s:patch_buffer(bufnr, dict) abort
+  if !exists('g:ddc#_initialized')
+    execute printf('autocmd User DDCReady call ' .
+          \ 'denops#request_async("ddc", "patchBuffer", [%s, %s], '.
+          \ '{-> v:null}, {-> v:null})', a:bufnr, a:dict
+          \ )
+  else
+    call denops#request_async(
+          \ 'ddc', 'patchBuffer', [a:bufnr, a:dict], {-> v:null}, {-> v:null})
+  endif
+endfunction
 
-  for key in ddc#util#split(a:source_name)
-    if !has_key(custom, key)
-      let custom[key] = {}
-    endif
+function! ddc#custom#patch_global(key_or_dict, ...) abort
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  call s:patch_global(dict)
+endfunction
 
-    call s:set_custom(custom[key], a:name_or_dict, get(a:000, 0, ''))
+function! ddc#custom#patch_filetype(ft, key_or_dict, ...) abort
+  let filetypes = s:normalize_string_or_list(a:ft)
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  for filetype in filetypes
+    call s:patch_filetype(filetype, dict)
   endfor
 endfunction
 
-function! ddc#custom#global(name_or_dict, ...) abort
-  let custom = ddc#custom#_get().option
-  call s:set_custom(custom, a:name_or_dict, get(a:000, 0, ''))
+function! ddc#custom#patch_buffer(key_or_dict, ...) abort
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  let n = bufnr('%')
+  call s:patch_buffer(n, dict)
 endfunction
 
-function! s:set_custom(dest, name_or_dict, value) abort
-  if type(a:name_or_dict) == v:t_dict
-    call extend(a:dest, a:name_or_dict)
-  else
-    let a:dest[a:name_or_dict] = a:value
+" This should be called manually, so wait until DDCReady by the user himself.
+function! ddc#custom#get_global() abort
+  return denops#request('ddc', 'getGlobal', [])
+endfunction
+
+function! ddc#custom#get_filetype() abort
+  return denops#request('ddc', 'getFiletype', [])
+endfunction
+
+function! ddc#custom#get_buffer() abort
+  return denops#request('ddc', 'getBuffer', [])
+endfunction
+
+function! s:normalize_key_or_dict(key_or_dict, value) abort
+  if type(a:key_or_dict) == v:t_dict
+    return a:key_or_dict
+  elseif type(a:key_or_dict) == v:t_string
+    let base = {}
+    let base[a:key_or_dict] = a:value
+    return base
   endif
+  return {}
+endfunction
+
+function! s:normalize_string_or_list(string_or_list) abort
+  if type(a:string_or_list) == v:t_list
+    return a:string_or_list
+  elseif type(a:string_or_list) == v:t_string
+    return [a:string_or_list]
+  endif
+  return []
 endfunction

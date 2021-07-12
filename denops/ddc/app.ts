@@ -1,6 +1,7 @@
-import { autocmd, Denops, vars } from "./deps.ts";
+import { autocmd, Denops, ensureObject, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
-import { Context, Custom, defaultDdcOptions } from "./types.ts";
+import { ContextBuilder } from "./context.ts";
+import { DdcOptions } from "./types.ts";
 
 type RegisterArg = {
   path: string;
@@ -9,84 +10,65 @@ type RegisterArg = {
 
 export async function main(denops: Denops) {
   const ddc: Ddc = new Ddc();
-  let lastInput = "";
+  const contextBuilder = new ContextBuilder();
 
   denops.dispatcher = {
     async registerFilter(arg1: unknown): Promise<void> {
       const arg = arg1 as RegisterArg;
-      const filter = await import(arg.path);
-      const name = arg.name;
-
-      ddc.filters[name] = new filter.Filter();
-      ddc.filters[name].name = name;
+      await ddc.registerFilter(arg.path, arg.name);
     },
     async registerSource(arg1: unknown): Promise<void> {
       const arg = arg1 as RegisterArg;
-      const source = await import(arg.path);
-      const name = arg.name;
-
-      const custom = await denops.call("ddc#custom#_get") as Custom;
-      const currentOptions = Object.assign(
-        custom.source._,
-        name in custom.source ? custom.source[name] : {},
-      );
-
-      const newSource = new source.Source();
-      newSource.name = name;
-      newSource.options.mark = name;
-      newSource.options = Object.assign(
-        newSource.options,
-        currentOptions,
-      );
-
-      ddc.sources[name] = newSource;
+      await ddc.registerSource(arg.path, arg.name);
     },
-    async start(arg: unknown): Promise<void> {
-      const event = arg as string;
-      const input = await denops.call("ddc#get_input", "") as string;
-      const completedItem = await vars.v.get(
-        denops,
-        "completed_item",
-      ) as Record<string, unknown>;
-
-      if (
-        input == lastInput ||
-        (event == "TextChangedP" && Object.keys(completedItem).length != 0)
-      ) {
-        return;
-      }
-
-      // Skip for iminsert
-      const iminsert = await denops.call("getbufvar", "%", "&iminsert");
-      if (iminsert == 1) {
-        return;
-      }
-
-      lastInput = input;
-
-      const custom = await denops.call("ddc#custom#_get") as Custom;
-      const userOptions = custom.option;
-      const context: Context = {
-        input: input,
-        options: Object.assign(
-          defaultDdcOptions,
-          userOptions,
-        ),
-      };
-      const candidates = await ddc.gatherCandidates(
-        denops,
-        context,
-      );
-
+    patchGlobal(arg1: unknown): Promise<void> {
+      ensureObject(arg1);
+      const options = arg1 as Record<string, unknown>;
+      contextBuilder.patchGlobal(options);
+      return Promise.resolve();
+    },
+    patchFiletype(arg1: unknown, arg2: unknown): Promise<void> {
+      const filetype = arg1 as string;
+      ensureObject(arg2);
+      const options = arg2 as Record<string, unknown>;
+      contextBuilder.patchFiletype(filetype, options);
+      return Promise.resolve();
+    },
+    patchBuffer(arg1: unknown, arg2: unknown): Promise<void> {
+      const bufnr = arg1 as number;
+      ensureObject(arg2);
+      const options = arg2 as Record<string, unknown>;
+      contextBuilder.patchBuffer(bufnr, options);
+      return Promise.resolve();
+    },
+    getGlobal(): Promise<Partial<DdcOptions>> {
+      return Promise.resolve(contextBuilder.getGlobal());
+    },
+    getFiletype(): Promise<Record<string, Partial<DdcOptions>>> {
+      return Promise.resolve(contextBuilder.getFiletype());
+    },
+    getBuffer(): Promise<Record<number, Partial<DdcOptions>>> {
+      return Promise.resolve(contextBuilder.getFiletype());
+    },
+    async _cacheWorld(arg1: unknown): Promise<unknown> {
+      return await contextBuilder._cacheWorld(denops, arg1 as string);
+    },
+    async onEvent(arg1: unknown): Promise<void> {
+      const event = arg1 as string;
+      const maybe = await contextBuilder.createContext(denops, event);
+      if (!maybe) return;
+      const [context, options] = maybe;
+      const candidates = await ddc.gatherCandidates(denops, context, options);
       const matchPos = context.input.search(/\w*$/);
+      const completePos = matchPos != null ? matchPos : -1;
 
-      await vars.g.set(
-        denops,
-        "ddc#_complete_pos",
-        matchPos != null ? matchPos : -1,
-      );
-      await vars.g.set(denops, "ddc#_candidates", candidates);
-      await denops.call("ddc#complete");
+      await (async function write() {
+        await Promise.all([
+          vars.g.set(denops, "ddc#_complete_pos", completePos),
+          vars.g.set(denops, "ddc#_candidates", candidates),
+        ]);
+        await denops.call("ddc#complete");
+      })();
     },
   };
 
@@ -95,17 +77,17 @@ export async function main(denops: Denops) {
     helper.define(
       "InsertEnter",
       "*",
-      `call denops#notify('${denops.name}', 'start', ["InsertEnter"])`,
+      `call denops#notify('${denops.name}', 'onEvent', ["InsertEnter"])`,
     );
     helper.define(
       "TextChangedI",
       "*",
-      `call denops#notify('${denops.name}', 'start', ["TextChangedI"])`,
+      `call denops#notify('${denops.name}', 'onEvent', ["TextChangedI"])`,
     );
     helper.define(
       "TextChangedP",
       "*",
-      `call denops#notify('${denops.name}', 'start', ["TextChangedP"])`,
+      `call denops#notify('${denops.name}', 'onEvent', ["TextChangedP"])`,
     );
   });
 

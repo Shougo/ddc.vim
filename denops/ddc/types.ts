@@ -8,6 +8,30 @@ export type Custom = {
   option: DdcOptions;
 };
 
+export type Context = {
+  input: string;
+};
+
+export type DdcOptions = {
+  sources: SourceName[];
+  sourceOptions: Record<SourceName, Partial<SourceOptions>>;
+  sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;
+  filterOptions: Record<string, Partial<FilterOptions>>;
+  filterParams: Record<string, Partial<Record<string, unknown>>>;
+};
+
+export type SourceOptions = {
+  mark: string;
+  matchers: string[];
+  sorters: string[];
+  converters: string[];
+};
+
+export type FilterOptions = {
+  // TODO: add options and remove placeholder
+  placeholder: void;
+};
+
 export type Candidate = {
   word: string;
   abbr?: string;
@@ -23,31 +47,4 @@ export type DdcCandidate = Candidate & {
   icase: boolean;
   equal: boolean;
   source: SourceName;
-};
-
-export type DdcOptions = {
-  sources: Record<string, SourceName[]>;
-};
-
-export const defaultDdcOptions: DdcOptions = {
-  sources: {},
-};
-
-export type Context = {
-  input: string;
-  options: DdcOptions;
-};
-
-export type SourceOptions = {
-  mark: string;
-  matchers: string[];
-  sorters: string[];
-  converters: string[];
-};
-
-export const defaultSourceOptions: SourceOptions = {
-  mark: "",
-  matchers: [],
-  sorters: [],
-  converters: [],
 };
