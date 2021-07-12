@@ -53,10 +53,10 @@ function! ddc#custom#patch_filetype(ft, key_or_dict, ...) abort
   endfor
 endfunction
 
-function! ddc#custom#patch_local(bufnr, key_or_dict, ...) abort
+function! ddc#custom#patch_buffer(key_or_dict, ...) abort
   let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
-  let bufnr = bufnr('%')
-  call s:patch_buffer(bufnr, dict)
+  let n = bufnr('%')
+  call s:patch_buffer(n, dict)
 endfunction
 
 " This should be called manually, so wait until DDCReady by the user himself.
