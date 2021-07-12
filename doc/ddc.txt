@@ -59,12 +59,12 @@ For example:
 
 >
     " Set a single option
-    call ddc#custom#patch_global('auto_complete_delay', 200)
+    call ddc#custom#patch_global('autoCompleteDelay', 200)
 
     " Pass a dictionary to set multiple options
     call ddc#custom#patch_global({
-    \ 'auto_complete_delay': 200,
-    \ 'smart_case': v:true,
+    \ 'autoCompleteDelay': 200,
+    \ 'smartCase': v:true,
     \ })
 
     call ddc#custom#patch_filetype(['c', 'cpp'], 'sources', ['around'])
