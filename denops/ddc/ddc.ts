@@ -73,31 +73,6 @@ function filterArgs(
   return [optionsOf(filter), paramsOf(filter)];
 }
 
-type FiltersUsed = {
-  matchers: string[];
-  sorters: string[];
-  converters: string[];
-};
-
-function filtersUsed(options: DdcOptions, sourceName: string): FiltersUsed {
-  const filtersUsed = foldMerge(merge, empty, [
-    options.sourceOptions["_"],
-    options.sourceOptions[sourceName],
-  ]);
-  return filtersUsed;
-
-  function merge(a: FiltersUsed, b: Partial<FiltersUsed>): FiltersUsed {
-    return { ...a, ...b };
-  }
-  function empty(): FiltersUsed {
-    return {
-      matchers: [],
-      sorters: [],
-      converters: [],
-    };
-  }
-}
-
 export class Ddc {
   private sources: Record<string, BaseSource> = {};
   private filters: Record<string, BaseFilter> = {};
@@ -135,10 +110,9 @@ export class Ddc {
       const filterCandidates = await this.filterCandidates(
         denops,
         context,
-        filtersUsed(options, source.name),
+        sourceOptions,
         options.filterOptions,
         options.filterParams,
-        sourceOptions,
         sourceCandidates,
       );
       const result: DdcCandidate[] = filterCandidates.map((c: Candidate) => (
@@ -161,17 +135,16 @@ export class Ddc {
   private async filterCandidates(
     denops: Denops,
     context: Context,
-    filtersUsed: FiltersUsed,
+    sourceOptions: SourceOptions,
     filterOptions: Record<string, Partial<FilterOptions>>,
     filterParams: Record<string, Partial<Record<string, unknown>>>,
-    sourceOptions: SourceOptions,
     cdd: Candidate[],
   ): Promise<Candidate[]> {
     const foundFilters = (names: string[]) =>
       names.map((name) => this.filters[name]).filter((x) => x);
-    const matchers = foundFilters(filtersUsed.matchers);
-    const sorters = foundFilters(filtersUsed.sorters);
-    const converters = foundFilters(filtersUsed.converters);
+    const matchers = foundFilters(sourceOptions.matchers);
+    const sorters = foundFilters(sourceOptions.sorters);
+    const converters = foundFilters(sourceOptions.converters);
 
     for (const matcher of matchers) {
       const [o, p] = filterArgs(filterOptions, filterParams, matcher);
@@ -287,33 +260,4 @@ Deno.test("filterArgs", () => {
     min: 100,
     max: 999,
   }]);
-});
-
-Deno.test("filtersUsed", () => {
-  const userOptions: DdcOptions = {
-    ...defaultDdcOptions(),
-    sources: [],
-    sourceOptions: {
-      "_": {
-        matchers: ["matcher_head"],
-      },
-      "around": {
-        matchers: [],
-        sorters: ["O(1)"],
-      },
-    },
-    filterOptions: {},
-    sourceParams: {},
-    filterParams: {},
-  };
-  assertEquals(filtersUsed(userOptions, "around"), {
-    matchers: [],
-    sorters: ["O(1)"],
-    converters: [],
-  });
-  assertEquals(filtersUsed(userOptions, "foo"), {
-    matchers: ["matcher_head"],
-    sorters: [],
-    converters: [],
-  });
 });
