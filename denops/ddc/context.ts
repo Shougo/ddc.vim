@@ -374,6 +374,7 @@ Deno.test("mergeDdcOptions", () => {
     })
     .patchBuffer(2, {});
   assertEquals(custom.get("typescript", 1), {
+    ...defaultDdcOptions(),
     sources: ["around", "foo"],
     sourceOptions: {},
     filterOptions: {},
@@ -392,6 +393,7 @@ Deno.test("mergeDdcOptions", () => {
     },
   });
   assertEquals(custom.get("typescript", 2), {
+    ...defaultDdcOptions(),
     sources: [],
     sourceOptions: {},
     filterOptions: {},
@@ -407,6 +409,7 @@ Deno.test("mergeDdcOptions", () => {
     },
   });
   assertEquals(custom.get("cpp", 1), {
+    ...defaultDdcOptions(),
     sources: ["around", "foo"],
     sourceOptions: {},
     filterOptions: {},

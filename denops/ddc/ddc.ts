@@ -7,6 +7,7 @@ import {
   SourceOptions,
 } from "./types.ts";
 import {
+  defaultDdcOptions,
   foldMerge,
   mergeFilterOptions,
   mergeFilterParams,
@@ -194,7 +195,7 @@ export class Ddc {
 
 Deno.test("sourceArgs", () => {
   const userOptions: DdcOptions = {
-    completionMode: "inline",
+    ...defaultDdcOptions(),
     sources: ["strength"],
     sourceOptions: {
       "_": {
@@ -213,8 +214,6 @@ Deno.test("sourceArgs", () => {
         min: 100,
       },
     },
-    filterOptions: {},
-    filterParams: {},
   };
   class S extends BaseSource {
     params() {
@@ -236,6 +235,7 @@ Deno.test("sourceArgs", () => {
   source.name = "strength";
   const [o, p] = sourceArgs(userOptions, source);
   assertEquals(o, {
+    ...defaultSourceOptions(),
     mark: "S",
     matchers: ["matcher_head"],
     maxCandidates: 500,
@@ -244,6 +244,7 @@ Deno.test("sourceArgs", () => {
   });
   assertEquals(p.by_, undefined);
   assertEquals(p, {
+    ...defaultSourceParams(),
     min: 100,
     max: 999,
   });
@@ -280,13 +281,17 @@ Deno.test("filterArgs", () => {
   const filter = new F();
   filter.name = "/dev/null";
   assertEquals(filterArgs(userOptions, userParams, filter), [{
-    placeholder: undefined,
-  }, { min: 100, max: 999 }]);
+    ...defaultFilterOptions(),
+  }, {
+    ...defaultFilterParams(),
+    min: 100,
+    max: 999,
+  }]);
 });
 
 Deno.test("filtersUsed", () => {
   const userOptions: DdcOptions = {
-    completionMode: "inline",
+    ...defaultDdcOptions(),
     sources: [],
     sourceOptions: {
       "_": {
