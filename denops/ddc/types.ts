@@ -12,7 +12,10 @@ export type Context = {
   input: string;
 };
 
+type CompletionMode = "virtual" | "popupmenu";
+
 export type DdcOptions = {
+  completionMode: CompletionMode;
   sources: SourceName[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;

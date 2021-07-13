@@ -25,6 +25,10 @@ import {
 } from "./base/filter.ts";
 import { assertEquals, Denops } from "./deps.ts";
 
+function formatAbbr(word: string, abbr: string | undefined): string {
+  return abbr ? abbr : word;
+}
+
 function formatMenu(prefix: string, menu: string | undefined): string {
   menu = menu ? menu : "";
   return prefix == ""
@@ -139,6 +143,7 @@ export class Ddc {
       const result: DdcCandidate[] = filterCandidates.map((c: Candidate) => (
         {
           ...c,
+          abbr: formatAbbr(c.word, c.abbr),
           source: source.name,
           icase: true,
           equal: true,
@@ -189,6 +194,7 @@ export class Ddc {
 
 Deno.test("sourceArgs", () => {
   const userOptions: DdcOptions = {
+    completionMode: "virtual",
     sources: ["strength"],
     sourceOptions: {
       "_": {
@@ -280,6 +286,7 @@ Deno.test("filterArgs", () => {
 
 Deno.test("filtersUsed", () => {
   const userOptions: DdcOptions = {
+    completionMode: "virtual",
     sources: [],
     sourceOptions: {
       "_": {

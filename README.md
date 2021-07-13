@@ -113,5 +113,6 @@ See `:help ddc-options` for a complete list of options.
 * [x] Custom source options support
 * [x] Implement source orders
 * [ ] Implement sorter_rank
+* [ ] virtual text completion mode
 * [ ] Use ReadableStream
 * [ ] LSP support

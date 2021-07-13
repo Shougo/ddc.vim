@@ -67,7 +67,11 @@ export async function main(denops: Denops) {
           vars.g.set(denops, "ddc#_complete_pos", completePos),
           vars.g.set(denops, "ddc#_candidates", candidates),
         ]);
-        await denops.call("ddc#complete");
+        if (options.completionMode == "popupmenu") {
+          await denops.call("ddc#complete");
+        } else if (options.completionMode == "virtual") {
+          await denops.call("ddc#_virtual");
+        }
       })();
     },
   };

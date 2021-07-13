@@ -70,7 +70,15 @@ For example:
 
 The set of available options follows.
 
-					*ddc-options-sources*
+						*ddc-options-completionMenu*
+completionMenu
+		The completion mode. It must be following string.
+		"popupmenu": Use |ins-completion-menu|.
+		"virtual": Use |nvim_buf_set_virtual_text()|.
+
+		Default value: "popupmenu"
+
+							*ddc-options-sources*
 sources
 		It is a list of registered source names.  You have to select
 		one or more sources to use completion.
@@ -82,7 +90,7 @@ sources
 		" e.g.
 		call ddc#custom#patch_global('sources', ['around'])
 <
-					*ddc-options-sourceOptions*
+						*ddc-options-sourceOptions*
 sourceOptions
 		It is a dictionary that maps source names to its options.  The
 		options with the name "_" is used as the options for all
@@ -96,7 +104,7 @@ sourceOptions
 		    \ 'around': {'mark': 'A'},
 		    \ })
 <
-					*ddc-options-sourceParams*
+						*ddc-options-sourceParams*
 sourceParams
 		It is a dictionary that maps source names to its parameters.
 		See also |ddc-source-params|.
@@ -107,7 +115,7 @@ sourceParams
 		    \ 'around': {'max': 8},
 		    \ })
 <
-					*ddc-options-filterOptions*
+						*ddc-options-filterOptions*
 filterOptions
 		It is a dictionary that maps filter names to its options.
 		See also |ddc-filter-options|.
@@ -118,7 +126,7 @@ filterOptions
 		    \ 'matcher_head': {},
 		    \ })
 <
-					*ddc-options-filterParams*
+						*ddc-options-filterParams*
 filterParams
 		It is a dictionary that maps filter names to its parameters.
 		Default value: {}

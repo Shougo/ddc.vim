@@ -37,6 +37,20 @@ function! ddc#_complete() abort
   return ''
 endfunction
 
+function! ddc#_virtual() abort
+  if !exists('*nvim_buf_set_virtual_text') || empty(g:ddc#_candidates)
+    return
+  endif
+
+  if !exists('s:ddc_namespace')
+    let s:ddc_namespace = nvim_create_namespace('ddc')
+  endif
+
+  call nvim_buf_set_virtual_text(
+        \ bufnr('%'), s:ddc_namespace, line('.') - 1,
+        \ [[g:ddc#_candidates[0].abbr, 'PmenuSel']], {})
+endfunction
+
 function! ddc#register_source(dict) abort
   if !exists('g:ddc#_initialized')
     execute printf('autocmd User DDCReady call ' .

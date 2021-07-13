@@ -36,6 +36,7 @@ export function foldMerge<T>(
 
 export function defaultDdcOptions(): DdcOptions {
   return {
+    completionMode: "popupmenu",
     sources: [],
     sourceOptions: {},
     sourceParams: {},
@@ -77,8 +78,7 @@ export function mergeDdcOptions(
   const partialMergeSourceParams = partialOverwrite;
   const partialMergeFilterOptions = partialOverwrite;
   const partialMergeFilterParams = partialOverwrite;
-  return {
-    sources: overwritten.sources,
+  return Object.assign(overwritten, {
     sourceOptions: migrateEachKeys(
       partialMergeSourceOptions,
       a.sourceOptions,
@@ -99,7 +99,7 @@ export function mergeDdcOptions(
       a.filterParams,
       b.filterParams,
     ) || {},
-  };
+  });
 }
 
 function patchDdcOptions(
