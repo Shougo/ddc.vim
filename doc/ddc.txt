@@ -15,16 +15,15 @@ Interface		|ddc-interface|
   Custom Functions	  |ddc-custom-functions|
 Examples		|ddc-examples|
 Sources			|ddc-sources|
-  Source option	         |ddc-source-options|
-  Source params	         |ddc-source-params|
+  Source option	          |ddc-source-options|
+  Source params	          |ddc-source-params|
 Filters			|ddc-filters|
-  Filter options          |ddc-filter-options|
-  Filter params	   |ddc-filter-params|
+  Filter options	  |ddc-filter-options|
 Create source		|ddc-create-source|
-  Source attributes       |ddc-source-attributes|
+  Source attributes	  |ddc-source-attributes|
   Candidate attributes    |ddc-candidate-attributes|
 Create filter		|ddc-create-filter|
-  filter attributes       |ddc-filter-attributes|
+  filter attributes	  |ddc-filter-attributes|
 FAQ			|ddc-faq|
 Compatibility		|ddc-compatibility|
 
@@ -108,7 +107,7 @@ sourceParams
 		    \ 'around': {'max': 8},
 		    \ })
 <
-					*ddc-options-sourceParams*
+					*ddc-options-filterOptions*
 filterOptions
 		It is a dictionary that maps filter names to its options.
 		See also |ddc-filter-options|.
@@ -119,10 +118,9 @@ filterOptions
 		    \ 'matcher_head': {},
 		    \ })
 <
-					*ddc-options-sourceParams*
+					*ddc-options-filterParams*
 filterParams
 		It is a dictionary that maps filter names to its parameters.
-		See also |ddc-filter-params|.
 		Default value: {}
 >
 		" e.g.
@@ -144,7 +142,7 @@ ddc#enable()
 		Enable ddc auto completion.
 		Note: It changes the global state.
 
-							*ddc#register_filter()*
+						*ddc#register_filter()*
 ddc#register_filter({dict})
 		Register filter.
 		The {dict} must have following keys.
@@ -152,7 +150,7 @@ ddc#register_filter({dict})
 		name: The filter name
 		path: The filter path
 
-							*ddc#register_source()*
+						*ddc#register_source()*
 ddc#register_source({dict})
 		Register source.
 		The {dict} must have following keys.
@@ -181,7 +179,7 @@ ddc#custom#patch_filetype({filetype}, {dict})
 ddc#custom#patch_buffer({option-name}, {value})
 ddc#custom#patch_buffer({dict})
 		Set local options on current buffer.  The arguments are the
-		same as for |ddc#custom#patch_global|.
+		same as for |ddc#custom#patch_global()|.
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
@@ -289,6 +287,9 @@ configure them to use ddc.
 				    	    	*ddc-filter-matcher_head*
 matcher_head	Head matching matcher.
 
+------------------------------------------------------------------------------
+FILTER OPTIONS						*ddc-filter-options*
+
 ==============================================================================
 CREATE SOURCE						*ddc-create-source*
 
@@ -303,7 +304,7 @@ Note: If you call Vim functions in your source, it is not asynchronous.
 
 
 ------------------------------------------------------------------------------
-SOURCE ATTRIBUTES					*ddc-source-attributes*
+SOURCE ATTRIBUTES				*ddc-source-attributes*
 
 ------------------------------------------------------------------------------
 CANDIDATE ATTRIBUTES				*ddc-candidate-attributes*
@@ -322,7 +323,7 @@ Note: If you call Vim functions in your source, it is not asynchronous.
 
 
 ------------------------------------------------------------------------------
-FILTER ATTRIBUTES					*ddc-filter-attributes*
+FILTER ATTRIBUTES				*ddc-filter-attributes*
 
 
 ==============================================================================
