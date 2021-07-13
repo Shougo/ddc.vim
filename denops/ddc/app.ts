@@ -55,6 +55,11 @@ export async function main(denops: Denops) {
     },
     async onEvent(arg1: unknown): Promise<void> {
       const event = arg1 as string;
+      if (event == "InsertLeave") {
+        await denops.call("ddc#_clear");
+        return;
+      }
+
       const maybe = await contextBuilder.createContext(denops, event);
       if (!maybe) return;
       const [context, options] = maybe;
@@ -67,10 +72,15 @@ export async function main(denops: Denops) {
           vars.g.set(denops, "ddc#_complete_pos", completePos),
           vars.g.set(denops, "ddc#_candidates", candidates),
         ]);
-        if (options.completionMode == "popupmenu") {
-          await denops.call("ddc#complete");
-        } else if (options.completionMode == "virtual") {
-          await denops.call("ddc#_virtual");
+        switch (options.completionMode) {
+          case "popupmenu":
+            await denops.call("ddc#complete");
+            break;
+          case "virtual":
+            await denops.call("ddc#_virtual");
+            break;
+          case "manual":
+            break;
         }
       })();
     },
@@ -78,21 +88,20 @@ export async function main(denops: Denops) {
 
   await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
     helper.remove("*");
-    helper.define(
-      "InsertEnter",
-      "*",
-      `call denops#notify('${denops.name}', 'onEvent', ["InsertEnter"])`,
-    );
-    helper.define(
-      "TextChangedI",
-      "*",
-      `call denops#notify('${denops.name}', 'onEvent', ["TextChangedI"])`,
-    );
-    helper.define(
-      "TextChangedP",
-      "*",
-      `call denops#notify('${denops.name}', 'onEvent', ["TextChangedP"])`,
-    );
+    for (
+      const event of [
+        "InsertEnter",
+        "InsertLeave",
+        "TextChangedI",
+        "TextChangedP",
+      ]
+    ) {
+      helper.define(
+        event as autocmd.AutocmdEvent,
+        "*",
+        `call denops#notify('${denops.name}', 'onEvent', ["${event}"])`,
+      );
+    }
   });
 
   await vars.g.set(denops, "ddc#_complete_pos", -1);

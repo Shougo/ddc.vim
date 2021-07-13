@@ -30,11 +30,24 @@ function! ddc#complete() abort
   set completeopt+=noselect
 
   call feedkeys("\<Plug>_", 'i')
+  return ''
 endfunction
 
 function! ddc#_complete() abort
   call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   return ''
+endfunction
+
+function! ddc#_clear() abort
+  if !exists('*nvim_buf_set_virtual_text')
+    return
+  endif
+
+  if !exists('s:ddc_namespace')
+    let s:ddc_namespace = nvim_create_namespace('ddc')
+  endif
+
+  call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
 endfunction
 
 function! ddc#_virtual() abort
@@ -83,4 +96,16 @@ function! ddc#get_input(event) abort
         \         . 'c' . (mode ==# 'i' ? '' : '.'))
 
   return input
+endfunction
+
+function! ddc#insert_candidate(number) abort
+  let word = get(g:ddc#_candidates, a:number, {'word': ''}).word
+  if word ==# ''
+    return ''
+  endif
+
+  " Get cursor word.
+  let complete_str = ddc#get_input('')[g:ddc#_complete_pos :]
+  return (pumvisible() ? "\<C-e>" : '')
+        \ . repeat("\<BS>", strchars(complete_str)) . word
 endfunction

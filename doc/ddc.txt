@@ -70,11 +70,15 @@ For example:
 
 The set of available options follows.
 
-						*ddc-options-completionMenu*
-completionMenu
+						*ddc-options-completionMode*
+completionMode
 		The completion mode. It must be following string.
+
 		"popupmenu": Use |ins-completion-menu|.
-		"virtual": Use |nvim_buf_set_virtual_text()|.
+		"virtual": Use |nvim_buf_set_virtual_text()|.  It is neovim
+			only.
+		"manual": You can display popupmenu manually by
+			|ddc#complete()|.
 
 		Default value: "popupmenu"
 
@@ -191,6 +195,16 @@ ddc#custom#patch_buffer({dict})
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
+
+							*ddc#complete()*
+ddc#complete()
+		Open current completion popup menu.
+		Note: It must be in |:map-<expr>|.
+
+						*ddc#insert_candidate()*
+ddc#insert_candidate({index})
+		Insert the candidate at index {index}. Indices start at 0.
+		Note: It must be in |:map-<expr>|.
 
 ==============================================================================
 EXAMPLES						*ddc-examples*
@@ -361,6 +375,12 @@ A: Because users can customize sources perfectly.  If a source has the
 default, users have to check them.  It increases configuration cost.
 The config should work as users config.
 
+
+Q: I want to use inline suggestiong like fish shell.
+
+A: >
+	inoremap <expr><C-t>       ddc#insert_candidate(0)
+	call ddc#custom#patch_global('completionMode', 'virtual')
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
