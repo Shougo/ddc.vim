@@ -12,7 +12,7 @@ export type Context = {
   input: string;
 };
 
-type CompletionMode = "virtual" | "popupmenu" | "manual";
+type CompletionMode = "inline" | "popupmenu" | "manual";
 
 export type DdcOptions = {
   completionMode: CompletionMode;

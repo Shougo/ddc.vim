@@ -194,7 +194,7 @@ export class Ddc {
 
 Deno.test("sourceArgs", () => {
   const userOptions: DdcOptions = {
-    completionMode: "virtual",
+    completionMode: "inline",
     sources: ["strength"],
     sourceOptions: {
       "_": {
@@ -286,7 +286,7 @@ Deno.test("filterArgs", () => {
 
 Deno.test("filtersUsed", () => {
   const userOptions: DdcOptions = {
-    completionMode: "virtual",
+    completionMode: "inline",
     sources: [],
     sourceOptions: {
       "_": {

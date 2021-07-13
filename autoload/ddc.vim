@@ -50,7 +50,7 @@ function! ddc#_clear() abort
   call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
 endfunction
 
-function! ddc#_virtual() abort
+function! ddc#_inline() abort
   if !exists('*nvim_buf_set_virtual_text') || empty(g:ddc#_candidates)
     return
   endif

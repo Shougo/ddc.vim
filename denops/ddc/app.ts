@@ -76,8 +76,8 @@ export async function main(denops: Denops) {
           case "popupmenu":
             await denops.call("ddc#complete");
             break;
-          case "virtual":
-            await denops.call("ddc#_virtual");
+          case "inline":
+            await denops.call("ddc#_inline");
             break;
           case "manual":
             break;

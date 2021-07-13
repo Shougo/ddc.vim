@@ -75,7 +75,7 @@ completionMode
 		The completion mode. It must be following string.
 
 		"popupmenu": Use |ins-completion-menu|.
-		"virtual": Use |nvim_buf_set_virtual_text()|.  It is neovim
+		"inline": Use |nvim_buf_set_virtual_text()|.  It is neovim
 			only.
 		"manual": You can display popupmenu manually by
 			|ddc#complete()|.
@@ -380,7 +380,7 @@ Q: I want to use inline suggestiong like fish shell.
 
 A: >
 	inoremap <expr><C-t>       ddc#insert_candidate(0)
-	call ddc#custom#patch_global('completionMode', 'virtual')
+	call ddc#custom#patch_global('completionMode', 'inline')
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
