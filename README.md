@@ -29,17 +29,11 @@ I have chosen denops.vim framework to create new auto completion plugin.
 Because denops.vim is better than neovim Python interface.
 
 * Easy to setup
-
 * Minimal dependency
-
 * Stability
-
 * neovim/Vim8 compatibility
-
 * Speed
-
 * Library
-
 * Easy to hack
 
 
@@ -87,7 +81,7 @@ call ddc#custom#patch_global('sources', ['around'])
 " Enable default matcher.
 call ddc#custom#patch_global('sourceOptions', {
       \ '_': {'matchers': ['matcher_head']},
-      \ }
+      \ })
 " Change source options
 call ddc#custom#patch_global('sourceOptions', {
       \ 'around': {'matchers': ['matcher_head'], 'mark': 'A'},
@@ -100,7 +94,7 @@ call ddc#custom#patch_global('sourceParams', {
 call ddc#custom#patch_filetype(['c', 'cpp'], 'sources', ['around', 'clangd'])
 call ddc#custom#patch_filetype(['c', 'cpp'], 'sourceOptions', {
       \ 'clangd': {'mark': 'C'},
-      \ }
+      \ })
 call ddc#custom#patch_filetype('markdown', 'sourceParams', {
       \ 'around': {'maxSize': 100},
       \ })
