@@ -191,7 +191,7 @@ function initialWorld(): World {
   };
 }
 
-// Fetchs current state
+// Fetches current state
 async function cacheWorld(denops: Denops, event: string): Promise<World> {
   const changedByCompletion: Promise<boolean> = (async () => {
     const completedItem =

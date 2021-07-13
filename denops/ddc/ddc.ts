@@ -232,6 +232,7 @@ Deno.test("sourceArgs", () => {
   assertEquals(o, {
     mark: "S",
     matchers: ["matcher_head"],
+    maxCandidates: 500,
     converters: [],
     sorters: [],
   });
