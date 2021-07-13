@@ -16,6 +16,7 @@ export abstract class BaseSource {
 export function defaultSourceOptions(): SourceOptions {
   return {
     mark: "",
+    maxCandidates: 500,
     matchers: [],
     sorters: [],
     converters: [],

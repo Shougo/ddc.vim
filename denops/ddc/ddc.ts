@@ -133,6 +133,7 @@ export class Ddc {
         filtersUsed(options, source.name),
         options.filterOptions,
         options.filterParams,
+        sourceOptions,
         sourceCandidates,
       );
       const result: DdcCandidate[] = filterCandidates.map((c: Candidate) => (
@@ -157,6 +158,7 @@ export class Ddc {
     filtersUsed: FiltersUsed,
     filterOptions: Record<string, Partial<FilterOptions>>,
     filterParams: Record<string, Partial<Record<string, unknown>>>,
+    sourceOptions: SourceOptions,
     cdd: Candidate[],
   ): Promise<Candidate[]> {
     const foundFilters = (names: string[]) =>
@@ -173,6 +175,10 @@ export class Ddc {
       const [o, p] = filterArgs(filterOptions, filterParams, sorter);
       cdd = await sorter.filter(denops, context, o, p, cdd);
     }
+
+    // Filter by maxCandidates
+    cdd = cdd.slice(0, sourceOptions.maxCandidates);
+
     for (const converter of converters) {
       const [o, p] = filterArgs(filterOptions, filterParams, converter);
       cdd = await converter.filter(denops, context, o, p, cdd);

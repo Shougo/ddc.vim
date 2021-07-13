@@ -22,6 +22,7 @@ export type DdcOptions = {
 
 export type SourceOptions = {
   mark: string;
+  maxCandidates: number;
   matchers: string[];
   sorters: string[];
   converters: string[];
