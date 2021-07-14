@@ -63,9 +63,11 @@ export async function main(denops: Denops) {
       const maybe = await contextBuilder.createContext(denops, event);
       if (!maybe) return;
       const [context, options] = maybe;
-      const candidates = await ddc.gatherCandidates(denops, context, options);
-      const matchPos = context.input.search(/\w*$/);
-      const completePos = matchPos != null ? matchPos : -1;
+      const [completePos, candidates] = await ddc.gatherResults(
+        denops,
+        context,
+        options,
+      );
 
       await (async function write() {
         await Promise.all([

@@ -90,11 +90,11 @@ export class Ddc {
     this.sources[source.name] = source;
   }
 
-  async gatherCandidates(
+  async gatherResults(
     denops: Denops,
     context: Context,
     options: DdcOptions,
-  ): Promise<DdcCandidate[]> {
+  ): Promise<[number, DdcCandidate[]]> {
     let candidates: DdcCandidate[] = [];
     const sources = options.sources.map((name) => this.sources[name])
       .filter((x) => x);
@@ -129,7 +129,9 @@ export class Ddc {
       candidates = candidates.concat(result);
     }
 
-    return candidates;
+    const matchPos = context.input.search(/\w*$/);
+    const completePos = matchPos != null ? matchPos : -1;
+    return [completePos, candidates];
   }
 
   private async filterCandidates(
