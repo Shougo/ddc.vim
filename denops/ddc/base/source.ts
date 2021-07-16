@@ -4,7 +4,7 @@ import { Denops } from "../deps.ts";
 export abstract class BaseSource {
   name = "";
 
-  async getCompletePosition(
+  getCompletePosition(
     _denops: Denops,
     context: Context,
     _options: SourceOptions,

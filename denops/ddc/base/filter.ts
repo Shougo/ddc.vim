@@ -11,7 +11,9 @@ export abstract class BaseFilter {
     candidates: Candidate[],
   ): Promise<Candidate[]>;
 
-  abstract params(): Record<string, unknown>;
+  params(): Record<string, unknown> {
+    return {} as Record<string, unknown>;
+  }
 }
 
 export function defaultFilterOptions(): FilterOptions {

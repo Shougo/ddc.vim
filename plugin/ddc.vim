@@ -19,3 +19,8 @@ call ddc#register_filter({
       \ 'path': fnamemodify(expand('<sfile>'), ':h:h')
       \         . '/denops/ddc/filters/matcher_head.ts',
       \ })
+call ddc#register_filter({
+      \ 'name': 'sorter_rank',
+      \ 'path': fnamemodify(expand('<sfile>'), ':h:h')
+      \         . '/denops/ddc/filters/sorter_rank.ts',
+      \ })

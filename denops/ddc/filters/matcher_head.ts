@@ -1,6 +1,5 @@
 import { BaseFilter, Candidate, Context, FilterOptions } from "../types.ts";
-import { Denops } from "../deps.ts";
-import { assertEquals } from "https://deno.land/std@0.98.0/testing/asserts.ts";
+import { assertEquals, Denops } from "../deps.ts";
 
 function lastWord(input: string): string {
   const match = input.match(/\w*$/);
@@ -20,10 +19,6 @@ export class Filter extends BaseFilter {
       (candidate) => candidate.word.startsWith(completeStr),
     );
     return Promise.resolve(filtered);
-  }
-
-  params(): Record<string, unknown> {
-    return {};
   }
 }
 

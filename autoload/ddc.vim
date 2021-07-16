@@ -22,6 +22,8 @@ function! ddc#enable() abort
 endfunction
 
 function! ddc#complete() abort
+  call ddc#_clear()
+
   inoremap <silent> <Plug>_ <C-r>=ddc#_complete()<CR>
 
   set completeopt-=longest

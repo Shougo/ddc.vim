@@ -309,6 +309,10 @@ configure them to use ddc.
 				    	    	*ddc-filter-matcher_head*
 matcher_head	Head matching matcher.
 
+				    	    	*ddc-filter-sorter_rank*
+sorter_rank	Matched rank order sorter.  The higher the head matched word
+		or already typed or inserted word.
+
 ------------------------------------------------------------------------------
 FILTER OPTIONS						*ddc-filter-options*
 
