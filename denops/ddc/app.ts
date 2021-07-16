@@ -74,15 +74,13 @@ export async function main(denops: Denops) {
           vars.g.set(denops, "ddc#_complete_pos", completePos),
           vars.g.set(denops, "ddc#_candidates", candidates),
         ]);
-        switch (options.completionMode) {
-          case "popupmenu":
-            await denops.call("ddc#complete");
-            break;
-          case "inline":
-            await denops.call("ddc#_inline");
-            break;
-          case "manual":
-            break;
+        const pumvisible = await denops.call("pumvisible");
+        if (options.completionMode == "popupmenu" || pumvisible) {
+          await denops.call("ddc#complete");
+        } else if (options.completionMode == "inline") {
+          await denops.call("ddc#_inline");
+        } else if (options.completionMode == "manual") {
+          // through
         }
       })();
     },

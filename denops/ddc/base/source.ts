@@ -3,6 +3,18 @@ import { Denops } from "../deps.ts";
 
 export abstract class BaseSource {
   name = "";
+
+  async getCompletePosition(
+    _denops: Denops,
+    context: Context,
+    _options: SourceOptions,
+    _params: Record<string, unknown>,
+  ): Promise<number> {
+    const matchPos = context.input.search(/\w+$/);
+    const completePos = matchPos != null ? matchPos : -1;
+    return Promise.resolve(completePos);
+  }
+
   abstract gatherCandidates(
     denops: Denops,
     context: Context,
@@ -10,7 +22,9 @@ export abstract class BaseSource {
     params: Record<string, unknown>,
   ): Promise<Candidate[]>;
 
-  abstract params(): Record<string, unknown>;
+  params(): Record<string, unknown> {
+    return {} as Record<string, unknown>;
+  }
 }
 
 export function defaultSourceOptions(): SourceOptions {
