@@ -226,6 +226,13 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
   };
 }
 
+// is neglect-able
+function isNegligible(older: World, newer: World): boolean {
+  return older.bufnr == newer.bufnr &&
+    older.filetype == newer.filetype &&
+    older.input == newer.input;
+}
+
 export class ContextBuilder {
   private lastWorld: World = initialWorld();
   private custom: Custom = new Custom();
@@ -240,11 +247,10 @@ export class ContextBuilder {
     event: string,
   ): Promise<null | [Context, DdcOptions]> {
     const world = await this._cacheWorld(denops, event);
-    if (this.lastWorld == world) return null;
+    const old = this.lastWorld;
     this.lastWorld = world;
-    if (world.isLmap || world.changedByCompletion) {
-      return null;
-    }
+    if (isNegligible(old, world)) return null;
+    if (world.isLmap || world.changedByCompletion) return null;
     const userOptions = this.custom.get(world.filetype, world.bufnr);
     const context = {
       input: world.input,
@@ -272,6 +278,17 @@ export class ContextBuilder {
     this.custom.patchBuffer(bufnr, options);
   }
 }
+
+Deno.test("isNegligible", () => {
+  assertEquals(true, isNegligible(initialWorld(), initialWorld()));
+  assertEquals(
+    isNegligible(
+      { ...initialWorld(), input: "a" },
+      { ...initialWorld(), input: "ab" },
+    ),
+    false,
+  );
+});
 
 Deno.test("patchDdcOptions", () => {
   const custom = (new Custom())
