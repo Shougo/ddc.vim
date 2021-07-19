@@ -3,6 +3,14 @@ import { Denops } from "../deps.ts";
 
 export abstract class BaseFilter {
   name = "";
+
+  async onEvent(
+    _denops: Denops,
+    _context: Context,
+    _options: FilterOptions,
+    _params: Record<string, unknown>,
+  ): Promise<void> {}
+
   abstract filter(
     denops: Denops,
     context: Context,

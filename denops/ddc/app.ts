@@ -63,6 +63,15 @@ export async function main(denops: Denops) {
       const maybe = await contextBuilder.createContext(denops, event);
       if (!maybe) return;
       const [context, options] = maybe;
+
+      if (event == "InsertEnter") {
+        await ddc.onEvent(
+          denops,
+          context,
+          options,
+        );
+      }
+
       const [completePos, candidates] = await ddc.gatherResults(
         denops,
         context,

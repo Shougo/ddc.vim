@@ -90,6 +90,38 @@ export class Ddc {
     this.sources[source.name] = source;
   }
 
+  async onEvent(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+  ): Promise<void> {
+    const sources = options.sources.map((name) => this.sources[name])
+      .filter((x) => x);
+
+    const foundFilters = (names: string[]) =>
+      names.map((name) => this.filters[name]).filter((x) => x);
+
+    for (const source of sources) {
+      const [sourceOptions, _] = sourceArgs(options, source);
+      const filters = foundFilters(
+        sourceOptions.matchers.concat(
+          sourceOptions.sorters,
+          sourceOptions.converters,
+        ),
+      );
+
+      for (const filter of filters) {
+        const [o, p] = filterArgs(
+          options.filterOptions,
+          options.filterParams,
+          filter,
+        );
+        console.log(filter);
+        await filter.onEvent(denops, context, o, p);
+      }
+    }
+  }
+
   async gatherResults(
     denops: Denops,
     context: Context,

@@ -214,7 +214,9 @@ EXAMPLES						*ddc-examples*
 	call ddc#custom#patch_global('sources', ['around'])
 	" Enable default matcher.
 	call ddc#custom#patch_global('sourceOptions', {
-	      \ '_': {'matchers': ['matcher_head']},
+	      \ '_': {
+	      \   'matchers': ['matcher_head'],
+	      \   'sorters': ['sorter_rank']},
 	      \ })
 	" Change source options
 	call ddc#custom#patch_global('sourceOptions', {
