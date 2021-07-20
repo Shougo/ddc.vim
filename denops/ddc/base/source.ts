@@ -20,7 +20,7 @@ export abstract class BaseSource {
     context: Context,
     options: SourceOptions,
     params: Record<string, unknown>,
-  ): Promise<Candidate[]>;
+  ): Promise<ReadableStream<Candidate[]>>;
 
   params(): Record<string, unknown> {
     return {} as Record<string, unknown>;

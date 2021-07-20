@@ -131,6 +131,8 @@ export class Ddc {
     const sources = options.sources.map((name) => this.sources[name])
       .filter((x) => x);
 
+    var sourceCandidates: Candidate[] = [];
+
     for (const source of sources) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
       completePos = await source.getCompletePosition(
@@ -139,12 +141,27 @@ export class Ddc {
         sourceOptions,
         sourceParams,
       );
-      const sourceCandidates = await source.gatherCandidates(
+      const reader = (await source.gatherCandidates(
         denops,
         context,
         sourceOptions,
         sourceParams,
-      );
+      )).getReader();
+
+      sourceCandidates = [];
+      const readCandidates = (
+        { done, value }: { done: boolean; value?: Candidate[] },
+      ) => {
+        if (done || value == undefined) {
+          return;
+        }
+        sourceCandidates = sourceCandidates.concat(value);
+
+        reader.read().then(readCandidates);
+      };
+      reader.read().then(readCandidates);
+      console.log(sourceCandidates);
+
       const filterCandidates = await this.filterCandidates(
         denops,
         context,
@@ -238,8 +255,15 @@ Deno.test("sourceArgs", () => {
       _context: Context,
       _options: SourceOptions,
       _params: Record<string, unknown>,
-    ): Promise<Candidate[]> {
-      return Promise.resolve([]);
+    ): Promise<ReadableStream<Candidate[]>> {
+      return Promise.resolve(
+        new ReadableStream<Candidate[]>({
+          start(controller) {
+            controller.enqueue([]);
+            controller.close();
+          },
+        }),
+      );
     }
   }
   const source = new S();

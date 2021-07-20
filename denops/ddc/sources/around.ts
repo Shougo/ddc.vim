@@ -28,7 +28,7 @@ export class Source extends BaseSource {
     _context: Context,
     _options: SourceOptions,
     params: Record<string, unknown>,
-  ): Promise<Candidate[]> {
+  ): Promise<ReadableStream<Candidate[]>> {
     const pageSize = 500;
     const p = params as unknown as Params;
     const maxSize = p.maxSize;
@@ -47,7 +47,13 @@ export class Source extends BaseSource {
     const lines = pages.flatMap((page) => page);
 
     const candidates: Candidate[] = allWords(lines).map((word) => ({ word }));
-    return candidates;
+
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(candidates);
+        controller.close();
+      },
+    });
   }
 
   params(): Record<string, unknown> {
