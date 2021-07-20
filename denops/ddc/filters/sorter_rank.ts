@@ -39,7 +39,7 @@ export class Filter extends BaseFilter {
       ),
     )) as string[][];
 
-    var linenr = minLines;
+    let linenr = minLines;
     for (const line of pages.flatMap((page) => page)) {
       for (const match of line.matchAll(/[a-zA-Z0-9_]+/g)) {
         const word = match[0].toLowerCase();
@@ -72,7 +72,7 @@ export class Filter extends BaseFilter {
       function compare(x: Candidate): number {
         const lower = x.word.toLowerCase();
         const matched = lower.indexOf(completeStr);
-        var score = -matched * 40;
+        let score = -matched * 40;
 
         if (lower in cache) {
           const mru = Math.abs(cache[lower] - linenr) - LINES_MAX;

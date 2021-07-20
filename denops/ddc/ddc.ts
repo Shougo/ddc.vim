@@ -131,9 +131,8 @@ export class Ddc {
     const sources = options.sources.map((name) => this.sources[name])
       .filter((x) => x);
 
-    var sourceCandidates: Candidate[] = [];
-
     for (const source of sources) {
+      let sourceCandidates: Candidate[] = [];
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
       completePos = await source.getCompletePosition(
         denops,
@@ -156,11 +155,12 @@ export class Ddc {
           return;
         }
         sourceCandidates = sourceCandidates.concat(value);
+        console.log(value);
+        console.log(sourceCandidates);
 
         reader.read().then(readCandidates);
       };
-      reader.read().then(readCandidates);
-      console.log(sourceCandidates);
+      await reader.read().then(readCandidates);
 
       const filterCandidates = await this.filterCandidates(
         denops,
