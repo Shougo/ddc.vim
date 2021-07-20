@@ -116,7 +116,6 @@ export class Ddc {
           options.filterParams,
           filter,
         );
-        console.log(filter);
         await filter.onEvent(denops, context, o, p);
       }
     }
