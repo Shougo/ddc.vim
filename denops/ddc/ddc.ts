@@ -155,8 +155,6 @@ export class Ddc {
           return;
         }
         sourceCandidates = sourceCandidates.concat(value);
-        console.log(value);
-        console.log(sourceCandidates);
 
         reader.read().then(readCandidates);
       };
