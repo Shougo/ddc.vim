@@ -28,7 +28,7 @@ export class Source extends BaseSource {
     _context: Context,
     _options: SourceOptions,
     params: Record<string, unknown>,
-  ): Promise<Candidate[]> {
+  ): Promise<ReadableStream<Candidate[]>> {
     const pageSize = 500;
     const p = params as unknown as Params;
     const maxSize = p.maxSize;
@@ -38,16 +38,20 @@ export class Source extends BaseSource {
       (await denops.call("line", "$")) as number,
       currentLine + maxSize,
     );
-    const pages = (await Promise.all(
-      imap(
-        splitPages(minLines, maxLines, pageSize),
-        ([start, end]: [number, number]) => denops.call("getline", start, end),
-      ),
-    )) as string[][];
-    const lines = pages.flatMap((page) => page);
-
-    const candidates: Candidate[] = allWords(lines).map((word) => ({ word }));
-    return candidates;
+    return new ReadableStream({
+      async start(controller) {
+        const pages = imap(
+          splitPages(minLines, maxLines, pageSize),
+          ([start, end]) =>
+            denops.call("getline", start, end) as Promise<string[]>,
+        );
+        await Promise.all(imap(pages, async (page) => {
+          const words = allWords(await page);
+          controller.enqueue(words.map((word) => ({ word })));
+        }));
+        controller.close();
+      },
+    });
   }
 
   params(): Record<string, unknown> {

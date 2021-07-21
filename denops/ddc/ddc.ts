@@ -73,6 +73,50 @@ function filterArgs(
   return [optionsOf(filter), paramsOf(filter)];
 }
 
+// https://github.com/MeirionHughes/web-streams-extensions/blob/master/src/concat.ts
+function concatStreams<T>(...streams: ReadableStream<T>[]): ReadableStream<T> {
+  if (streams.length == 0) throw Error("must pass at least 1 stream to concat");
+
+  let reader: ReadableStreamDefaultReader<T> = null;
+
+  async function flush(controller: ReadableStreamDefaultController<T>) {
+    try {
+      if (reader == null) {
+        if (streams.length == 0) {
+          controller.close();
+        }
+        reader = streams.shift().getReader();
+      }
+
+      while (controller.desiredSize > 0 && reader != null) {
+        let next = await reader.read();
+        // if the current reader is exhausted...
+        if (next.done) {
+          reader = null;
+        } else {
+          controller.enqueue(next.value);
+        }
+      }
+    } catch (err) {
+      controller.error(err);
+    }
+  }
+
+  return new ReadableStream<T>({
+    async start(controller) {
+      return flush(controller);
+    },
+    async pull(controller) {
+      return flush(controller);
+    },
+    async cancel() {
+      if (reader) {
+        reader.releaseLock();
+      }
+    },
+  });
+}
+
 export class Ddc {
   private sources: Record<string, BaseSource> = {};
   private filters: Record<string, BaseFilter> = {};
@@ -125,82 +169,105 @@ export class Ddc {
     denops: Denops,
     context: Context,
     options: DdcOptions,
-  ): Promise<[number, DdcCandidate[]]> {
-    let completePos = -1;
-    let candidates: DdcCandidate[] = [];
-    const sources = options.sources.map((name) => this.sources[name])
-      .filter((x) => x);
-
-    for (const source of sources) {
-      const [sourceOptions, sourceParams] = sourceArgs(options, source);
-      completePos = await source.getCompletePosition(
-        denops,
-        context,
-        sourceOptions,
-        sourceParams,
-      );
-      const sourceCandidates = await source.gatherCandidates(
-        denops,
-        context,
-        sourceOptions,
-        sourceParams,
-      );
-      const filterCandidates = await this.filterCandidates(
-        denops,
-        context,
-        sourceOptions,
-        options.filterOptions,
-        options.filterParams,
-        sourceCandidates,
-      );
-      const result: DdcCandidate[] = filterCandidates.map((c: Candidate) => (
-        {
-          ...c,
-          abbr: formatAbbr(c.word, c.abbr),
-          source: source.name,
-          icase: true,
-          equal: true,
-          menu: formatMenu(sourceOptions.mark, c.menu),
-        }
-      ));
-
-      candidates = candidates.concat(result);
-    }
-
-    return [completePos, candidates];
+  ): Promise<
+    { completePos: number; candidates: ReadableStream<DdcCandidate[]> }
+  > {
+    const sources = await Promise.all(
+      options.sources
+        .map((n) => this.sources[n])
+        .filter((v) => v)
+        .map(async (s) => {
+          const [sourceOptions, sourceParams] = sourceArgs(options, s);
+          const [completePos, candidates] = await Promise.all([
+            s.getCompletePosition(
+              denops,
+              context,
+              sourceOptions,
+              sourceParams,
+            ),
+            s.gatherCandidates(
+              denops,
+              context,
+              sourceOptions,
+              sourceParams,
+            ),
+          ]);
+          return {
+            completePos,
+            candidates: candidates
+              .pipeThrough(this.filterCandidates(
+                denops,
+                context,
+                sourceOptions,
+                options.filterOptions,
+                options.filterParams,
+              ))
+              .pipeThrough(this.finalizeCandidates(
+                s,
+                sourceOptions,
+              )),
+          };
+        }),
+    );
+    const completePos = Math.max(
+      ...sources.map(({ completePos }) => completePos),
+    );
+    const candidates = concatStreams<DdcCandidate[]>(
+      ...sources.map(({ candidates }) => candidates),
+    );
+    return { completePos, candidates };
   }
 
-  private async filterCandidates(
+  private filterCandidates(
     denops: Denops,
     context: Context,
     sourceOptions: SourceOptions,
     filterOptions: Record<string, Partial<FilterOptions>>,
     filterParams: Record<string, Partial<Record<string, unknown>>>,
-    cdd: Candidate[],
-  ): Promise<Candidate[]> {
+  ): TransformStream<Candidate[]> {
     const foundFilters = (names: string[]) =>
       names.map((name) => this.filters[name]).filter((x) => x);
     const matchers = foundFilters(sourceOptions.matchers);
     const sorters = foundFilters(sourceOptions.sorters);
     const converters = foundFilters(sourceOptions.converters);
 
-    for (const matcher of matchers) {
-      const [o, p] = filterArgs(filterOptions, filterParams, matcher);
-      cdd = await matcher.filter(denops, context, o, p, cdd);
-    }
-    for (const sorter of sorters) {
-      const [o, p] = filterArgs(filterOptions, filterParams, sorter);
-      cdd = await sorter.filter(denops, context, o, p, cdd);
-    }
+    return new TransformStream({
+      async transform(chunk, controller) {
+        for (const matcher of matchers) {
+          const [o, p] = filterArgs(filterOptions, filterParams, matcher);
+          chunk = await matcher.filter(denops, context, o, p, chunk);
+        }
+        for (const sorter of sorters) {
+          const [o, p] = filterArgs(filterOptions, filterParams, sorter);
+          chunk = await sorter.filter(denops, context, o, p, chunk);
+        }
+        // Filter by maxCandidates
+        chunk = chunk.slice(0, sourceOptions.maxCandidates);
+        for (const converter of converters) {
+          const [o, p] = filterArgs(filterOptions, filterParams, converter);
+          chunk = await converter.filter(denops, context, o, p, chunk);
+        }
+        controller.enqueue(chunk);
+      },
+    });
+  }
 
-    // Filter by maxCandidates
-    cdd = cdd.slice(0, sourceOptions.maxCandidates);
-
-    for (const converter of converters) {
-      const [o, p] = filterArgs(filterOptions, filterParams, converter);
-      cdd = await converter.filter(denops, context, o, p, cdd);
-    }
-    return cdd;
+  private finalizeCandidates(
+    source: BaseSource,
+    sourceOptions: SourceOptions,
+  ): TransformStream<Candidate[], DdcCandidate[]> {
+    return new TransformStream({
+      transform(chunk, controller) {
+        controller.enqueue(chunk.map((c) => ({
+          ...c,
+          abbr: formatAbbr(c.word, c.abbr),
+          source: source.name,
+          icase: true,
+          equal: true,
+          menu: formatMenu(sourceOptions.mark, c.menu),
+        })));
+      },
+    });
   }
 }
 
@@ -238,8 +305,15 @@ Deno.test("sourceArgs", () => {
       _context: Context,
       _options: SourceOptions,
       _params: Record<string, unknown>,
-    ): Promise<Candidate[]> {
-      return Promise.resolve([]);
+    ): Promise<ReadableStream<Candidate[]>> {
+      return Promise.resolve(
+        new ReadableStream({
+          start(controller) {
+            controller.enqueue([]);
+            controller.close();
+          },
+        }),
+      );
     }
   }
   const source = new S();

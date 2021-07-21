@@ -1,7 +1,7 @@
-import { autocmd, Denops, ensureObject, vars } from "./deps.ts";
+import { autocmd, batch, Denops, ensureObject, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
-import { DdcOptions } from "./types.ts";
+import { DdcCandidate, DdcOptions } from "./types.ts";
 
 type RegisterArg = {
   path: string;
@@ -72,26 +72,30 @@ export async function main(denops: Denops) {
         );
       }
 
-      const [completePos, candidates] = await ddc.gatherResults(
+      const allCandidates: DdcCandidate[] = [];
+      const writableStream = new WritableStream<DdcCandidate[]>({
+        async write(chunk) {
+          allCandidates.push(...chunk);
+          const pumvisible = await denops.call("pumvisible");
+          await batch(denops, (helper) => {
+            vars.g.set(helper, "ddc#_candidates", allCandidates);
+            if (options.completionMode == "popupmenu" || pumvisible) {
+              helper.call("ddc#complete");
+            } else if (options.completionMode == "inline") {
+              helper.call("ddc#_inline");
+            } else if (options.completionMode == "manual") {
+              // through
+            }
+          });
+        },
+      });
+      const { completePos, candidates } = await ddc.gatherResults(
         denops,
         context,
         options,
       );
-
-      await (async function write() {
-        await Promise.all([
-          vars.g.set(denops, "ddc#_complete_pos", completePos),
-          vars.g.set(denops, "ddc#_candidates", candidates),
-        ]);
-        const pumvisible = await denops.call("pumvisible");
-        if (options.completionMode == "popupmenu" || pumvisible) {
-          await denops.call("ddc#complete");
-        } else if (options.completionMode == "inline") {
-          await denops.call("ddc#_inline");
-        } else if (options.completionMode == "manual") {
-          // through
-        }
-      })();
+      await vars.g.set(denops, "ddc#_complete_pos", completePos);
+      await candidates.pipeTo(writableStream);
     },
   };
 
