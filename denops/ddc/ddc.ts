@@ -5,6 +5,7 @@ import {
   DdcOptions,
   FilterOptions,
   SourceOptions,
+  SourceResult,
 } from "./types.ts";
 import {
   defaultDdcOptions,
@@ -175,9 +176,7 @@ export class Ddc {
     denops: Denops,
     context: Context,
     options: DdcOptions,
-  ): Promise<
-    { completePos: number; candidates: ReadableStream<DdcCandidate[]> }
-  > {
+  ): Promise<SourceResult> {
     const sources = await Promise.all(
       options.sources
         .map((n) => this.sources[n])

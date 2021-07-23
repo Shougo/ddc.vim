@@ -52,3 +52,8 @@ export type DdcCandidate = Candidate & {
   equal: boolean;
   source: SourceName;
 };
+
+export type SourceResult = {
+  completePos: number;
+  candidates: ReadableStream<DdcCandidate[]>;
+};
