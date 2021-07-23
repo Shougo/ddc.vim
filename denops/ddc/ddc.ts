@@ -96,7 +96,7 @@ function concatStreams<T>(...streams: ReadableStream<T>[]): ReadableStream<T> {
         reader != null
       ) {
         const next = await reader.read();
-        // if the current reader is exhausted...
+        // If the current reader is exhausted...
         if (next.done) {
           reader = null;
         } else {
@@ -215,7 +215,8 @@ export class Ddc {
           };
         }),
     );
-    const completePos = Math.max(
+    // Todo: Merge gatherCandidates by completePos like deoplete.
+    const completePos = Math.min(
       ...sources.map(({ completePos }) => completePos),
     );
     const candidates = concatStreams<DdcCandidate[]>(
