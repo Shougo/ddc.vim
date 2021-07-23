@@ -109,11 +109,11 @@ function concatStreams<T>(...streams: ReadableStream<T>[]): ReadableStream<T> {
   }
 
   return new ReadableStream<T>({
-    start(controller) {
-      return flush(controller);
+    async start(controller) {
+      return await flush(controller);
     },
-    pull(controller) {
-      return flush(controller);
+    async pull(controller) {
+      return await flush(controller);
     },
     cancel() {
       if (reader) {
