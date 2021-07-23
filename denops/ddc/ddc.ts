@@ -77,19 +77,25 @@ function filterArgs(
 function concatStreams<T>(...streams: ReadableStream<T>[]): ReadableStream<T> {
   if (streams.length == 0) throw Error("must pass at least 1 stream to concat");
 
-  let reader: ReadableStreamDefaultReader<T> = null;
+  let reader: ReadableStreamDefaultReader<T> | null = null;
 
   async function flush(controller: ReadableStreamDefaultController<T>) {
     try {
       if (reader == null) {
-        if (streams.length == 0) {
+        if (streams.length == 0 || streams == null) {
           controller.close();
         }
-        reader = streams.shift().getReader();
+        const shift = streams.shift();
+        if (shift != undefined) {
+          reader = shift.getReader();
+        }
       }
 
-      while (controller.desiredSize > 0 && reader != null) {
-        let next = await reader.read();
+      while (
+        controller.desiredSize != null && controller.desiredSize > 0 &&
+        reader != null
+      ) {
+        const next = await reader.read();
         // if the current reader is exhausted...
         if (next.done) {
           reader = null;
@@ -103,13 +109,13 @@ function concatStreams<T>(...streams: ReadableStream<T>[]): ReadableStream<T> {
   }
 
   return new ReadableStream<T>({
-    async start(controller) {
+    start(controller) {
       return flush(controller);
     },
-    async pull(controller) {
+    pull(controller) {
       return flush(controller);
     },
-    async cancel() {
+    cancel() {
       if (reader) {
         reader.releaseLock();
       }
