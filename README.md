@@ -118,3 +118,4 @@ See `:help ddc-options` for a complete list of options.
 * [x] virtual text completion mode
 * [ ] Use ReadableStream
 * [ ] LSP support
+* [ ] keyword pattern support
