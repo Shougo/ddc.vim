@@ -76,7 +76,13 @@ function filterArgs(
 
 // https://github.com/MeirionHughes/web-streams-extensions/blob/master/src/concat.ts
 function concatStreams<T>(...streams: ReadableStream<T>[]): ReadableStream<T> {
-  if (streams.length == 0) throw Error("must pass at least 1 stream to concat");
+  if (streams.length == 0) {
+    return new ReadableStream<T>({
+      start(controller) {
+        controller.close();
+      },
+    });
+  }
 
   let reader: ReadableStreamDefaultReader<T> | null = null;
 
@@ -177,7 +183,7 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<SourceResult> {
-    const sources = await Promise.all(
+    const results = (await Promise.all(
       options.sources
         .map((n) => this.sources[n])
         .filter((v) => v)
@@ -213,13 +219,13 @@ export class Ddc {
               )),
           };
         }),
-    );
+    ));
     // Todo: Merge gatherCandidates by completePos like deoplete.
     const completePos = Math.min(
-      ...sources.map(({ completePos }) => completePos),
+      ...results.map(({ completePos }) => completePos),
     );
     const candidates = concatStreams<DdcCandidate[]>(
-      ...sources.map(({ candidates }) => candidates),
+      ...results.map(({ candidates }) => candidates),
     );
     return { completePos, candidates };
   }
