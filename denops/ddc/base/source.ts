@@ -1,4 +1,4 @@
-import { Candidate, Context, SourceOptions } from "../types.ts";
+import { Candidate, Context, DdcOptions, SourceOptions } from "../types.ts";
 import { Denops } from "../deps.ts";
 
 export abstract class BaseSource {
@@ -7,10 +7,13 @@ export abstract class BaseSource {
   getCompletePosition(
     _denops: Denops,
     context: Context,
-    _options: SourceOptions,
-    _params: Record<string, unknown>,
+    options: DdcOptions,
+    _sourceOptions: SourceOptions,
+    _sourceParams: Record<string, unknown>,
   ): Promise<number> {
-    const matchPos = context.input.search(/\w+$/);
+    const matchPos = context.input.search(
+      new RegExp(options.keywordPattern + "$"),
+    );
     const completePos = matchPos != null ? matchPos : -1;
     return Promise.resolve(completePos);
   }
@@ -18,8 +21,9 @@ export abstract class BaseSource {
   abstract gatherCandidates(
     denops: Denops,
     context: Context,
-    options: SourceOptions,
-    params: Record<string, unknown>,
+    options: DdcOptions,
+    sourceOptions: SourceOptions,
+    sourceParams: Record<string, unknown>,
   ): Promise<Candidate[]>;
 
   params(): Record<string, unknown> {

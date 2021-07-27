@@ -1,4 +1,4 @@
-import { Candidate, Context, FilterOptions } from "../types.ts";
+import { Candidate, Context, DdcOptions, FilterOptions } from "../types.ts";
 import { Denops } from "../deps.ts";
 
 export abstract class BaseFilter {
@@ -7,15 +7,17 @@ export abstract class BaseFilter {
   async onEvent(
     _denops: Denops,
     _context: Context,
-    _options: FilterOptions,
-    _params: Record<string, unknown>,
+    _options: DdcOptions,
+    _filterOptions: FilterOptions,
+    _filterParams: Record<string, unknown>,
   ): Promise<void> {}
 
   abstract filter(
     denops: Denops,
     context: Context,
-    options: FilterOptions,
-    params: Record<string, unknown>,
+    options: DdcOptions,
+    filterOptions: FilterOptions,
+    filterParams: Record<string, unknown>,
     candidates: Candidate[],
   ): Promise<Candidate[]>;
 

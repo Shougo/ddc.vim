@@ -37,6 +37,7 @@ export function foldMerge<T>(
 export function defaultDdcOptions(): DdcOptions {
   return {
     completionMode: "popupmenu",
+    keywordPattern: "\\w+",
     sources: [],
     sourceOptions: {},
     sourceParams: {},

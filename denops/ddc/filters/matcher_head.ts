@@ -1,4 +1,10 @@
-import { BaseFilter, Candidate, Context, FilterOptions } from "../types.ts";
+import {
+  BaseFilter,
+  Candidate,
+  Context,
+  DdcOptions,
+  FilterOptions,
+} from "../types.ts";
 import { assertEquals, Denops } from "../deps.ts";
 
 function lastWord(input: string): string {
@@ -10,8 +16,9 @@ export class Filter extends BaseFilter {
   filter(
     _denops: Denops,
     context: Context,
-    _options: FilterOptions,
-    _params: Record<string, unknown>,
+    _options: DdcOptions,
+    _filterOptions: FilterOptions,
+    _filterParams: Record<string, unknown>,
     candidates: Candidate[],
   ): Promise<Candidate[]> {
     const completeStr = lastWord(context.input);

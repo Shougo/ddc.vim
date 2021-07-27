@@ -1,4 +1,10 @@
-import { BaseFilter, Candidate, Context, FilterOptions } from "../types.ts";
+import {
+  BaseFilter,
+  Candidate,
+  Context,
+  DdcOptions,
+  FilterOptions,
+} from "../types.ts";
 import { Denops } from "../deps.ts";
 import { imap, range } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
 
@@ -21,8 +27,9 @@ export class Filter extends BaseFilter {
   async onEvent(
     denops: Denops,
     _context: Context,
-    _options: FilterOptions,
-    _params: Record<string, unknown>,
+    _options: DdcOptions,
+    _filterOptions: FilterOptions,
+    _filterParams: Record<string, unknown>,
   ): Promise<void> {
     const pageSize = 500;
     const maxSize = LINES_MAX;
@@ -59,8 +66,9 @@ export class Filter extends BaseFilter {
   async filter(
     denops: Denops,
     context: Context,
-    _options: FilterOptions,
-    _params: Record<string, unknown>,
+    _options: DdcOptions,
+    _filterOptions: FilterOptions,
+    _filterParams: Record<string, unknown>,
     candidates: Candidate[],
   ): Promise<Candidate[]> {
     const match = context.input.toLowerCase().match(/\w*$/);

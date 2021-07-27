@@ -116,7 +116,7 @@ export class Ddc {
           options.filterParams,
           filter,
         );
-        await filter.onEvent(denops, context, o, p);
+        await filter.onEvent(denops, context, options, o, p);
       }
     }
   }
@@ -136,18 +136,21 @@ export class Ddc {
       completePos = await source.getCompletePosition(
         denops,
         context,
+        options,
         sourceOptions,
         sourceParams,
       );
       const sourceCandidates = await source.gatherCandidates(
         denops,
         context,
+        options,
         sourceOptions,
         sourceParams,
       );
       const filterCandidates = await this.filterCandidates(
         denops,
         context,
+        options,
         sourceOptions,
         options.filterOptions,
         options.filterParams,
@@ -173,6 +176,7 @@ export class Ddc {
   private async filterCandidates(
     denops: Denops,
     context: Context,
+    options: DdcOptions,
     sourceOptions: SourceOptions,
     filterOptions: Record<string, Partial<FilterOptions>>,
     filterParams: Record<string, Partial<Record<string, unknown>>>,
@@ -186,11 +190,11 @@ export class Ddc {
 
     for (const matcher of matchers) {
       const [o, p] = filterArgs(filterOptions, filterParams, matcher);
-      cdd = await matcher.filter(denops, context, o, p, cdd);
+      cdd = await matcher.filter(denops, context, options, o, p, cdd);
     }
     for (const sorter of sorters) {
       const [o, p] = filterArgs(filterOptions, filterParams, sorter);
-      cdd = await sorter.filter(denops, context, o, p, cdd);
+      cdd = await sorter.filter(denops, context, options, o, p, cdd);
     }
 
     // Filter by maxCandidates
@@ -198,7 +202,7 @@ export class Ddc {
 
     for (const converter of converters) {
       const [o, p] = filterArgs(filterOptions, filterParams, converter);
-      cdd = await converter.filter(denops, context, o, p, cdd);
+      cdd = await converter.filter(denops, context, options, o, p, cdd);
     }
     return cdd;
   }
@@ -236,8 +240,9 @@ Deno.test("sourceArgs", () => {
     gatherCandidates(
       _denops: Denops,
       _context: Context,
-      _options: SourceOptions,
-      _params: Record<string, unknown>,
+      _options: DdcOptions,
+      _sourceOptions: SourceOptions,
+      _sourceParams: Record<string, unknown>,
     ): Promise<Candidate[]> {
       return Promise.resolve([]);
     }
@@ -282,8 +287,9 @@ Deno.test("filterArgs", () => {
     filter(
       _denops: Denops,
       _context: Context,
-      _options: FilterOptions,
-      _params: Record<string, unknown>,
+      _options: DdcOptions,
+      _filterOptions: FilterOptions,
+      _filterParams: Record<string, unknown>,
       _candidates: Candidate[],
     ): Promise<Candidate[]> {
       return Promise.resolve([]);

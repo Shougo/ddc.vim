@@ -82,6 +82,14 @@ completionMode
 
 		Default value: "popupmenu"
 
+					*ddc-options-keyword_pattern*
+keyword_pattern
+		It defines the keyword pattern for completion.
+		This is regular expression string.
+		Note: It is JavaScript regexp.
+
+		Default value: '\w+'
+
 							*ddc-options-sources*
 sources
 		It is a list of registered source names.  You have to select

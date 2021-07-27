@@ -16,6 +16,7 @@ type CompletionMode = "inline" | "popupmenu" | "manual";
 
 export type DdcOptions = {
   completionMode: CompletionMode;
+  keywordPattern: string;
   sources: SourceName[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;

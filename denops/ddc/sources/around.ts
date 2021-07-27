@@ -1,4 +1,10 @@
-import { BaseSource, Candidate, Context, SourceOptions } from "../types.ts";
+import {
+  BaseSource,
+  Candidate,
+  Context,
+  DdcOptions,
+  SourceOptions,
+} from "../types.ts";
 import { assertEquals, Denops } from "../deps.ts";
 import { imap, range } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
 
@@ -26,11 +32,12 @@ export class Source extends BaseSource {
   async gatherCandidates(
     denops: Denops,
     _context: Context,
-    _options: SourceOptions,
-    params: Record<string, unknown>,
+    _ddcOptions: DdcOptions,
+    _sourceOptions: SourceOptions,
+    sourceParams: Record<string, unknown>,
   ): Promise<Candidate[]> {
     const pageSize = 500;
-    const p = params as unknown as Params;
+    const p = sourceParams as unknown as Params;
     const maxSize = p.maxSize;
     const currentLine = (await denops.call("line", ".")) as number;
     const minLines = Math.max(1, currentLine - maxSize);
