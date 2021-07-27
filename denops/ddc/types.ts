@@ -1,3 +1,4 @@
+import { autocmd } from "./deps.ts";
 export { BaseSource } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
 
@@ -15,6 +16,7 @@ export type Context = {
 type CompletionMode = "inline" | "popupmenu" | "manual";
 
 export type DdcOptions = {
+  autoCompleteEvents: autocmd.AutocmdEvent[];
   completionMode: CompletionMode;
   keywordPattern: string;
   sources: SourceName[];

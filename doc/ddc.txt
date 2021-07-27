@@ -70,6 +70,13 @@ For example:
 
 The set of available options follows.
 
+					*ddc-options-autoCompleteEvents*
+autoCompleteEvents
+		The auto completion fired events.  It must be list of
+		|autocmd-events| string.
+
+		Default value: ["InsertEnter", "TextChangedI", "TextChangedP"]
+
 						*ddc-options-completionMode*
 completionMode
 		The completion mode. It must be following string.

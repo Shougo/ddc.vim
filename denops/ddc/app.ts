@@ -54,7 +54,7 @@ export async function main(denops: Denops) {
       return await contextBuilder._cacheWorld(denops, arg1 as string);
     },
     async onEvent(arg1: unknown): Promise<void> {
-      const event = arg1 as string;
+      const event = arg1 as autocmd.AutocmdEvent;
       if (event == "InsertLeave") {
         await denops.call("ddc#_clear");
         return;
@@ -70,6 +70,10 @@ export async function main(denops: Denops) {
           context,
           options,
         );
+      }
+
+      if (options.autoCompleteEvents.indexOf(event) < 0) {
+        return;
       }
 
       const [completePos, candidates] = await ddc.gatherResults(
