@@ -275,6 +275,13 @@ mark		(String)
 
 		Default: ""
 
+				    *ddc-source-option-maxAutoCompleteLength*
+maxAutoCompleteLength	(Integer)
+		Ignored length of keyword for auto completion.
+		It is useful to edit BASE64 files.
+
+		Default: 80
+
 				    	*ddc-source-option-maxCandidates*
 maxCandidates	(Integer)
 		If there are more candidates than this value, ddc will ignore
@@ -289,6 +296,12 @@ matchers	([string])
 		here.
 
 		Default: []
+
+				    *ddc-source-option-minAutoCompleteLength*
+minAutoCompleteLength	(Integer)
+		Length of keyword required for auto completion.
+
+		Default: 2
 
 				    		*ddc-source-option-sorters*
 sorters		([string])

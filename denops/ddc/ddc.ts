@@ -140,6 +140,13 @@ export class Ddc {
         sourceOptions,
         sourceParams,
       );
+      const completeStr = context.input.slice(completePos);
+      if (
+        completeStr.length < sourceOptions.minAutoCompleteLength ||
+        completeStr.length > sourceOptions.maxAutoCompleteLength
+      ) {
+        continue;
+      }
       const sourceCandidates = await source.gatherCandidates(
         denops,
         context,

@@ -33,11 +33,13 @@ export abstract class BaseSource {
 
 export function defaultSourceOptions(): SourceOptions {
   return {
-    mark: "",
-    maxCandidates: 500,
-    matchers: [],
-    sorters: [],
     converters: [],
+    mark: "",
+    matchers: [],
+    maxAutoCompleteLength: 80,
+    maxCandidates: 500,
+    minAutoCompleteLength: 2,
+    sorters: [],
   };
 }
 

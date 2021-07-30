@@ -18,20 +18,22 @@ type CompletionMode = "inline" | "popupmenu" | "manual";
 export type DdcOptions = {
   autoCompleteEvents: autocmd.AutocmdEvent[];
   completionMode: CompletionMode;
-  keywordPattern: string;
-  sources: SourceName[];
-  sourceOptions: Record<SourceName, Partial<SourceOptions>>;
-  sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;
   filterOptions: Record<string, Partial<FilterOptions>>;
   filterParams: Record<string, Partial<Record<string, unknown>>>;
+  keywordPattern: string;
+  sourceOptions: Record<SourceName, Partial<SourceOptions>>;
+  sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;
+  sources: SourceName[];
 };
 
 export type SourceOptions = {
-  mark: string;
-  maxCandidates: number;
-  matchers: string[];
-  sorters: string[];
   converters: string[];
+  mark: string;
+  matchers: string[];
+  maxAutoCompleteLength: number;
+  maxCandidates: number;
+  minAutoCompleteLength: number;
+  sorters: string[];
 };
 
 export type FilterOptions = {

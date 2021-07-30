@@ -38,12 +38,12 @@ export function defaultDdcOptions(): DdcOptions {
   return {
     autoCompleteEvents: ["InsertEnter", "TextChangedI", "TextChangedP"],
     completionMode: "popupmenu",
-    keywordPattern: "\\w+",
-    sources: [],
-    sourceOptions: {},
-    sourceParams: {},
     filterOptions: {},
     filterParams: {},
+    keywordPattern: "\\w+",
+    sourceOptions: {},
+    sourceParams: {},
+    sources: [],
   };
 }
 
@@ -173,23 +173,23 @@ class Custom {
 // Schema of the state of buffers, etc
 type World = {
   bufnr: number;
-  filetype: string;
-  event: string;
-  mode: string;
-  input: string;
   changedByCompletion: boolean;
+  event: string;
+  filetype: string;
+  input: string;
   isLmap: boolean;
+  mode: string;
 };
 
 function initialWorld(): World {
   return {
     bufnr: 0,
-    filetype: "",
-    event: "",
-    mode: "",
-    input: "",
     changedByCompletion: false,
+    event: "",
+    filetype: "",
+    input: "",
     isLmap: false,
+    mode: "",
   };
 }
 

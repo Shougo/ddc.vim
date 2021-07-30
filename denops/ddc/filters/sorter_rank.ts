@@ -5,7 +5,7 @@ import {
   DdcOptions,
   FilterOptions,
 } from "../types.ts";
-import { Denops } from "../deps.ts";
+import { assertEquals, Denops } from "../deps.ts";
 import { imap, range } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
 
 function splitPages(
@@ -17,6 +17,27 @@ function splitPages(
     range(minLines, /* < */ maxLines + 1, size),
     (lnum: number) => [lnum, /* <= */ lnum + size - 1],
   );
+}
+
+function calcScore(
+  str: string,
+  completeStr: string,
+  cache: Record<string, number>,
+  linenr: number,
+): number {
+  let score = 0;
+  if (str.indexOf(completeStr) == 0) {
+    score += 100;
+  } else if (str.toLowerCase().indexOf(completeStr.toLowerCase()) == 0) {
+    score += 30;
+  }
+  score -= str.length * 2;
+
+  if (str in cache) {
+    score += LINES_MAX - Math.abs(cache[str] - linenr);
+  }
+
+  return score;
 }
 
 const LINES_MAX = 150;
@@ -49,7 +70,7 @@ export class Filter extends BaseFilter {
     let linenr = minLines;
     for (const line of pages.flatMap((page) => page)) {
       for (const match of line.matchAll(/[a-zA-Z0-9_]+/g)) {
-        const word = match[0].toLowerCase();
+        const word = match[0];
         if (
           word in this._cache &&
           Math.abs(this._cache[word] - currentLine) >=
@@ -57,7 +78,7 @@ export class Filter extends BaseFilter {
         ) {
           continue;
         }
-        this._cache[match[0]] = linenr;
+        this._cache[word] = linenr;
       }
       linenr += 1;
     }
@@ -71,25 +92,17 @@ export class Filter extends BaseFilter {
     _filterParams: Record<string, unknown>,
     candidates: Candidate[],
   ): Promise<Candidate[]> {
-    const match = context.input.toLowerCase().match(/\w*$/);
+    const match = context.input.match(/\w*$/);
     const completeStr = match ? match[0] : "";
     const linenr = (await denops.call("line", ".")) as number;
-    const cache = this._cache;
 
     return Promise.resolve(candidates.sort((a, b) => {
-      function compare(x: Candidate): number {
-        const lower = x.word.toLowerCase();
-        const matched = lower.indexOf(completeStr);
-        let score = -matched * 40;
-
-        if (lower in cache) {
-          const mru = Math.abs(cache[lower] - linenr) - LINES_MAX;
-          score += mru * 10;
-        }
-
-        return score;
-      }
-      return compare(a) - compare(b);
+      return calcScore(b.word, completeStr, this._cache, linenr) -
+        calcScore(a.word, completeStr, this._cache, linenr);
     }));
   }
 }
+
+Deno.test("calcScore", () => {
+  assertEquals(calcScore("", "", {}, 0), 100);
+});
