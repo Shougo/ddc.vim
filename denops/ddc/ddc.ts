@@ -161,6 +161,7 @@ export class Ddc {
         sourceOptions,
         options.filterOptions,
         options.filterParams,
+        completeStr,
         sourceCandidates,
       );
       const result: DdcCandidate[] = filterCandidates.map((c: Candidate) => (
@@ -187,6 +188,7 @@ export class Ddc {
     sourceOptions: SourceOptions,
     filterOptions: Record<string, Partial<FilterOptions>>,
     filterParams: Record<string, Partial<Record<string, unknown>>>,
+    completeStr: string,
     cdd: Candidate[],
   ): Promise<Candidate[]> {
     const foundFilters = (names: string[]) =>
@@ -197,11 +199,27 @@ export class Ddc {
 
     for (const matcher of matchers) {
       const [o, p] = filterArgs(filterOptions, filterParams, matcher);
-      cdd = await matcher.filter(denops, context, options, o, p, cdd);
+      cdd = await matcher.filter(
+        denops,
+        context,
+        options,
+        o,
+        p,
+        completeStr,
+        cdd,
+      );
     }
     for (const sorter of sorters) {
       const [o, p] = filterArgs(filterOptions, filterParams, sorter);
-      cdd = await sorter.filter(denops, context, options, o, p, cdd);
+      cdd = await sorter.filter(
+        denops,
+        context,
+        options,
+        o,
+        p,
+        completeStr,
+        cdd,
+      );
     }
 
     // Filter by maxCandidates
@@ -209,7 +227,15 @@ export class Ddc {
 
     for (const converter of converters) {
       const [o, p] = filterArgs(filterOptions, filterParams, converter);
-      cdd = await converter.filter(denops, context, options, o, p, cdd);
+      cdd = await converter.filter(
+        denops,
+        context,
+        options,
+        o,
+        p,
+        completeStr,
+        cdd,
+      );
     }
     return cdd;
   }
@@ -297,6 +323,7 @@ Deno.test("filterArgs", () => {
       _options: DdcOptions,
       _filterOptions: FilterOptions,
       _filterParams: Record<string, unknown>,
+      _completeStr: string,
       _candidates: Candidate[],
     ): Promise<Candidate[]> {
       return Promise.resolve([]);

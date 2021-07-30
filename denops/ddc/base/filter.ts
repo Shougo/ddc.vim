@@ -18,6 +18,7 @@ export abstract class BaseFilter {
     options: DdcOptions,
     filterOptions: FilterOptions,
     filterParams: Record<string, unknown>,
+    completeStr: string,
     candidates: Candidate[],
   ): Promise<Candidate[]>;
 

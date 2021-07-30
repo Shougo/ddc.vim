@@ -86,14 +86,13 @@ export class Filter extends BaseFilter {
 
   async filter(
     denops: Denops,
-    context: Context,
+    _context: Context,
     _options: DdcOptions,
     _filterOptions: FilterOptions,
     _filterParams: Record<string, unknown>,
+    completeStr: string,
     candidates: Candidate[],
   ): Promise<Candidate[]> {
-    const match = context.input.match(/\w*$/);
-    const completeStr = match ? match[0] : "";
     const linenr = (await denops.call("line", ".")) as number;
 
     return Promise.resolve(candidates.sort((a, b) => {
