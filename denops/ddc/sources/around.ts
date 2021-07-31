@@ -5,7 +5,7 @@ import {
   DdcOptions,
   SourceOptions,
 } from "../types.ts";
-import { assertEquals, Denops } from "../deps.ts";
+import { assertEquals, batch, Denops, fn } from "../deps.ts";
 import { imap, range } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
 
 function splitPages(
@@ -39,22 +39,21 @@ export class Source extends BaseSource {
     const pageSize = 500;
     const p = sourceParams as unknown as Params;
     const maxSize = p.maxSize;
-    const currentLine = (await denops.call("line", ".")) as number;
+    const currentLine = await fn.line(denops, ".");
     const minLines = Math.max(1, currentLine - maxSize);
     const maxLines = Math.min(
-      (await denops.call("line", "$")) as number,
+      await fn.line(denops, "$"),
       currentLine + maxSize,
     );
-    const pages = (await Promise.all(
-      imap(
-        splitPages(minLines, maxLines, pageSize),
-        ([start, end]: [number, number]) => denops.call("getline", start, end),
-      ),
-    )) as string[][];
-    const lines = pages.flatMap((page) => page);
-
-    const candidates: Candidate[] = allWords(lines).map((word) => ({ word }));
-    return candidates;
+    const ps = await batch(denops, (helper) => {
+      for (const [s, e] of splitPages(minLines, maxLines, pageSize)) {
+        fn.getline(helper, s, e);
+      }
+    }) as string[][];
+    const cs: Candidate[] = [
+      ...new Set(allWords(ps.flatMap((p) => p)).map((word) => ({ word }))),
+    ];
+    return cs;
   }
 
   params(): Record<string, unknown> {

@@ -77,6 +77,13 @@ export class Ddc {
   private sources: Record<string, BaseSource> = {};
   private filters: Record<string, BaseFilter> = {};
 
+  private foundSources(names: string[]): BaseSource[] {
+    return names.map((n) => this.sources[n]).filter((v) => v);
+  }
+  private foundFilters(names: string[]): BaseFilter[] {
+    return names.map((n) => this.filters[n]).filter((v) => v);
+  }
+
   async registerFilter(path: string, name: string) {
     const mod = await import(path);
     const filter = new mod.Filter();
@@ -95,15 +102,9 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<void> {
-    const sources = options.sources.map((name) => this.sources[name])
-      .filter((x) => x);
-
-    const foundFilters = (names: string[]) =>
-      names.map((name) => this.filters[name]).filter((x) => x);
-
-    for (const source of sources) {
+    for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, _] = sourceArgs(options, source);
-      const filters = foundFilters(
+      const filters = this.foundFilters(
         sourceOptions.matchers.concat(
           sourceOptions.sorters,
           sourceOptions.converters,
@@ -126,58 +127,61 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<[number, DdcCandidate[]]> {
-    let completePos = -1;
-    let candidates: DdcCandidate[] = [];
-    const sources = options.sources.map((name) => this.sources[name])
-      .filter((x) => x);
-
-    for (const source of sources) {
-      const [sourceOptions, sourceParams] = sourceArgs(options, source);
-      completePos = await source.getCompletePosition(
+    const sources = this.foundSources(options.sources)
+      .map((s) => [s, ...sourceArgs(options, s)] as const);
+    const rs = await Promise.all(sources.map(async ([s, o, p]) => {
+      const completePos = await s.getCompletePosition(
         denops,
         context,
         options,
-        sourceOptions,
-        sourceParams,
+        o,
+        p,
       );
       const completeStr = context.input.slice(completePos);
       if (
-        completeStr.length < sourceOptions.minAutoCompleteLength ||
-        completeStr.length > sourceOptions.maxAutoCompleteLength
+        completeStr.length < o.minAutoCompleteLength ||
+        completeStr.length > o.maxAutoCompleteLength
       ) {
-        continue;
+        return;
       }
-      const sourceCandidates = await source.gatherCandidates(
+      const scs = await s.gatherCandidates(
         denops,
         context,
         options,
-        sourceOptions,
-        sourceParams,
+        o,
+        p,
       );
-      const filterCandidates = await this.filterCandidates(
+      const fcs = await this.filterCandidates(
         denops,
         context,
         options,
-        sourceOptions,
+        o,
         options.filterOptions,
         options.filterParams,
         completeStr,
-        sourceCandidates,
+        scs,
       );
-      const result: DdcCandidate[] = filterCandidates.map((c: Candidate) => (
+      const candidates = fcs.map((c) => (
         {
           ...c,
           abbr: formatAbbr(c.word, c.abbr),
-          source: source.name,
+          source: s.name,
           icase: true,
           equal: true,
-          menu: formatMenu(sourceOptions.mark, c.menu),
+          menu: formatMenu(o.mark, c.menu),
         }
       ));
-
-      candidates = candidates.concat(result);
-    }
-
+      return [completePos, candidates] as const;
+    }));
+    // Remove invalid source and prepend default result ([0, []])
+    const fs = [[0, [] as DdcCandidate[]], ...rs.filter((v) => v)] as [
+      number,
+      DdcCandidate[],
+    ][];
+    // XXX: Should't we use the smallest completePos instead?
+    const completePos = fs[fs.length - 1][0];
+    // Flatten candidates
+    const candidates = fs.flatMap(([_, cs]) => cs);
     return [completePos, candidates];
   }
 
@@ -191,11 +195,9 @@ export class Ddc {
     completeStr: string,
     cdd: Candidate[],
   ): Promise<Candidate[]> {
-    const foundFilters = (names: string[]) =>
-      names.map((name) => this.filters[name]).filter((x) => x);
-    const matchers = foundFilters(sourceOptions.matchers);
-    const sorters = foundFilters(sourceOptions.sorters);
-    const converters = foundFilters(sourceOptions.converters);
+    const matchers = this.foundFilters(sourceOptions.matchers);
+    const sorters = this.foundFilters(sourceOptions.sorters);
+    const converters = this.foundFilters(sourceOptions.converters);
 
     for (const matcher of matchers) {
       const [o, p] = filterArgs(filterOptions, filterParams, matcher);
