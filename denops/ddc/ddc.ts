@@ -77,6 +77,13 @@ export class Ddc {
   private sources: Record<string, BaseSource> = {};
   private filters: Record<string, BaseFilter> = {};
 
+  private foundSources(names: string[]): BaseSource[] {
+    return names.map((n) => this.sources[n]).filter((v) => v);
+  }
+  private foundFilters(names: string[]): BaseFilter[] {
+    return names.map((n) => this.filters[n]).filter((v) => v);
+  }
+
   async registerFilter(path: string, name: string) {
     const mod = await import(path);
     const filter = new mod.Filter();
@@ -95,15 +102,9 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<void> {
-    const sources = options.sources.map((name) => this.sources[name])
-      .filter((x) => x);
-
-    const foundFilters = (names: string[]) =>
-      names.map((name) => this.filters[name]).filter((x) => x);
-
-    for (const source of sources) {
+    for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, _] = sourceArgs(options, source);
-      const filters = foundFilters(
+      const filters = this.foundFilters(
         sourceOptions.matchers.concat(
           sourceOptions.sorters,
           sourceOptions.converters,
@@ -128,10 +129,8 @@ export class Ddc {
   ): Promise<[number, DdcCandidate[]]> {
     let completePos = -1;
     let candidates: DdcCandidate[] = [];
-    const sources = options.sources.map((name) => this.sources[name])
-      .filter((x) => x);
 
-    for (const source of sources) {
+    for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
       completePos = await source.getCompletePosition(
         denops,
@@ -191,11 +190,9 @@ export class Ddc {
     completeStr: string,
     cdd: Candidate[],
   ): Promise<Candidate[]> {
-    const foundFilters = (names: string[]) =>
-      names.map((name) => this.filters[name]).filter((x) => x);
-    const matchers = foundFilters(sourceOptions.matchers);
-    const sorters = foundFilters(sourceOptions.sorters);
-    const converters = foundFilters(sourceOptions.converters);
+    const matchers = this.foundFilters(sourceOptions.matchers);
+    const sorters = this.foundFilters(sourceOptions.sorters);
+    const converters = this.foundFilters(sourceOptions.converters);
 
     for (const matcher of matchers) {
       const [o, p] = filterArgs(filterOptions, filterParams, matcher);
