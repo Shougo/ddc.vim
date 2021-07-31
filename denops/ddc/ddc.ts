@@ -180,7 +180,7 @@ export class Ddc {
 
     // Remove invalid source
     const fs = rs.filter(<T>(v?: T): v is T => !!v);
-    if (fs.length == 0) {
+    if (!fs.length) {
       return [-1, []];
     }
 
