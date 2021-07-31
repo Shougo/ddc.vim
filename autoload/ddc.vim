@@ -36,7 +36,10 @@ function! ddc#complete() abort
 endfunction
 
 function! ddc#_complete() abort
-  call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+  if g:ddc#_complete_pos >= 0
+    call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+  endif
+
   return ''
 endfunction
 
