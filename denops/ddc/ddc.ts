@@ -173,8 +173,8 @@ export class Ddc {
       ));
       return [completePos, candidates] as const;
     }));
-    // Remove invalid source and add default result ([0, []])
-    const fs = [...rs.filter((v) => v), [0, [] as DdcCandidate[]]] as [number, DdcCandidate[]][];
+    // Remove invalid source and prepend default result ([0, []])
+    const fs = [[0, [] as DdcCandidate[]], ...rs.filter((v) => v)] as [number, DdcCandidate[]][];
     // XXX: Should't we use the smallest completePos instead?
     const completePos = fs[fs.length - 1][0];
     // Flatten candidates
