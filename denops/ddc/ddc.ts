@@ -139,6 +139,7 @@ export class Ddc {
       );
       const completeStr = context.input.slice(completePos);
       if (
+        completePos < 0 ||
         completeStr.length < o.minAutoCompleteLength ||
         completeStr.length > o.maxAutoCompleteLength
       ) {
@@ -171,15 +172,14 @@ export class Ddc {
           menu: formatMenu(o.mark, c.menu),
         }
       ));
+      if (!candidates.length) {
+        return;
+      }
       return [completePos, candidates] as const;
     }));
 
     // Remove invalid source
-    const fs = [...rs.filter((v) => v && v[0] >= 0 && v[1].length > 0)] as [
-      number,
-      DdcCandidate[],
-    ][];
-
+    const fs = rs.filter(<T>(v?: T): v is T => !!v);
     if (fs.length == 0) {
       return [-1, []];
     }
