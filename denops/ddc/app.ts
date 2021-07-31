@@ -85,8 +85,8 @@ export async function main(denops: Denops) {
       await (async function write() {
         const pumvisible = await denops.call("pumvisible");
         await batch(denops, (helper) => {
-          vars.g.set(denops, "ddc#_complete_pos", completePos),
-            vars.g.set(helper, "ddc#_candidates", candidates);
+          vars.g.set(denops, "ddc#_complete_pos", completePos);
+          vars.g.set(helper, "ddc#_candidates", candidates);
           if (options.completionMode == "popupmenu" || pumvisible) {
             helper.call("ddc#complete");
           } else if (options.completionMode == "inline") {
