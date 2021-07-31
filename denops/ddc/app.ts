@@ -1,4 +1,4 @@
-import { autocmd, Denops, ensureObject, vars } from "./deps.ts";
+import { autocmd, batch, Denops, ensureObject, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
 import { DdcOptions } from "./types.ts";
@@ -83,18 +83,18 @@ export async function main(denops: Denops) {
       );
 
       await (async function write() {
-        await Promise.all([
-          vars.g.set(denops, "ddc#_complete_pos", completePos),
-          vars.g.set(denops, "ddc#_candidates", candidates),
-        ]);
         const pumvisible = await denops.call("pumvisible");
-        if (options.completionMode == "popupmenu" || pumvisible) {
-          await denops.call("ddc#complete");
-        } else if (options.completionMode == "inline") {
-          await denops.call("ddc#_inline");
-        } else if (options.completionMode == "manual") {
-          // through
-        }
+        await batch(denops, (helper) => {
+          vars.g.set(denops, "ddc#_complete_pos", completePos),
+          vars.g.set(helper, "ddc#_candidates", candidates);
+          if (options.completionMode == "popupmenu" || pumvisible) {
+            helper.call("ddc#complete");
+          } else if (options.completionMode == "inline") {
+            helper.call("ddc#_inline");
+          } else if (options.completionMode == "manual") {
+            // through
+          }
+        });
       })();
     },
   };
