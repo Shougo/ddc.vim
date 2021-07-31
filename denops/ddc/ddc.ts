@@ -127,56 +127,58 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<[number, DdcCandidate[]]> {
-    let completePos = -1;
-    let candidates: DdcCandidate[] = [];
-
-    for (const source of this.foundSources(options.sources)) {
-      const [sourceOptions, sourceParams] = sourceArgs(options, source);
-      completePos = await source.getCompletePosition(
+    const sources = this.foundSources(options.sources)
+      .map((s) => [s, ...sourceArgs(options, s)] as const);
+    const rs = await Promise.all(sources.map(async ([s, o, p]) => {
+      const completePos = await s.getCompletePosition(
         denops,
         context,
         options,
-        sourceOptions,
-        sourceParams,
+        o,
+        p,
       );
       const completeStr = context.input.slice(completePos);
       if (
-        completeStr.length < sourceOptions.minAutoCompleteLength ||
-        completeStr.length > sourceOptions.maxAutoCompleteLength
+        completeStr.length < o.minAutoCompleteLength ||
+        completeStr.length > o.maxAutoCompleteLength
       ) {
-        continue;
+        return;
       }
-      const sourceCandidates = await source.gatherCandidates(
+      const scs = await s.gatherCandidates(
         denops,
         context,
         options,
-        sourceOptions,
-        sourceParams,
+        o,
+        p,
       );
-      const filterCandidates = await this.filterCandidates(
+      const fcs = await this.filterCandidates(
         denops,
         context,
         options,
-        sourceOptions,
+        o,
         options.filterOptions,
         options.filterParams,
         completeStr,
-        sourceCandidates,
+        scs,
       );
-      const result: DdcCandidate[] = filterCandidates.map((c: Candidate) => (
+      const candidates = fcs.map((c) => (
         {
           ...c,
           abbr: formatAbbr(c.word, c.abbr),
-          source: source.name,
+          source: s.name,
           icase: true,
           equal: true,
-          menu: formatMenu(sourceOptions.mark, c.menu),
+          menu: formatMenu(o.mark, c.menu),
         }
       ));
-
-      candidates = candidates.concat(result);
-    }
-
+      return [completePos, candidates] as const;
+    }));
+    // Remove invalid source and add default result ([0, []])
+    const fs = [...rs.filter((v) => v) as [number, DdcCandidate[]][], [0, []]];
+    // XXX: Should't we use the smallest completePos instead?
+    const completePos = fs[fs.length - 1][0];
+    // Flatten candidates
+    const candidates = fs.flatMap(([_, cs]) => cs);
     return [completePos, candidates];
   }
 
