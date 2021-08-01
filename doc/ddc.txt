@@ -232,6 +232,7 @@ EXAMPLES						*ddc-examples*
 
 	" Use matcher_head and sorter_rank.
 	" https://github.com/Shougo/ddc-matcher_head
+	" https://github.com/Shougo/ddc-sorter_rank
 	call ddc#custom#patch_global('sourceOptions', {
 	      \ '_': {
 	      \   'matchers': ['matcher_head'],
@@ -240,7 +241,7 @@ EXAMPLES						*ddc-examples*
 
 	" Change source options
 	call ddc#custom#patch_global('sourceOptions', {
-	      \ 'around': {'matchers': ['matcher_head'], 'mark': 'A'},
+	      \ 'around': {'mark': 'A'},
 	      \ })
 	call ddc#custom#patch_global('sourceParams', {
 	      \ 'around': {'maxSize': 500},
@@ -263,7 +264,7 @@ EXAMPLES						*ddc-examples*
 ==============================================================================
 SOURCES							*ddc-sources*
 
-The sources are not bundled in ddc.vim.  You need to install them
+Note: The sources are not bundled in ddc.vim.  You need to install them
 to use ddc.vim.  Please search them by https://github.com/topics/ddc-source
 
 Note: The default sources are empty.  You need to
@@ -342,12 +343,11 @@ Once candidates have been supplied by one or more sources, they are passed
 through the filters, which are matchers, converters or sorters. Sources can
 have specific filters.
 
+Note: The filters are not bundled in ddc.vim.  You need to install them
+to use ddc.vim.  Please search them by https://github.com/topics/ddc-filter
+
 Note: The default matchers/sorters/converters are empty.  You need to
 configure them to use ddc.
-
-				    	    	*ddc-filter-sorter_rank*
-sorter_rank	Matched rank order sorter.  The higher the head matched word
-		or already typed or inserted word.
 
 ------------------------------------------------------------------------------
 FILTER OPTIONS						*ddc-filter-options*
@@ -428,6 +428,7 @@ COMPATIBILITY						*ddc-compatibility*
 2021.08.01
 * Split "around" source
 * Split "matcher_head" filter
+* Split "sorter_rank" filter
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:

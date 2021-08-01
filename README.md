@@ -1,6 +1,6 @@
 # ddc.vim
 
-Note: It is alpha version!!  You should not use it.
+Note: It is alpha version!!  You can test it.
 
 > Dark deno powered completion framework for neovim/Vim8
 
@@ -82,16 +82,19 @@ ddc requires both Deno and denops.vim.
 " Use around source.
 " https://github.com/Shougo/ddc-around
 call ddc#custom#patch_global('sources', ['around'])
+
 " Use matcher_head and sorter_rank.
 " https://github.com/Shougo/ddc-matcher_head
+" https://github.com/Shougo/ddc-sorter_rank
 call ddc#custom#patch_global('sourceOptions', {
       \ '_': {
       \   'matchers': ['matcher_head'],
       \   'sorters': ['sorter_rank']},
       \ })
+
 " Change source options
 call ddc#custom#patch_global('sourceOptions', {
-      \ 'around': {'matchers': ['matcher_head'], 'mark': 'A'},
+      \ 'around': {'mark': 'A'},
       \ })
 call ddc#custom#patch_global('sourceParams', {
       \ 'around': {'maxSize': 500},
@@ -123,6 +126,6 @@ See `:help ddc-options` for a complete list of options.
 * [x] Implement source orders
 * [x] Implement sorter_rank
 * [x] virtual text completion mode
-* [ ] Split sources and filters
+* [x] Split sources and filters
 * [ ] iskeyword support
 * [ ] Manual completion support
