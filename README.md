@@ -23,6 +23,7 @@ ddc will display completions via `complete()` by default.
 
 <!-- vim-markdown-toc -->
 
+
 ## Introduction
 
 I have chosen denops.vim framework to create new auto completion plugin.
@@ -65,6 +66,7 @@ call dein#add('vim-denops/denops.vim')
 call dein#end()
 ```
 
+
 ### Requirements
 
 ddc requires both Deno and denops.vim.
@@ -72,13 +74,15 @@ ddc requires both Deno and denops.vim.
 - <https://deno.land/>
 - <https://github.com/vim-denops/denops.vim>
 
+
 ## Configuration
 
 ```vim
 " Customize global settings
 " Use around source.
+" https://github.com/Shougo/ddc-around
 call ddc#custom#patch_global('sources', ['around'])
-" Enable default matcher/sorter.
+" Use matcher_head and sorter_rank.
 call ddc#custom#patch_global('sourceOptions', {
       \ '_': {
       \   'matchers': ['matcher_head'],
@@ -107,7 +111,9 @@ call ddc#enable()
 
 See `:help ddc-options` for a complete list of options.
 
+
 ## Screenshots
+
 
 ## Plans
 
@@ -116,6 +122,6 @@ See `:help ddc-options` for a complete list of options.
 * [x] Implement source orders
 * [x] Implement sorter_rank
 * [x] virtual text completion mode
+* [ ] Split sources and filters
 * [ ] iskeyword support
 * [ ] Manual completion support
-* [ ] Split sources and filters

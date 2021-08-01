@@ -64,9 +64,8 @@ function! ddc#_inline() abort
     let s:ddc_namespace = nvim_create_namespace('ddc')
   endif
 
-  if empty(g:ddc#_candidates)
-    call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
-  else
+  call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
+  if !empty(g:ddc#_candidates)
     call nvim_buf_set_virtual_text(
           \ bufnr('%'), s:ddc_namespace, line('.') - 1,
           \ [[g:ddc#_candidates[0].abbr, 'PmenuSel']], {})

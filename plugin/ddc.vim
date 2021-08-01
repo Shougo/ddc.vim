@@ -9,11 +9,6 @@ if exists('g:loaded_ddc')
 endif
 let g:loaded_ddc = 1
 
-call ddc#register_source({
-      \ 'name': 'around',
-      \ 'path': fnamemodify(expand('<sfile>'), ':h:h')
-      \         . '/denops/ddc/sources/around.ts',
-      \ })
 call ddc#register_filter({
       \ 'name': 'matcher_head',
       \ 'path': fnamemodify(expand('<sfile>'), ':h:h')

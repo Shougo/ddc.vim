@@ -226,8 +226,9 @@ EXAMPLES						*ddc-examples*
 >
 	" Customize global settings
 	" Use around source.
+	" https://github.com/Shougo/ddc-around
 	call ddc#custom#patch_global('sources', ['around'])
-	" Enable default matcher.
+	" Use matcher_head and sorter_rank.
 	call ddc#custom#patch_global('sourceOptions', {
 	      \ '_': {
 	      \   'matchers': ['matcher_head'],
@@ -258,9 +259,11 @@ EXAMPLES						*ddc-examples*
 ==============================================================================
 SOURCES							*ddc-sources*
 
-around							*ddc-source-around*
-		This source collects candidates around the cursor, namely
-		inside current buffer.
+The sources are not bundled in ddc.vim.  You need to install them
+to use ddc.vim.  Please search them by https://github.com/topics/ddc-source
+
+Note: The default sources are empty.  You need to
+configure them to use ddc.
 
 ------------------------------------------------------------------------------
 SOURCE OPTIONS						*ddc-source-options*
@@ -324,6 +327,8 @@ SOURCE PARAMS					*ddc-source-params*
 
 These are the parameters that each source can have.  You can select the
 behavior and tune the performance.
+
+Please read the source documentation.
 
 
 ==============================================================================
