@@ -225,15 +225,19 @@ ddc#insert_candidate({index})
 EXAMPLES						*ddc-examples*
 >
 	" Customize global settings
+
 	" Use around source.
 	" https://github.com/Shougo/ddc-around
 	call ddc#custom#patch_global('sources', ['around'])
+
 	" Use matcher_head and sorter_rank.
+	" https://github.com/Shougo/ddc-matcher_head
 	call ddc#custom#patch_global('sourceOptions', {
 	      \ '_': {
 	      \   'matchers': ['matcher_head'],
 	      \   'sorters': ['sorter_rank']},
 	      \ })
+
 	" Change source options
 	call ddc#custom#patch_global('sourceOptions', {
 	      \ 'around': {'matchers': ['matcher_head'], 'mark': 'A'},
@@ -341,9 +345,6 @@ have specific filters.
 Note: The default matchers/sorters/converters are empty.  You need to
 configure them to use ddc.
 
-				    	    	*ddc-filter-matcher_head*
-matcher_head	Head matching matcher.
-
 				    	    	*ddc-filter-sorter_rank*
 sorter_rank	Matched rank order sorter.  The higher the head matched word
 		or already typed or inserted word.
@@ -424,6 +425,9 @@ A: >
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
+2021.08.01
+* Split "around" source
+* Split "matcher_head" filter
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:

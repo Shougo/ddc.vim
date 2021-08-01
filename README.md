@@ -83,6 +83,7 @@ ddc requires both Deno and denops.vim.
 " https://github.com/Shougo/ddc-around
 call ddc#custom#patch_global('sources', ['around'])
 " Use matcher_head and sorter_rank.
+" https://github.com/Shougo/ddc-matcher_head
 call ddc#custom#patch_global('sourceOptions', {
       \ '_': {
       \   'matchers': ['matcher_head'],
