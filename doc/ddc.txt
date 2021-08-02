@@ -216,6 +216,12 @@ ddc#complete()
 		Open current completion popup menu.
 		Note: It must be in |:map-<expr>|.
 
+						*ddc#complete_common_string()*
+ddc#complete_common_string()
+		Complete common string in candidates.
+		This can be useful when candidates have a long common prefix.
+		Note: It must be in |:map-<expr>|.
+
 						*ddc#insert_candidate()*
 ddc#insert_candidate({index})
 		Insert the candidate at index {index}. Indices start at 0.

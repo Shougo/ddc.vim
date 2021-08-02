@@ -117,3 +117,24 @@ function! ddc#insert_candidate(number) abort
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", strchars(complete_str)) . word
 endfunction
+
+function! ddc#complete_common_string() abort
+  if empty(g:ddc#_candidates) || g:ddc#_complete_pos < 0
+    return ''
+  endif
+
+  let complete_str = ddc#get_input('')[g:ddc#_complete_pos :]
+  let common_str = g:ddc#_candidates[0].word
+  for candidate in g:ddc#_candidates[1:]
+    while stridx(tolower(candidate.word), tolower(common_str)) != 0
+      let common_str = common_str[: -2]
+    endwhile
+  endfor
+
+  if common_str ==# '' || complete_str ==? common_str
+    return ''
+  endif
+
+  return (pumvisible() ? "\<C-e>" : '')
+        \ . repeat("\<BS>", strchars(complete_str)) . common_str
+endfunction
