@@ -36,6 +36,14 @@ function! ddc#complete() abort
 endfunction
 
 function! ddc#_complete() abort
+  let info = complete_info()
+  let noinsert = &completeopt =~# 'noinsert'
+  if (info.mode !=# '' && info.mode !=# 'eval')
+        \ || (noinsert && info.selected > 0)
+        \ || (!noinsert && info.selected >= 0)
+    return ''
+  endif
+
   if g:ddc#_complete_pos >= 0
     call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   else
