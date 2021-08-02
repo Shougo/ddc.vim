@@ -24,6 +24,7 @@ export abstract class BaseSource {
     options: DdcOptions,
     sourceOptions: SourceOptions,
     sourceParams: Record<string, unknown>,
+    completeStr: string,
   ): Promise<Candidate[]>;
 
   params(): Record<string, unknown> {

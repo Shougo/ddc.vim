@@ -431,6 +431,9 @@ A: >
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
+2021.08.02
+* Change gatherCandidates() arguments
+
 2021.08.01
 * Split "around" source
 * Split "matcher_head" filter

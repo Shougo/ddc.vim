@@ -38,6 +38,9 @@ endfunction
 function! ddc#_complete() abort
   if g:ddc#_complete_pos >= 0
     call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+  else
+    " Clear current popup
+    call complete(1, [])
   endif
 
   return ''

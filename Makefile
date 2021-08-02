@@ -3,7 +3,6 @@ TSTEST=$(shell grep -rl "Deno.test" denops)
 
 lint:
 	vint --version
-	vint plugin
 	vint autoload
 	deno fmt --check denops
 	deno test --unstable --no-run -A ${TS}

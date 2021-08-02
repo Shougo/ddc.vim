@@ -151,6 +151,7 @@ export class Ddc {
         options,
         o,
         p,
+        completeStr,
       );
       const fcs = await this.filterCandidates(
         denops,
@@ -286,6 +287,7 @@ Deno.test("sourceArgs", () => {
       _options: DdcOptions,
       _sourceOptions: SourceOptions,
       _sourceParams: Record<string, unknown>,
+      _completeStr: string,
     ): Promise<Candidate[]> {
       return Promise.resolve([]);
     }
