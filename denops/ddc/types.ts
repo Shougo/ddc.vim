@@ -28,6 +28,7 @@ export type DdcOptions = {
 
 export type SourceOptions = {
   converters: string[];
+  ignoreCase: boolean;
   mark: string;
   matchers: string[];
   maxAutoCompleteLength: number;

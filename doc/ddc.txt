@@ -279,6 +279,20 @@ configure them to use ddc.
 ------------------------------------------------------------------------------
 SOURCE OPTIONS						*ddc-source-options*
 
+				    		*ddc-source-option-converters*
+converters		([string])
+		It is a list of registered filter names that used with this
+		source.  Candidates will be processed in the order you specify
+		here.
+
+		Default: []
+
+				    	*ddc-source-option-ignoreCase*
+ignoreCase
+		If it is True, ddc ignores case.
+
+		Default: v:false
+
 				    	    	*ddc-source-option-mark*
 mark		(String)
 		A text icon indicating the source displayed with the
@@ -319,14 +333,6 @@ minAutoCompleteLength	(Integer)
 
 				    		*ddc-source-option-sorters*
 sorters		([string])
-		It is a list of registered filter names that used with this
-		source.  Candidates will be processed in the order you specify
-		here.
-
-		Default: []
-
-				    		*ddc-source-option-converters*
-converters		([string])
 		It is a list of registered filter names that used with this
 		source.  Candidates will be processed in the order you specify
 		here.

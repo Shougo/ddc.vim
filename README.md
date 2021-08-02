@@ -129,3 +129,4 @@ See `:help ddc-options` for a complete list of options.
 * [x] Split sources and filters
 * [ ] iskeyword support
 * [ ] Manual completion support
+* [ ] ignore_case support
