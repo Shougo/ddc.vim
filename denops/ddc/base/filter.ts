@@ -1,4 +1,10 @@
-import { Candidate, Context, DdcOptions, FilterOptions } from "../types.ts";
+import {
+  Candidate,
+  Context,
+  DdcOptions,
+  FilterOptions,
+  SourceOptions,
+} from "../types.ts";
 import { Denops } from "../deps.ts";
 
 export abstract class BaseFilter {
@@ -16,6 +22,7 @@ export abstract class BaseFilter {
     denops: Denops,
     context: Context,
     options: DdcOptions,
+    sourceOptions: SourceOptions,
     filterOptions: FilterOptions,
     filterParams: Record<string, unknown>,
     completeStr: string,
