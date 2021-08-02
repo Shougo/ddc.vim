@@ -65,4 +65,4 @@ jobs:
 
       - name: Check with vint
         run: |
-          vint --version && vint plugin autoload
+          vint --version && vint autoload
