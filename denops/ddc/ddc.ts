@@ -39,6 +39,15 @@ function formatMenu(prefix: string, menu: string | undefined): string {
     : `[${prefix}] ${menu}`;
 }
 
+function byteposToCharpos(input: string, pos: number): number {
+  const bytes = (new TextEncoder()).encode(input);
+  return (new TextDecoder()).decode(bytes.slice(0, pos)).length;
+}
+
+function charposToBytepos(input: string, pos: number): number {
+  return (new TextEncoder()).encode(input.slice(0, pos)).length;
+}
+
 function sourceArgs(
   options: DdcOptions,
   source: BaseSource,
@@ -130,13 +139,16 @@ export class Ddc {
     const sources = this.foundSources(options.sources)
       .map((s) => [s, ...sourceArgs(options, s)] as const);
     const rs = await Promise.all(sources.map(async ([s, o, p]) => {
-      const completePos = await s.getCompletePosition(
+      const pos = await s.getCompletePosition(
         denops,
         context,
         options,
         o,
         p,
       );
+      const completePos = s.isBytePos
+        ? byteposToCharpos(context.input, pos)
+        : pos;
       const completeStr = context.input.slice(completePos);
       if (
         completePos < 0 ||
@@ -191,7 +203,10 @@ export class Ddc {
     // Todo: Merge candidates by completePos
     const candidates = fs.flatMap(([_, cs]) => cs);
 
-    return [completePos, candidates];
+    // Convert2byte for Vim
+    const completePosBytes = charposToBytepos(context.input, completePos);
+
+    return [completePosBytes, candidates];
   }
 
   private async filterCandidates(
@@ -354,4 +369,13 @@ Deno.test("filterArgs", () => {
     min: 100,
     max: 999,
   }]);
+});
+
+
+Deno.test("byteposToCharpos", () => {
+  assertEquals(byteposToCharpos("あ hoge", 4), 2);
+});
+
+Deno.test("charposToBytepos", () => {
+  assertEquals(charposToBytepos("あ hoge", 2), 4);
 });

@@ -1,4 +1,4 @@
-import { assertEquals, Denops, vars } from "./deps.ts";
+import { assertEquals, Denops, fn, vars } from "./deps.ts";
 import { Context, DdcOptions, FilterOptions, SourceOptions } from "./types.ts";
 import { reduce } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
 
@@ -201,9 +201,11 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
     return event == "TextChangedP" && Object.keys(completedItem).length != 0;
   })();
   const isLmap: Promise<boolean> = (async () => {
+    const enabledEskk = (await fn.exists(denops, "*eskk#is_enabled") &&
+      denops.call("eskk#is_enabled"));
     const iminsert =
       (await denops.call("getbufvar", "%", "&iminsert")) as number;
-    return iminsert == 1;
+    return !enabledEskk && iminsert == 1;
   })();
   const mode: string = event == "InsertEnter"
     ? "i"

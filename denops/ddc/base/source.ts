@@ -3,6 +3,7 @@ import { Denops } from "../deps.ts";
 
 export abstract class BaseSource {
   name = "";
+  isBytePos = false;
 
   getCompletePosition(
     _denops: Denops,
