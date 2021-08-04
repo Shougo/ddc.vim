@@ -207,21 +207,15 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
       (await denops.call("getbufvar", "%", "&iminsert")) as number;
     return !enabledEskk && iminsert == 1;
   })();
+  const bufnr = denops.call("bufnr") as Promise<number>;
+  const ft = denops.call("getbufvar", "%", "&filetype") as Promise<string>;
   const mode: string = event == "InsertEnter"
     ? "i"
     : (await denops.call("mode")) as string;
-  const input: Promise<string> = (async () => {
-    return (await denops.call("ddc#get_input", mode)) as string;
-  })();
-  const bufnr: Promise<number> = (async () => {
-    return (await denops.call("bufnr")) as number;
-  })();
-  const filetype: Promise<string> = (async () => {
-    return (await denops.call("getbufvar", "%", "&filetype")) as string;
-  })();
+  const input = denops.call("ddc#get_input", mode) as Promise<string>;
   return {
     bufnr: await bufnr,
-    filetype: await filetype,
+    filetype: await ft,
     event: event,
     mode: mode,
     input: await input,

@@ -48,7 +48,7 @@ export async function main(denops: Denops) {
       return Promise.resolve(contextBuilder.getFiletype());
     },
     getBuffer(): Promise<Record<number, Partial<DdcOptions>>> {
-      return Promise.resolve(contextBuilder.getFiletype());
+      return Promise.resolve(contextBuilder.getBuffer());
     },
     async _cacheWorld(arg1: unknown): Promise<unknown> {
       return await contextBuilder._cacheWorld(denops, arg1 as string);
