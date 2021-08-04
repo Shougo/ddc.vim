@@ -25,6 +25,7 @@ import {
   defaultFilterParams,
 } from "./base/filter.ts";
 import { assertEquals, Denops } from "./deps.ts";
+import { toFileUrl } from "https://deno.land/std@0.103.0/path/mod.ts";
 
 function formatAbbr(word: string, abbr: string | undefined): string {
   return abbr ? abbr : word;
@@ -94,13 +95,13 @@ export class Ddc {
   }
 
   async registerFilter(path: string, name: string) {
-    const mod = await import(path);
+    const mod = await import(toFileUrl(path));
     const filter = new mod.Filter();
     filter.name = name;
     this.filters[filter.name] = filter;
   }
   async registerSource(path: string, name: string) {
-    const mod = await import(path);
+    const mod = await import(toFileUrl(path));
     const source = new mod.Source();
     source.name = name;
     this.sources[source.name] = source;
