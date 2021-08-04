@@ -24,7 +24,7 @@ import {
   defaultFilterOptions,
   defaultFilterParams,
 } from "./base/filter.ts";
-import { assertEquals, Denops } from "./deps.ts";
+import { assertEquals, Denops, toFileUrl } from "./deps.ts";
 
 function formatAbbr(word: string, abbr: string | undefined): string {
   return abbr ? abbr : word;
@@ -94,13 +94,13 @@ export class Ddc {
   }
 
   async registerFilter(path: string, name: string) {
-    const mod = await import(path);
+    const mod = await import(toFileUrl(path).href);
     const filter = new mod.Filter();
     filter.name = name;
     this.filters[filter.name] = filter;
   }
   async registerSource(path: string, name: string) {
-    const mod = await import(path);
+    const mod = await import(toFileUrl(path).href);
     const source = new mod.Source();
     source.name = name;
     this.sources[source.name] = source;
@@ -370,7 +370,6 @@ Deno.test("filterArgs", () => {
     max: 999,
   }]);
 });
-
 
 Deno.test("byteposToCharpos", () => {
   assertEquals(byteposToCharpos("あ hoge", 4), 2);
