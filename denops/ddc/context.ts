@@ -200,19 +200,18 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
       (await vars.v.get(denops, "completed_item")) as Record<string, unknown>;
     return event == "TextChangedP" && Object.keys(completedItem).length != 0;
   })();
-  const isLmap: Promise<boolean> = (async () => {
-    const enabledEskk = (await fn.exists(denops, "*eskk#is_enabled") &&
-      denops.call("eskk#is_enabled"));
-    const iminsert =
-      (await denops.call("getbufvar", "%", "&iminsert")) as number;
-    return !enabledEskk && iminsert == 1;
-  })();
   const bufnr = denops.call("bufnr") as Promise<number>;
   const ft = denops.call("getbufvar", "%", "&filetype") as Promise<string>;
   const mode: string = event == "InsertEnter"
     ? "i"
     : (await denops.call("mode")) as string;
   const input = denops.call("ddc#get_input", mode) as Promise<string>;
+  const existsEskk = await (fn.exists(denops, "*eskk#is_enabled")) as boolean;
+  const enabledEskk = existsEskk &&
+    (denops.call("eskk#is_enabled") as Promise<boolean>);
+  const iminsert = (denops.call("getbufvar", "%", "&iminsert")) as Promise<
+    number
+  >;
   return {
     bufnr: await bufnr,
     filetype: await ft,
@@ -220,7 +219,7 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
     mode: mode,
     input: await input,
     changedByCompletion: await changedByCompletion,
-    isLmap: await isLmap,
+    isLmap: !(await enabledEskk) && (await iminsert) == 1,
   };
 }
 
