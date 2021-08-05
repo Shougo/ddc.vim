@@ -112,7 +112,14 @@ export class Ddc {
     options: DdcOptions,
   ): Promise<void> {
     for (const source of this.foundSources(options.sources)) {
-      const [sourceOptions, _] = sourceArgs(options, source);
+      const [sourceOptions, sourceParams] = sourceArgs(options, source);
+      await source.onEvent(
+        denops,
+        context,
+        options,
+        sourceOptions,
+        sourceParams,
+      );
       const filters = this.foundFilters(
         sourceOptions.matchers.concat(
           sourceOptions.sorters,
