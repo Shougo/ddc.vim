@@ -20,6 +20,11 @@ function! ddc#enable() abort
           \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'))
   augroup END
 endfunction
+function! ddc#disale() abort
+  augroup ddc
+    autocmd!
+  augroup END
+endfunction
 
 function! ddc#complete() abort
   call ddc#_clear()
@@ -41,6 +46,7 @@ function! ddc#_complete() abort
   if (info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
         \ || (!noinsert && info.selected >= 0)
+        \ || !exists('g:ddc#_complete_pos')
     return ''
   endif
 
