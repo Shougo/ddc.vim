@@ -19,6 +19,14 @@ export abstract class BaseSource {
     return Promise.resolve(completePos);
   }
 
+  async onEvent(
+    _denops: Denops,
+    _context: Context,
+    _options: DdcOptions,
+    _sourceOptions: SourceOptions,
+    _sourceParams: Record<string, unknown>,
+  ): Promise<void> {}
+
   abstract gatherCandidates(
     denops: Denops,
     context: Context,
