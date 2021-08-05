@@ -1,6 +1,5 @@
 import { assertEquals, Denops, fn, vars } from "./deps.ts";
 import { Context, DdcOptions, FilterOptions, SourceOptions } from "./types.ts";
-import { reduce } from "https://deno.land/x/itertools@v0.1.2/mod.ts";
 
 // where
 // T: Object
@@ -27,11 +26,7 @@ export function foldMerge<T>(
   def: Default<T>,
   partials: (null | undefined | Partial<T>)[],
 ): T {
-  return reduce(
-    partials.map((x) => x || {}),
-    merge,
-    def(),
-  );
+  return partials.map((x) => x || {}).reduce(merge, def());
 }
 
 export function defaultDdcOptions(): DdcOptions {
