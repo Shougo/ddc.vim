@@ -48,6 +48,7 @@ export abstract class BaseSource {
 export function defaultSourceOptions(): SourceOptions {
   return {
     converters: [],
+    forceCompletionPattern: "",
     ignoreCase: false,
     mark: "",
     matchers: [],

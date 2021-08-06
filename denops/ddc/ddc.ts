@@ -159,10 +159,13 @@ export class Ddc {
         ? byteposToCharpos(context.input, pos)
         : pos;
       const completeStr = context.input.slice(completePos);
+      const forceCompletion = context.input.search(
+        new RegExp(o.forceCompletionPattern + "$"),
+      ) != null;
       if (
-        completePos < 0 ||
-        completeStr.length < o.minAutoCompleteLength ||
-        completeStr.length > o.maxAutoCompleteLength
+        !forceCompletion &&
+        (completeStr.length < o.minAutoCompleteLength ||
+          completeStr.length > o.maxAutoCompleteLength)
       ) {
         return;
       }

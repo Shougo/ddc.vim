@@ -2,6 +2,8 @@ import { autocmd } from "./deps.ts";
 export { BaseSource } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
 
+export type DdcEvent = autocmd.AutocmdEvent | "Auto" | "Manual";
+
 export type SourceName = string;
 
 export type Custom = {
@@ -16,7 +18,7 @@ export type Context = {
 type CompletionMode = "inline" | "popupmenu" | "manual";
 
 export type DdcOptions = {
-  autoCompleteEvents: autocmd.AutocmdEvent[];
+  autoCompleteEvents: DdcEvent[];
   completionMode: CompletionMode;
   filterOptions: Record<string, Partial<FilterOptions>>;
   filterParams: Record<string, Partial<Record<string, unknown>>>;
@@ -28,6 +30,7 @@ export type DdcOptions = {
 
 export type SourceOptions = {
   converters: string[];
+  forceCompletionPattern: string;
   ignoreCase: boolean;
   mark: string;
   matchers: string[];

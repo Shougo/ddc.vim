@@ -109,6 +109,10 @@ function! ddc#register_filter(dict) abort
   endif
 endfunction
 
+function! ddc#auto_complete() abort
+  call denops#notify('ddc', 'onEvent', ['Auto'])
+endfunction
+
 function! ddc#get_input(event) abort
   let mode = mode()
   if a:event ==# 'InsertEnter'

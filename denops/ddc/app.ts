@@ -1,7 +1,7 @@
 import { autocmd, batch, Denops, ensureObject, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
-import { DdcOptions } from "./types.ts";
+import { DdcEvent, DdcOptions } from "./types.ts";
 
 type RegisterArg = {
   path: string;
@@ -54,7 +54,7 @@ export async function main(denops: Denops) {
       return await contextBuilder._cacheWorld(denops, arg1 as string);
     },
     async onEvent(arg1: unknown): Promise<void> {
-      const event = arg1 as autocmd.AutocmdEvent;
+      const event = arg1 as DdcEvent;
       if (event == "InsertLeave") {
         await denops.call("ddc#_clear");
         return;
@@ -72,7 +72,10 @@ export async function main(denops: Denops) {
         );
       }
 
-      if (options.autoCompleteEvents.indexOf(event) < 0) {
+      if (
+        options.autoCompleteEvents.indexOf(event) < 0 && event != "Auto" &&
+        event != "Manual"
+      ) {
         return;
       }
 
@@ -117,11 +120,13 @@ export async function main(denops: Denops) {
     }
   });
 
-  await vars.g.set(denops, "ddc#_complete_pos", -1);
-  await vars.g.set(denops, "ddc#_candidates", []);
-  await vars.g.set(denops, "ddc#_initialized", 1);
+  await batch(denops, (helper) => {
+    vars.g.set(helper, "ddc#_complete_pos", -1);
+    vars.g.set(helper, "ddc#_candidates", []);
+    vars.g.set(helper, "ddc#_initialized", 1);
 
-  await denops.cmd("doautocmd <nomodeline> User DDCReady");
+    helper.cmd("doautocmd <nomodeline> User DDCReady");
+  });
 
   //console.log(`${denops.name} has loaded`);
 }

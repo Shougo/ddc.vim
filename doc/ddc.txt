@@ -89,13 +89,12 @@ completionMode
 
 		Default value: "popupmenu"
 
-					*ddc-options-keyword_pattern*
-keyword_pattern
+					*ddc-options-keywordPattern*
+keywordPattern
 		It defines the keyword pattern for completion.
-		This is regular expression string.
 		Note: It is JavaScript regexp.
 
-		Default value: '\w+'
+		Default value: '\w*'
 
 							*ddc-options-sources*
 sources
@@ -286,6 +285,14 @@ converters		([string])
 		here.
 
 		Default: []
+
+				*ddc-source-option-forceCompletionPattern*
+forceCompletionPattern
+		If it matches the input, ddc ignores
+		|ddc-source-option-minAutoCompleteLength|.
+		Note: It is JavaScript regexp.
+
+		Default value: ''
 
 				    	*ddc-source-option-ignoreCase*
 ignoreCase

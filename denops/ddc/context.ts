@@ -35,7 +35,7 @@ export function defaultDdcOptions(): DdcOptions {
     completionMode: "popupmenu",
     filterOptions: {},
     filterParams: {},
-    keywordPattern: "\\w+",
+    keywordPattern: "\\w*",
     sourceOptions: {},
     sourceParams: {},
     sources: [],
@@ -245,7 +245,9 @@ export class ContextBuilder {
     const world = await this._cacheWorld(denops, event);
     const old = this.lastWorld;
     this.lastWorld = world;
-    if (isNegligible(old, world)) return null;
+    if (event != "Auto" && event != "Manual" && isNegligible(old, world)) {
+      return null;
+    }
     if (world.isLmap || world.changedByCompletion) return null;
     const userOptions = this.custom.get(world.filetype, world.bufnr);
     const context = {
