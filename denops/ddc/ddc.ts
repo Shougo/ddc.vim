@@ -97,14 +97,14 @@ export class Ddc {
     const mod = await import(toFileUrl(path).href);
     const source = new mod.Source();
     source.name = name;
-    source().onInit(denops);
+    source.onInit(denops);
     this.sources[source.name] = source;
   }
   async registerFilter(denops: Denops, path: string, name: string) {
     const mod = await import(toFileUrl(path).href);
     const filter = new mod.Filter();
     filter.name = name;
-    filter().onInit(denops);
+    filter.onInit(denops);
     this.filters[filter.name] = filter;
   }
 
