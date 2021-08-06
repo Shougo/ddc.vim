@@ -172,6 +172,9 @@ export class Ddc {
         p,
         completeStr,
       );
+      if (!scs.length) {
+        return;
+      }
       const fcs = await this.filterCandidates(
         denops,
         context,

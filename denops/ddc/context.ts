@@ -173,6 +173,7 @@ type World = {
   filetype: string;
   input: string;
   isLmap: boolean;
+  lineNr: number;
   mode: string;
 };
 
@@ -184,6 +185,7 @@ function initialWorld(): World {
     filetype: "",
     input: "",
     isLmap: false,
+    lineNr: 0,
     mode: "",
   };
 }
@@ -201,6 +203,7 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
     ? "i"
     : (await denops.call("mode")) as string;
   const input = denops.call("ddc#get_input", mode) as Promise<string>;
+  const lineNr = (denops.call("line", ".")) as Promise<number>;
   const existsEskk = await (fn.exists(denops, "*eskk#is_enabled")) as boolean;
   const enabledEskk = existsEskk &&
     (denops.call("eskk#is_enabled") as Promise<boolean>);
@@ -209,12 +212,13 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
   >;
   return {
     bufnr: await bufnr,
-    filetype: await ft,
-    event: event,
-    mode: mode,
-    input: await input,
     changedByCompletion: await changedByCompletion,
+    event: event,
+    filetype: await ft,
+    input: await input,
     isLmap: !(await enabledEskk) && (await iminsert) == 1,
+    lineNr: await lineNr,
+    mode: mode,
   };
 }
 
