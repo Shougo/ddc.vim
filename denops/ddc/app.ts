@@ -13,13 +13,13 @@ export async function main(denops: Denops) {
   const contextBuilder = new ContextBuilder();
 
   denops.dispatcher = {
-    async registerFilter(arg1: unknown): Promise<void> {
-      const arg = arg1 as RegisterArg;
-      await ddc.registerFilter(arg.path, arg.name);
-    },
     async registerSource(arg1: unknown): Promise<void> {
       const arg = arg1 as RegisterArg;
-      await ddc.registerSource(arg.path, arg.name);
+      await ddc.registerSource(denops, arg.path, arg.name);
+    },
+    async registerFilter(arg1: unknown): Promise<void> {
+      const arg = arg1 as RegisterArg;
+      await ddc.registerFilter(denops, arg.path, arg.name);
     },
     patchGlobal(arg1: unknown): Promise<void> {
       ensureObject(arg1);

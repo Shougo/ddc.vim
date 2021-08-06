@@ -127,5 +127,6 @@ See `:help ddc-options` for a complete list of options.
 * [x] Implement sorter_rank
 * [x] virtual text completion mode
 * [x] Split sources and filters
+* [ ] Implement LSP source
 * [ ] iskeyword support
 * [ ] Manual completion support

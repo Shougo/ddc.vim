@@ -10,6 +10,10 @@ import { Denops } from "../deps.ts";
 export abstract class BaseFilter {
   name = "";
 
+  async onInit(
+    _denops: Denops,
+  ): Promise<void> {}
+
   async onEvent(
     _denops: Denops,
     _context: Context,

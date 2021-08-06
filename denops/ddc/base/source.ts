@@ -5,6 +5,18 @@ export abstract class BaseSource {
   name = "";
   isBytePos = false;
 
+  async onInit(
+    _denops: Denops,
+  ): Promise<void> {}
+
+  async onEvent(
+    _denops: Denops,
+    _context: Context,
+    _options: DdcOptions,
+    _sourceOptions: SourceOptions,
+    _sourceParams: Record<string, unknown>,
+  ): Promise<void> {}
+
   getCompletePosition(
     _denops: Denops,
     context: Context,
@@ -18,14 +30,6 @@ export abstract class BaseSource {
     const completePos = matchPos != null ? matchPos : -1;
     return Promise.resolve(completePos);
   }
-
-  async onEvent(
-    _denops: Denops,
-    _context: Context,
-    _options: DdcOptions,
-    _sourceOptions: SourceOptions,
-    _sourceParams: Record<string, unknown>,
-  ): Promise<void> {}
 
   abstract gatherCandidates(
     denops: Denops,

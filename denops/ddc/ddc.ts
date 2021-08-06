@@ -93,17 +93,19 @@ export class Ddc {
     return names.map((n) => this.filters[n]).filter((v) => v);
   }
 
-  async registerFilter(path: string, name: string) {
-    const mod = await import(toFileUrl(path).href);
-    const filter = new mod.Filter();
-    filter.name = name;
-    this.filters[filter.name] = filter;
-  }
-  async registerSource(path: string, name: string) {
+  async registerSource(denops: Denops, path: string, name: string) {
     const mod = await import(toFileUrl(path).href);
     const source = new mod.Source();
     source.name = name;
+    source().onInit(denops);
     this.sources[source.name] = source;
+  }
+  async registerFilter(denops: Denops, path: string, name: string) {
+    const mod = await import(toFileUrl(path).href);
+    const filter = new mod.Filter();
+    filter.name = name;
+    filter().onInit(denops);
+    this.filters[filter.name] = filter;
   }
 
   async onEvent(
