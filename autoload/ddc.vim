@@ -34,9 +34,19 @@ function! ddc#complete() abort
   set completeopt-=menu
   set completeopt+=noselect
 
+  " Debounce for Vim8
+  if has('nvim')
+    call ddc#_complete()
+  else
+    silent! call timer_stop(s:completion_timer)
+    let s:completion_timer = timer_start(10, { -> ddc#_complete() })
+  endif
+endfunction
+function! ddc#_complete() abort
   let info = complete_info()
   let noinsert = &completeopt =~# 'noinsert'
-  if (info.mode !=# '' && info.mode !=# 'eval')
+  if mode() !=# 'i'
+        \ || (info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
         \ || (!noinsert && info.selected >= 0)
         \ || !exists('g:ddc#_complete_pos')
