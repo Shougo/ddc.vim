@@ -29,25 +29,18 @@ endfunction
 function! ddc#complete() abort
   call ddc#_clear()
 
-  inoremap <silent> <Plug>_ <C-r>=ddc#_complete()<CR>
-
   set completeopt-=longest
   set completeopt+=menuone
   set completeopt-=menu
   set completeopt+=noselect
 
-  call feedkeys("\<Plug>_", 'i')
-  return ''
-endfunction
-
-function! ddc#_complete() abort
   let info = complete_info()
   let noinsert = &completeopt =~# 'noinsert'
   if (info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
         \ || (!noinsert && info.selected >= 0)
         \ || !exists('g:ddc#_complete_pos')
-    return ''
+    return
   endif
 
   if g:ddc#_complete_pos >= 0
@@ -56,8 +49,6 @@ function! ddc#_complete() abort
     " Clear current popup
     call complete(1, [])
   endif
-
-  return ''
 endfunction
 
 function! ddc#_clear() abort
@@ -92,20 +83,19 @@ endfunction
 function! ddc#register_source(dict) abort
   if !exists('g:ddc#_initialized')
     execute printf('autocmd User DDCReady call ' .
-          \ 'denops#request_async("ddc", "registerSource", [%s], '.
-          \ '{-> v:null}, {-> v:null})', a:dict
-          \ )
+          \ 'denops#notify("ddc", "registerSource", [%s])',
+          \ a:dict)
   else
-    call denops#request_async(
-          \ 'ddc', 'registerSource', [a:dict], {-> v:null}, {-> v:null})
+    call denops#notify('ddc', 'registerSource', [a:dict])
   endif
 endfunction
 function! ddc#register_filter(dict) abort
   if !exists('g:ddc#_initialized')
     execute printf('autocmd User DDCReady call ' .
-          \ 'denops#request("ddc", "registerFilter", [%s])', a:dict)
+          \ 'denops#notify("ddc", "registerFilter", [%s])',
+          \ a:dict)
   else
-    call denops#request('ddc', 'registerFilter', [a:dict])
+    call denops#notify('ddc', 'registerFilter', [a:dict])
   endif
 endfunction
 

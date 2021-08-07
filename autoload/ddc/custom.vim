@@ -7,36 +7,30 @@
 function! s:patch_global(dict) abort
   if !exists('g:ddc#_initialized')
     execute printf('autocmd User DDCReady call ' .
-          \ 'denops#request_async("ddc", "patchGlobal", [%s], '.
-          \ '{-> v:null}, {-> v:null})', a:dict
-          \ )
+          \ 'denops#notify("ddc", "patchGlobal", [%s])',
+          \ a:dict)
   else
-    call denops#request_async(
-          \ 'ddc', 'patchGlobal', [a:dict], {-> v:null}, {-> v:null})
+    call denops#notify('ddc', 'patchGlobal', [a:dict])
   endif
 endfunction
 
 function! s:patch_filetype(ft, dict) abort
   if !exists('g:ddc#_initialized')
     execute printf('autocmd User DDCReady call ' .
-          \ 'denops#request_async("ddc", "patchFiletype", ["%s", %s], '.
-          \ '{-> v:null}, {-> v:null})', a:ft, a:dict
-          \ )
+          \ 'denops#notify("ddc", "patchFiletype", ["%s", %s])',
+          \ a:ft, a:dict)
   else
-    call denops#request_async(
-          \ 'ddc', 'patchFiletype', [a:ft, a:dict], {-> v:null}, {-> v:null})
+    call denops#notify('ddc', 'patchFiletype', [a:ft, a:dict])
   endif
 endfunction
 
 function! s:patch_buffer(bufnr, dict) abort
   if !exists('g:ddc#_initialized')
     execute printf('autocmd User DDCReady call ' .
-          \ 'denops#request_async("ddc", "patchBuffer", [%s, %s], '.
-          \ '{-> v:null}, {-> v:null})', a:bufnr, a:dict
-          \ )
+          \ 'denops#notify("ddc", "patchBuffer", [%s, %s])',
+          \ a:bufnr, a:dict)
   else
-    call denops#request_async(
-          \ 'ddc', 'patchBuffer', [a:bufnr, a:dict], {-> v:null}, {-> v:null})
+    call denops#notify('ddc', 'patchBuffer', [a:bufnr, a:dict])
   endif
 endfunction
 

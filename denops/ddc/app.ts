@@ -115,7 +115,7 @@ export async function main(denops: Denops) {
       helper.define(
         event as autocmd.AutocmdEvent,
         "*",
-        `call denops#notify('${denops.name}', 'onEvent', ["${event}"])`,
+        `call denops#notify('${denops.name}', 'onEvent',["${event}"])`,
       );
     }
   });
@@ -124,6 +124,7 @@ export async function main(denops: Denops) {
     vars.g.set(helper, "ddc#_complete_pos", -1);
     vars.g.set(helper, "ddc#_candidates", []);
     vars.g.set(helper, "ddc#_initialized", 1);
+    vars.g.set(helper, "ddc#_now", 0);
 
     helper.cmd("doautocmd <nomodeline> User DDCReady");
   });
