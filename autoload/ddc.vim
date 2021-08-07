@@ -4,6 +4,7 @@
 " License: MIT license
 "=============================================================================
 
+let s:completion_timer = -1
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 
 function! ddc#enable() abort
@@ -38,7 +39,7 @@ function! ddc#complete() abort
   if has('nvim')
     call ddc#_complete()
   else
-    silent! call timer_stop(s:completion_timer)
+    call timer_stop(s:completion_timer)
     let s:completion_timer = timer_start(10, { -> ddc#_complete() })
   endif
 endfunction
