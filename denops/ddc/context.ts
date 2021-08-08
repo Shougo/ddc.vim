@@ -198,7 +198,12 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
     return event == "TextChangedP" && Object.keys(completedItem).length != 0;
   })();
   const bufnr = denops.call("bufnr") as Promise<number>;
-  const ft = denops.call("getbufvar", "%", "&filetype") as Promise<string>;
+  const existsContextFiletype =
+    await (fn.exists(denops, "*context_filetype#get_filetype")) as boolean;
+  const ft =
+    (await existsContextFiletype
+      ? denops.call("context_filetype#get_filetype")
+      : denops.call("getbufvar", "%", "&filetype")) as Promise<string>;
   const mode: string = event == "InsertEnter"
     ? "i"
     : (await denops.call("mode")) as string;
@@ -251,6 +256,7 @@ export class ContextBuilder {
     if (world.isLmap || world.changedByCompletion) return null;
     const userOptions = this.custom.get(world.filetype, world.bufnr);
     const context = {
+      filetype: world.filetype,
       input: world.input,
     };
     return [context, userOptions];

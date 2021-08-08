@@ -12,6 +12,7 @@ export type Custom = {
 };
 
 export type Context = {
+  filetype: string;
   input: string;
 };
 
