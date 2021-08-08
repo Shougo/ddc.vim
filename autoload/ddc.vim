@@ -119,9 +119,10 @@ function! ddc#get_input(event) abort
   if a:event ==# 'InsertEnter'
     let mode = 'i'
   endif
-  let input = (mode ==# 'i' ? (col('.')-1) : col('.')) >= len(getline('.')) ?
-        \      getline('.') :
-        \      matchstr(getline('.'),
+  let text = getline('.')
+  let input = (mode ==# 'i' ? (col('.')-1) : col('.')) >= len(text) ?
+        \      text :
+        \      matchstr(text,
         \         '^.*\%' . (mode ==# 'i' ? col('.') : col('.') - 1)
         \         . 'c' . (mode ==# 'i' ? '' : '.'))
 
