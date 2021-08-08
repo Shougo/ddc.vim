@@ -190,6 +190,14 @@ function initialWorld(): World {
   };
 }
 
+async function _call<T>(denops: Denops, f: string, def: T): Promise<T> {
+  if (await fn.exists(denops, "*" + f)) {
+    return denops.call(f) as Promise<T>;
+  } else {
+    return def;
+  }
+}
+
 // Fetches current state
 async function cacheWorld(denops: Denops, event: string): Promise<World> {
   const changedByCompletion: Promise<boolean> = (async () => {
@@ -197,29 +205,26 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
       (await vars.v.get(denops, "completed_item")) as Record<string, unknown>;
     return event == "TextChangedP" && Object.keys(completedItem).length != 0;
   })();
+  const filetype: Promise<string> = (async () => {
+    const context = await _call(denops, "context_filetype#get_filetype", "");
+    if (context != "") return context;
+    return (await denops.call("getbufvar", "%", "&filetype")) as string;
+  })();
   const bufnr = denops.call("bufnr") as Promise<number>;
-  const existsContextFiletype =
-    await (fn.exists(denops, "*context_filetype#get_filetype")) as boolean;
-  const ft =
-    (await existsContextFiletype
-      ? denops.call("context_filetype#get_filetype")
-      : denops.call("getbufvar", "%", "&filetype")) as Promise<string>;
+  const lineNr = denops.call("line", ".") as Promise<number>;
+  const enabledEskk = _call(denops, "eskk#is_enabled", false);
+  const iminsert = denops.call("getbufvar", "%", "&iminsert") as Promise<
+    number
+  >;
   const mode: string = event == "InsertEnter"
     ? "i"
     : (await denops.call("mode")) as string;
   const input = denops.call("ddc#get_input", mode) as Promise<string>;
-  const lineNr = (denops.call("line", ".")) as Promise<number>;
-  const existsEskk = await (fn.exists(denops, "*eskk#is_enabled")) as boolean;
-  const enabledEskk = existsEskk &&
-    (denops.call("eskk#is_enabled") as Promise<boolean>);
-  const iminsert = (denops.call("getbufvar", "%", "&iminsert")) as Promise<
-    number
-  >;
   return {
     bufnr: await bufnr,
     changedByCompletion: await changedByCompletion,
     event: event,
-    filetype: await ft,
+    filetype: await filetype,
     input: await input,
     isLmap: !(await enabledEskk) && (await iminsert) == 1,
     lineNr: await lineNr,
