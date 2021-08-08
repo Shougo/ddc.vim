@@ -21,7 +21,7 @@ function! ddc#enable() abort
           \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'))
   augroup END
 endfunction
-function! ddc#disale() abort
+function! ddc#disable() abort
   augroup ddc
     autocmd!
   augroup END
