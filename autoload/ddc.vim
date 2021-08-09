@@ -115,21 +115,6 @@ function! ddc#refresh_candidates() abort
   call denops#notify('ddc', 'onEvent', ['Refresh'])
 endfunction
 
-function! ddc#get_input(event) abort
-  let mode = mode()
-  if a:event ==# 'InsertEnter'
-    let mode = 'i'
-  endif
-  let text = getline('.')
-  let input = (mode ==# 'i' ? (col('.')-1) : col('.')) >= len(text) ?
-        \      text :
-        \      matchstr(text,
-        \         '^.*\%' . (mode ==# 'i' ? col('.') : col('.') - 1)
-        \         . 'c' . (mode ==# 'i' ? '' : '.'))
-
-  return input
-endfunction
-
 function! ddc#manual_complete(...) abort
   return printf("\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
         \ string([get(a:000, 0, [])]))
@@ -142,7 +127,7 @@ function! ddc#insert_candidate(number) abort
   endif
 
   " Get cursor word.
-  let complete_str = ddc#get_input('')[g:ddc#_complete_pos :]
+  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", strchars(complete_str)) . word
 endfunction
@@ -152,7 +137,7 @@ function! ddc#complete_common_string() abort
     return ''
   endif
 
-  let complete_str = ddc#get_input('')[g:ddc#_complete_pos :]
+  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
   let common_str = g:ddc#_candidates[0].word
   for candidate in g:ddc#_candidates[1:]
     while stridx(tolower(candidate.word), tolower(common_str)) != 0

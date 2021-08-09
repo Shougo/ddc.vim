@@ -34,3 +34,19 @@ function! ddc#util#get_syn_names() abort
   endtry
   return names
 endfunction
+
+function! ddc#util#get_input(event) abort
+  let mode = mode()
+  if a:event ==# 'InsertEnter'
+    let mode = 'i'
+  endif
+  let text = getline('.')
+  let input = (mode ==# 'i' ? (col('.')-1) : col('.')) >= len(text) ?
+        \      text :
+        \      matchstr(text,
+        \         '^.*\%' . (mode ==# 'i' ? col('.') : col('.') - 1)
+        \         . 'c' . (mode ==# 'i' ? '' : '.'))
+
+  return input
+endfunction
+
