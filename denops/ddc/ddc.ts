@@ -24,7 +24,7 @@ import {
   defaultFilterOptions,
   defaultFilterParams,
 } from "./base/filter.ts";
-import { assertEquals, Denops, toFileUrl } from "./deps.ts";
+import { assertEquals, autocmd, Denops, toFileUrl } from "./deps.ts";
 
 type DdcResult = {
   candidates: Candidate[];
@@ -92,6 +92,7 @@ export class Ddc {
   private sources: Record<string, BaseSource> = {};
   private filters: Record<string, BaseFilter> = {};
   private prevResults: Record<string, DdcResult> = {};
+  private events: string[] = [];
 
   private foundSources(names: string[]): BaseSource[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
@@ -100,12 +101,33 @@ export class Ddc {
     return names.map((n) => this.filters[n]).filter((v) => v);
   }
 
+  async registerAutocmd(
+    denops: Denops,
+    events: string[],
+  ) {
+    await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
+      for (
+        const event of events
+      ) {
+        if (!this.events.includes(event)) {
+          helper.define(
+            event as autocmd.AutocmdEvent,
+            "*",
+            `call denops#notify('${denops.name}', 'onEvent',["${event}"])`,
+          );
+          this.events.push(event);
+        }
+      }
+    });
+  }
+
   async registerSource(denops: Denops, path: string, name: string) {
     const mod = await import(toFileUrl(path).href);
     const source = new mod.Source();
     source.name = name;
     source.onInit(denops);
     this.sources[source.name] = source;
+    this.registerAutocmd(denops, source.events);
   }
   async registerFilter(denops: Denops, path: string, name: string) {
     const mod = await import(toFileUrl(path).href);
@@ -113,6 +135,7 @@ export class Ddc {
     filter.name = name;
     filter.onInit(denops);
     this.filters[filter.name] = filter;
+    this.registerAutocmd(denops, filter.events);
   }
 
   async onEvent(
@@ -122,13 +145,15 @@ export class Ddc {
   ): Promise<void> {
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
-      await source.onEvent(
-        denops,
-        context,
-        options,
-        sourceOptions,
-        sourceParams,
-      );
+      if (source.events.includes(context.event)) {
+        await source.onEvent(
+          denops,
+          context,
+          options,
+          sourceOptions,
+          sourceParams,
+        );
+      }
       const filters = this.foundFilters(
         sourceOptions.matchers.concat(
           sourceOptions.sorters,
@@ -137,12 +162,14 @@ export class Ddc {
       );
 
       for (const filter of filters) {
-        const [o, p] = filterArgs(
-          options.filterOptions,
-          options.filterParams,
-          filter,
-        );
-        await filter.onEvent(denops, context, options, o, p);
+        if (filter.events.includes(context.event)) {
+          const [o, p] = filterArgs(
+            options.filterOptions,
+            options.filterParams,
+            filter,
+          );
+          await filter.onEvent(denops, context, options, o, p);
+        }
       }
     }
   }
