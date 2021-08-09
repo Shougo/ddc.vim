@@ -27,3 +27,24 @@ endfunction
 function! ddc#util#split(string) abort
   return split(a:string, '\s*,\s*')
 endfunction
+
+function! ddc#util#get_syn_names() abort
+  if col('$') >= 200
+    return []
+  endif
+
+  let names = []
+  try
+    " Note: synstack() seems broken in concealed text.
+    for id in synstack(line('.'), (mode() ==# 'i' ? col('.')-1 : col('.')))
+      let name = synIDattr(id, 'name')
+      call add(names, name)
+      if synIDattr(synIDtrans(id), 'name') !=# name
+        call add(names, synIDattr(synIDtrans(id), 'name'))
+      endif
+    endfor
+  catch
+    " Ignore error
+  endtry
+  return names
+endfunction
