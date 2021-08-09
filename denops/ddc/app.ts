@@ -85,7 +85,7 @@ export async function main(denops: Denops) {
       }
 
       if (
-        options.autoCompleteEvents.indexOf(event) < 0 && event != "Auto"
+        options.autoCompleteEvents.indexOf(event) < 0 && event != "Refresh"
       ) {
         return;
       }

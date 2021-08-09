@@ -157,11 +157,6 @@ filterParams
 ------------------------------------------------------------------------------
 FUNCTIONS 						*ddc-functions*
 
-						*ddc#auto_complete()*
-ddc#auto_complete()
-		It calls the auto completion of ddc to update current
-		candidates.
-
 							*ddc#disable()*
 ddc#disable()
 		Disable ddc auto completion.
@@ -172,6 +167,11 @@ ddc#disable()
 ddc#enable()
 		Enable ddc auto completion.
 		Note: It changes the global state.
+
+						*ddc#refresh_candidates()*
+ddc#refresh_candidates()
+		It calls the auto completion of ddc to refresh current
+		candidates.
 
 						*ddc#register_filter()*
 ddc#register_filter({dict})
@@ -461,6 +461,9 @@ A: >
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.08.09
+* Rename ddc#auto_complete() to ddc#refresh_candidates()
 
 2021.08.02
 * Change gatherCandidates() arguments in sources

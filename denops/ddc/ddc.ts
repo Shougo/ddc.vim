@@ -189,7 +189,7 @@ export class Ddc {
         !result ||
         !completeStr.startsWith(result.completeStr) ||
         context.lineNr != result.lineNr ||
-        context.event == "Auto" ||
+        context.event == "Refresh" ||
         context.event == "Manual" ||
         o.isVolatile
       ) {

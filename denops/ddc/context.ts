@@ -255,7 +255,7 @@ export class ContextBuilder {
     const world = await this._cacheWorld(denops, event);
     const old = this.lastWorld;
     this.lastWorld = world;
-    if (event != "Auto" && event != "Manual" && isNegligible(old, world)) {
+    if (event != "Refresh" && event != "Manual" && isNegligible(old, world)) {
       return null;
     }
     if (world.isLmap || world.changedByCompletion) return null;

@@ -55,7 +55,6 @@ function! ddc#_complete() abort
     return
   endif
 
-  echomsg g:ddc#_complete_pos
   if g:ddc#_complete_pos >= 0
     call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   else
@@ -112,13 +111,8 @@ function! ddc#register_filter(dict) abort
   endif
 endfunction
 
-function! ddc#auto_complete() abort
-  call denops#notify('ddc', 'onEvent', ['Auto'])
-  return ''
-endfunction
-function! ddc#manual_complete(...) abort
-  return printf("\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
-        \ string([get(a:000, 0, [])]))
+function! ddc#refresh_candidates() abort
+  call denops#notify('ddc', 'onEvent', ['Refresh'])
 endfunction
 
 function! ddc#get_input(event) abort
@@ -134,6 +128,11 @@ function! ddc#get_input(event) abort
         \         . 'c' . (mode ==# 'i' ? '' : '.'))
 
   return input
+endfunction
+
+function! ddc#manual_complete(...) abort
+  return printf("\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
+        \ string([get(a:000, 0, [])]))
 endfunction
 
 function! ddc#insert_candidate(number) abort
