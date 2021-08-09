@@ -1,7 +1,7 @@
 import { autocmd, batch, Denops, ensureObject, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
-import { DdcEvent, DdcOptions } from "./types.ts";
+import { Context, DdcEvent, DdcOptions } from "./types.ts";
 
 type RegisterArg = {
   path: string;
@@ -53,6 +53,18 @@ export async function main(denops: Denops) {
     async _cacheWorld(arg1: unknown): Promise<unknown> {
       return await contextBuilder._cacheWorld(denops, arg1 as string);
     },
+    async manualComplete(arg1: unknown): Promise<void> {
+      const sources = arg1 as string[];
+
+      const maybe = await contextBuilder.createContext(denops, "Manual");
+      if (!maybe) return;
+      const [context, options] = maybe;
+      if (sources.length != 0) {
+        options.sources = sources;
+      }
+
+      await doCompletion(denops, context, options);
+    },
     async onEvent(arg1: unknown): Promise<void> {
       const event = arg1 as DdcEvent;
       if (event == "InsertLeave") {
@@ -73,32 +85,12 @@ export async function main(denops: Denops) {
       }
 
       if (
-        options.autoCompleteEvents.indexOf(event) < 0 && event != "Auto" &&
-        event != "Manual"
+        options.autoCompleteEvents.indexOf(event) < 0 && event != "Auto"
       ) {
         return;
       }
 
-      const [completePos, candidates] = await ddc.gatherResults(
-        denops,
-        context,
-        options,
-      );
-
-      await (async function write() {
-        const pumvisible = await denops.call("pumvisible");
-        await batch(denops, (helper) => {
-          vars.g.set(helper, "ddc#_complete_pos", completePos);
-          vars.g.set(helper, "ddc#_candidates", candidates);
-          if (options.completionMode == "popupmenu" || pumvisible) {
-            helper.call("ddc#complete");
-          } else if (options.completionMode == "inline") {
-            helper.call("ddc#_inline");
-          } else if (options.completionMode == "manual") {
-            // through
-          }
-        });
-      })();
+      await doCompletion(denops, context, options);
     },
   };
 
@@ -119,6 +111,36 @@ export async function main(denops: Denops) {
       );
     }
   });
+
+  async function doCompletion(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+  ): Promise<void> {
+    const [completePos, candidates] = await ddc.gatherResults(
+      denops,
+      context,
+      options,
+    );
+
+    await (async function write() {
+      const pumvisible = await denops.call("pumvisible");
+      await batch(denops, (helper) => {
+        vars.g.set(helper, "ddc#_complete_pos", completePos);
+        vars.g.set(helper, "ddc#_candidates", candidates);
+        if (
+          options.completionMode == "popupmenu" || pumvisible ||
+          context.event == "Manual"
+        ) {
+          helper.call("ddc#complete");
+        } else if (options.completionMode == "inline") {
+          helper.call("ddc#_inline");
+        } else if (options.completionMode == "manual") {
+          // through
+        }
+      });
+    })();
+  }
 
   await batch(denops, (helper) => {
     vars.g.set(helper, "ddc#_complete_pos", -1);

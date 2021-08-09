@@ -171,9 +171,10 @@ export class Ddc {
             new RegExp(o.forceCompletionPattern + "$"),
           ) != -1;
       if (
-        !forceCompletion &&
-        (completeStr.length < o.minAutoCompleteLength ||
-          completeStr.length > o.maxAutoCompleteLength)
+        completePos < 0 ||
+        (!forceCompletion && context.event != "Manual" &&
+          (completeStr.length < o.minAutoCompleteLength ||
+            completeStr.length > o.maxAutoCompleteLength))
       ) {
         delete this.prevResults[s.name];
         return;

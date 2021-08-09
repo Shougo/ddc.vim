@@ -46,6 +46,7 @@ endfunction
 function! ddc#_complete() abort
   let info = complete_info()
   let noinsert = &completeopt =~# 'noinsert'
+  echomsg mode()
   if mode() !=# 'i'
         \ || (info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
@@ -54,6 +55,7 @@ function! ddc#_complete() abort
     return
   endif
 
+  echomsg g:ddc#_complete_pos
   if g:ddc#_complete_pos >= 0
     call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   else
@@ -112,6 +114,11 @@ endfunction
 
 function! ddc#auto_complete() abort
   call denops#notify('ddc', 'onEvent', ['Auto'])
+  return ''
+endfunction
+function! ddc#manual_complete(...) abort
+  return printf("\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
+        \ string([get(a:000, 0, [])]))
 endfunction
 
 function! ddc#get_input(event) abort

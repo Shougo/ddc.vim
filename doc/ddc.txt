@@ -157,6 +157,11 @@ filterParams
 ------------------------------------------------------------------------------
 FUNCTIONS 						*ddc-functions*
 
+						*ddc#auto_complete()*
+ddc#auto_complete()
+		It calls the auto completion of ddc to update current
+		candidates.
+
 							*ddc#disable()*
 ddc#disable()
 		Disable ddc auto completion.
@@ -224,6 +229,13 @@ ddc#complete_common_string()
 						*ddc#insert_candidate()*
 ddc#insert_candidate({index})
 		Insert the candidate at index {index}. Indices start at 0.
+		Note: It must be in |:map-<expr>|.
+
+					    	*ddc#manual_complete()*
+ddc#manual_complete([{sources}])
+		Manual trigger ddc completion.
+		You can provide a list of {sources}: It can be the name of a
+		source or a list of sources name.
 		Note: It must be in |:map-<expr>|.
 
 ==============================================================================

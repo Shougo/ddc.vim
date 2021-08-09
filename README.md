@@ -128,5 +128,6 @@ See `:help ddc-options` for a complete list of options.
 * [x] virtual text completion mode
 * [x] Split sources and filters
 * [x] Implement LSP source
+* [x] Manual completion support
 * [ ] iskeyword support
-* [ ] Manual completion support
+* [ ] Implement converter_remove_overlap
