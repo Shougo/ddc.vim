@@ -162,7 +162,7 @@ export class Ddc {
       const forceCompletion = o.forceCompletionPattern.length != 0 &&
         context.input.search(
             new RegExp(o.forceCompletionPattern + "$"),
-          ) != null;
+          ) != -1;
       if (
         !forceCompletion &&
         (completeStr.length < o.minAutoCompleteLength ||
