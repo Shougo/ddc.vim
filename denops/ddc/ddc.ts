@@ -101,14 +101,9 @@ export class Ddc {
     return names.map((n) => this.filters[n]).filter((v) => v);
   }
 
-  async registerAutocmd(
-    denops: Denops,
-    events: string[],
-  ) {
+  async registerAutocmd(denops: Denops, events: string[]) {
     await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
-      for (
-        const event of events
-      ) {
+      for (const event of events) {
         if (!this.events.includes(event)) {
           helper.define(
             event as autocmd.AutocmdEvent,
