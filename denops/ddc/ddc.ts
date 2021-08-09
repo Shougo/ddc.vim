@@ -26,6 +26,12 @@ import {
 } from "./base/filter.ts";
 import { assertEquals, Denops, toFileUrl } from "./deps.ts";
 
+type DdcResult = {
+  candidates: Candidate[];
+  completeStr: string;
+  lineNr: number;
+};
+
 function formatAbbr(word: string, abbr: string | undefined): string {
   return abbr ? abbr : word;
 }
@@ -85,6 +91,7 @@ function filterArgs(
 export class Ddc {
   private sources: Record<string, BaseSource> = {};
   private filters: Record<string, BaseFilter> = {};
+  private prevResults: Record<string, DdcResult> = {};
 
   private foundSources(names: string[]): BaseSource[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
@@ -168,19 +175,43 @@ export class Ddc {
         (completeStr.length < o.minAutoCompleteLength ||
           completeStr.length > o.maxAutoCompleteLength)
       ) {
+        delete this.prevResults[s.name];
         return;
       }
-      const scs = await s.gatherCandidates(
-        denops,
-        context,
-        options,
-        o,
-        p,
-        completeStr,
-      );
-      if (!scs.length) {
-        return;
+
+      // Check previous result.
+      const result = s.name in this.prevResults
+        ? this.prevResults[s.name]
+        : null;
+
+      if (
+        !result ||
+        !completeStr.startsWith(result.completeStr) ||
+        context.lineNr != result.lineNr ||
+        context.event == "Auto" ||
+        context.event == "Manual" ||
+        o.isVolatile
+      ) {
+        // Not matched.
+        const scs = await s.gatherCandidates(
+          denops,
+          context,
+          options,
+          o,
+          p,
+          completeStr,
+        );
+        if (!scs.length) {
+          return;
+        }
+
+        this.prevResults[s.name] = {
+          candidates: scs.concat(),
+          completeStr: completeStr,
+          lineNr: context.lineNr,
+        };
       }
+
       const fcs = await this.filterCandidates(
         denops,
         context,
@@ -189,7 +220,7 @@ export class Ddc {
         options.filterOptions,
         options.filterParams,
         completeStr,
-        scs,
+        this.prevResults[s.name].candidates,
       );
       const candidates = fcs.map((c) => (
         {

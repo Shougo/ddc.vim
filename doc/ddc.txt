@@ -300,6 +300,12 @@ ignoreCase
 
 		Default: v:false
 
+				    	*ddc-source-option-isVolatile*
+isVolatile
+		If it is True, ddc refresh candidates always.
+
+		Default: v:false
+
 				    	    	*ddc-source-option-mark*
 mark		(String)
 		A text icon indicating the source displayed with the

@@ -12,8 +12,10 @@ export type Custom = {
 };
 
 export type Context = {
+  event: string;
   filetype: string;
   input: string;
+  lineNr: number;
 };
 
 type CompletionMode = "inline" | "popupmenu" | "manual";
@@ -33,6 +35,7 @@ export type SourceOptions = {
   converters: string[];
   forceCompletionPattern: string;
   ignoreCase: boolean;
+  isVolatile: boolean;
   mark: string;
   matchers: string[];
   maxAutoCompleteLength: number;

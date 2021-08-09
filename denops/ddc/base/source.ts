@@ -50,6 +50,7 @@ export function defaultSourceOptions(): SourceOptions {
     converters: [],
     forceCompletionPattern: "",
     ignoreCase: false,
+    isVolatile: false,
     mark: "",
     matchers: [],
     maxAutoCompleteLength: 80,

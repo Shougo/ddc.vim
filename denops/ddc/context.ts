@@ -261,8 +261,10 @@ export class ContextBuilder {
     if (world.isLmap || world.changedByCompletion) return null;
     const userOptions = this.custom.get(world.filetype, world.bufnr);
     const context = {
+      event: event,
       filetype: world.filetype,
       input: world.input,
+      lineNr: world.lineNr,
     };
     return [context, userOptions];
   }
