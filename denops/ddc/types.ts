@@ -2,7 +2,11 @@ import { autocmd } from "./deps.ts";
 export { BaseSource } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
 
-export type DdcEvent = autocmd.AutocmdEvent | "Refresh" | "Manual";
+export type DdcEvent =
+  | autocmd.AutocmdEvent
+  | "Manual"
+  | "AutoRefresh"
+  | "ManualRefresh";
 
 export type SourceName = string;
 

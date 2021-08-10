@@ -111,7 +111,8 @@ function! ddc#register_filter(dict) abort
 endfunction
 
 function! ddc#refresh_candidates() abort
-  call denops#notify('ddc', 'onEvent', ['Refresh'])
+  call denops#notify('ddc', 'onEvent',
+        \ [g:ddc#_event =~# '^Manual' ? 'ManualRefresh' : 'AutoRefresh'])
 endfunction
 
 function! ddc#manual_complete(...) abort

@@ -187,7 +187,7 @@ function initialWorld(): World {
   return {
     bufnr: 0,
     changedByCompletion: false,
-    event: "Refresh",
+    event: "Manual",
     filetype: "",
     input: "",
     isLmap: false,
@@ -261,7 +261,10 @@ export class ContextBuilder {
     const world = await this._cacheWorld(denops, event);
     const old = this.lastWorld;
     this.lastWorld = world;
-    if (event != "Refresh" && event != "Manual" && isNegligible(old, world)) {
+    if (
+      event != "Manual" && event != "AutoRefresh" && event != "ManualRefresh" &&
+      isNegligible(old, world)
+    ) {
       return null;
     }
     if (world.isLmap || world.changedByCompletion) return null;

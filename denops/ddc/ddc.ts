@@ -198,7 +198,8 @@ export class Ddc {
           ) != -1;
       if (
         completePos < 0 ||
-        (!forceCompletion && context.event != "Manual" &&
+        (!forceCompletion &&
+          context.event != "Manual" && context.event != "ManualRefresh" &&
           (completeStr.length < o.minAutoCompleteLength ||
             completeStr.length > o.maxAutoCompleteLength))
       ) {
@@ -215,8 +216,9 @@ export class Ddc {
         !result ||
         !completeStr.startsWith(result.completeStr) ||
         context.lineNr != result.lineNr ||
-        context.event == "Refresh" ||
         context.event == "Manual" ||
+        context.event == "AutoRefresh" ||
+        context.event == "ManualRefresh" ||
         o.isVolatile
       ) {
         // Not matched.

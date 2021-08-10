@@ -83,7 +83,8 @@ export async function main(denops: Denops) {
       );
 
       if (
-        options.autoCompleteEvents.indexOf(event) < 0 && event != "Refresh"
+        options.autoCompleteEvents.indexOf(event) < 0 &&
+        event != "AutoRefresh" && event != "ManualRefresh"
       ) {
         return;
       }
@@ -116,11 +117,15 @@ export async function main(denops: Denops) {
     await (async function write() {
       const pumvisible = await denops.call("pumvisible");
       await batch(denops, (helper) => {
+        vars.g.set(helper, "ddc#_event", context.event);
         vars.g.set(helper, "ddc#_complete_pos", completePos);
         vars.g.set(helper, "ddc#_candidates", candidates);
         if (
-          options.completionMode == "popupmenu" || pumvisible ||
-          context.event == "Manual"
+          options.completionMode == "popupmenu" ||
+          context.event == "Manual" ||
+          context.event == "AutoRefresh" ||
+          context.event == "ManualRefresh" ||
+          pumvisible
         ) {
           helper.call("ddc#complete");
         } else if (options.completionMode == "inline") {
@@ -133,6 +138,7 @@ export async function main(denops: Denops) {
   }
 
   await batch(denops, (helper) => {
+    vars.g.set(helper, "ddc#_event", "Manual");
     vars.g.set(helper, "ddc#_complete_pos", -1);
     vars.g.set(helper, "ddc#_candidates", []);
     vars.g.set(helper, "ddc#_initialized", 1);
