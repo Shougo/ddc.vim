@@ -1,10 +1,16 @@
-import { Candidate, Context, DdcOptions, SourceOptions } from "../types.ts";
+import {
+  Candidate,
+  Context,
+  DdcEvent,
+  DdcOptions,
+  SourceOptions,
+} from "../types.ts";
 import { Denops } from "../deps.ts";
 
 export abstract class BaseSource {
   name = "";
   isBytePos = false;
-  events = [];
+  events: DdcEvent[] = [];
 
   async onInit(
     _denops: Denops,

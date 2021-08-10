@@ -12,7 +12,7 @@ export type Custom = {
 };
 
 export type Context = {
-  event: string;
+  event: DdcEvent;
   filetype: string;
   input: string;
   lineNr: number;

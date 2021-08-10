@@ -1,6 +1,7 @@
 import {
   Candidate,
   Context,
+  DdcEvent,
   DdcOptions,
   FilterOptions,
   SourceOptions,
@@ -9,7 +10,7 @@ import { Denops } from "../deps.ts";
 
 export abstract class BaseFilter {
   name = "";
-  events = [];
+  events: DdcEvent[] = [];
 
   async onInit(
     _denops: Denops,

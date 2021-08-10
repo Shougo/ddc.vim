@@ -51,7 +51,7 @@ export async function main(denops: Denops) {
       return Promise.resolve(contextBuilder.getBuffer());
     },
     async _cacheWorld(arg1: unknown): Promise<unknown> {
-      return await contextBuilder._cacheWorld(denops, arg1 as string);
+      return await contextBuilder._cacheWorld(denops, arg1 as DdcEvent);
     },
     async manualComplete(arg1: unknown): Promise<void> {
       const sources = arg1 as string[];

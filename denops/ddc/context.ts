@@ -1,5 +1,11 @@
 import { assertEquals, Denops, fn, vars } from "./deps.ts";
-import { Context, DdcOptions, FilterOptions, SourceOptions } from "./types.ts";
+import {
+  Context,
+  DdcEvent,
+  DdcOptions,
+  FilterOptions,
+  SourceOptions,
+} from "./types.ts";
 
 // where
 // T: Object
@@ -169,7 +175,7 @@ class Custom {
 type World = {
   bufnr: number;
   changedByCompletion: boolean;
-  event: string;
+  event: DdcEvent;
   filetype: string;
   input: string;
   isLmap: boolean;
@@ -181,7 +187,7 @@ function initialWorld(): World {
   return {
     bufnr: 0,
     changedByCompletion: false,
-    event: "",
+    event: "Refresh",
     filetype: "",
     input: "",
     isLmap: false,
@@ -199,7 +205,7 @@ async function _call<T>(denops: Denops, f: string, def: T): Promise<T> {
 }
 
 // Fetches current state
-async function cacheWorld(denops: Denops, event: string): Promise<World> {
+async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   const changedByCompletion: Promise<boolean> = (async () => {
     const completedItem =
       (await vars.v.get(denops, "completed_item")) as Record<string, unknown>;
@@ -244,13 +250,13 @@ export class ContextBuilder {
   private custom: Custom = new Custom();
 
   // Re-export for denops.dispatcher
-  async _cacheWorld(denops: Denops, event: string): Promise<World> {
+  async _cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     return await cacheWorld(denops, event);
   }
 
   async createContext(
     denops: Denops,
-    event: string,
+    event: DdcEvent,
   ): Promise<null | [Context, DdcOptions]> {
     const world = await this._cacheWorld(denops, event);
     const old = this.lastWorld;
