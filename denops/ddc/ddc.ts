@@ -122,7 +122,9 @@ export class Ddc {
     source.name = name;
     source.onInit(denops);
     this.sources[source.name] = source;
-    this.registerAutocmd(denops, source.events);
+    if (source.events && source.events.length != 0) {
+      this.registerAutocmd(denops, source.events);
+    }
   }
   async registerFilter(denops: Denops, path: string, name: string) {
     const mod = await import(toFileUrl(path).href);
@@ -130,7 +132,9 @@ export class Ddc {
     filter.name = name;
     filter.onInit(denops);
     this.filters[filter.name] = filter;
-    this.registerAutocmd(denops, filter.events);
+    if (filter.events && filter.events.length != 0) {
+      this.registerAutocmd(denops, filter.events);
+    }
   }
 
   async onEvent(
@@ -140,7 +144,7 @@ export class Ddc {
   ): Promise<void> {
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
-      if (source.events.includes(context.event)) {
+      if (source.events?.includes(context.event)) {
         await source.onEvent(
           denops,
           context,
@@ -157,7 +161,7 @@ export class Ddc {
       );
 
       for (const filter of filters) {
-        if (filter.events.includes(context.event)) {
+        if (filter.events?.includes(context.event)) {
           const [o, p] = filterArgs(
             options.filterOptions,
             options.filterParams,

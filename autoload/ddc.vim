@@ -46,7 +46,6 @@ endfunction
 function! ddc#_complete() abort
   let info = complete_info()
   let noinsert = &completeopt =~# 'noinsert'
-  echomsg mode()
   if mode() !=# 'i'
         \ || (info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)

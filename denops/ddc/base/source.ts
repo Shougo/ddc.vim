@@ -4,7 +4,7 @@ import { Denops } from "../deps.ts";
 export abstract class BaseSource {
   name = "";
   isBytePos = false;
-  events = ["InsertEnter"];
+  events = [];
 
   async onInit(
     _denops: Denops,
