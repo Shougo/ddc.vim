@@ -440,6 +440,36 @@ onEvent
 ------------------------------------------------------------------------------
 CANDIDATE ATTRIBUTES				*ddc-candidate-attributes*
 
+					*ddc-candidate-attribute-name*
+word		(String)			(Required)
+		The completion word of a candidate. It is used for matching
+		inputs.
+
+					*ddc-candidate-attribute-abbr*
+abbr		(String)			(Optional)
+		The abbreviation of a candidate. It is displayed in popup
+		window.
+
+					*ddc-candidate-attribute-kind*
+kind		(String)			(Optional)
+		The kind of a candidate. It is displayed in popup window.
+
+					*ddc-candidate-attribute-menu*
+menu		(String)			(Optional)
+		The menu information of a candidate. It is displayed in popup
+		window.
+
+					*ddc-candidate-attribute-info*
+info		(String)			(Optional)
+		The preview information of a candidate. If 'completeopt'
+		contains "preview", it will be displayed in |preview-window|.
+
+					*ddc-candidate-attribute-dup*
+dup		(Integer)			(Optional)
+		If it is non zero, the item will be displayed in the popup
+		menu when an item with the same word is already present.
+
+
 ==============================================================================
 CREATE FILTER						*ddc-create-filter*
 
