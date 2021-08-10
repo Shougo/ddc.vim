@@ -71,14 +71,14 @@ For example:
 
 The set of available options follows.
 
-					*ddc-options-autoCompleteEvents*
+					*ddc-option-autoCompleteEvents*
 autoCompleteEvents
 		The auto completion fired events.  It must be list of
 		|autocmd-events| string.
 
 		Default value: ["InsertEnter", "TextChangedI", "TextChangedP"]
 
-						*ddc-options-completionMode*
+						*ddc-option-completionMode*
 completionMode
 		The completion mode. It must be following string.
 
@@ -90,14 +90,14 @@ completionMode
 
 		Default value: "popupmenu"
 
-					*ddc-options-keywordPattern*
+					*ddc-option-keywordPattern*
 keywordPattern
 		It defines the keyword pattern for completion.
 		Note: It is JavaScript regexp.
 
 		Default value: '\w*'
 
-							*ddc-options-sources*
+							*ddc-option-sources*
 sources
 		It is a list of registered source names.  You have to select
 		one or more sources to use completion.
@@ -109,7 +109,7 @@ sources
 		" e.g.
 		call ddc#custom#patch_global('sources', ['around'])
 <
-						*ddc-options-sourceOptions*
+						*ddc-option-sourceOptions*
 sourceOptions
 		It is a dictionary that maps source names to its options.  The
 		options with the name "_" is used as the options for all
@@ -123,7 +123,7 @@ sourceOptions
 		    \ 'around': {'mark': 'A'},
 		    \ })
 <
-						*ddc-options-sourceParams*
+						*ddc-option-sourceParams*
 sourceParams
 		It is a dictionary that maps source names to its parameters.
 		See also |ddc-source-params|.
@@ -134,7 +134,7 @@ sourceParams
 		    \ 'around': {'max': 8},
 		    \ })
 <
-						*ddc-options-filterOptions*
+						*ddc-option-filterOptions*
 filterOptions
 		It is a dictionary that maps filter names to its options.
 		See also |ddc-filter-options|.
@@ -145,7 +145,7 @@ filterOptions
 		    \ 'matcher_head': {},
 		    \ })
 <
-						*ddc-options-filterParams*
+						*ddc-option-filterParams*
 filterParams
 		It is a dictionary that maps filter names to its parameters.
 		Default value: {}
@@ -413,6 +413,30 @@ Note: If you call Vim functions in your source, it is not asynchronous.
 ------------------------------------------------------------------------------
 SOURCE ATTRIBUTES				*ddc-source-attributes*
 
+					*ddc-source-attribute-events*
+events		(string[])			(Optional)
+		List of events for which |ddc-source-attribute-onEvent|
+		should get called.
+
+		Default: []
+
+				*ddc-source-attribute-gatherCandidates*
+gatherCandidates
+		(Function)			(Required)
+		It is called to gather candidates.
+
+				*ddc-source-attribute-getCompletePosition*
+getCompletePosition
+		(Function)			(Optional)
+		It is called to get the position of the current completion.
+
+				*ddc-source-attribute-onEvent*
+onEvent
+		(Function)			(Required)
+		Called for the autocommands.
+		It is useful to make cache.
+
+
 ------------------------------------------------------------------------------
 CANDIDATE ATTRIBUTES				*ddc-candidate-attributes*
 
@@ -431,6 +455,24 @@ Note: If you call Vim functions in your source, it is not asynchronous.
 
 ------------------------------------------------------------------------------
 FILTER ATTRIBUTES				*ddc-filter-attributes*
+
+					*ddc-filter-attribute-events*
+events		(string[])			(Optional)
+		List of events for which |ddc-filter-attribute-onEvent|
+		should get called.
+
+		Default: []
+
+				*ddc-filter-attribute-filter*
+filter
+		(Function)			(Required)
+		It is called to filter candidates.
+
+				*ddc-filter-attribute-onEvent*
+onEvent
+		(Function)			(Required)
+		Called for the autocommands.
+		It is useful to make cache.
 
 
 ==============================================================================
