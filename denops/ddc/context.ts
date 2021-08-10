@@ -219,7 +219,7 @@ async function cacheWorld(denops: Denops, event: string): Promise<World> {
   const mode: string = event == "InsertEnter"
     ? "i"
     : (await denops.call("mode")) as string;
-  const input = denops.call("ddc#util#get_input", mode) as Promise<string>;
+  const input = denops.call("ddc#util#get_input", event) as Promise<string>;
   return {
     bufnr: await bufnr,
     changedByCompletion: await changedByCompletion,

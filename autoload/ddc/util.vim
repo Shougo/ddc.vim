@@ -36,10 +36,7 @@ function! ddc#util#get_syn_names() abort
 endfunction
 
 function! ddc#util#get_input(event) abort
-  let mode = mode()
-  if a:event ==# 'InsertEnter'
-    let mode = 'i'
-  endif
+  let mode = a:event ==# 'InsertEnter' ? 'i' : mode()
   let text = getline('.')
   let input = (mode ==# 'i' ? (col('.')-1) : col('.')) >= len(text) ?
         \      text :
