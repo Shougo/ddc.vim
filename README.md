@@ -66,7 +66,7 @@ call dein#add('vim-denops/denops.vim')
 call dein#end()
 ```
 
-Note: Ddc.vim does not include any sources and filters.
+**Note:** Ddc.vim does not include any sources and filters.
 You can search ddc plugins(sources and filters) from
 [here](https://github.com/topics/ddc-vim).
 
