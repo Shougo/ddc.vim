@@ -8,10 +8,10 @@ Note: It is alpha version!!  You can test it.
 
 Please read [help](doc/ddc.txt) for details.
 
-DDC is the abbreviation of "dark deno powered completion". It provides an
+Ddc is the abbreviation of "dark deno powered completion". It provides an
 extensible and asynchronous completion framework for neovim/Vim8.
 
-ddc will display completions via `complete()` by default.
+ddc.vim will display completions via `complete()` by default.
 
 <!-- vim-markdown-toc GFM -->
 
@@ -40,9 +40,9 @@ Because denops.vim is better than neovim Python interface.
 
 ## Install
 
-**Note:** ddc requires Neovim (0.5.0+ and of course, **latest** is recommended)
-or Vim8.2. See [requirements](#requirements) if you aren't sure whether you have
-this.
+**Note:** Ddc.vim requires Neovim (0.5.0+ and of course, **latest** is
+recommended) or Vim8.2. See [requirements](#requirements) if you aren't sure
+whether you have this.
 
 For vim-plug
 
@@ -66,10 +66,15 @@ call dein#add('vim-denops/denops.vim')
 call dein#end()
 ```
 
+Note: Ddc.vim does not include any sources and filters.
+You can search ddc plugins(sources and filters) from
+[here](https://github.com/topics/ddc-vim).
+
+
 
 ### Requirements
 
-ddc requires both Deno and denops.vim.
+Ddc.vim requires both Deno and denops.vim.
 
 - <https://deno.land/>
 - <https://github.com/vim-denops/denops.vim>

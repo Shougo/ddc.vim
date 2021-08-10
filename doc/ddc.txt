@@ -39,12 +39,16 @@ asynchronous keyword completion system in the current buffer.
 ==============================================================================
 INSTALL							*ddc-install*
 
-Note: ddc requires Neovim (0.5.0+) or Vim8.2+ (latest is recommended).
+Note: Ddc.vim requires Neovim (0.5.0+) or Vim8.2+ (latest is recommended).
 
 Please install both Deno and "denops.vim".
 
 https://deno.land/
 https://github.com/vim-denops/denops.vim
+
+Note: Ddc.vim does not include any sources and filters.
+You can search ddc.vim plugins(sources and filters) from
+https://github.com/topics/ddc-vim.
 
 
 ==============================================================================
@@ -160,13 +164,13 @@ FUNCTIONS 						*ddc-functions*
 
 							*ddc#disable()*
 ddc#disable()
-		Disable ddc auto completion.
-		It should be used when ddc is broken.
+		Disable ddc.vim auto completion.
+		It should be used when ddc.vim is broken.
 		Note: It changes the global state.
 
 							*ddc#enable()*
 ddc#enable()
-		Enable ddc auto completion.
+		Enable ddc.vim auto completion.
 		Note: It changes the global state.
 
 						*ddc#refresh_candidates()*
