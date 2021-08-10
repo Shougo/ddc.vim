@@ -19,6 +19,7 @@ Sources			|ddc-sources|
   Source params	          |ddc-source-params|
 Filters			|ddc-filters|
   Filter options	  |ddc-filter-options|
+  Filter params		  |ddc-filter-params|
 Create source		|ddc-create-source|
   Source attributes	  |ddc-source-attributes|
   Candidate attributes    |ddc-candidate-attributes|
@@ -82,8 +83,8 @@ completionMode
 		The completion mode. It must be following string.
 
 		"popupmenu": Use |ins-completion-menu|.
-		"inline": Use |nvim_buf_set_virtual_text()|.  It is neovim
-			only.
+		"inline": Use virtual text by |nvim_buf_set_extmark()|.  It is
+			neovim only.
 		"manual": You can display popupmenu manually by
 			|ddc#complete()|.
 
@@ -290,6 +291,10 @@ configure them to use ddc.
 ------------------------------------------------------------------------------
 SOURCE OPTIONS						*ddc-source-options*
 
+Note: The sources cannot set default options for source.  If the source need
+to specify the recommended configuration, you should write it in the
+documentation instead.
+
 				    		*ddc-source-option-converters*
 converters		([string])
 		It is a list of registered filter names that used with this
@@ -388,6 +393,9 @@ configure them to use ddc.
 
 ------------------------------------------------------------------------------
 FILTER OPTIONS						*ddc-filter-options*
+
+------------------------------------------------------------------------------
+FILTER PARAMS						*ddc-filter-params*
 
 ==============================================================================
 CREATE SOURCE						*ddc-create-source*

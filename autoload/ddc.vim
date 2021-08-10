@@ -75,7 +75,7 @@ function! ddc#_clear() abort
 endfunction
 
 function! ddc#_inline() abort
-  if !exists('*nvim_buf_set_virtual_text')
+  if !exists('*nvim_buf_set_extmark')
     return
   endif
 
@@ -83,11 +83,11 @@ function! ddc#_inline() abort
     let s:ddc_namespace = nvim_create_namespace('ddc')
   endif
 
-  call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
+  call nvim_buf_clear_namespace(0, s:ddc_namespace, 0, -1)
   if !empty(g:ddc#_candidates)
-    call nvim_buf_set_virtual_text(
-          \ bufnr('%'), s:ddc_namespace, line('.') - 1,
-          \ [[g:ddc#_candidates[0].abbr, 'PmenuSel']], {})
+    call nvim_buf_set_extmark(
+          \ 0, s:ddc_namespace, line('.') - 1, 0,
+          \ { 'virt_text': [[g:ddc#_candidates[0].abbr, 'PmenuSel']] })
   endif
 endfunction
 
