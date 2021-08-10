@@ -76,13 +76,11 @@ export async function main(denops: Denops) {
       if (!maybe) return;
       const [context, options] = maybe;
 
-      if (event == "InsertEnter") {
-        await ddc.onEvent(
-          denops,
-          context,
-          options,
-        );
-      }
+      await ddc.onEvent(
+        denops,
+        context,
+        options,
+      );
 
       if (
         options.autoCompleteEvents.indexOf(event) < 0 && event != "Refresh"
@@ -96,21 +94,13 @@ export async function main(denops: Denops) {
 
   await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
     helper.remove("*");
-    for (
-      const event of [
-        "InsertEnter",
-        "InsertLeave",
-        "TextChangedI",
-        "TextChangedP",
-      ]
-    ) {
-      helper.define(
-        event as autocmd.AutocmdEvent,
-        "*",
-        `call denops#notify('${denops.name}', 'onEvent',["${event}"])`,
-      );
-    }
   });
+  ddc.registerAutocmd(denops, [
+    "InsertEnter",
+    "InsertLeave",
+    "TextChangedI",
+    "TextChangedP",
+  ]);
 
   async function doCompletion(
     denops: Denops,

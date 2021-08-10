@@ -9,6 +9,7 @@ import { Denops } from "../deps.ts";
 
 export abstract class BaseFilter {
   name = "";
+  events = ["InsertEnter"];
 
   async onInit(
     _denops: Denops,
