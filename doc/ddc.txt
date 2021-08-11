@@ -436,6 +436,14 @@ events		(string[])			(Optional)
 
 		Default: []
 
+					*ddc-source-attribute-isBytePos*
+isBytePos	(boolean)			(Optional)
+		If |ddc-source-attribute-getCompletePosition| returns byte
+		position, it must be true.
+		It is useful to use Vim script function.
+
+		Default: false
+
 				*ddc-source-attribute-gatherCandidates*
 gatherCandidates
 		(Function)			(Required)
@@ -451,6 +459,16 @@ onEvent
 		(Function)			(Required)
 		Called for the autocommands.
 		It is useful to make cache.
+
+				*ddc-source-attribute-onInit*
+onInit
+		(Function)			(Optional)
+		Called to initialize source.
+
+				*ddc-source-attribute-params*
+params
+		(Function)			(Optional)
+		Called to get source params.
 
 
 ------------------------------------------------------------------------------
@@ -519,6 +537,16 @@ onEvent
 		(Function)			(Required)
 		Called for the autocommands.
 		It is useful to make cache.
+
+				*ddc-filter-attribute-onInit*
+onInit
+		(Function)			(Optional)
+		Called to initialize filter.
+
+				*ddc-filter-attribute-params*
+params
+		(Function)			(Optional)
+		Called to get filter params.
 
 
 ==============================================================================
