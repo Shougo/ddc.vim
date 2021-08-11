@@ -59,6 +59,7 @@ export function defaultSourceOptions(): SourceOptions {
     ignoreCase: false,
     isVolatile: false,
     mark: "",
+    matcherKey: "",
     matchers: [],
     maxAutoCompleteLength: 80,
     maxCandidates: 500,

@@ -251,6 +251,7 @@ export class Ddc {
         completeStr,
         this.prevResults[s.name].candidates,
       );
+
       const candidates = fcs.map((c) => (
         {
           ...c,
@@ -299,6 +300,17 @@ export class Ddc {
     const sorters = this.foundFilters(sourceOptions.sorters);
     const converters = this.foundFilters(sourceOptions.converters);
 
+    if (sourceOptions.matcherKey != "") {
+      cdd = cdd.map((c) => (
+        {
+          ...c,
+          // @ts-ignore: Convert matcherKey
+          word: c[sourceOptions.matcherKey],
+          __word: c.word,
+        }
+      ));
+    }
+
     for (const matcher of matchers) {
       const [o, p] = filterArgs(filterOptions, filterParams, matcher);
       cdd = await matcher.filter(
@@ -312,6 +324,17 @@ export class Ddc {
         cdd,
       );
     }
+
+    if (sourceOptions.matcherKey != "") {
+      cdd = cdd.map((c) => (
+        {
+          ...c,
+          // @ts-ignore: Restore matcherKey
+          word: c.__word,
+        }
+      ));
+    }
+
     for (const sorter of sorters) {
       const [o, p] = filterArgs(filterOptions, filterParams, sorter);
       cdd = await sorter.filter(

@@ -41,6 +41,7 @@ export type SourceOptions = {
   ignoreCase: boolean;
   isVolatile: boolean;
   mark: string;
+  matcherKey: string;
   matchers: string[];
   maxAutoCompleteLength: number;
   maxCandidates: number;

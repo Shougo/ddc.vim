@@ -312,7 +312,7 @@ to specify the recommended configuration, you should write it in the
 documentation instead.
 
 				    		*ddc-source-option-converters*
-converters		([string])
+converters		([String])
 		It is a list of registered filter names that used with this
 		source.  Candidates will be processed in the order you specify
 		here.
@@ -320,7 +320,7 @@ converters		([string])
 		Default: []
 
 				*ddc-source-option-forceCompletionPattern*
-forceCompletionPattern
+forceCompletionPattern	(String)
 		If it matches the input, ddc ignores
 		|ddc-source-option-minAutoCompleteLength|.
 		Note: It is JavaScript regexp.
@@ -328,13 +328,13 @@ forceCompletionPattern
 		Default value: ''
 
 				    	*ddc-source-option-ignoreCase*
-ignoreCase
+ignoreCase	(Boolean)
 		If it is True, ddc ignores case.
 
 		Default: v:false
 
 				    	*ddc-source-option-isVolatile*
-isVolatile
+isVolatile	(Boolean)
 		If it is True, ddc refresh candidates always.
 
 		Default: v:false
@@ -363,8 +363,15 @@ maxCandidates	(Integer)
 
 		Default: 500
 
+					*ddc-source-attribute-matcherKey*
+matcherKey	(String)			(Optional)
+		Matcher compare key instead of "word".
+		If it is empty string, the feature is disabled.
+
+		Default: ""
+
 				    		*ddc-source-option-matchers*
-matchers	([string])
+matchers	([String])
 		It is a list of registered filter names that used with this
 		source.  Candidates will be processed in the order you specify
 		here.
@@ -378,7 +385,7 @@ minAutoCompleteLength	(Integer)
 		Default: 2
 
 				    		*ddc-source-option-sorters*
-sorters		([string])
+sorters		([String])
 		It is a list of registered filter names that used with this
 		source.  Candidates will be processed in the order you specify
 		here.
@@ -446,28 +453,28 @@ isBytePos	(boolean)			(Optional)
 
 				*ddc-source-attribute-gatherCandidates*
 gatherCandidates
-		(Function)			(Required)
+		(function)			(Required)
 		It is called to gather candidates.
 
 				*ddc-source-attribute-getCompletePosition*
 getCompletePosition
-		(Function)			(Optional)
+		(function)			(Optional)
 		It is called to get the position of the current completion.
 
 				*ddc-source-attribute-onEvent*
 onEvent
-		(Function)			(Required)
+		(function)			(Required)
 		Called for the autocommands.
 		It is useful to make cache.
 
 				*ddc-source-attribute-onInit*
 onInit
-		(Function)			(Optional)
+		(function)			(Optional)
 		Called to initialize source.
 
 				*ddc-source-attribute-params*
 params
-		(Function)			(Optional)
+		(function)			(Optional)
 		Called to get source params.
 
 
@@ -529,23 +536,23 @@ events		(string[])			(Optional)
 
 				*ddc-filter-attribute-filter*
 filter
-		(Function)			(Required)
+		(function)			(Required)
 		It is called to filter candidates.
 
 				*ddc-filter-attribute-onEvent*
 onEvent
-		(Function)			(Required)
+		(function)			(Required)
 		Called for the autocommands.
 		It is useful to make cache.
 
 				*ddc-filter-attribute-onInit*
 onInit
-		(Function)			(Optional)
+		(function)			(Optional)
 		Called to initialize filter.
 
 				*ddc-filter-attribute-params*
 params
-		(Function)			(Optional)
+		(function)			(Optional)
 		Called to get filter params.
 
 
