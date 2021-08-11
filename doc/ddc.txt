@@ -62,11 +62,11 @@ Options can be toggled through the use of |ddc#custom#patch_global()|.
 For example:
 >
     " Set a single option
-    call ddc#custom#patch_global('autoCompleteDelay', 200)
+    call ddc#custom#patch_global('completionMode', 'manual')
 
     " Pass a dictionary to set multiple options
     call ddc#custom#patch_global({
-    \ 'autoCompleteDelay': 200,
+    \ 'keywordPattern': '\w*',
     \ 'smartCase': v:true,
     \ })
 
