@@ -101,6 +101,13 @@ export class Ddc {
     return names.map((n) => this.filters[n]).filter((v) => v);
   }
 
+  private foundInvalidSources(names: string[]): string[] {
+    return names.filter((n) => !this.sources[n]);
+  }
+  private foundFInvalidilters(names: string[]): string[] {
+    return names.filter((n) => !this.filters[n]);
+  }
+
   async registerAutocmd(denops: Denops, events: string[]) {
     await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
       for (const event of events) {
@@ -142,6 +149,17 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<void> {
+    // Check invalid sources
+    const invalidSources = this.foundInvalidSources(options.sources);
+    if (invalidSources.length != 0) {
+      await denops.call(
+        "ddc#util#print_error",
+        "Invalid sources are detected!",
+      );
+      await denops.call("ddc#util#print_error", invalidSources);
+    }
+
+    let filterNames: string[] = [];
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
       if (source.events?.includes(context.event)) {
@@ -153,22 +171,30 @@ export class Ddc {
           sourceParams,
         );
       }
-      const filters = this.foundFilters(
-        sourceOptions.matchers.concat(
-          sourceOptions.sorters,
-          sourceOptions.converters,
-        ),
-      );
 
-      for (const filter of filters) {
-        if (filter.events?.includes(context.event)) {
-          const [o, p] = filterArgs(
-            options.filterOptions,
-            options.filterParams,
-            filter,
-          );
-          await filter.onEvent(denops, context, options, o, p);
-        }
+      filterNames = filterNames.concat(
+        sourceOptions.matchers,
+        sourceOptions.sorters,
+        sourceOptions.converters,
+      );
+    }
+
+    // Uniq.
+    filterNames = filterNames.filter(
+      (elem, index, self) => self.indexOf(elem) === index,
+    );
+
+    // Check invalid filters
+    const filters = this.foundFilters(filterNames);
+
+    for (const filter of filters) {
+      if (filter.events?.includes(context.event)) {
+        const [o, p] = filterArgs(
+          options.filterOptions,
+          options.filterParams,
+          filter,
+        );
+        await filter.onEvent(denops, context, options, o, p);
       }
     }
   }
