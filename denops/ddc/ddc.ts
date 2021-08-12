@@ -104,7 +104,7 @@ export class Ddc {
   private foundInvalidSources(names: string[]): string[] {
     return names.filter((n) => !this.sources[n]);
   }
-  private foundFInvalidilters(names: string[]): string[] {
+  private foundInvalidFilters(names: string[]): string[] {
     return names.filter((n) => !this.filters[n]);
   }
 
@@ -185,6 +185,15 @@ export class Ddc {
     );
 
     // Check invalid filters
+    const invalidFilters = this.foundInvalidFilters(filterNames);
+    if (invalidFilters.length != 0) {
+      await denops.call(
+        "ddc#util#print_error",
+        "Invalid filters are detected!",
+      );
+      await denops.call("ddc#util#print_error", invalidFilters);
+    }
+
     const filters = this.foundFilters(filterNames);
 
     for (const filter of filters) {
