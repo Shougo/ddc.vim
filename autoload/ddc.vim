@@ -28,12 +28,13 @@ function! ddc#disable() abort
 endfunction
 
 function! ddc#complete() abort
-  call ddc#_clear()
+  if exists('g:ddc#_save_completeopt')
+    " Restore completeopt
+    let &completeopt = g:ddc#_save_completeopt
+    unlet g:ddc#_save_completeopt
+  endif
 
-  set completeopt-=longest
-  set completeopt+=menuone
-  set completeopt-=menu
-  set completeopt+=noselect
+  call ddc#_clear()
 
   " Debounce for Vim8
   if has('nvim')
@@ -55,6 +56,24 @@ function! ddc#_complete() abort
   endif
 
   if g:ddc#_complete_pos >= 0
+    if g:ddc#_event !=# 'Manual'
+      if !exists('g:ddc#_save_completeopt')
+        let g:ddc#_save_completeopt = &completeopt
+      endif
+
+      " Auto completion conflicts with 'completeopt'.
+      set completeopt-=longest
+      set completeopt+=menuone
+      set completeopt-=menu
+
+      if &completeopt !~# 'noinsert\|noselect' || g:ddc#_event =~# 'Refresh$'
+        " Note: If it is async, noselect is needed to prevent without
+        " confirmation problem
+        set completeopt-=noinsert
+        set completeopt+=noselect
+      endif
+    endif
+
     call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   else
     " Clear current popup
