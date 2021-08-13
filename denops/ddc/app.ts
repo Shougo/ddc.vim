@@ -1,4 +1,4 @@
-import { autocmd, Denops, ensureObject, gather, vars } from "./deps.ts";
+import { autocmd, batch, Denops, ensureObject, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
 import { Context, DdcEvent, DdcOptions } from "./types.ts";
@@ -116,7 +116,7 @@ export async function main(denops: Denops) {
 
     await (async function write() {
       const pumvisible = await denops.call("pumvisible");
-      await gather(denops, async (denops) => {
+      await batch(denops, async (denops) => {
         await vars.g.set(denops, "ddc#_event", context.event);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
         await vars.g.set(denops, "ddc#_candidates", candidates);
@@ -137,7 +137,7 @@ export async function main(denops: Denops) {
     })();
   }
 
-  await gather(denops, async (denops) => {
+  await batch(denops, async (denops) => {
     await vars.g.set(denops, "ddc#_event", "Manual");
     await vars.g.set(denops, "ddc#_complete_pos", -1);
     await vars.g.set(denops, "ddc#_candidates", []);
