@@ -1,4 +1,4 @@
-import { autocmd, batch, Denops, ensureObject, vars } from "./deps.ts";
+import { autocmd, batch, Denops, ensureObject, fn, op, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
 import { Context, DdcEvent, DdcOptions } from "./types.ts";
@@ -77,7 +77,7 @@ export async function main(denops: Denops) {
       const [context, options] = maybe;
 
       // Skip special buffers.
-      const buftype = await denops.call("getbufvar", "%", "&buftype");
+      const buftype = await op.buftype.getLocal(denops);
       if (
         buftype != "" &&
         options.specialBufferCompletionFiletypes.indexOf(context.filetype) < 0
@@ -124,7 +124,7 @@ export async function main(denops: Denops) {
     );
 
     await (async function write() {
-      const pumvisible = await denops.call("pumvisible");
+      const pumvisible = await fn.pumvisible(denops);
       await batch(denops, async (denops) => {
         await vars.g.set(denops, "ddc#_event", context.event);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);

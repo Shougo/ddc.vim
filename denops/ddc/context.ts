@@ -1,4 +1,4 @@
-import { assertEquals, Denops, fn, vars } from "./deps.ts";
+import { assertEquals, Denops, fn, op, vars } from "./deps.ts";
 import {
   Context,
   DdcEvent,
@@ -215,17 +215,15 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   const filetype: Promise<string> = (async () => {
     const context = await _call(denops, "context_filetype#get_filetype", "");
     if (context != "") return context;
-    return (await denops.call("getbufvar", "%", "&filetype")) as string;
+    return (await op.filetype.getLocal(denops)) as string;
   })();
-  const bufnr = denops.call("bufnr") as Promise<number>;
-  const lineNr = denops.call("line", ".") as Promise<number>;
+  const bufnr = fn.bufnr(denops);
+  const lineNr = fn.line(denops, ".");
   const enabledEskk = _call(denops, "eskk#is_enabled", false);
-  const iminsert = denops.call("getbufvar", "%", "&iminsert") as Promise<
-    number
-  >;
+  const iminsert = op.iminsert.getLocal(denops);
   const mode: string = event == "InsertEnter"
     ? "i"
-    : (await denops.call("mode")) as string;
+    : (await fn.mode(denops)) as string;
   const input = denops.call("ddc#util#get_input", event) as Promise<string>;
   return {
     bufnr: await bufnr,
