@@ -32,7 +32,7 @@ export abstract class BaseSource {
     _sourceParams: Record<string, unknown>,
   ): Promise<number> {
     const matchPos = context.input.search(
-      new RegExp(options.keywordPattern + "$"),
+      new RegExp("(" + options.keywordPattern + ")$"),
     );
     const completePos = matchPos != null ? matchPos : -1;
     return Promise.resolve(completePos);

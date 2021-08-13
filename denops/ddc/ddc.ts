@@ -229,7 +229,7 @@ export class Ddc {
       const completeStr = context.input.slice(completePos);
       const forceCompletion = o.forceCompletionPattern.length != 0 &&
         context.input.search(
-            new RegExp(o.forceCompletionPattern + "$"),
+            new RegExp("(" + o.forceCompletionPattern + ")$"),
           ) != -1;
       if (
         completePos < 0 ||
