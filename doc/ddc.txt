@@ -94,6 +94,27 @@ completionMode
 
 		Default value: "popupmenu"
 
+						*ddc-option-filterOptions*
+filterOptions
+		It is a dictionary that maps filter names to its options.
+		See also |ddc-filter-options|.
+		Default value: {}
+>
+		" e.g.
+		call ddc#custom#patch_global('filterOptions', {
+		    \ 'matcher_head': {},
+		    \ })
+<
+						*ddc-option-filterParams*
+filterParams
+		It is a dictionary that maps filter names to its parameters.
+		Default value: {}
+>
+		" e.g.
+		call ddc#custom#patch_global('filterParams', {
+		    \ 'matcher_head': {},
+		    \ })
+
 					*ddc-option-keywordPattern*
 keywordPattern
 		It defines the keyword pattern for completion.
@@ -138,26 +159,12 @@ sourceParams
 		    \ 'around': {'max': 8},
 		    \ })
 <
-						*ddc-option-filterOptions*
-filterOptions
-		It is a dictionary that maps filter names to its options.
-		See also |ddc-filter-options|.
-		Default value: {}
->
-		" e.g.
-		call ddc#custom#patch_global('filterOptions', {
-		    \ 'matcher_head': {},
-		    \ })
-<
-						*ddc-option-filterParams*
-filterParams
-		It is a dictionary that maps filter names to its parameters.
-		Default value: {}
->
-		" e.g.
-		call ddc#custom#patch_global('filterParams', {
-		    \ 'matcher_head': {},
-		    \ })
+				*ddc-option-specialBufferCompletionFiletypes*
+specialBufferCompletionFiletypes
+		If 'buftype' is not "", ddc auto completion is disabled
+		automatically except the filetype list.
+
+		Default value: []
 
 ------------------------------------------------------------------------------
 FUNCTIONS 						*ddc-functions*
@@ -592,6 +599,10 @@ A: >
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.08.13
+* Disable special buffers completion except
+  ddc-option-specialBufferCompletionFiletypes.
 
 2021.08.09
 * Rename ddc#auto_complete() to ddc#refresh_candidates()

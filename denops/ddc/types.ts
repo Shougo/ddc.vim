@@ -33,6 +33,7 @@ export type DdcOptions = {
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;
   sources: SourceName[];
+  specialBufferCompletionFiletypes: string[];
 };
 
 export type SourceOptions = {

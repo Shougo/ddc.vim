@@ -76,6 +76,15 @@ export async function main(denops: Denops) {
       if (!maybe) return;
       const [context, options] = maybe;
 
+      // Skip special buffers.
+      const buftype = await denops.call("getbufvar", "%", "&buftype");
+      if (
+        buftype != "" &&
+        options.specialBufferCompletionFiletypes.indexOf(context.filetype) < 0
+      ) {
+        return;
+      }
+
       await ddc.onEvent(
         denops,
         context,
