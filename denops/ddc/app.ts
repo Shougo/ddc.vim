@@ -1,4 +1,4 @@
-import { autocmd, batch, Denops, ensureObject, vars } from "./deps.ts";
+import { autocmd, Denops, ensureObject, gather, vars } from "./deps.ts";
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
 import { Context, DdcEvent, DdcOptions } from "./types.ts";
@@ -116,10 +116,10 @@ export async function main(denops: Denops) {
 
     await (async function write() {
       const pumvisible = await denops.call("pumvisible");
-      await batch(denops, (helper) => {
-        vars.g.set(helper, "ddc#_event", context.event);
-        vars.g.set(helper, "ddc#_complete_pos", completePos);
-        vars.g.set(helper, "ddc#_candidates", candidates);
+      await gather(denops, async (denops) => {
+        await vars.g.set(denops, "ddc#_event", context.event);
+        await vars.g.set(denops, "ddc#_complete_pos", completePos);
+        await vars.g.set(denops, "ddc#_candidates", candidates);
         if (
           options.completionMode == "popupmenu" ||
           context.event == "Manual" ||
@@ -127,9 +127,9 @@ export async function main(denops: Denops) {
           context.event == "ManualRefresh" ||
           pumvisible
         ) {
-          helper.call("ddc#complete");
+          await denops.call("ddc#complete");
         } else if (options.completionMode == "inline") {
-          helper.call("ddc#_inline");
+          await denops.call("ddc#_inline");
         } else if (options.completionMode == "manual") {
           // through
         }
@@ -137,14 +137,14 @@ export async function main(denops: Denops) {
     })();
   }
 
-  await batch(denops, (helper) => {
-    vars.g.set(helper, "ddc#_event", "Manual");
-    vars.g.set(helper, "ddc#_complete_pos", -1);
-    vars.g.set(helper, "ddc#_candidates", []);
-    vars.g.set(helper, "ddc#_initialized", 1);
-    vars.g.set(helper, "ddc#_now", 0);
+  await gather(denops, async (denops) => {
+    await vars.g.set(denops, "ddc#_event", "Manual");
+    await vars.g.set(denops, "ddc#_complete_pos", -1);
+    await vars.g.set(denops, "ddc#_candidates", []);
+    await vars.g.set(denops, "ddc#_initialized", 1);
+    await vars.g.set(denops, "ddc#_now", 0);
 
-    helper.cmd("doautocmd <nomodeline> User DDCReady");
+    await denops.cmd("doautocmd <nomodeline> User DDCReady");
   });
 
   //console.log(`${denops.name} has loaded`);
