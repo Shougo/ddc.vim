@@ -41,7 +41,7 @@ export function defaultDdcOptions(): DdcOptions {
     completionMode: "popupmenu",
     filterOptions: {},
     filterParams: {},
-    keywordPattern: "\\w*",
+    keywordPattern: "[a-zA-Z_]\\w*",
     sourceOptions: {},
     sourceParams: {},
     sources: [],

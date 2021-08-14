@@ -66,7 +66,7 @@ For example:
 
     " Pass a dictionary to set multiple options
     call ddc#custom#patch_global({
-    \ 'keywordPattern': '\w*',
+    \ 'keywordPattern': '[a-zA-Z_]\w*',
     \ 'smartCase': v:true,
     \ })
 
@@ -120,7 +120,7 @@ keywordPattern
 		It defines the keyword pattern for completion.
 		Note: It is JavaScript regexp.
 
-		Default value: '\w*'
+		Default value: '[a-zA-Z_]\w*'
 
 							*ddc-option-sources*
 sources
