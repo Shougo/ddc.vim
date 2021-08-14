@@ -600,6 +600,9 @@ A: >
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
+2021.08.14
+* Don't complete when backspace, because of completion flicker.
+
 2021.08.13
 * Disable special buffers completion except
   ddc-option-specialBufferCompletionFiletypes.

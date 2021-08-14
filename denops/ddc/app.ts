@@ -76,6 +76,16 @@ export async function main(denops: Denops) {
       if (!maybe) return;
       const [context, options] = maybe;
 
+      // Note: Don't complete when backspace, because of completion flicker.
+      const prevInput = await vars.g.get(denops, "ddc#_prev_input") as string;
+      const checkBackSpace = (context.input != prevInput
+                              && context.input.length + 1 == prevInput.length
+                              && prevInput.startsWith(context.input));
+      if (checkBackSpace && options.completionMode == "popupmenu") {
+        await vars.g.set(denops, "ddc#_prev_input", context.input);
+        return;
+      }
+
       // Skip special buffers.
       const buftype = await op.buftype.getLocal(denops);
       if (
@@ -127,6 +137,7 @@ export async function main(denops: Denops) {
       const pumvisible = await fn.pumvisible(denops);
       await batch(denops, async (denops) => {
         await vars.g.set(denops, "ddc#_event", context.event);
+        await vars.g.set(denops, "ddc#_prev_input", context.input);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
         await vars.g.set(denops, "ddc#_candidates", candidates);
         if (
@@ -148,6 +159,7 @@ export async function main(denops: Denops) {
 
   await batch(denops, async (denops) => {
     await vars.g.set(denops, "ddc#_event", "Manual");
+    await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_complete_pos", -1);
     await vars.g.set(denops, "ddc#_candidates", []);
     await vars.g.set(denops, "ddc#_initialized", 1);
