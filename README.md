@@ -1,6 +1,6 @@
 # ddc.vim
 
-Note: It is alpha version!!  You can test it.
+Note: It is beta version!!  You can test it.
 
 > Dark deno powered completion framework for neovim/Vim8
 
