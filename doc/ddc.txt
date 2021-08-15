@@ -599,7 +599,7 @@ A: >
 	inoremap <expr><C-t>       ddc#insert_candidate(0)
 	call ddc#custom#patch_global('completionMode', 'inline')
 
-Q: Linked/chained completion mode?
+Q: The Linked/chained completion exists like vim-mucomplete?
 
 A: It is not implemented, but you can emulate the behavior by
    |ddc#manual_complete()| like this. >
