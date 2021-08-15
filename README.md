@@ -41,8 +41,8 @@ Because denops.vim is better than neovim Python interface.
 ## Install
 
 **Note:** Ddc.vim requires Neovim (0.5.0+ and of course, **latest** is
-recommended) or Vim8.2. See [requirements](#requirements) if you aren't sure
-whether you have this.
+recommended) or Vim8.2.0662. See [requirements](#requirements) if you aren't
+sure whether you have this.
 
 For vim-plug
 

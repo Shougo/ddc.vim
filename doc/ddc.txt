@@ -39,7 +39,8 @@ asynchronous keyword completion system in the current buffer.
 ==============================================================================
 INSTALL							*ddc-install*
 
-Note: Ddc.vim requires Neovim (0.5.0+) or Vim8.2+ (latest is recommended).
+Note: Ddc.vim requires Neovim (0.5.0+) or Vim8.2.0662+ (latest is
+recommended).
 
 Please install both Deno and "denops.vim".
 

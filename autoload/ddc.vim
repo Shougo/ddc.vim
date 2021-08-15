@@ -8,9 +8,9 @@ let s:completion_timer = -1
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 
 function! ddc#enable() abort
-  if v:version < 802 && !has('nvim-0.5')
+  if !has('patch-8.2.0662') && !has('nvim-0.5')
     call ddc#util#print_error(
-          \ 'ddc requires Vim 8.2+ or neovim 0.5.0+.')
+          \ 'ddc requires Vim 8.2.0662+ or neovim 0.5.0+.')
     return
   endif
 
