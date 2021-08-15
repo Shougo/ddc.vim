@@ -78,9 +78,9 @@ export async function main(denops: Denops) {
 
       // Note: Don't complete when backspace, because of completion flicker.
       const prevInput = await vars.g.get(denops, "ddc#_prev_input") as string;
-      const checkBackSpace = (context.input != prevInput
-                              && context.input.length + 1 == prevInput.length
-                              && prevInput.startsWith(context.input));
+      const checkBackSpace = (context.input != prevInput &&
+        context.input.length + 1 == prevInput.length &&
+        prevInput.startsWith(context.input));
       if (checkBackSpace && options.completionMode == "popupmenu") {
         await vars.g.set(denops, "ddc#_prev_input", context.input);
         return;

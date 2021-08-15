@@ -216,7 +216,7 @@ export class Ddc {
     const sources = this.foundSources(options.sources)
       .map((s) => [s, ...sourceArgs(options, s)] as const);
     const rs = await Promise.all(sources.map(async ([s, o, p]) => {
-      let pos = await s.getCompletePosition(
+      const pos = await s.getCompletePosition(
         denops,
         context,
         options,
@@ -227,10 +227,11 @@ export class Ddc {
         context.input.search(
             new RegExp("(" + o.forceCompletionPattern + ")$"),
           ) != -1;
-      if (pos < 0 && forceCompletion) {
-        pos = context.input.length;
-      }
-      const completePos = s.isBytePos
+      // Note: If forceCompletion and not matched getCompletePosition(),
+      // Use cursor position instead.
+      const completePos = (pos < 0 && forceCompletion)
+        ? context.input.length
+        : (s.isBytePos && pos >= 0)
         ? byteposToCharpos(context.input, pos)
         : pos;
       const completeStr = context.input.slice(completePos);
