@@ -599,6 +599,20 @@ A: >
 	inoremap <expr><C-t>       ddc#insert_candidate(0)
 	call ddc#custom#patch_global('completionMode', 'inline')
 
+Q: Linked/chained completion mode?
+
+A: It is not implemented, but you can emulate the behavior by
+   |ddc#manual_complete()| like this. >
+
+	let g:chains = ['around', 'zsh', 'deoppet']
+	function! MyChainCompletion() abort
+	  let head = g:chains[0]
+	  let g:chains = g:chains[1:] + [head]
+	  return ddc#manual_complete([head])
+	endfunction
+	inoremap <silent><expr> <C-t>  MyChainCompletion()
+
+
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
