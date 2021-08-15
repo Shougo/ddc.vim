@@ -145,5 +145,5 @@ See `:help ddc-options` for a complete list of options.
 * [x] Split sources and filters
 * [x] Implement LSP source
 * [x] Manual completion support
+* [x] Implement converter_remove_overlap
 * [ ] iskeyword support
-* [ ] Implement converter_remove_overlap
