@@ -146,4 +146,4 @@ See `:help ddc-options` for a complete list of options.
 * [x] Implement LSP source
 * [x] Manual completion support
 * [x] Implement converter_remove_overlap
-* [ ] iskeyword support
+* [x] iskeyword support

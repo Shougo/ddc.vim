@@ -6,6 +6,7 @@ import {
   FilterOptions,
   SourceOptions,
 } from "./types.ts";
+import { vimoption2ts } from "./util.ts";
 
 // where
 // T: Object
@@ -41,7 +42,7 @@ export function defaultDdcOptions(): DdcOptions {
     completionMode: "popupmenu",
     filterOptions: {},
     filterParams: {},
-    keywordPattern: "[a-zA-Z_]\\w*",
+    keywordPattern: "[a-zA-Z_]\\k*",
     sourceOptions: {},
     sourceParams: {},
     sources: [],
@@ -274,6 +275,14 @@ export class ContextBuilder {
     }
     if (world.isLmap || world.changedByCompletion) return null;
     const userOptions = this.custom.get(world.filetype, world.bufnr);
+
+    // Convert keywordPattern
+    const iskeyword = await op.iskeyword.getLocal(denops);
+    userOptions.keywordPattern = userOptions.keywordPattern.replaceAll(
+      /\\k/g,
+      () => "[a-zA-Z" + vimoption2ts(iskeyword) + "]",
+    );
+
     const context = {
       event: event,
       filetype: world.filetype,

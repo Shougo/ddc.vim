@@ -115,13 +115,14 @@ filterParams
 		call ddc#custom#patch_global('filterParams', {
 		    \ 'matcher_head': {},
 		    \ })
-
+<
 					*ddc-option-keywordPattern*
 keywordPattern
 		It defines the keyword pattern for completion.
 		Note: It is JavaScript regexp.
+		Note: "\k" is converted to 'iskeyword' pattern.
 
-		Default value: '[a-zA-Z_]\w*'
+		Default value: '[a-zA-Z_]\k*'
 
 							*ddc-option-sources*
 sources
@@ -600,6 +601,9 @@ A: >
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.08.15
+* Use 'iskeyword' for |ddc-option-keywordPattern|.
 
 2021.08.14
 * Don't complete when backspace, because of completion flicker.
