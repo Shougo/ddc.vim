@@ -46,4 +46,6 @@ function! ddc#util#get_input(event) abort
 
   return input
 endfunction
-
+function! ddc#util#get_next_input(event) abort
+  return getline('.')[len(ddc#util#get_input(a:event)) :]
+endfunction

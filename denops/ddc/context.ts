@@ -182,6 +182,7 @@ type World = {
   isLmap: boolean;
   lineNr: number;
   mode: string;
+  nextInput: string;
 };
 
 function initialWorld(): World {
@@ -194,6 +195,7 @@ function initialWorld(): World {
     isLmap: false,
     lineNr: 0,
     mode: "",
+    nextInput: "",
   };
 }
 
@@ -225,6 +227,9 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     ? "i"
     : (await fn.mode(denops)) as string;
   const input = denops.call("ddc#util#get_input", event) as Promise<string>;
+  const nextInput = denops.call("ddc#util#get_next_input", event) as Promise<
+    string
+  >;
   return {
     bufnr: await bufnr,
     changedByCompletion: await changedByCompletion,
@@ -234,6 +239,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     isLmap: !(await enabledEskk) && (await iminsert) == 1,
     lineNr: await lineNr,
     mode: mode,
+    nextInput: await nextInput,
   };
 }
 
@@ -273,6 +279,7 @@ export class ContextBuilder {
       filetype: world.filetype,
       input: world.input,
       lineNr: world.lineNr,
+      nextInput: world.nextInput,
     };
     return [context, userOptions];
   }

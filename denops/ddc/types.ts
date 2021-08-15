@@ -20,6 +20,7 @@ export type Context = {
   filetype: string;
   input: string;
   lineNr: number;
+  nextInput: string;
 };
 
 type CompletionMode = "inline" | "popupmenu" | "manual";
