@@ -216,21 +216,24 @@ export class Ddc {
     const sources = this.foundSources(options.sources)
       .map((s) => [s, ...sourceArgs(options, s)] as const);
     const rs = await Promise.all(sources.map(async ([s, o, p]) => {
-      const pos = await s.getCompletePosition(
+      let pos = await s.getCompletePosition(
         denops,
         context,
         options,
         o,
         p,
       );
-      const completePos = s.isBytePos
-        ? byteposToCharpos(context.input, pos)
-        : pos;
-      const completeStr = context.input.slice(completePos);
       const forceCompletion = o.forceCompletionPattern.length != 0 &&
         context.input.search(
             new RegExp("(" + o.forceCompletionPattern + ")$"),
           ) != -1;
+      if (pos < 0 && forceCompletion) {
+        pos = context.input.length;
+      }
+      const completePos = s.isBytePos
+        ? byteposToCharpos(context.input, pos)
+        : pos;
+      const completeStr = context.input.slice(completePos);
       if (
         completePos < 0 ||
         (!forceCompletion &&
