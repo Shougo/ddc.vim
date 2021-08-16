@@ -180,9 +180,7 @@ export class Ddc {
     }
 
     // Uniq.
-    filterNames = filterNames.filter(
-      (elem, index, self) => self.indexOf(elem) === index,
-    );
+    filterNames = [...new Set(filterNames)];
 
     // Check invalid filters
     const invalidFilters = this.foundInvalidFilters(filterNames);
