@@ -134,6 +134,10 @@ See `:help ddc-options` for a complete list of options.
 
 ## Screenshots
 
+Please see: https://github.com/Shougo/ddc.vim/issues/32
+
+![nvim-lsp](https://user-images.githubusercontent.com/41495/129931010-258d3917-7379-4b40-b3cc-2313c9fbe600.png)
+
 
 ## Plans
 
