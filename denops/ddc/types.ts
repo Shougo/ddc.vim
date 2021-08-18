@@ -63,7 +63,7 @@ export type Candidate = {
   info?: string;
   kind?: string;
   dup?: boolean;
-  userData?: unknown;
+  "user_data"?: unknown;
 };
 
 // For internal type
