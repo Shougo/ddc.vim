@@ -42,7 +42,7 @@ export abstract class BaseSource {
   events: DdcEvent[] = [];
 
   // Use overload methods
-  _apiVersion = 1;
+  apiVersion = 1;
 
   // Deprecated
   async onInit(
