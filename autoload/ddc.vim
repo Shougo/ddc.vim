@@ -8,6 +8,10 @@ let s:completion_timer = -1
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 
 function! ddc#enable() abort
+  if exists('g:ddc#_initialized')
+    return
+  endif
+
   if !has('patch-8.2.0662') && !has('nvim-0.5')
     call ddc#util#print_error(
           \ 'ddc requires Vim 8.2.0662+ or neovim 0.5.0+.')
@@ -15,16 +19,25 @@ function! ddc#enable() abort
   endif
 
   " Note: ddc.vim must be registered manually.
+
+  if exists('g:loaded_denops')
+    " Note: denops load may be started
+    silent! call ddc#_register()
+  endif
+
   augroup ddc
     autocmd!
-    autocmd User DenopsReady call denops#plugin#register('ddc',
-          \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'))
+    autocmd User DenopsReady call ddc#_register()
   augroup END
 endfunction
 function! ddc#disable() abort
   augroup ddc
     autocmd!
   augroup END
+endfunction
+function! ddc#_register() abort
+  call denops#plugin#register('ddc',
+        \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'))
 endfunction
 
 function! ddc#complete() abort

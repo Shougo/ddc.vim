@@ -7,13 +7,28 @@ import {
 } from "../types.ts";
 import { Denops } from "../deps.ts";
 
+export type onInitArguments = {
+  denops: Denops;
+};
+
 export abstract class BaseSource {
   name = "";
   isBytePos = false;
   events: DdcEvent[] = [];
 
+  // Use overload methods
+  apiVersion = 2
+
+  // Deprecated
   async onInit(
     _denops: Denops,
+  ): Promise<void>;
+  async onInit({
+    denops: Denops,
+  }: onInitArguments): Promise<void>;
+
+  async onInit(
+    _args: onInitArguments | Denops,
   ): Promise<void> {}
 
   async onEvent(
