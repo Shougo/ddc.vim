@@ -8,22 +8,67 @@ import {
 } from "../types.ts";
 import { Denops } from "../deps.ts";
 
+export type OnInitArguments = {
+  denops: Denops;
+};
+
+export type OnEventArguments = {
+  denops: Denops;
+  context: Context;
+  options: DdcOptions;
+  filterOptions: FilterOptions;
+  filterParams: Record<string, unknown>;
+};
+
+export type FilterArguments = {
+  denops: Denops;
+  context: Context;
+  options: DdcOptions;
+  sourceOptions: SourceOptions;
+  filterOptions: FilterOptions;
+  filterParams: Record<string, unknown>;
+  completeStr: string;
+  candidates: Candidate[];
+};
+
 export abstract class BaseFilter {
   name = "";
   events: DdcEvent[] = [];
 
+  // Use overload methods
+  apiVersion = 1;
+
+  // Deprecated
   async onInit(
     _denops: Denops,
+  ): Promise<void>;
+
+  // New
+  async onInit({
+    denops: Denops,
+  }: OnInitArguments): Promise<void>;
+
+  async onInit(
+    _args: OnInitArguments | Denops,
   ): Promise<void> {}
+
+  // Deprecated
+  async onEvent(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+    filterOptions: FilterOptions,
+    filterParams: Record<string, unknown>,
+  ): Promise<void>;
+
+  // New
+  async onEvent({}: OnEventArguments): Promise<void>;
 
   async onEvent(
-    _denops: Denops,
-    _context: Context,
-    _options: DdcOptions,
-    _filterOptions: FilterOptions,
-    _filterParams: Record<string, unknown>,
+    _args: OnInitArguments | Denops,
   ): Promise<void> {}
 
+  // Deprecated
   abstract filter(
     denops: Denops,
     context: Context,
@@ -33,6 +78,11 @@ export abstract class BaseFilter {
     filterParams: Record<string, unknown>,
     completeStr: string,
     candidates: Candidate[],
+  ): Promise<Candidate[]>;
+
+  // New
+  abstract filter(
+    args: FilterArguments,
   ): Promise<Candidate[]>;
 
   params(): Record<string, unknown> {

@@ -1,6 +1,6 @@
 *ddc.txt*	Dark deno powered completion framework for neovim/Vim8
 
-Version: 0.1
+Version: 0.2
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
@@ -615,6 +615,9 @@ A: It is not implemented, but you can emulate the behavior by
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.08.20
+* Sources and Filters functions arguments are changed
 
 2021.08.15
 * Use 'iskeyword' for |ddc-option-keywordPattern|.

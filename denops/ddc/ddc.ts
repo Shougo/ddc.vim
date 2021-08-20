@@ -18,11 +18,13 @@ import {
   BaseSource,
   defaultSourceOptions,
   defaultSourceParams,
+  GatherCandidatesArguments,
 } from "./base/source.ts";
 import {
   BaseFilter,
   defaultFilterOptions,
   defaultFilterParams,
+  FilterArguments,
 } from "./base/filter.ts";
 import { assertEquals, autocmd, Denops, toFileUrl } from "./deps.ts";
 
@@ -436,12 +438,12 @@ Deno.test("sourceArgs", () => {
       };
     }
     gatherCandidates(
-      _denops: Denops,
-      _context: Context,
-      _options: DdcOptions,
-      _sourceOptions: SourceOptions,
-      _sourceParams: Record<string, unknown>,
-      _completeStr: string,
+      _args: GatherCandidatesArguments | Denops,
+      _context?: Context,
+      _options?: DdcOptions,
+      _sourceOptions?: SourceOptions,
+      _sourceParams?: Record<string, unknown>,
+      _completeStr?: string,
     ): Promise<Candidate[]> {
       return Promise.resolve([]);
     }
@@ -484,14 +486,14 @@ Deno.test("filterArgs", () => {
       };
     }
     filter(
-      _denops: Denops,
-      _context: Context,
-      _options: DdcOptions,
-      _sourceOptions: SourceOptions,
-      _filterOptions: FilterOptions,
-      _filterParams: Record<string, unknown>,
-      _completeStr: string,
-      _candidates: Candidate[],
+      _args: FilterArguments | Denops,
+      _context?: Context,
+      _options?: DdcOptions,
+      _sourceOptions?: SourceOptions,
+      _filterOptions?: FilterOptions,
+      _filterParams?: Record<string, unknown>,
+      _completeStr?: string,
+      _candidates?: Candidate[],
     ): Promise<Candidate[]> {
       return Promise.resolve([]);
     }
