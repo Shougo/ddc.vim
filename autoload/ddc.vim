@@ -86,12 +86,14 @@ function! ddc#_complete() abort
         set completeopt+=noselect
       endif
     endif
-
-    call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   else
     " Clear current popup
-    call complete(1, [])
+    let g:ddc#_complete_pos = 0
+    let g:ddc#_candidates = []
   endif
+
+  " Note: It may be called in map-<expr>
+  silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
 endfunction
 
 function! ddc#_clear() abort
