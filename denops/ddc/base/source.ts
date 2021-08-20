@@ -11,18 +11,27 @@ export type onInitArguments = {
   denops: Denops;
 };
 
+export type onEventArguments = {
+  denops: Denops;
+  context: Context;
+  options: DdcOptions;
+  sourceOptions: SourceOptions;
+  sourceParams: Record<string, unknown>;
+};
+
 export abstract class BaseSource {
   name = "";
   isBytePos = false;
   events: DdcEvent[] = [];
 
   // Use overload methods
-  apiVersion = 2
+  apiVersion = 2;
 
   // Deprecated
   async onInit(
     _denops: Denops,
   ): Promise<void>;
+
   async onInit({
     denops: Denops,
   }: onInitArguments): Promise<void>;
@@ -31,12 +40,19 @@ export abstract class BaseSource {
     _args: onInitArguments | Denops,
   ): Promise<void> {}
 
+  // Deprecated
   async onEvent(
-    _denops: Denops,
-    _context: Context,
-    _options: DdcOptions,
-    _sourceOptions: SourceOptions,
-    _sourceParams: Record<string, unknown>,
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+    sourceOptions: SourceOptions,
+    sourceParams: Record<string, unknown>,
+  ): Promise<void>;
+
+  async onEvent({}: onEventArguments): Promise<void>;
+
+  async onEvent(
+    _args: onInitArguments | Denops,
   ): Promise<void> {}
 
   getCompletePosition(
