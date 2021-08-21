@@ -18,17 +18,18 @@ function! ddc#enable() abort
     return
   endif
 
-  " Note: ddc.vim must be registered manually.
-
-  if exists('g:loaded_denops')
-    " Note: denops load may be started
-    silent! call ddc#_register()
-  endif
-
   augroup ddc
     autocmd!
-    autocmd User DenopsReady call ddc#_register()
   augroup END
+
+  " Note: ddc.vim must be registered manually.
+
+  " Note: denops load may be started
+  if exists('g:loaded_denops')
+    silent! call ddc#_register()
+  else
+    autocmd ddc User DenopsReady silent! call ddc#_register()
+  endif
 endfunction
 function! ddc#disable() abort
   augroup ddc
