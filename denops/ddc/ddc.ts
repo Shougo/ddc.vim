@@ -153,7 +153,7 @@ export class Ddc {
   ): Promise<void> {
     // Check invalid sources
     const invalidSources = this.foundInvalidSources(options.sources);
-    if (invalidSources.length != 0) {
+    if (context.event == "InsertEnter" && invalidSources.length != 0) {
       await denops.call(
         "ddc#util#print_error",
         "Invalid sources are detected!",
@@ -194,7 +194,7 @@ export class Ddc {
 
     // Check invalid filters
     const invalidFilters = this.foundInvalidFilters(filterNames);
-    if (invalidFilters.length != 0) {
+    if (context.event == "InsertLeave" && invalidFilters.length != 0) {
       await denops.call(
         "ddc#util#print_error",
         "Invalid filters are detected!",
