@@ -372,17 +372,6 @@ export class Ddc {
     const sorters = this.foundFilters(sourceOptions.sorters);
     const converters = this.foundFilters(sourceOptions.converters);
 
-    if (sourceOptions.matcherKey != "") {
-      cdd = cdd.map((c) => (
-        {
-          ...c,
-          // @ts-ignore: Convert matcherKey
-          word: c[sourceOptions.matcherKey],
-          __word: c.word,
-        }
-      ));
-    }
-
     async function callFilters(filters: BaseFilter[]): Promise<Candidate[]> {
       for (const filter of filters) {
         const [o, p] = filterArgs(filterOptions, filterParams, filter);
@@ -410,6 +399,17 @@ export class Ddc {
       }
 
       return cdd;
+    }
+
+    if (sourceOptions.matcherKey != "") {
+      cdd = cdd.map((c) => (
+        {
+          ...c,
+          // @ts-ignore: Convert matcherKey
+          word: c[sourceOptions.matcherKey],
+          __word: c.word,
+        }
+      ));
     }
 
     cdd = await callFilters(matchers);
