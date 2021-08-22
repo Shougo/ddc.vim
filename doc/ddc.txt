@@ -426,8 +426,16 @@ configure them to use ddc.
 ------------------------------------------------------------------------------
 FILTER OPTIONS						*ddc-filter-options*
 
+Undefined now
+
 ------------------------------------------------------------------------------
 FILTER PARAMS						*ddc-filter-params*
+
+These are the parameters that each filter can have.  You can select the
+behavior and tune the performance.
+
+Please read the filter documentation.
+
 
 ==============================================================================
 CREATE SOURCE						*ddc-create-source*
