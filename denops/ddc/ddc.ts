@@ -129,7 +129,7 @@ export class Ddc {
     const mod = await import(toFileUrl(path).href);
     const source = new mod.Source();
     source.name = name;
-    source.onInit(denops);
+    source?.apiVersion ? source.onInit({ denops }) : source.onInit(denops);
     this.sources[source.name] = source;
     if (source.events && source.events.length != 0) {
       this.registerAutocmd(denops, source.events);
@@ -139,7 +139,7 @@ export class Ddc {
     const mod = await import(toFileUrl(path).href);
     const filter = new mod.Filter();
     filter.name = name;
-    filter.onInit(denops);
+    filter?.apiVersion ? filter.onInit({ denops }) : filter.onInit(denops);
     this.filters[filter.name] = filter;
     if (filter.events && filter.events.length != 0) {
       this.registerAutocmd(denops, filter.events);
@@ -165,13 +165,21 @@ export class Ddc {
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
       if (source.events?.includes(context.event)) {
-        await source.onEvent(
-          denops,
-          context,
-          options,
-          sourceOptions,
-          sourceParams,
-        );
+        (source?.apiVersion)
+          ? await source.onEvent({
+            denops,
+            context,
+            options,
+            sourceOptions,
+            sourceParams,
+          })
+          : await source.onEvent(
+            denops,
+            context,
+            options,
+            sourceOptions,
+            sourceParams,
+          );
       }
 
       filterNames = filterNames.concat(
@@ -203,7 +211,15 @@ export class Ddc {
           options.filterParams,
           filter,
         );
-        await filter.onEvent(denops, context, options, o, p);
+        (filter.apiVersion)
+          ? await filter.onEvent({
+            denops,
+            context,
+            options,
+            filterOptions: o,
+            filterParams: p,
+          })
+          : await filter.onEvent(denops, context, options, o, p);
       }
     }
   }
@@ -367,19 +383,36 @@ export class Ddc {
       ));
     }
 
-    for (const matcher of matchers) {
-      const [o, p] = filterArgs(filterOptions, filterParams, matcher);
-      cdd = await matcher.filter(
-        denops,
-        context,
-        options,
-        sourceOptions,
-        o,
-        p,
-        completeStr,
-        cdd,
-      );
+    async function callFilters(filters: BaseFilter[]): Promise<Candidate[]> {
+      for (const filter of filters) {
+        const [o, p] = filterArgs(filterOptions, filterParams, filter);
+        cdd = (filter.apiVersion)
+          ? await filter.filter({
+            denops,
+            context,
+            options,
+            sourceOptions,
+            filterOptions: o,
+            filterParams: p,
+            completeStr,
+            candidates: cdd,
+          })
+          : await filter.filter(
+            denops,
+            context,
+            options,
+            sourceOptions,
+            o,
+            p,
+            completeStr,
+            cdd,
+          );
+      }
+
+      return cdd;
     }
+
+    cdd = await callFilters(matchers);
 
     if (sourceOptions.matcherKey != "") {
       cdd = cdd.map((c) => (
@@ -391,36 +424,13 @@ export class Ddc {
       ));
     }
 
-    for (const sorter of sorters) {
-      const [o, p] = filterArgs(filterOptions, filterParams, sorter);
-      cdd = await sorter.filter(
-        denops,
-        context,
-        options,
-        sourceOptions,
-        o,
-        p,
-        completeStr,
-        cdd,
-      );
-    }
+    cdd = await callFilters(sorters);
 
     // Filter by maxCandidates
     cdd = cdd.slice(0, sourceOptions.maxCandidates);
 
-    for (const converter of converters) {
-      const [o, p] = filterArgs(filterOptions, filterParams, converter);
-      cdd = await converter.filter(
-        denops,
-        context,
-        options,
-        sourceOptions,
-        o,
-        p,
-        completeStr,
-        cdd,
-      );
-    }
+    cdd = await callFilters(converters);
+
     return cdd;
   }
 }

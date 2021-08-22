@@ -39,18 +39,12 @@ export abstract class BaseFilter {
   apiVersion = 1;
 
   // Deprecated
-  async onInit(
-    _denops: Denops,
-  ): Promise<void>;
+  async onInit(_denops: Denops): Promise<void>;
 
   // New
-  async onInit({
-    denops: Denops,
-  }: OnInitArguments): Promise<void>;
+  async onInit({}: OnInitArguments): Promise<void>;
 
-  async onInit(
-    _args: OnInitArguments | Denops,
-  ): Promise<void> {}
+  async onInit(_args: OnInitArguments | Denops): Promise<void> {}
 
   // Deprecated
   async onEvent(
@@ -64,9 +58,7 @@ export abstract class BaseFilter {
   // New
   async onEvent({}: OnEventArguments): Promise<void>;
 
-  async onEvent(
-    _args: OnInitArguments | Denops,
-  ): Promise<void> {}
+  async onEvent(_args: OnInitArguments | Denops): Promise<void> {}
 
   // Deprecated
   abstract filter(
@@ -81,9 +73,7 @@ export abstract class BaseFilter {
   ): Promise<Candidate[]>;
 
   // New
-  abstract filter(
-    args: FilterArguments,
-  ): Promise<Candidate[]>;
+  abstract filter({}: FilterArguments): Promise<Candidate[]>;
 
   params(): Record<string, unknown> {
     return {} as Record<string, unknown>;

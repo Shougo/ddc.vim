@@ -45,18 +45,12 @@ export abstract class BaseSource {
   apiVersion = 1;
 
   // Deprecated
-  async onInit(
-    _denops: Denops,
-  ): Promise<void>;
+  async onInit(_denops: Denops): Promise<void>;
 
   // New
-  async onInit({
-    denops: Denops,
-  }: OnInitArguments): Promise<void>;
+  async onInit({}: OnInitArguments): Promise<void>;
 
-  async onInit(
-    _args: OnInitArguments | Denops,
-  ): Promise<void> {}
+  async onInit(_args: OnInitArguments | Denops): Promise<void> {}
 
   // Deprecated
   async onEvent(
@@ -70,9 +64,7 @@ export abstract class BaseSource {
   // New
   async onEvent({}: OnEventArguments): Promise<void>;
 
-  async onEvent(
-    _args: OnInitArguments | Denops,
-  ): Promise<void> {}
+  async onEvent(_args: OnInitArguments | Denops): Promise<void> {}
 
   // Deprecated
   getCompletePosition(
@@ -84,7 +76,7 @@ export abstract class BaseSource {
   ): Promise<number>;
 
   // New
-  getCompletePosition(args: GetCompletePositionArguments): Promise<number>;
+  getCompletePosition({}: GetCompletePositionArguments): Promise<number>;
 
   getCompletePosition(
     args: GetCompletePositionArguments | Denops,
@@ -116,7 +108,7 @@ export abstract class BaseSource {
 
   // New
   abstract gatherCandidates(
-    args: GatherCandidatesArguments,
+    {}: GatherCandidatesArguments,
   ): Promise<Candidate[]>;
 
   params(): Record<string, unknown> {
