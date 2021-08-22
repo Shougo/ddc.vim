@@ -153,7 +153,7 @@ export class Ddc {
   ): Promise<void> {
     // Check invalid sources
     const invalidSources = this.foundInvalidSources(options.sources);
-    if (context.event == "InsertEnter" && invalidSources.length != 0) {
+    if (context.event == "InsertLeave" && invalidSources.length != 0) {
       await denops.call(
         "ddc#util#print_error",
         "Invalid sources are detected!",
