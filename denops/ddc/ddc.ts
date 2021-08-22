@@ -216,13 +216,21 @@ export class Ddc {
     const sources = this.foundSources(options.sources)
       .map((s) => [s, ...sourceArgs(options, s)] as const);
     const rs = await Promise.all(sources.map(async ([s, o, p]) => {
-      const pos = await s.getCompletePosition(
-        denops,
-        context,
-        options,
-        o,
-        p,
-      );
+      const pos = (s?.apiVersion)
+        ? await s.getCompletePosition({
+          denops,
+          context,
+          options,
+          sourceOptions: o,
+          sourceParams: p,
+        })
+        : await s.getCompletePosition(
+          denops,
+          context,
+          options,
+          o,
+          p,
+        );
       const forceCompletion = o.forceCompletionPattern.length != 0 &&
         context.input.search(
             new RegExp("(" + o.forceCompletionPattern + ")$"),
@@ -261,14 +269,23 @@ export class Ddc {
         o.isVolatile
       ) {
         // Not matched.
-        const scs = await s.gatherCandidates(
-          denops,
-          context,
-          options,
-          o,
-          p,
-          completeStr,
-        );
+        const scs = (s?.apiVersion)
+          ? await s.gatherCandidates({
+            denops,
+            context,
+            options,
+            sourceOptions: o,
+            sourceParams: p,
+            completeStr,
+          })
+          : await s.gatherCandidates(
+            denops,
+            context,
+            options,
+            o,
+            p,
+            completeStr,
+          );
         if (!scs.length) {
           return;
         }
