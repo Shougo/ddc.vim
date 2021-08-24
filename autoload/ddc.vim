@@ -38,7 +38,8 @@ function! ddc#disable() abort
 endfunction
 function! ddc#_register() abort
   call denops#plugin#register('ddc',
-        \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'))
+        \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'),
+        \ { 'mode': 'skip' })
 endfunction
 
 function! ddc#complete() abort
