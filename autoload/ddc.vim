@@ -59,14 +59,17 @@ function! ddc#complete() abort
     let s:completion_timer = timer_start(10, { -> ddc#_complete() })
   endif
 endfunction
-function! ddc#_complete() abort
+function! ddc#_cannot_complete() abort
   let info = complete_info()
   let noinsert = &completeopt =~# 'noinsert'
-  if mode() !=# 'i'
+  return mode() !=# 'i'
         \ || (info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
         \ || (!noinsert && info.selected >= 0)
         \ || !exists('g:ddc#_complete_pos')
+endfunction
+function! ddc#_complete() abort
+  if ddc#_cannot_complete()
     return
   endif
 
@@ -187,4 +190,10 @@ function! ddc#complete_common_string() abort
 
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", strchars(complete_str)) . common_str
+endfunction
+
+function! ddc#can_complete() abort
+  return !empty(get(g:, 'ddc#_candidates', []))
+        \ && get(g:, 'ddc#_complete_pos', -1) >= 0
+        \ && !ddc#_cannot_complete()
 endfunction

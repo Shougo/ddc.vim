@@ -229,6 +229,10 @@ ddc#custom#patch_buffer({dict})
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
 
+							*ddc#can_complete()*
+ddc#can_complete()
+		Return |v:true| if current word completion is available.
+
 							*ddc#complete()*
 ddc#complete()
 		Open current completion popup menu.
