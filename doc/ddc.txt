@@ -589,7 +589,7 @@ Q: How to donate money to you?
 A: I have started github sponsorship to spend more time for Vim/neovim
 plugins.  You can donate money to help me!
 
-https://github.com/sponsors/Shougo
+   https://github.com/sponsors/Shougo
 
 
 Q: Why does ddc.vim not include any sources/matchers/sorters/converters?
@@ -615,6 +615,7 @@ A: >
 	inoremap <expr><C-t>       ddc#insert_candidate(0)
 	call ddc#custom#patch_global('completionMode', 'inline')
 
+
 Q: The Linked/chained completion exists like vim-mucomplete?
 
 A: It is not implemented, but you can emulate the behavior by
@@ -628,6 +629,7 @@ A: It is not implemented, but you can emulate the behavior by
 	endfunction
 	inoremap <silent><expr> <C-t>  MyChainCompletion()
 
+
 Q: I want to silence the |ins-completion-menu| messages in the command line
 such as "-- XXX completion (YYY)", "match 1 of 2", "The only match", "Pattern
 not found", "Back at original", etc.
@@ -636,15 +638,18 @@ A: You can disable the messages through the 'shortmess' option. >
 
 	set shortmess+=c
 
+
 Q: I want to use the auto select feature.
 
 A: You can use it by the 'completeopt' option. >
 
 	set completeopt+=noinsert
 
+
 Q: How do I select one of the responses from the pop up?
 
 A: Please press <C-y> on the candidate.
+
 
 Q: I want to close the preview window after completion is done.
 
@@ -658,16 +663,24 @@ Or
    Note: It conflicts with delimitMate.
    https://github.com/Shougo/deoplete.nvim/issues/234
 
+
 Q: I want to disable the preview window feature.
 
 A: >
 	set completeopt-=preview
 
+
 Q: I want to look selected function's arguments. But I don't like preview
 window feature.
 
-A: You can do it by |echodoc|.
+A: You can do it by echodoc plugin.
    http://github.com/Shougo/echodoc.vim
+
+
+Q: I want to use floating preview window feature.
+
+A: Please install float-preview.nvim plugin.
+   https://github.com/ncm2/float-preview.nvim
 
 
 ==============================================================================
