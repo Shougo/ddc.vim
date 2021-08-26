@@ -151,3 +151,4 @@ Please see: https://github.com/Shougo/ddc.vim/issues/32
 * [x] Manual completion support
 * [x] Implement converter_remove_overlap
 * [x] iskeyword support
+* [ ] Sources/Filters auto loading without registers

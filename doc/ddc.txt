@@ -317,6 +317,8 @@ to use ddc.vim.  Please search them by https://github.com/topics/ddc-source
 Note: The default sources are empty.  You need to
 configure them to use ddc.
 
+The sources must be registered by |ddc#register_source()|.
+
 ------------------------------------------------------------------------------
 SOURCE OPTIONS						*ddc-source-options*
 
@@ -426,6 +428,8 @@ to use ddc.vim.  Please search them by https://github.com/topics/ddc-filter
 
 Note: The default matchers/sorters/converters are empty.  You need to
 configure them to use ddc.
+
+The filters must be registered by |ddc#register_filter()|.
 
 ------------------------------------------------------------------------------
 FILTER OPTIONS						*ddc-filter-options*
