@@ -174,7 +174,7 @@ export class Ddc {
             sourceParams,
           })
           : await source.onEvent(
-            denops,
+            denops, // @ts-ignore: For deprecated sources
             context,
             options,
             sourceOptions,
@@ -219,7 +219,13 @@ export class Ddc {
             filterOptions: o,
             filterParams: p,
           })
-          : await filter.onEvent(denops, context, options, o, p);
+          : await filter.onEvent(
+            denops, // @ts-ignore: For deprecated filters
+            context,
+            options,
+            o,
+            p,
+          );
       }
     }
   }
@@ -241,7 +247,7 @@ export class Ddc {
           sourceParams: p,
         })
         : await s.getCompletePosition(
-          denops,
+          denops, // @ts-ignore: For deprecated sources
           context,
           options,
           o,
@@ -295,7 +301,7 @@ export class Ddc {
             completeStr,
           })
           : await s.gatherCandidates(
-            denops,
+            denops, // @ts-ignore: For deprecated sources
             context,
             options,
             o,
@@ -387,7 +393,7 @@ export class Ddc {
             candidates: cdd,
           })
           : await filter.filter(
-            denops,
+            denops, // @ts-ignore: For deprecated filters
             context,
             options,
             sourceOptions,

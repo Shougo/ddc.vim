@@ -42,71 +42,22 @@ export abstract class BaseSource {
   events: DdcEvent[] = [];
 
   // Use overload methods
-  apiVersion = 1;
+  apiVersion = 2;
 
-  // Deprecated
-  async onInit(_denops: Denops): Promise<void>;
+  async onInit(_args: OnInitArguments): Promise<void> {}
 
-  // New
-  async onInit({}: OnInitArguments): Promise<void>;
-
-  async onInit(_args: OnInitArguments | Denops): Promise<void> {}
-
-  // Deprecated
-  async onEvent(
-    denops: Denops,
-    context: Context,
-    options: DdcOptions,
-    sourceOptions: SourceOptions,
-    sourceParams: Record<string, unknown>,
-  ): Promise<void>;
-
-  // New
-  async onEvent({}: OnEventArguments): Promise<void>;
-
-  async onEvent(_args: OnInitArguments | Denops): Promise<void> {}
-
-  // Deprecated
-  getCompletePosition(
-    _denops: Denops,
-    context: Context,
-    options: DdcOptions,
-    _sourceOptions: SourceOptions,
-    _sourceParams: Record<string, unknown>,
-  ): Promise<number>;
-
-  // New
-  getCompletePosition({}: GetCompletePositionArguments): Promise<number>;
+  async onEvent(_args: OnEventArguments): Promise<void> {}
 
   getCompletePosition(
-    args: GetCompletePositionArguments | Denops,
-    _context?: Context,
-    _options?: DdcOptions,
-    _sourceOptions?: SourceOptions,
-    _sourceParams?: Record<string, unknown>,
+    args: GetCompletePositionArguments,
   ): Promise<number> {
-    if ("context" in args && "options" in args) {
-      const matchPos = args.context.input.search(
-        new RegExp("(" + args.options.keywordPattern + ")$"),
-      );
-      const completePos = matchPos != null ? matchPos : -1;
-      return Promise.resolve(completePos);
-    }
-
-    return Promise.resolve(-1);
+    const matchPos = args.context.input.search(
+      new RegExp("(" + args.options.keywordPattern + ")$"),
+    );
+    const completePos = matchPos != null ? matchPos : -1;
+    return Promise.resolve(completePos);
   }
 
-  // Deprecated
-  abstract gatherCandidates(
-    denops: Denops,
-    context: Context,
-    options: DdcOptions,
-    sourceOptions: SourceOptions,
-    sourceParams: Record<string, unknown>,
-    completeStr: string,
-  ): Promise<Candidate[]>;
-
-  // New
   abstract gatherCandidates(
     {}: GatherCandidatesArguments,
   ): Promise<Candidate[]>;
