@@ -26,7 +26,15 @@ import {
   defaultFilterParams,
   FilterArguments,
 } from "./base/filter.ts";
-import { assertEquals, autocmd, Denops, toFileUrl } from "./deps.ts";
+import {
+  assertEquals,
+  autocmd,
+  Denops,
+  fn,
+  op,
+  parse,
+  toFileUrl,
+} from "./deps.ts";
 
 type DdcResult = {
   candidates: Candidate[];
@@ -93,8 +101,10 @@ function filterArgs(
 export class Ddc {
   private sources: Record<string, BaseSource> = {};
   private filters: Record<string, BaseFilter> = {};
+  private checkPaths: Record<string, boolean> = {};
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
+  private prevRuntimepath = "";
 
   private foundSources(names: string[]): BaseSource[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
@@ -126,6 +136,12 @@ export class Ddc {
   }
 
   async registerSource(denops: Denops, path: string, name: string) {
+    if (path in this.checkPaths) {
+      return;
+    }
+
+    this.checkPaths[path] = true;
+
     const mod = await import(toFileUrl(path).href);
     const source = new mod.Source();
     source.name = name;
@@ -136,6 +152,12 @@ export class Ddc {
     }
   }
   async registerFilter(denops: Denops, path: string, name: string) {
+    if (path in this.checkPaths) {
+      return;
+    }
+
+    this.checkPaths[path] = true;
+
     const mod = await import(toFileUrl(path).href);
     const filter = new mod.Filter();
     filter.name = name;
@@ -144,6 +166,36 @@ export class Ddc {
     if (filter.events && filter.events.length != 0) {
       this.registerAutocmd(denops, filter.events);
     }
+  }
+
+  async autoload(denops: Denops) {
+    const runtimepath = await op.runtimepath.getGlobal(denops);
+    if (runtimepath == this.prevRuntimepath) {
+      return;
+    }
+
+    this.prevRuntimepath = runtimepath;
+
+    const sources = await fn.globpath(
+      denops,
+      runtimepath,
+      "denops/ddc-sources/*.ts",
+      1,
+      1,
+    ) as string[];
+    const filters = await fn.globpath(
+      denops,
+      runtimepath,
+      "denops/ddc-filters/*.ts",
+      1,
+      1,
+    ) as string[];
+    await Promise.all(sources.map((path) => {
+      this.registerSource(denops, path, parse(path).name);
+    }));
+    await Promise.all(filters.map((path) => {
+      this.registerFilter(denops, path, parse(path).name);
+    }));
   }
 
   async onEvent(

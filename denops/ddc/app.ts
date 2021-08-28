@@ -72,6 +72,8 @@ export async function main(denops: Denops) {
         return;
       }
 
+      await ddc.autoload(denops);
+
       const maybe = await contextBuilder.createContext(denops, event);
       if (!maybe) return;
       const [context, options] = maybe;
@@ -167,6 +169,4 @@ export async function main(denops: Denops) {
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
   });
-
-  //console.log(`${denops.name} has loaded`);
 }
