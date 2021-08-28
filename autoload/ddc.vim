@@ -25,7 +25,7 @@ function! ddc#enable() abort
   " Note: ddc.vim must be registered manually.
 
   " Note: denops load may be started
-  if exists('g:loaded_denops')
+  if exists('g:loaded_denops') && !has('vim_starting')
     silent! call ddc#_register()
   else
     autocmd ddc User DenopsReady silent! call ddc#_register()
