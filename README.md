@@ -1,6 +1,6 @@
 # ddc.vim
 
-Note: It is beta version!!  You can test it.
+Note: It is beta version!!  But it is almot stable version.
 
 > Dark deno powered completion framework for neovim/Vim8
 
@@ -12,6 +12,15 @@ Ddc is the abbreviation of "dark deno powered completion". It provides an
 extensible and asynchronous completion framework for neovim/Vim8.
 
 ddc.vim will display completions via `complete()` by default.
+
+
+I have created [Japanese article](https://zenn.dev/shougo/articles/ddc-vim-beta) for ddc.vim recently.
+
+You can read it by translation service.
+
+
+The development is supported by [github sponsors](https://github.com/sponsors/Shougo/). Thank you!
+
 
 <!-- vim-markdown-toc GFM -->
 
