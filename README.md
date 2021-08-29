@@ -79,11 +79,11 @@ call dein#add('Shougo/ddc.vim')
 call dein#add('vim-denops/denops.vim')
 
 " Install your sources
-"call dein#add('Shougo/ddc-around")
+"call dein#add('Shougo/ddc-around')
 
 " Install your filters
-"call dein#add('Shougo/ddc-matcher_head")
-"call dein#add('Shougo/ddc-sorter_rank")
+"call dein#add('Shougo/ddc-matcher_head')
+"call dein#add('Shougo/ddc-sorter_rank')
 
 call dein#end()
 ```
@@ -141,12 +141,12 @@ call ddc#custom#patch_filetype('markdown', 'sourceParams', {
 
 " <TAB>: completion.
 inoremap <silent><expr> <TAB>
-\ pumvisible() ? "\<C-n>" :
+\ pumvisible() ? '<C-n>' :
 \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
-\ "\<TAB>" : ddc#manual_complete()
+\ '<TAB>' : ddc#manual_complete()
 
 " <S-TAB>: completion back.
-inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
 
 " Use ddc.
 call ddc#enable()
