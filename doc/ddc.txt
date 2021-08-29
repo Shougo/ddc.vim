@@ -329,7 +329,7 @@ to specify the recommended configuration, you should write it in the
 documentation instead.
 
 				    		*ddc-source-option-converters*
-converters		([String])
+converters		(string[])
 		It is a list of registered filter names that used with this
 		source.  Candidates will be processed in the order you specify
 		here.
@@ -337,7 +337,7 @@ converters		([String])
 		Default: []
 
 				*ddc-source-option-forceCompletionPattern*
-forceCompletionPattern	(String)
+forceCompletionPattern	(string)
 		If it matches the input, ddc ignores
 		|ddc-source-option-minAutoCompleteLength|.
 		Note: It is JavaScript regexp.
@@ -345,19 +345,19 @@ forceCompletionPattern	(String)
 		Default value: ''
 
 				    	*ddc-source-option-ignoreCase*
-ignoreCase	(Boolean)
+ignoreCase	(boolean)
 		If it is True, ddc ignores case.
 
 		Default: v:false
 
 				    	*ddc-source-option-isVolatile*
-isVolatile	(Boolean)
+isVolatile	(boolean)
 		If it is True, ddc refresh candidates always.
 
 		Default: v:false
 
 				    	    	*ddc-source-option-mark*
-mark		(String)
+mark		(string)
 		A text icon indicating the source displayed with the
 		candidate.
 		Note: If the source set candidate menu, the source must set
@@ -367,28 +367,28 @@ mark		(String)
 		Default: ""
 
 				    *ddc-source-option-maxAutoCompleteLength*
-maxAutoCompleteLength	(Integer)
+maxAutoCompleteLength	(number)
 		Ignored length of keyword for auto completion.
 		It is useful to edit BASE64 files.
 
 		Default: 80
 
 				    	*ddc-source-option-maxCandidates*
-maxCandidates	(Integer)
+maxCandidates	(number)
 		If there are more candidates than this value, ddc will ignore
 		the filtering.
 
 		Default: 500
 
 					*ddc-source-attribute-matcherKey*
-matcherKey	(String)			(Optional)
+matcherKey	(string)			(Optional)
 		Matcher compare key instead of "word".
 		If it is empty string, the feature is disabled.
 
 		Default: ""
 
 				    		*ddc-source-option-matchers*
-matchers	([String])
+matchers	(string[])
 		It is a list of registered filter names that used with this
 		source.  Candidates will be processed in the order you specify
 		here.
@@ -396,13 +396,13 @@ matchers	([String])
 		Default: []
 
 				    *ddc-source-option-minAutoCompleteLength*
-minAutoCompleteLength	(Integer)
+minAutoCompleteLength	(number)
 		Length of keyword required for auto completion.
 
 		Default: 2
 
 				    		*ddc-source-option-sorters*
-sorters		([String])
+sorters		(string[])
 		It is a list of registered filter names that used with this
 		source.  Candidates will be processed in the order you specify
 		here.
@@ -510,33 +510,33 @@ params
 CANDIDATE ATTRIBUTES				*ddc-candidate-attributes*
 
 					*ddc-candidate-attribute-name*
-word		(String)			(Required)
+word		(string)			(Required)
 		The completion word of a candidate. It is used for matching
 		inputs.
 
 					*ddc-candidate-attribute-abbr*
-abbr		(String)			(Optional)
+abbr		(string)			(Optional)
 		The abbreviation of a candidate. It is displayed in popup
 		window.
 
 					*ddc-candidate-attribute-kind*
-kind		(String)			(Optional)
+kind		(string)			(Optional)
 		The kind of a candidate. It is displayed in popup window.
 
 					*ddc-candidate-attribute-menu*
-menu		(String)			(Optional)
+menu		(string)			(Optional)
 		The menu information of a candidate. It is displayed in popup
 		window.
 
 					*ddc-candidate-attribute-info*
-info		(String)			(Optional)
+info		(string)			(Optional)
 		The preview information of a candidate. If 'completeopt'
 		contains "preview", it will be displayed in |preview-window|.
 
 					*ddc-candidate-attribute-dup*
-dup		(Integer)			(Optional)
-		If it is non zero, the item will be displayed in the popup
-		menu when an item with the same word is already present.
+dup		(boolean)			(Optional)
+		If true, the item will be displayed in the popup menu when an
+		item with the same word is already present.
 
 
 ==============================================================================
