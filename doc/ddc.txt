@@ -700,9 +700,10 @@ Please see below issues.
 * Slash may be comment or URL or divide operator
 * Hidden files
 * Tilde/Enviroment variables substitution
+* Link resolve
 
-The file path source is buggy source in deoplete sources. So I don't want to
-implement anymore.
+The file path source is the most buggy source in deoplete sources. So I don't
+want to implement it anymore.
 Other people can implement it instead...
 
 
