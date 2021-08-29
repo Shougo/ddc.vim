@@ -39,6 +39,7 @@ import {
 type DdcResult = {
   candidates: Candidate[];
   completeStr: string;
+  prevInput: string;
   lineNr: number;
 };
 
@@ -333,9 +334,11 @@ export class Ddc {
         ? this.prevResults[s.name]
         : null;
 
+      const prevInput = context.input.slice(0, completePos);
+
       if (
         !result ||
-        result.completeStr == "" ||
+        prevInput != result.prevInput ||
         !completeStr.startsWith(result.completeStr) ||
         context.lineNr != result.lineNr ||
         context.event == "Manual" ||
@@ -368,6 +371,7 @@ export class Ddc {
         this.prevResults[s.name] = {
           candidates: scs.concat(),
           completeStr: completeStr,
+          prevInput: prevInput,
           lineNr: context.lineNr,
         };
       }
