@@ -15,7 +15,6 @@ ddc.vim will display completions via `complete()` by default.
 
 
 I have created [Japanese article](https://zenn.dev/shougo/articles/ddc-vim-beta) for ddc.vim recently.
-
 You can read it by translation service.
 
 
@@ -160,4 +159,4 @@ Please see: https://github.com/Shougo/ddc.vim/issues/32
 * [x] Manual completion support
 * [x] Implement converter_remove_overlap
 * [x] iskeyword support
-* [ ] Sources/Filters auto loading without registers
+* [x] Sources/Filters auto loading without registers
