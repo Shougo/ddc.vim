@@ -335,6 +335,7 @@ export class Ddc {
 
       if (
         !result ||
+        result.completeStr == "" ||
         !completeStr.startsWith(result.completeStr) ||
         context.lineNr != result.lineNr ||
         context.event == "Manual" ||
