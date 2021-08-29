@@ -60,6 +60,13 @@ call plug#begin()
 Plug 'Shougo/ddc.vim'
 Plug 'vim-denops/denops.vim'
 
+" Install your sources
+"Plug 'Shougo/ddc-around'
+
+" Install your filters
+"Plug 'Shougo/ddc-matcher_head'
+"Plug 'Shougo/ddc-sorter_rank'
+
 call plug#end()
 ```
 
@@ -71,10 +78,18 @@ call dein#begin()
 call dein#add('Shougo/ddc.vim')
 call dein#add('vim-denops/denops.vim')
 
+" Install your sources
+"call dein#add('Shougo/ddc-around")
+
+" Install your filters
+"call dein#add('Shougo/ddc-matcher_head")
+"call dein#add('Shougo/ddc-sorter_rank")
+
 call dein#end()
 ```
 
 **Note:** Ddc.vim does not include any sources and filters.
+You must install them you want manually.
 You can search ddc plugins(sources and filters) from
 [here](https://github.com/topics/ddc-vim).
 
