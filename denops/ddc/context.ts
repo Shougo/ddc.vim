@@ -42,7 +42,7 @@ export function defaultDdcOptions(): DdcOptions {
     completionMode: "popupmenu",
     filterOptions: {},
     filterParams: {},
-    keywordPattern: "[a-zA-Z_]\\k*",
+    keywordPattern: "\\k*",
     sourceOptions: {},
     sourceParams: {},
     sources: [],

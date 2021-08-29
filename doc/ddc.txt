@@ -123,7 +123,7 @@ keywordPattern
 		Note: It is JavaScript regexp.
 		Note: "\k" is converted to 'iskeyword' pattern.
 
-		Default value: '[a-zA-Z_]\k*'
+		Default value: '\k*'
 
 							*ddc-option-sources*
 sources
