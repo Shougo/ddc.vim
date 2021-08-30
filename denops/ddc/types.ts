@@ -39,6 +39,7 @@ export type DdcOptions = {
 
 export type SourceOptions = {
   converters: string[];
+  dup: boolean;
   forceCompletionPattern: string;
   ignoreCase: boolean;
   isVolatile: boolean;

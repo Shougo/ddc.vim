@@ -70,6 +70,7 @@ export abstract class BaseSource {
 export function defaultSourceOptions(): SourceOptions {
   return {
     converters: [],
+    dup: false,
     forceCompletionPattern: "",
     ignoreCase: false,
     isVolatile: false,

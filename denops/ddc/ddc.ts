@@ -392,6 +392,7 @@ export class Ddc {
           ...c,
           abbr: formatAbbr(c.word, c.abbr),
           source: s.name,
+          dup: o.dup,
           icase: true,
           equal: true,
           menu: formatMenu(o.mark, c.menu),

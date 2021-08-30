@@ -82,7 +82,7 @@ autoCompleteEvents
 		The auto completion fired events.  It must be list of
 		|autocmd-events| string.
 
-		Default value: ["InsertEnter", "TextChangedI", "TextChangedP"]
+		Default: ["InsertEnter", "TextChangedI", "TextChangedP"]
 
 						*ddc-option-completionMode*
 completionMode
@@ -94,13 +94,13 @@ completionMode
 		"manual": You can display popupmenu manually by
 			|ddc#complete()|.
 
-		Default value: "popupmenu"
+		Default: "popupmenu"
 
 						*ddc-option-filterOptions*
 filterOptions
 		It is a dictionary that maps filter names to its options.
 		See also |ddc-filter-options|.
-		Default value: {}
+		Default: {}
 >
 		" e.g.
 		call ddc#custom#patch_global('filterOptions', {
@@ -110,7 +110,7 @@ filterOptions
 						*ddc-option-filterParams*
 filterParams
 		It is a dictionary that maps filter names to its parameters.
-		Default value: {}
+		Default: {}
 >
 		" e.g.
 		call ddc#custom#patch_global('filterParams', {
@@ -123,7 +123,7 @@ keywordPattern
 		Note: It is JavaScript regexp.
 		Note: "\k" is converted to 'iskeyword' pattern.
 
-		Default value: '\k*'
+		Default: '\k*'
 
 							*ddc-option-sources*
 sources
@@ -132,7 +132,7 @@ sources
 		Candidates from sources with smaller indexes will have smaller
 		indexes.
 
-		Default value: []
+		Default: []
 >
 		" e.g.
 		call ddc#custom#patch_global('sources', ['around'])
@@ -143,7 +143,7 @@ sourceOptions
 		options with the name "_" is used as the options for all
 		sources.
 		See also |ddc-source-options|.
-		Default value: {}
+		Default: {}
 >
 		" e.g.
 		call ddc#custom#patch_global('sourceOptions', {
@@ -155,7 +155,7 @@ sourceOptions
 sourceParams
 		It is a dictionary that maps source names to its parameters.
 		See also |ddc-source-params|.
-		Default value: {}
+		Default: {}
 >
 		" e.g.
 		call ddc#custom#patch_global('sourceParams', {
@@ -167,20 +167,21 @@ specialBufferCompletionFiletypes
 		If 'buftype' is not "", ddc auto completion is disabled
 		automatically except the filetype list.
 
-		Default value: []
+		Default: []
 
 ------------------------------------------------------------------------------
 FUNCTIONS 						*ddc-functions*
 
 							*ddc#disable()*
 ddc#disable()
-		Disable ddc.vim auto completion.
+		Disable ddc.vim all features permanentlly.
 		It should be used when ddc.vim is broken.
+		It should not be used for temporary plugin disable.
 		Note: It changes the global state.
 
 							*ddc#enable()*
 ddc#enable()
-		Enable ddc.vim auto completion.
+		Enable ddc.vim features and you can use it.
 		Note: It changes the global state.
 
 						*ddc#refresh_candidates()*
@@ -336,28 +337,35 @@ converters		(string[])
 
 		Default: []
 
+					*ddc-source-attribute-dup*
+dup			(boolean)			(Optional)
+		The candidates will be added even when the same word is
+		already present.
+
+		Default: v:false
+
 				*ddc-source-option-forceCompletionPattern*
 forceCompletionPattern	(string)
 		If it matches the input, ddc ignores
 		|ddc-source-option-minAutoCompleteLength|.
 		Note: It is JavaScript regexp.
 
-		Default value: ''
+		Default: ''
 
 				    	*ddc-source-option-ignoreCase*
-ignoreCase	(boolean)
+ignoreCase		(boolean)
 		If it is True, ddc ignores case.
 
 		Default: v:false
 
 				    	*ddc-source-option-isVolatile*
-isVolatile	(boolean)
+isVolatile		(boolean)
 		If it is True, ddc refresh candidates always.
 
 		Default: v:false
 
 				    	    	*ddc-source-option-mark*
-mark		(string)
+mark			(string)
 		A text icon indicating the source displayed with the
 		candidate.
 		Note: If the source set candidate menu, the source must set
@@ -374,21 +382,21 @@ maxAutoCompleteLength	(number)
 		Default: 80
 
 				    	*ddc-source-option-maxCandidates*
-maxCandidates	(number)
+maxCandidates		(number)
 		If there are more candidates than this value, ddc will ignore
 		the filtering.
 
 		Default: 500
 
 					*ddc-source-attribute-matcherKey*
-matcherKey	(string)			(Optional)
+matcherKey		(string)
 		Matcher compare key instead of "word".
 		If it is empty string, the feature is disabled.
 
 		Default: ""
 
 				    		*ddc-source-option-matchers*
-matchers	(string[])
+matchers		(string[])
 		It is a list of registered filter names that used with this
 		source.  Candidates will be processed in the order you specify
 		here.
@@ -402,7 +410,7 @@ minAutoCompleteLength	(number)
 		Default: 2
 
 				    		*ddc-source-option-sorters*
-sorters		(string[])
+sorters			(string[])
 		It is a list of registered filter names that used with this
 		source.  Candidates will be processed in the order you specify
 		here.
@@ -465,14 +473,14 @@ Note: If you call Vim functions in your source, it is not asynchronous.
 SOURCE ATTRIBUTES				*ddc-source-attributes*
 
 					*ddc-source-attribute-events*
-events		(string[])			(Optional)
+events			(string[])			(Optional)
 		List of events for which |ddc-source-attribute-onEvent|
 		should get called.
 
 		Default: []
 
 					*ddc-source-attribute-isBytePos*
-isBytePos	(boolean)			(Optional)
+isBytePos		(boolean)			(Optional)
 		If |ddc-source-attribute-getCompletePosition| returns byte
 		position, it must be true.
 		It is useful to use Vim script function.
@@ -480,29 +488,24 @@ isBytePos	(boolean)			(Optional)
 		Default: false
 
 				*ddc-source-attribute-gatherCandidates*
-gatherCandidates
-		(function)			(Required)
+gatherCandidates	(function)			(Required)
 		It is called to gather candidates.
 
 				*ddc-source-attribute-getCompletePosition*
-getCompletePosition
-		(function)			(Optional)
+getCompletePosition	(function)			(Optional)
 		It is called to get the position of the current completion.
 
 				*ddc-source-attribute-onEvent*
-onEvent
-		(function)			(Required)
+onEvent			(function)			(Required)
 		Called for the autocommands.
 		It is useful to make cache.
 
 				*ddc-source-attribute-onInit*
-onInit
-		(function)			(Optional)
+onInit			(function)			(Optional)
 		Called to initialize source.
 
 				*ddc-source-attribute-params*
-params
-		(function)			(Optional)
+params			(function)			(Optional)
 		Called to get source params.
 
 
@@ -510,31 +513,31 @@ params
 CANDIDATE ATTRIBUTES				*ddc-candidate-attributes*
 
 					*ddc-candidate-attribute-name*
-word		(string)			(Required)
+word			(string)			(Required)
 		The completion word of a candidate. It is used for matching
 		inputs.
 
 					*ddc-candidate-attribute-abbr*
-abbr		(string)			(Optional)
+abbr			(string)			(Optional)
 		The abbreviation of a candidate. It is displayed in popup
 		window.
 
 					*ddc-candidate-attribute-kind*
-kind		(string)			(Optional)
+kind			(string)			(Optional)
 		The kind of a candidate. It is displayed in popup window.
 
 					*ddc-candidate-attribute-menu*
-menu		(string)			(Optional)
+menu			(string)			(Optional)
 		The menu information of a candidate. It is displayed in popup
 		window.
 
 					*ddc-candidate-attribute-info*
-info		(string)			(Optional)
+info			(string)			(Optional)
 		The preview information of a candidate. If 'completeopt'
 		contains "preview", it will be displayed in |preview-window|.
 
 					*ddc-candidate-attribute-dup*
-dup		(boolean)			(Optional)
+dup			(boolean)			(Optional)
 		If true, the item will be displayed in the popup menu when an
 		item with the same word is already present.
 
@@ -556,31 +559,27 @@ Note: If you call Vim functions in your source, it is not asynchronous.
 FILTER ATTRIBUTES				*ddc-filter-attributes*
 
 					*ddc-filter-attribute-events*
-events		(string[])			(Optional)
+events			(string[])			(Optional)
 		List of events for which |ddc-filter-attribute-onEvent|
 		should get called.
 
 		Default: []
 
 				*ddc-filter-attribute-filter*
-filter
-		(function)			(Required)
+filter			(function)			(Required)
 		It is called to filter candidates.
 
 				*ddc-filter-attribute-onEvent*
-onEvent
-		(function)			(Required)
+onEvent			(function)			(Required)
 		Called for the autocommands.
 		It is useful to make cache.
 
 				*ddc-filter-attribute-onInit*
-onInit
-		(function)			(Optional)
+onInit			(function)			(Optional)
 		Called to initialize filter.
 
 				*ddc-filter-attribute-params*
-params
-		(function)			(Optional)
+params			(function)			(Optional)
 		Called to get filter params.
 
 
