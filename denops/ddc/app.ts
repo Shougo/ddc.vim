@@ -147,6 +147,13 @@ export async function main(denops: Denops) {
 
     await (async function write() {
       const pumvisible = await fn.pumvisible(denops);
+      const input = denops.call('ddc#util#get_input',
+                                context.event) as Promise<string>
+      if (context.input != await input) {
+        // Input is changed.  Skip invalid completion.
+        return;
+      }
+
       await batch(denops, async (denops) => {
         await vars.g.set(denops, "ddc#_event", context.event);
         await vars.g.set(denops, "ddc#_prev_input", context.input);
