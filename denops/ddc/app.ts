@@ -168,5 +168,12 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_now", 0);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
+
+    ddc.registerAutocmd(denops, [
+      "InsertEnter",
+      "InsertLeave",
+      "TextChangedI",
+      "TextChangedP",
+    ]);
   });
 }
