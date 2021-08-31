@@ -77,6 +77,12 @@ For example:
 
 The set of available options follows.
 
+					*ddc-option-autoCompleteDelay*
+autoCompleteDelay
+		Delay the completion after input in milliseconds.
+
+		Default: 0
+
 					*ddc-option-autoCompleteEvents*
 autoCompleteEvents
 		The auto completion fired events.  It must be list of
@@ -100,6 +106,7 @@ completionMode
 filterOptions
 		It is a dictionary that maps filter names to its options.
 		See also |ddc-filter-options|.
+
 		Default: {}
 >
 		" e.g.
@@ -110,6 +117,7 @@ filterOptions
 						*ddc-option-filterParams*
 filterParams
 		It is a dictionary that maps filter names to its parameters.
+
 		Default: {}
 >
 		" e.g.
@@ -143,6 +151,7 @@ sourceOptions
 		options with the name "_" is used as the options for all
 		sources.
 		See also |ddc-source-options|.
+
 		Default: {}
 >
 		" e.g.
@@ -155,6 +164,7 @@ sourceOptions
 sourceParams
 		It is a dictionary that maps source names to its parameters.
 		See also |ddc-source-params|.
+
 		Default: {}
 >
 		" e.g.

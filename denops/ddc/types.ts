@@ -27,6 +27,7 @@ export type Context = {
 type CompletionMode = "inline" | "popupmenu" | "manual";
 
 export type DdcOptions = {
+  autoCompleteDelay: 0;
   autoCompleteEvents: DdcEvent[];
   completionMode: CompletionMode;
   filterOptions: Record<string, Partial<FilterOptions>>;

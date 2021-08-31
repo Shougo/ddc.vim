@@ -111,16 +111,52 @@ export async function main(denops: Denops) {
         options,
       );
 
-      if (
-        options.autoCompleteEvents.indexOf(event) < 0 &&
-        event != "AutoRefresh" && event != "ManualRefresh"
-      ) {
+      const isAutoComplete = event != "AutoRefresh" && event != "ManualRefresh";
+      if (options.autoCompleteEvents.indexOf(event) < 0 && isAutoComplete) {
         return;
+      }
+
+      // Check auto complete delay.
+      if (options.autoCompleteDelay > 0 && isAutoComplete) {
+        // Cancel previous completion
+        await cancelCompletion(denops, context);
+
+        await new Promise((resolve) =>
+          setTimeout(
+            resolve,
+            options.autoCompleteDelay,
+          )
+        );
+
+        const changedTick = vars.b.get(denops, "changedtick") as Promise<
+          number
+        >;
+        if (context.changedTick != await changedTick) {
+          // Input is changed.  Skip invalid completion.
+          return;
+        }
       }
 
       await doCompletion(denops, context, options);
     },
   };
+
+  async function cancelCompletion(
+    denops: Denops,
+    context: Context,
+  ): Promise<void> {
+    const pumvisible = await fn.pumvisible(denops);
+
+    await batch(denops, async (denops) => {
+      await vars.g.set(denops, "ddc#_event", context.event);
+      await vars.g.set(denops, "ddc#_prev_input", "");
+      await vars.g.set(denops, "ddc#_complete_pos", -1);
+      await vars.g.set(denops, "ddc#_candidates", []);
+      if (pumvisible) {
+        await denops.call("ddc#complete");
+      }
+    });
+  }
 
   async function doCompletion(
     denops: Denops,
