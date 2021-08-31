@@ -16,6 +16,7 @@ export type Custom = {
 };
 
 export type Context = {
+  changedTick: number;
   event: DdcEvent;
   filetype: string;
   input: string;

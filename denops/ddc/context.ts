@@ -177,6 +177,7 @@ class Custom {
 type World = {
   bufnr: number;
   changedByCompletion: boolean;
+  changedTick: number;
   event: DdcEvent;
   filetype: string;
   input: string;
@@ -190,6 +191,7 @@ function initialWorld(): World {
   return {
     bufnr: 0,
     changedByCompletion: false,
+    changedTick: 0,
     event: "Manual",
     filetype: "",
     input: "",
@@ -215,6 +217,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
       (await vars.v.get(denops, "completed_item")) as Record<string, unknown>;
     return event == "TextChangedP" && Object.keys(completedItem).length != 0;
   })();
+  const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
   const filetype: Promise<string> = (async () => {
     const context = await _call(denops, "context_filetype#get_filetype", "");
     if (context != "") return context;
@@ -234,6 +237,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   return {
     bufnr: await bufnr,
     changedByCompletion: await changedByCompletion,
+    changedTick: await changedTick,
     event: event,
     filetype: await filetype,
     input: await input,
@@ -284,6 +288,7 @@ export class ContextBuilder {
     );
 
     const context = {
+      changedTick: world.changedTick,
       event: event,
       filetype: world.filetype,
       input: world.input,
