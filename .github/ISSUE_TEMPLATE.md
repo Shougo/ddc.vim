@@ -8,13 +8,18 @@
 
 ## Environment Information
 
- * ddc version (SHA1):
+ * ddc.vim version (SHA1):
+
+ * denops.vim version (SHA1):
+
+ * deno version(`deno -v` output):
 
  * OS:
 
  * neovim/Vim `:version` output:
 
  * `:checkhealth` or `:CheckHealth` result(neovim only):
+
 
 ## Provide a minimal init.vim/vimrc with less than 50 lines (Required!)
 
