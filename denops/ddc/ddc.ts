@@ -33,6 +33,7 @@ import {
   fn,
   op,
   parse,
+  TimeoutError,
   toFileUrl,
 } from "./deps.ts";
 
@@ -152,6 +153,7 @@ export class Ddc {
       this.registerAutocmd(denops, source.events);
     }
   }
+
   async registerFilter(denops: Denops, path: string, name: string) {
     if (path in this.checkPaths) {
       return;
@@ -218,21 +220,14 @@ export class Ddc {
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
       if (source.events?.includes(context.event)) {
-        (source?.apiVersion)
-          ? await source.onEvent({
-            denops,
-            context,
-            options,
-            sourceOptions,
-            sourceParams,
-          })
-          : await source.onEvent(
-            denops, // @ts-ignore: For deprecated sources
-            context,
-            options,
-            sourceOptions,
-            sourceParams,
-          );
+        this.callSourceOnEvent(
+          source,
+          denops,
+          context,
+          options,
+          sourceOptions,
+          sourceParams,
+        );
       }
 
       filterNames = filterNames.concat(
@@ -279,6 +274,43 @@ export class Ddc {
             o,
             p,
           );
+      }
+    }
+  }
+
+  async callSourceOnEvent(
+    source: BaseSource,
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+    sourceOptions: SourceOptions,
+    sourceParams: Record<string, unknown>,
+  ) {
+    try {
+      (source?.apiVersion)
+        ? await source.onEvent({
+          denops,
+          context,
+          options,
+          sourceOptions,
+          sourceParams,
+        })
+        : await source.onEvent(
+          denops, // @ts-ignore: For deprecated sources
+          context,
+          options,
+          sourceOptions,
+          sourceParams,
+        );
+    } catch (e: unknown) {
+      if (e instanceof TimeoutError) {
+        // Ignore timeout error
+        return;
+      } else {
+        console.error(
+          `[ddc.vim] source: ${source.name} "onEvent" execution is failed`,
+        );
+        console.error(e);
       }
     }
   }
