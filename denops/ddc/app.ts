@@ -78,25 +78,6 @@ export async function main(denops: Denops) {
       if (!maybe) return;
       const [context, options] = maybe;
 
-      // Note: Don't complete when backspace, because of completion flicker.
-      const prevInput = await vars.g.get(denops, "ddc#_prev_input") as string;
-      const checkBackSpace = (context.input != prevInput &&
-        context.input.length + 1 == prevInput.length &&
-        prevInput.startsWith(context.input));
-      if (checkBackSpace && options.completionMode == "popupmenu") {
-        await vars.g.set(denops, "ddc#_prev_input", context.input);
-        return;
-      }
-
-      // Skip special buffers.
-      const buftype = await op.buftype.getLocal(denops);
-      if (
-        buftype != "" &&
-        options.specialBufferCompletionFiletypes.indexOf(context.filetype) < 0
-      ) {
-        return;
-      }
-
       await ddc.onEvent(
         denops,
         context,
@@ -104,12 +85,17 @@ export async function main(denops: Denops) {
       );
 
       const isAutoComplete = event != "AutoRefresh" && event != "ManualRefresh";
-      if (options.autoCompleteEvents.indexOf(event) < 0 && isAutoComplete) {
+
+      if (
+        isAutoComplete && await checkSkipCompletion(event, context, options)
+      ) {
+        await cancelCompletion(denops, context);
+
         return;
       }
 
       // Check auto complete delay.
-      if (options.autoCompleteDelay > 0 && isAutoComplete) {
+      if (isAutoComplete && options.autoCompleteDelay > 0) {
         // Cancel previous completion
         await cancelCompletion(denops, context);
 
@@ -132,6 +118,53 @@ export async function main(denops: Denops) {
       await doCompletion(denops, context, options);
     },
   };
+
+  async function checkSkipCompletion(
+    event: DdcEvent,
+    context: Context,
+    options: DdcOptions,
+  ): Promise<boolean> {
+    // Note: Don't complete when backspace, because of completion flicker.
+    const prevInput = await vars.g.get(denops, "ddc#_prev_input") as string;
+    const checkBackSpace = (context.input != prevInput &&
+      context.input.length + 1 == prevInput.length &&
+      prevInput.startsWith(context.input));
+    if (checkBackSpace && options.completionMode == "popupmenu") {
+      await vars.g.set(denops, "ddc#_prev_input", context.input);
+      return true;
+    }
+
+    // Skip special buffers.
+    const buftype = await op.buftype.getLocal(denops);
+    if (
+      buftype != "" &&
+      options.specialBufferCompletionFiletypes.indexOf(context.filetype) < 0
+    ) {
+      return true;
+    }
+
+    // Check indentkeys.
+    const indentkeys = await op.indentkeys.getLocal(denops);
+    for (const pattern of indentkeys.split(",")) {
+      const found = pattern.match(/^0?=~?(.*)$/);
+      if (!found) {
+        continue;
+      }
+
+      if (context.input.endsWith(found[1])) {
+        // Skip completion and reindent if matched.
+        // Note: feedkeys("\<C-f>") didn't work for me.
+        await denops.call("ddc#util#indent_current_line");
+        return true;
+      }
+    }
+
+    if (options.autoCompleteEvents.indexOf(event) < 0) {
+      return true;
+    }
+
+    return false;
+  }
 
   async function cancelCompletion(
     denops: Denops,
