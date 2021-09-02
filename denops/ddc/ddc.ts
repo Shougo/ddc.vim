@@ -272,23 +272,15 @@ export class Ddc {
         o.isVolatile
       ) {
         // Not matched.
-        const scs = (s?.apiVersion)
-          ? await s.gatherCandidates({
-            denops,
-            context,
-            options,
-            sourceOptions: o,
-            sourceParams: p,
-            completeStr,
-          })
-          : await s.gatherCandidates(
-            denops, // @ts-ignore: For deprecated sources
-            context,
-            options,
-            o,
-            p,
-            completeStr,
-          );
+        const scs = await callSourceGatherCandidates(
+          s,
+          denops,
+          context,
+          options,
+          o,
+          p,
+          completeStr,
+        );
         if (!scs.length) {
           return;
         }
@@ -364,27 +356,17 @@ export class Ddc {
     async function callFilters(filters: BaseFilter[]): Promise<Candidate[]> {
       for (const filter of filters) {
         const [o, p] = filterArgs(filterOptions, filterParams, filter);
-        cdd = (filter.apiVersion)
-          ? await filter.filter({
-            denops,
-            context,
-            options,
-            sourceOptions,
-            filterOptions: o,
-            filterParams: p,
-            completeStr,
-            candidates: cdd,
-          })
-          : await filter.filter(
-            denops, // @ts-ignore: For deprecated filters
-            context,
-            options,
-            sourceOptions,
-            o,
-            p,
-            completeStr,
-            cdd,
-          );
+        cdd = await callFilterFilter(
+          filter,
+          denops,
+          context,
+          options,
+          sourceOptions,
+          o,
+          p,
+          completeStr,
+          cdd,
+        );
       }
 
       return cdd;
@@ -562,14 +544,14 @@ async function callSourceGetCompletePosition(
 ): Promise<number> {
   try {
     return (source?.apiVersion)
-      ? source.getCompletePosition({
+      ? await source.getCompletePosition({
         denops,
         context,
         options,
         sourceOptions,
         sourceParams,
       })
-      : source.getCompletePosition(
+      : await source.getCompletePosition(
         denops, // @ts-ignore: For deprecated sources
         context,
         options,
@@ -587,6 +569,93 @@ async function callSourceGetCompletePosition(
     }
 
     return -1;
+  }
+}
+
+async function callSourceGatherCandidates(
+  source: BaseSource,
+  denops: Denops,
+  context: Context,
+  options: DdcOptions,
+  sourceOptions: SourceOptions,
+  sourceParams: Record<string, unknown>,
+  completeStr: string,
+): Promise<Candidate[]> {
+  try {
+    return (source?.apiVersion)
+      ? await source.gatherCandidates({
+        denops,
+        context,
+        options,
+        sourceOptions,
+        sourceParams,
+        completeStr,
+      })
+      : await source.gatherCandidates(
+        denops, // @ts-ignore: For deprecated sources
+        context,
+        options,
+        sourceOptions,
+        sourceParams,
+        completeStr,
+      );
+  } catch (e: unknown) {
+    if (e instanceof TimeoutError) {
+      // Ignore timeout error
+    } else {
+      console.error(
+        `[ddc.vim] source: ${source.name} "gatherCandidates()" is failed`,
+      );
+      console.error(e);
+    }
+
+    return [];
+  }
+}
+
+async function callFilterFilter(
+  filter: BaseFilter,
+  denops: Denops,
+  context: Context,
+  options: DdcOptions,
+  sourceOptions: SourceOptions,
+  filterOptions: FilterOptions,
+  filterParams: Record<string, unknown>,
+  completeStr: string,
+  candidates: Candidate[],
+): Promise<Candidate[]> {
+  try {
+    return (filter?.apiVersion)
+      ? await filter.filter({
+        denops,
+        context,
+        options,
+        sourceOptions,
+        filterOptions,
+        filterParams,
+        completeStr,
+        candidates,
+      })
+      : await filter.filter(
+        denops, // @ts-ignore: For deprecated sources
+        context,
+        options,
+        filterOptions,
+        filterParams,
+        completeStr,
+        candidates,
+      );
+  } catch (e: unknown) {
+    if (e instanceof TimeoutError) {
+      // Ignore timeout error
+    } else {
+      console.error(
+        `[ddc.vim] filter: ${filter.name} "filter()" is failed`,
+      );
+      console.error(e);
+    }
+
+    return [];
   }
 }
 
