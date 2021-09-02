@@ -223,21 +223,14 @@ export class Ddc {
     const sources = this.foundSources(options.sources)
       .map((s) => [s, ...sourceArgs(options, s)] as const);
     const rs = await Promise.all(sources.map(async ([s, o, p]) => {
-      const pos = (s?.apiVersion)
-        ? await s.getCompletePosition({
-          denops,
-          context,
-          options,
-          sourceOptions: o,
-          sourceParams: p,
-        })
-        : await s.getCompletePosition(
-          denops, // @ts-ignore: For deprecated sources
-          context,
-          options,
-          o,
-          p,
-        );
+      const pos = await callSourceGetCompletePosition(
+        s,
+        denops,
+        context,
+        options,
+        o,
+        p,
+      );
       const forceCompletion = o.forceCompletionPattern.length != 0 &&
         context.input.search(
             new RegExp("(" + o.forceCompletionPattern + ")$"),
@@ -487,7 +480,7 @@ function filterArgs(
   return [optionsOf(filter), paramsOf(filter)];
 }
 
-async function callSourceOnEvent(
+function callSourceOnEvent(
   source: BaseSource,
   denops: Denops,
   context: Context,
@@ -497,14 +490,14 @@ async function callSourceOnEvent(
 ) {
   try {
     (source?.apiVersion)
-      ? await source.onEvent({
+      ? source.onEvent({
         denops,
         context,
         options,
         sourceOptions,
         sourceParams,
       })
-      : await source.onEvent(
+      : source.onEvent(
         denops, // @ts-ignore: For deprecated sources
         context,
         options,
@@ -514,17 +507,16 @@ async function callSourceOnEvent(
   } catch (e: unknown) {
     if (e instanceof TimeoutError) {
       // Ignore timeout error
-      return;
     } else {
       console.error(
-        `[ddc.vim] source: ${source.name} "onEvent" execution is failed`,
+        `[ddc.vim] source: ${source.name} "onEvent()" is failed`,
       );
       console.error(e);
     }
   }
 }
 
-async function callFilterOnEvent(
+function callFilterOnEvent(
   filter: BaseFilter,
   denops: Denops,
   context: Context,
@@ -534,14 +526,14 @@ async function callFilterOnEvent(
 ) {
   try {
     (filter?.apiVersion)
-      ? await filter.onEvent({
+      ? filter.onEvent({
         denops,
         context,
         options,
         filterOptions,
         filterParams,
       })
-      : await filter.onEvent(
+      : filter.onEvent(
         denops, // @ts-ignore: For deprecated sources
         context,
         options,
@@ -551,13 +543,50 @@ async function callFilterOnEvent(
   } catch (e: unknown) {
     if (e instanceof TimeoutError) {
       // Ignore timeout error
-      return;
     } else {
       console.error(
-        `[ddc.vim] filter: ${filter.name} "onEvent" execution is failed`,
+        `[ddc.vim] filter: ${filter.name} "onEvent()" is failed`,
       );
       console.error(e);
     }
+  }
+}
+
+async function callSourceGetCompletePosition(
+  source: BaseSource,
+  denops: Denops,
+  context: Context,
+  options: DdcOptions,
+  sourceOptions: SourceOptions,
+  sourceParams: Record<string, unknown>,
+): Promise<number> {
+  try {
+    return (source?.apiVersion)
+      ? source.getCompletePosition({
+        denops,
+        context,
+        options,
+        sourceOptions,
+        sourceParams,
+      })
+      : source.getCompletePosition(
+        denops, // @ts-ignore: For deprecated sources
+        context,
+        options,
+        sourceOptions,
+        sourceParams,
+      );
+  } catch (e: unknown) {
+    if (e instanceof TimeoutError) {
+      // Ignore timeout error
+    } else {
+      console.error(
+        `[ddc.vim] source: ${source.name} "getCompletePoistion()" is failed`,
+      );
+      console.error(e);
+    }
+
+    return -1;
   }
 }
 
