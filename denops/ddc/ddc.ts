@@ -44,62 +44,6 @@ type DdcResult = {
   lineNr: number;
 };
 
-function formatAbbr(word: string, abbr: string | undefined): string {
-  return abbr ? abbr : word;
-}
-
-function formatMenu(prefix: string, menu: string | undefined): string {
-  menu = menu ? menu : "";
-  return prefix == ""
-    ? menu
-    : menu == ""
-    ? `[${prefix}]`
-    : `[${prefix}] ${menu}`;
-}
-
-function byteposToCharpos(input: string, pos: number): number {
-  const bytes = (new TextEncoder()).encode(input);
-  return (new TextDecoder()).decode(bytes.slice(0, pos)).length;
-}
-
-function charposToBytepos(input: string, pos: number): number {
-  return (new TextEncoder()).encode(input.slice(0, pos)).length;
-}
-
-function sourceArgs(
-  options: DdcOptions,
-  source: BaseSource,
-): [SourceOptions, Record<string, unknown>] {
-  const o = foldMerge(
-    mergeSourceOptions,
-    defaultSourceOptions,
-    [options.sourceOptions["_"], options.sourceOptions[source.name]],
-  );
-  const p = foldMerge(mergeSourceParams, defaultSourceParams, [
-    source.params(),
-    options.sourceParams[source.name],
-  ]);
-  return [o, p];
-}
-
-function filterArgs(
-  filterOptions: Record<string, Partial<FilterOptions>>,
-  filterParams: Record<string, Partial<Record<string, unknown>>>,
-  filter: BaseFilter,
-): [FilterOptions, Record<string, unknown>] {
-  // TODO: '_'?
-  const optionsOf = (filter: BaseFilter) =>
-    foldMerge(mergeFilterOptions, defaultFilterOptions, [
-      filterOptions[filter.name],
-    ]);
-  const paramsOf = (filter: BaseFilter) =>
-    foldMerge(mergeFilterParams, defaultFilterParams, [
-      filter.params(),
-      filterParams[filter.name],
-    ]);
-  return [optionsOf(filter), paramsOf(filter)];
-}
-
 export class Ddc {
   private sources: Record<string, BaseSource> = {};
   private filters: Record<string, BaseFilter> = {};
@@ -220,7 +164,7 @@ export class Ddc {
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
       if (source.events?.includes(context.event)) {
-        this.callSourceOnEvent(
+        callSourceOnEvent(
           source,
           denops,
           context,
@@ -259,58 +203,14 @@ export class Ddc {
           options.filterParams,
           filter,
         );
-        (filter.apiVersion)
-          ? await filter.onEvent({
-            denops,
-            context,
-            options,
-            filterOptions: o,
-            filterParams: p,
-          })
-          : await filter.onEvent(
-            denops, // @ts-ignore: For deprecated filters
-            context,
-            options,
-            o,
-            p,
-          );
-      }
-    }
-  }
-
-  async callSourceOnEvent(
-    source: BaseSource,
-    denops: Denops,
-    context: Context,
-    options: DdcOptions,
-    sourceOptions: SourceOptions,
-    sourceParams: Record<string, unknown>,
-  ) {
-    try {
-      (source?.apiVersion)
-        ? await source.onEvent({
+        callFilterOnEvent(
+          filter,
           denops,
           context,
           options,
-          sourceOptions,
-          sourceParams,
-        })
-        : await source.onEvent(
-          denops, // @ts-ignore: For deprecated sources
-          context,
-          options,
-          sourceOptions,
-          sourceParams,
+          o,
+          p,
         );
-    } catch (e: unknown) {
-      if (e instanceof TimeoutError) {
-        // Ignore timeout error
-        return;
-      } else {
-        console.error(
-          `[ddc.vim] source: ${source.name} "onEvent" execution is failed`,
-        );
-        console.error(e);
       }
     }
   }
@@ -528,6 +428,136 @@ export class Ddc {
     cdd = await callFilters(converters);
 
     return cdd;
+  }
+}
+
+function formatAbbr(word: string, abbr: string | undefined): string {
+  return abbr ? abbr : word;
+}
+
+function formatMenu(prefix: string, menu: string | undefined): string {
+  menu = menu ? menu : "";
+  return prefix == ""
+    ? menu
+    : menu == ""
+    ? `[${prefix}]`
+    : `[${prefix}] ${menu}`;
+}
+
+function byteposToCharpos(input: string, pos: number): number {
+  const bytes = (new TextEncoder()).encode(input);
+  return (new TextDecoder()).decode(bytes.slice(0, pos)).length;
+}
+
+function charposToBytepos(input: string, pos: number): number {
+  return (new TextEncoder()).encode(input.slice(0, pos)).length;
+}
+
+function sourceArgs(
+  options: DdcOptions,
+  source: BaseSource,
+): [SourceOptions, Record<string, unknown>] {
+  const o = foldMerge(
+    mergeSourceOptions,
+    defaultSourceOptions,
+    [options.sourceOptions["_"], options.sourceOptions[source.name]],
+  );
+  const p = foldMerge(mergeSourceParams, defaultSourceParams, [
+    source.params(),
+    options.sourceParams[source.name],
+  ]);
+  return [o, p];
+}
+
+function filterArgs(
+  filterOptions: Record<string, Partial<FilterOptions>>,
+  filterParams: Record<string, Partial<Record<string, unknown>>>,
+  filter: BaseFilter,
+): [FilterOptions, Record<string, unknown>] {
+  // TODO: '_'?
+  const optionsOf = (filter: BaseFilter) =>
+    foldMerge(mergeFilterOptions, defaultFilterOptions, [
+      filterOptions[filter.name],
+    ]);
+  const paramsOf = (filter: BaseFilter) =>
+    foldMerge(mergeFilterParams, defaultFilterParams, [
+      filter.params(),
+      filterParams[filter.name],
+    ]);
+  return [optionsOf(filter), paramsOf(filter)];
+}
+
+async function callSourceOnEvent(
+  source: BaseSource,
+  denops: Denops,
+  context: Context,
+  options: DdcOptions,
+  sourceOptions: SourceOptions,
+  sourceParams: Record<string, unknown>,
+) {
+  try {
+    (source?.apiVersion)
+      ? await source.onEvent({
+        denops,
+        context,
+        options,
+        sourceOptions,
+        sourceParams,
+      })
+      : await source.onEvent(
+        denops, // @ts-ignore: For deprecated sources
+        context,
+        options,
+        sourceOptions,
+        sourceParams,
+      );
+  } catch (e: unknown) {
+    if (e instanceof TimeoutError) {
+      // Ignore timeout error
+      return;
+    } else {
+      console.error(
+        `[ddc.vim] source: ${source.name} "onEvent" execution is failed`,
+      );
+      console.error(e);
+    }
+  }
+}
+
+async function callFilterOnEvent(
+  filter: BaseFilter,
+  denops: Denops,
+  context: Context,
+  options: DdcOptions,
+  filterOptions: FilterOptions,
+  filterParams: Record<string, unknown>,
+) {
+  try {
+    (filter?.apiVersion)
+      ? await filter.onEvent({
+        denops,
+        context,
+        options,
+        filterOptions,
+        filterParams,
+      })
+      : await filter.onEvent(
+        denops, // @ts-ignore: For deprecated sources
+        context,
+        options,
+        filterOptions,
+        filterParams,
+      );
+  } catch (e: unknown) {
+    if (e instanceof TimeoutError) {
+      // Ignore timeout error
+      return;
+    } else {
+      console.error(
+        `[ddc.vim] filter: ${filter.name} "onEvent" execution is failed`,
+      );
+      console.error(e);
+    }
   }
 }
 
