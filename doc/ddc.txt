@@ -221,12 +221,23 @@ ddc#register_source({dict})
 
 CUSTOM FUNCTIONS 					*ddc-custom-functions*
 
-						*ddc#custom#patch_global()*
-ddc#custom#patch_global({option-name}, {value})
-ddc#custom#patch_global({dict})
-		Set {option-name} option to {value}.
-		If {dict} is available, the key is {option-name} and the value
-		is {value}. See |ddc-options| for available {option-name}.
+						*ddc#custom#get_buffer()*
+ddc#custom#get_buffer()
+		Get buffer specific options.
+
+						*ddc#custom#get_filetype()*
+ddc#custom#get_filetype()
+		Get filetype specific options.
+
+						*ddc#custom#get_global()*
+ddc#custom#get_global()
+		Get global options.
+
+						*ddc#custom#patch_buffer()*
+ddc#custom#patch_buffer({option-name}, {value})
+ddc#custom#patch_buffer({dict})
+		Set local options on current buffer.  The arguments are the
+		same as for |ddc#custom#patch_global()|.
 
 						*ddc#custom#patch_filetype()*
 ddc#custom#patch_filetype({filetype}, {option-name}, {value})
@@ -235,11 +246,12 @@ ddc#custom#patch_filetype({filetype}, {dict})
 		a list of strings. Options are {dict} or {'{option-name}':
 		{value}}.
 
-						*ddc#custom#patch_buffer()*
-ddc#custom#patch_buffer({option-name}, {value})
-ddc#custom#patch_buffer({dict})
-		Set local options on current buffer.  The arguments are the
-		same as for |ddc#custom#patch_global()|.
+						*ddc#custom#patch_global()*
+ddc#custom#patch_global({option-name}, {value})
+ddc#custom#patch_global({dict})
+		Set {option-name} option to {value}.
+		If {dict} is available, the key is {option-name} and the value
+		is {value}. See |ddc-options| for available {option-name}.
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
