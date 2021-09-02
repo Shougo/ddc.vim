@@ -4,6 +4,9 @@ Note: It is still beta version.  But it is almost stable.
 
 > Dark deno powered completion framework for neovim/Vim8
 
+If you don't want to configure plugins, you don't have to use the plugin.
+It does not work with zero configuration.  You can use other plugins.
+
 [![Doc](https://img.shields.io/badge/doc-%3Ah%20ddc-orange.svg)](doc/ddc.txt)
 
 Please read [help](doc/ddc.txt) for details.
