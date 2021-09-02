@@ -1,15 +1,7 @@
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
-import { Context, DdcCandidate, DdcEvent, DdcOptions } from "./types.ts";
-import {
-  batch,
-  Denops,
-  ensureObject,
-  fn,
-  op,
-  TimeoutError,
-  vars,
-} from "./deps.ts";
+import { Context, DdcEvent, DdcOptions } from "./types.ts";
+import { batch, Denops, ensureObject, fn, op, vars } from "./deps.ts";
 
 type RegisterArg = {
   path: string;
@@ -163,23 +155,11 @@ export async function main(denops: Denops) {
     context: Context,
     options: DdcOptions,
   ): Promise<void> {
-    let completePos: number;
-    let candidates: DdcCandidate[];
-    try {
-      [completePos, candidates] = await ddc.gatherResults(
-        denops,
-        context,
-        options,
-      );
-    } catch (e: unknown) {
-      if (e instanceof TimeoutError) {
-        // Ignore timeout error
-        // https://github.com/Shougo/ddc.vim/issues/39
-        return;
-      } else {
-        throw e;
-      }
-    }
+    const [completePos, candidates] = await ddc.gatherResults(
+      denops,
+      context,
+      options,
+    );
 
     await (async function write() {
       const pumvisible = await fn.pumvisible(denops);
