@@ -10,6 +10,8 @@ import { Denops } from "../deps.ts";
 
 export type OnInitArguments = {
   denops: Denops;
+  filterOptions: FilterOptions;
+  filterParams: Record<string, unknown>;
 };
 
 export type OnEventArguments = {
@@ -34,9 +36,10 @@ export type FilterArguments = {
 export abstract class BaseFilter {
   name = "";
   events: DdcEvent[] = [];
+  isInitialized = false;
 
   // Use overload methods
-  apiVersion = 2;
+  apiVersion = 3;
 
   async onInit(_args: OnInitArguments): Promise<void> {}
 

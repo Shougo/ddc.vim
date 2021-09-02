@@ -9,6 +9,8 @@ import { Denops } from "../deps.ts";
 
 export type OnInitArguments = {
   denops: Denops;
+  sourceOptions: SourceOptions;
+  sourceParams: Record<string, unknown>;
 };
 
 export type OnEventArguments = {
@@ -40,9 +42,10 @@ export abstract class BaseSource {
   name = "";
   isBytePos = false;
   events: DdcEvent[] = [];
+  isInitialized = false;
 
   // Use overload methods
-  apiVersion = 2;
+  apiVersion = 3;
 
   async onInit(_args: OnInitArguments): Promise<void> {}
 

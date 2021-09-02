@@ -91,7 +91,6 @@ export class Ddc {
     const mod = await import(toFileUrl(path).href);
     const source = new mod.Source();
     source.name = name;
-    source?.apiVersion ? source.onInit({ denops }) : source.onInit(denops);
     this.sources[source.name] = source;
     if (source.events && source.events.length != 0) {
       this.registerAutocmd(denops, source.events);
@@ -164,7 +163,7 @@ export class Ddc {
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
       if (source.events?.includes(context.event)) {
-        callSourceOnEvent(
+        await callSourceOnEvent(
           source,
           denops,
           context,
@@ -203,7 +202,7 @@ export class Ddc {
           options.filterParams,
           filter,
         );
-        callFilterOnEvent(
+        await callFilterOnEvent(
           filter,
           denops,
           context,
@@ -462,7 +461,75 @@ function filterArgs(
   return [optionsOf(filter), paramsOf(filter)];
 }
 
-function callSourceOnEvent(
+async function checkSourceOnInit(
+  source: BaseSource,
+  denops: Denops,
+  sourceOptions: SourceOptions,
+  sourceParams: Record<string, unknown>,
+) {
+  if (source.isInitialized) {
+    return;
+  }
+
+  try {
+    (source?.apiVersion)
+      ? await source.onInit({
+        denops,
+        sourceOptions,
+        sourceParams,
+      })
+      : await source.onInit( // @ts-ignore: For deprecated sources
+        denops,
+      );
+
+    source.isInitialized = true;
+  } catch (e: unknown) {
+    if (e instanceof TimeoutError) {
+      // Ignore timeout error
+    } else {
+      console.error(
+        `[ddc.vim] source: ${source.name} "onInit()" is failed`,
+      );
+      console.error(e);
+    }
+  }
+}
+
+async function checkFilterOnInit(
+  filter: BaseFilter,
+  denops: Denops,
+  filterOptions: FilterOptions,
+  filterParams: Record<string, unknown>,
+) {
+  if (filter.isInitialized) {
+    return;
+  }
+
+  try {
+    (filter?.apiVersion)
+      ? await filter.onInit({
+        denops,
+        filterOptions,
+        filterParams,
+      })
+      : await filter.onInit( // @ts-ignore: For deprecated sources
+        denops,
+      );
+
+    filter.isInitialized = true;
+  } catch (e: unknown) {
+    if (e instanceof TimeoutError) {
+      // Ignore timeout error
+    } else {
+      console.error(
+        `[ddc.vim] filter: ${filter.name} "onInit()" is failed`,
+      );
+      console.error(e);
+    }
+  }
+}
+
+async function callSourceOnEvent(
   source: BaseSource,
   denops: Denops,
   context: Context,
@@ -470,16 +537,18 @@ function callSourceOnEvent(
   sourceOptions: SourceOptions,
   sourceParams: Record<string, unknown>,
 ) {
+  await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
+
   try {
     (source?.apiVersion)
-      ? source.onEvent({
+      ? await source.onEvent({
         denops,
         context,
         options,
         sourceOptions,
         sourceParams,
       })
-      : source.onEvent(
+      : await source.onEvent(
         denops, // @ts-ignore: For deprecated sources
         context,
         options,
@@ -498,7 +567,7 @@ function callSourceOnEvent(
   }
 }
 
-function callFilterOnEvent(
+async function callFilterOnEvent(
   filter: BaseFilter,
   denops: Denops,
   context: Context,
@@ -506,6 +575,8 @@ function callFilterOnEvent(
   filterOptions: FilterOptions,
   filterParams: Record<string, unknown>,
 ) {
+  await checkFilterOnInit(filter, denops, filterOptions, filterParams);
+
   try {
     (filter?.apiVersion)
       ? filter.onEvent({
@@ -542,6 +613,8 @@ async function callSourceGetCompletePosition(
   sourceOptions: SourceOptions,
   sourceParams: Record<string, unknown>,
 ): Promise<number> {
+  await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
+
   try {
     return (source?.apiVersion)
       ? await source.getCompletePosition({
@@ -581,6 +654,8 @@ async function callSourceGatherCandidates(
   sourceParams: Record<string, unknown>,
   completeStr: string,
 ): Promise<Candidate[]> {
+  await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
+
   try {
     return (source?.apiVersion)
       ? await source.gatherCandidates({
@@ -624,6 +699,8 @@ async function callFilterFilter(
   completeStr: string,
   candidates: Candidate[],
 ): Promise<Candidate[]> {
+  await checkFilterOnInit(filter, denops, filterOptions, filterParams);
+
   try {
     return (filter?.apiVersion)
       ? await filter.filter({

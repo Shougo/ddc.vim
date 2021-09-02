@@ -527,7 +527,7 @@ onEvent			(function)			(Required)
 
 				*ddc-source-attribute-onInit*
 onInit			(function)			(Optional)
-		Called to initialize source.
+		Called before call source functions.
 
 				*ddc-source-attribute-params*
 params			(function)			(Optional)
@@ -601,7 +601,7 @@ onEvent			(function)			(Required)
 
 				*ddc-filter-attribute-onInit*
 onInit			(function)			(Optional)
-		Called to initialize filter.
+		Called before call filter functions.
 
 				*ddc-filter-attribute-params*
 params			(function)			(Optional)
@@ -733,6 +733,12 @@ Other people can implement it instead...
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.09.02
+* Change onInit() timing.  It is called before sources/filters after
+  initialized.
+* Change onInit() arguments.
+* Catch source/filters errors.
 
 2021.08.28
 * "denops/ddc-sources/*.ts" or "denops/ddc-filters/*.ts" files are autoloaded.
