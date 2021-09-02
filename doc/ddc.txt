@@ -350,7 +350,7 @@ converters		(string[])
 
 		Default: []
 
-					*ddc-source-attribute-dup*
+					*ddc-source-option-dup*
 dup			(boolean)			(Optional)
 		The candidates will be added even when the same word is
 		already present.
@@ -401,7 +401,7 @@ maxCandidates		(number)
 
 		Default: 500
 
-					*ddc-source-attribute-matcherKey*
+						*ddc-source-option-matcherKey*
 matcherKey		(string)
 		Matcher compare key instead of "word".
 		If it is empty string, the feature is disabled.
