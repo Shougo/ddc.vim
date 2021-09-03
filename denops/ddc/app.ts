@@ -146,7 +146,7 @@ export async function main(denops: Denops) {
     // Check indentkeys.
     const indentkeys = await op.indentkeys.getLocal(denops);
     for (const pattern of indentkeys.split(",")) {
-      const found = pattern.match(/^0?=~?(.*)$/);
+      const found = pattern.match(/^0?=~?(.+)$/);
       if (!found) {
         continue;
       }
