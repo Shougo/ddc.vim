@@ -123,10 +123,31 @@ function! ddc#_inline() abort
   endif
 
   call nvim_buf_clear_namespace(0, s:ddc_namespace, 0, -1)
-  if !empty(g:ddc#_candidates)
+  if empty(g:ddc#_candidates)
+    return
+  endif
+
+  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos:]
+  let word = g:ddc#_candidates[0].word
+
+  if stridx(word, complete_str) == 0
+    " Head matched: Follow cursor text
     call nvim_buf_set_extmark(
-          \ 0, s:ddc_namespace, line('.') - 1, 0,
-          \ { 'virt_text': [[g:ddc#_candidates[0].abbr, 'PmenuSel']] })
+          \ 0, s:ddc_namespace, line('.') - 1, col('.') - 1, {
+          \ 'virt_text': [[word[len(complete_str):], 'Comment']],
+          \ 'virt_text_pos': 'overlay',
+          \ 'virt_text_win_col': col('.') - 1,
+          \ 'hl_mode': 'blend',
+          \ 'priority': 0,
+          \ })
+  else
+    " Others: After cursor text
+    call nvim_buf_set_extmark(
+          \ 0, s:ddc_namespace, line('.') - 1, 0, {
+          \ 'virt_text': [[word, 'Comment']],
+          \ 'hl_mode': 'blend',
+          \ 'priority': 0,
+          \ })
   endif
 endfunction
 
