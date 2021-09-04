@@ -700,14 +700,27 @@ A: >
 Q: I want to look selected function's arguments. But I don't like preview
 window feature.
 
-A: You can do it by echodoc plugin.
+A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
+   feature only.  The extra tasks are out of the range.
+
+   But you can do it by echodoc plugin.
    http://github.com/Shougo/echodoc.vim
+
+   Or you can use lsp_signature.nvim plugin for nvim-lsp.
+   https://github.com/ray-x/lsp_signature.nvim
 
 
 Q: I want to use floating preview window feature.
 
-A: Please install float-preview.nvim plugin.
+A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
+   feature only.  The extra tasks are out of the range.
+
+   You can do it by float-preview.nvim plugin.
    https://github.com/ncm2/float-preview.nvim
+
+   Or you can use ddc-nvim-lsp-doc plugin for nvim-lsp.
+   https://github.com/matsui54/ddc-nvim-lsp-doc
+
 
 Q: Why file/path source is not available for ddc.vim?
 
