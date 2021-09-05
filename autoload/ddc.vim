@@ -113,7 +113,7 @@ function! ddc#_clear() abort
   call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
 endfunction
 
-function! ddc#_inline() abort
+function! ddc#_inline(highlight) abort
   if !exists('*nvim_buf_set_extmark')
     return
   endif
@@ -134,7 +134,7 @@ function! ddc#_inline() abort
     " Head matched: Follow cursor text
     call nvim_buf_set_extmark(
           \ 0, s:ddc_namespace, line('.') - 1, col('.') - 1, {
-          \ 'virt_text': [[word[len(complete_str):], 'Comment']],
+          \ 'virt_text': [[word[len(complete_str):], a:highlight]],
           \ 'virt_text_pos': 'overlay',
           \ 'virt_text_win_col': col('.') - 1,
           \ 'hl_mode': 'blend',

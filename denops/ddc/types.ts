@@ -27,11 +27,12 @@ export type Context = {
 type CompletionMode = "inline" | "popupmenu" | "manual";
 
 export type DdcOptions = {
-  autoCompleteDelay: 0;
+  autoCompleteDelay: number;
   autoCompleteEvents: DdcEvent[];
   completionMode: CompletionMode;
   filterOptions: Record<string, Partial<FilterOptions>>;
   filterParams: Record<string, Partial<Record<string, unknown>>>;
+  inlineHighlight: string;
   keywordPattern: string;
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;

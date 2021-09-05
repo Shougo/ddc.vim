@@ -43,6 +43,7 @@ export function defaultDdcOptions(): DdcOptions {
     completionMode: "popupmenu",
     filterOptions: {},
     filterParams: {},
+    inlineHighlight: "Comment",
     keywordPattern: "\\k*",
     sourceOptions: {},
     sourceParams: {},

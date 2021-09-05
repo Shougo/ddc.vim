@@ -128,6 +128,12 @@ filterParams
 		    \ 'matcher_head': {},
 		    \ })
 <
+						*ddc-option-inlineHighlight*
+inlineHighlight
+		The highlight of |ddc-option-completionMode|'s inline text.
+
+		Default: "Comment"
+
 					*ddc-option-keywordPattern*
 keywordPattern
 		It defines the keyword pattern for completion.
