@@ -72,11 +72,11 @@ export async function main(denops: Denops) {
         return;
       }
 
-      await ddc.autoload(denops);
-
       const maybe = await contextBuilder.createContext(denops, event);
       if (!maybe) return;
       const [context, options] = maybe;
+
+      await ddc.autoload(denops);
 
       await ddc.onEvent(
         denops,

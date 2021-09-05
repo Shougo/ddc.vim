@@ -144,14 +144,14 @@ export class Ddc {
     }));
   }
 
-  async onEvent(
+  async checkInvalid(
     denops: Denops,
-    context: Context,
     options: DdcOptions,
-  ): Promise<void> {
+    filterNames: string[],
+  ) {
     // Check invalid sources
     const invalidSources = this.foundInvalidSources(options.sources);
-    if (invalidSources.length != 0) {
+    if (Object.keys(this.sources).length != 0 && invalidSources.length != 0) {
       await denops.call(
         "ddc#util#print_error",
         "Invalid sources are detected!",
@@ -159,6 +159,22 @@ export class Ddc {
       await denops.call("ddc#util#print_error", invalidSources);
     }
 
+    // Check invalid filters
+    const invalidFilters = this.foundInvalidFilters([...new Set(filterNames)]);
+    if (Object.keys(this.filters).length != 0 && invalidFilters.length != 0) {
+      await denops.call(
+        "ddc#util#print_error",
+        "Invalid filters are detected!",
+      );
+      await denops.call("ddc#util#print_error", invalidFilters);
+    }
+  }
+
+  async onEvent(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+  ): Promise<void> {
     let filterNames: string[] = [];
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
@@ -183,19 +199,7 @@ export class Ddc {
     // Uniq.
     filterNames = [...new Set(filterNames)];
 
-    // Check invalid filters
-    const invalidFilters = this.foundInvalidFilters(filterNames);
-    if (invalidFilters.length != 0) {
-      await denops.call(
-        "ddc#util#print_error",
-        "Invalid filters are detected!",
-      );
-      await denops.call("ddc#util#print_error", invalidFilters);
-    }
-
-    const filters = this.foundFilters(filterNames);
-
-    for (const filter of filters) {
+    for (const filter of this.foundFilters(filterNames)) {
       if (filter.events?.includes(context.event)) {
         const [o, p] = filterArgs(
           options.filterOptions,
@@ -211,6 +215,13 @@ export class Ddc {
           p,
         );
       }
+    }
+
+    if (
+      Object.keys(this.sources).length != 0 &&
+      Object.keys(this.filters).length != 0
+    ) {
+      await this.checkInvalid(denops, options, filterNames);
     }
   }
 
