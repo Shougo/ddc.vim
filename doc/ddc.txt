@@ -448,6 +448,13 @@ sorters			(string[])
 
 		Default: []
 
+			    		    *ddc-source-option-timeout*
+timeout			(number)
+		The |ddc-source-attribute-gatherCandidates| timeout for
+		completion.
+
+		Default: 2000
+
 ------------------------------------------------------------------------------
 SOURCE PARAMS					*ddc-source-params*
 

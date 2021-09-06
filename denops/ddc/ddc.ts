@@ -29,6 +29,8 @@ import {
 import {
   assertEquals,
   autocmd,
+  deadline,
+  DeadlineError,
   Denops,
   fn,
   op,
@@ -668,8 +670,8 @@ async function callSourceGatherCandidates(
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
   try {
-    return (source?.apiVersion)
-      ? await source.gatherCandidates({
+    const promise = (source?.apiVersion)
+      ? source.gatherCandidates({
         denops,
         context,
         options,
@@ -677,7 +679,7 @@ async function callSourceGatherCandidates(
         sourceParams,
         completeStr,
       })
-      : await source.gatherCandidates(
+      : source.gatherCandidates(
         denops, // @ts-ignore: For deprecated sources
         context,
         options,
@@ -685,8 +687,9 @@ async function callSourceGatherCandidates(
         sourceParams,
         completeStr,
       );
+    return await deadline(promise, sourceOptions.timeout);
   } catch (e: unknown) {
-    if (e instanceof TimeoutError) {
+    if (e instanceof TimeoutError || e instanceof DeadlineError) {
       // Ignore timeout error
     } else {
       console.error(

@@ -53,6 +53,7 @@ export type SourceOptions = {
   maxCandidates: number;
   minAutoCompleteLength: number;
   sorters: string[];
+  timeout: number;
 };
 
 export type FilterOptions = {

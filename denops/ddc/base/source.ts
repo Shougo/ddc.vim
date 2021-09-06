@@ -84,6 +84,7 @@ export function defaultSourceOptions(): SourceOptions {
     maxCandidates: 500,
     minAutoCompleteLength: 2,
     sorters: [],
+    timeout: 2000,
   };
 }
 
