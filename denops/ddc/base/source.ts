@@ -7,38 +7,38 @@ import {
 } from "../types.ts";
 import { Denops } from "../deps.ts";
 
-export type OnInitArguments = {
+export type OnInitArguments<SourceParams> = {
   denops: Denops;
   sourceOptions: SourceOptions;
-  sourceParams: Record<string, unknown>;
+  sourceParams: SourceParams;
 };
 
-export type OnEventArguments = {
+export type OnEventArguments<SourceParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
   sourceOptions: SourceOptions;
-  sourceParams: Record<string, unknown>;
+  sourceParams: SourceParams;
 };
 
-export type GetCompletePositionArguments = {
+export type GetCompletePositionArguments<SourceParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
   sourceOptions: SourceOptions;
-  sourceParams: Record<string, unknown>;
+  sourceParams: SourceParams;
 };
 
-export type GatherCandidatesArguments = {
+export type GatherCandidatesArguments<SourceParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
   sourceOptions: SourceOptions;
-  sourceParams: Record<string, unknown>;
+  sourceParams: SourceParams;
   completeStr: string;
 };
 
-export abstract class BaseSource {
+export abstract class BaseSource<SourceParams = Record<string, never>> {
   name = "";
   isBytePos = false;
   events: DdcEvent[] = [];
@@ -47,12 +47,12 @@ export abstract class BaseSource {
   // Use overload methods
   apiVersion = 3;
 
-  async onInit(_args: OnInitArguments): Promise<void> {}
+  async onInit(_args: OnInitArguments<SourceParams>): Promise<void> {}
 
-  async onEvent(_args: OnEventArguments): Promise<void> {}
+  async onEvent(_args: OnEventArguments<SourceParams>): Promise<void> {}
 
   getCompletePosition(
-    args: GetCompletePositionArguments,
+    args: GetCompletePositionArguments<SourceParams>,
   ): Promise<number> {
     const matchPos = args.context.input.search(
       new RegExp("(" + args.options.keywordPattern + ")$"),
@@ -62,12 +62,10 @@ export abstract class BaseSource {
   }
 
   abstract gatherCandidates(
-    {}: GatherCandidatesArguments,
+    {}: GatherCandidatesArguments<SourceParams>,
   ): Promise<Candidate[]>;
 
-  params(): Record<string, unknown> {
-    return {} as Record<string, unknown>;
-  }
+  abstract params(): SourceParams;
 }
 
 export function defaultSourceOptions(): SourceOptions {
