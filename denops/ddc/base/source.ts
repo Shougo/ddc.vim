@@ -65,7 +65,9 @@ export abstract class BaseSource<SourceParams = Record<string, never>> {
     {}: GatherCandidatesArguments<SourceParams>,
   ): Promise<Candidate[]>;
 
-  abstract params(): SourceParams;
+  params(): SourceParams {
+    return {} as SourceParams;
+  }
 }
 
 export function defaultSourceOptions(): SourceOptions {
