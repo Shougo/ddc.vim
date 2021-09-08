@@ -137,15 +137,15 @@ function! ddc#_inline(highlight) abort
           \ 'virt_text': [[word[len(complete_str):], a:highlight]],
           \ 'virt_text_pos': 'overlay',
           \ 'virt_text_win_col': col('.') - 1,
-          \ 'hl_mode': 'blend',
+          \ 'hl_mode': 'combine',
           \ 'priority': 0,
           \ })
   else
     " Others: After cursor text
     call nvim_buf_set_extmark(
           \ 0, s:ddc_namespace, line('.') - 1, 0, {
-          \ 'virt_text': [[word, 'Comment']],
-          \ 'hl_mode': 'blend',
+          \ 'virt_text': [[word, a:highlight]],
+          \ 'hl_mode': 'combine',
           \ 'priority': 0,
           \ })
   endif
