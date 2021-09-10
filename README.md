@@ -37,7 +37,7 @@ The development is supported by [github sponsors](https://github.com/sponsors/Sh
 
 ## Introduction
 
-I have chosen denops.vim framework to create new auto completion plugin.
+I have chosen denops.vim framework to create new plugin.
 Because denops.vim is better than neovim Python interface.
 
 * Easy to setup
@@ -52,7 +52,7 @@ Because denops.vim is better than neovim Python interface.
 ## Install
 
 **Note:** Ddc.vim requires Neovim (0.5.0+ and of course, **latest** is
-recommended) or Vim8.2.0662. See [requirements](#requirements) if you aren't
+recommended) or Vim 8.2.0662. See [requirements](#requirements) if you aren't
 sure whether you have this.
 
 For vim-plug
