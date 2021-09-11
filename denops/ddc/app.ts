@@ -172,7 +172,7 @@ export async function main(denops: Denops) {
   ): Promise<void> {
     const pumvisible = await fn.pumvisible(denops);
 
-    await batch(denops, async (denops) => {
+    await batch(denops, async (denops: Denops) => {
       await vars.g.set(denops, "ddc#_event", context.event);
       await vars.g.set(denops, "ddc#_prev_input", "");
       await vars.g.set(denops, "ddc#_complete_pos", -1);
@@ -202,7 +202,7 @@ export async function main(denops: Denops) {
         return;
       }
 
-      await batch(denops, async (denops) => {
+      await batch(denops, async (denops: Denops) => {
         await vars.g.set(denops, "ddc#_event", context.event);
         await vars.g.set(denops, "ddc#_prev_input", context.input);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
@@ -230,7 +230,7 @@ export async function main(denops: Denops) {
     })();
   }
 
-  await batch(denops, async (denops) => {
+  await batch(denops, async (denops: Denops) => {
     await vars.g.set(denops, "ddc#_candidates", []);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
     await vars.g.set(denops, "ddc#_event", "Manual");
