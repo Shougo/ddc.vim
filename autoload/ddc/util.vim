@@ -6,12 +6,10 @@
 
 function! ddc#util#print_error(string, ...) abort
   let name = a:0 ? a:1 : 'ddc'
-  echohl Error | echomsg printf('[%s] %s', name,
-        \ ddc#util#string(a:string)) | echohl None
-endfunction
-
-function! ddc#util#string(expr) abort
-  return type(a:expr) ==# v:t_string ? a:expr : string(a:expr)
+  echohl Error
+  echomsg printf('[%s] %s', name,
+        \ type(a:string) ==# v:t_string ? a:string : string(a:string))
+  echohl None
 endfunction
 
 function! ddc#util#get_syn_names() abort
