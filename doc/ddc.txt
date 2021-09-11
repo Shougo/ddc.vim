@@ -142,6 +142,15 @@ keywordPattern
 
 		Default: '\k*'
 
+					*ddc-option-overwriteCompleteopt*
+overwriteCompleteopt
+		If it is enabled, ddc.vim overwrites 'completeopt'
+		automatically.
+		Note: If you disable the feature, you need to change
+		'completeopt' manually.
+
+		Default: v:true
+
 							*ddc-option-sources*
 sources
 		It is a list of registered source names.  You have to select

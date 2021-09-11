@@ -43,7 +43,7 @@ function! ddc#_register() abort
 endfunction
 
 function! ddc#complete() abort
-  if exists('g:ddc#_save_completeopt')
+  if exists('g:ddc#_save_completeopt') && g:ddc#_overwrite_completeopt
     " Restore completeopt
     let &completeopt = g:ddc#_save_completeopt
     unlet g:ddc#_save_completeopt
@@ -74,22 +74,8 @@ function! ddc#_complete() abort
   endif
 
   if g:ddc#_complete_pos >= 0
-    if g:ddc#_event !=# 'Manual'
-      if !exists('g:ddc#_save_completeopt')
-        let g:ddc#_save_completeopt = &completeopt
-      endif
-
-      " Auto completion conflicts with 'completeopt'.
-      set completeopt-=longest
-      set completeopt+=menuone
-      set completeopt-=menu
-
-      if &completeopt !~# 'noinsert\|noselect' || g:ddc#_event =~# 'Refresh$'
-        " Note: If it is async, noselect is needed to prevent without
-        " confirmation problem
-        set completeopt-=noinsert
-        set completeopt+=noselect
-      endif
+    if g:ddc#_event !=# 'Manual' && g:ddc#_overwrite_completeopt
+      call s:overwrite_completeopt()
     endif
   else
     " Clear current popup
@@ -99,6 +85,23 @@ function! ddc#_complete() abort
 
   " Note: It may be called in map-<expr>
   silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+endfunction
+function! s:overwrite_completeopt() abort
+  if !exists('g:ddc#_save_completeopt')
+    let g:ddc#_save_completeopt = &completeopt
+  endif
+
+  " Auto completion conflicts with 'completeopt'.
+  set completeopt-=longest
+  set completeopt+=menuone
+  set completeopt-=menu
+
+  if &completeopt !~# 'noinsert\|noselect' || g:ddc#_event =~# 'Refresh$'
+    " Note: If it is async, noselect is needed to prevent without
+    " confirmation problem
+    set completeopt-=noinsert
+    set completeopt+=noselect
+  endif
 endfunction
 
 function! ddc#_clear() abort

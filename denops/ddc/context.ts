@@ -45,6 +45,7 @@ export function defaultDdcOptions(): DdcOptions {
     filterParams: {},
     inlineHighlight: "Comment",
     keywordPattern: "\\k*",
+    overwriteCompleteopt: true,
     sourceOptions: {},
     sourceParams: {},
     sources: [],
