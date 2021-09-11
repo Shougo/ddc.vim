@@ -744,7 +744,7 @@ A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
    https://github.com/matsui54/ddc-nvim-lsp-doc
 
 
-Q: Why file/path source is not available for ddc.vim?
+Q: Why don't create file/path source is for ddc.vim?
 
 A: I know it is the important source.  But it is not easy to implement.
 Please see below issues.
@@ -763,7 +763,10 @@ Please see below issues.
 
 The file path source is the most buggy source in deoplete sources. So I don't
 want to implement it anymore.
-Other people can implement it instead...
+
+But other people has implemented it instead.
+
+https://github.com/LumaKernel/ddc-file
 
 
 ==============================================================================
