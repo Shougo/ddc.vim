@@ -220,6 +220,7 @@ export class Ddc {
     }
 
     if (
+      context.event == "InsertLeave" &&
       Object.keys(this.sources).length != 0 &&
       Object.keys(this.filters).length != 0
     ) {

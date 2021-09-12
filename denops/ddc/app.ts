@@ -67,11 +67,6 @@ export async function main(denops: Denops) {
     },
     async onEvent(arg1: unknown): Promise<void> {
       const event = arg1 as DdcEvent;
-      if (event == "InsertLeave") {
-        await denops.call("ddc#_clear");
-        return;
-      }
-
       const maybe = await contextBuilder.createContext(denops, event);
       if (!maybe) return;
       const [context, options] = maybe;
@@ -83,6 +78,11 @@ export async function main(denops: Denops) {
         context,
         options,
       );
+
+      if (event == "InsertLeave") {
+        await denops.call("ddc#_clear");
+        return;
+      }
 
       const isAutoComplete = event != "AutoRefresh" && event != "ManualRefresh";
 
