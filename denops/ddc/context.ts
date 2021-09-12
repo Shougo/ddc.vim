@@ -49,7 +49,7 @@ export function defaultDdcOptions(): DdcOptions {
     sourceOptions: {},
     sourceParams: {},
     sources: [],
-    specialBufferCompletionFiletypes: [],
+    specialBufferCompletion: false,
   };
 }
 

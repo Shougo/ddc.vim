@@ -137,8 +137,7 @@ export async function main(denops: Denops) {
     // Skip special buffers.
     const buftype = await op.buftype.getLocal(denops);
     if (
-      buftype != "" &&
-      options.specialBufferCompletionFiletypes.indexOf(context.filetype) < 0
+      buftype != "" && !options.specialBufferCompletion
     ) {
       return true;
     }

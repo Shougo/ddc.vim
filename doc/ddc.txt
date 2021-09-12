@@ -190,12 +190,12 @@ sourceParams
 		    \ 'around': {'max': 8},
 		    \ })
 <
-				*ddc-option-specialBufferCompletionFiletypes*
-specialBufferCompletionFiletypes
-		If 'buftype' is not "", ddc auto completion is disabled
-		automatically except the filetype list.
+				*ddc-option-specialBufferCompletion*
+specialBufferCompletion
+		If it is false and 'buftype' is not "", ddc auto completion is
+		disabled automatically.
 
-		Default: []
+		Default: v:false
 
 ------------------------------------------------------------------------------
 FUNCTIONS 						*ddc-functions*
@@ -771,6 +771,9 @@ https://github.com/LumaKernel/ddc-file
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.09.13
+* Change "specialBufferCompletionFiletypes" to "specialBufferCompletion"
 
 2021.09.02
 * Change onInit() timing.  It is called before sources/filters after
