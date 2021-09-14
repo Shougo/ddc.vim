@@ -75,7 +75,7 @@ export class Ddc {
           helper.define(
             event as autocmd.AutocmdEvent,
             "*",
-            `call denops#notify('${denops.name}','onEvent',["${event}"])`,
+            `call ddc#_on_event("${event}")`,
           );
           this.events.push(event);
         }

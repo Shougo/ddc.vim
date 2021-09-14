@@ -5,32 +5,32 @@
 "=============================================================================
 
 function! s:patch_global(dict) abort
-  if !exists('g:ddc#_initialized')
+  if ddc#_denops_running()
+    call denops#notify('ddc', 'patchGlobal', [a:dict])
+  else
     execute printf('autocmd User DDCReady call ' .
           \ 'denops#notify("ddc", "patchGlobal", [%s])',
           \ a:dict)
-  else
-    call denops#notify('ddc', 'patchGlobal', [a:dict])
   endif
 endfunction
 
 function! s:patch_filetype(ft, dict) abort
-  if !exists('g:ddc#_initialized')
+  if ddc#_denops_running()
+    call denops#notify('ddc', 'patchFiletype', [a:ft, a:dict])
+  else
     execute printf('autocmd User DDCReady call ' .
           \ 'denops#notify("ddc", "patchFiletype", ["%s", %s])',
           \ a:ft, a:dict)
-  else
-    call denops#notify('ddc', 'patchFiletype', [a:ft, a:dict])
   endif
 endfunction
 
 function! s:patch_buffer(bufnr, dict) abort
-  if !exists('g:ddc#_initialized')
+  if ddc#_denops_running()
+    call denops#notify('ddc', 'patchBuffer', [a:bufnr, a:dict])
+  else
     execute printf('autocmd User DDCReady call ' .
           \ 'denops#notify("ddc", "patchBuffer", [%s, %s])',
           \ a:bufnr, a:dict)
-  else
-    call denops#notify('ddc', 'patchBuffer', [a:bufnr, a:dict])
   endif
 endfunction
 
@@ -55,14 +55,26 @@ endfunction
 
 " This should be called manually, so wait until DDCReady by the user himself.
 function! ddc#custom#get_global() abort
+  if !ddc#_denops_running()
+    return {}
+  endif
+
   return denops#request('ddc', 'getGlobal', [])
 endfunction
 
 function! ddc#custom#get_filetype() abort
+  if !ddc#_denops_running()
+    return {}
+  endif
+
   return denops#request('ddc', 'getFiletype', [])
 endfunction
 
 function! ddc#custom#get_buffer() abort
+  if !ddc#_denops_running()
+    return {}
+  endif
+
   return denops#request('ddc', 'getBuffer', [])
 endfunction
 

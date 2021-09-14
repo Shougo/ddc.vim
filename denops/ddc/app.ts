@@ -232,7 +232,6 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_candidates", []);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
     await vars.g.set(denops, "ddc#_event", "Manual");
-    await vars.g.set(denops, "ddc#_initialized", 1);
     await vars.g.set(denops, "ddc#_now", 0);
     await vars.g.set(denops, "ddc#_overwrite_completeopt", false);
     await vars.g.set(denops, "ddc#_prev_input", "");

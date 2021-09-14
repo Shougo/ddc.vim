@@ -8,7 +8,7 @@ let s:completion_timer = -1
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 
 function! ddc#enable() abort
-  if exists('g:ddc#_initialized')
+  if denops#plugin#is_loaded('ddc')
     return
   endif
 
@@ -22,10 +22,11 @@ function! ddc#enable() abort
     autocmd!
   augroup END
 
-  " Note: ddc.vim must be registered manually.
+  " Force context_filetype call
+  silent! call context_filetype#get_filetype()
 
-  " Note: denops load may be started
-  if exists('g:loaded_denops') && !has('vim_starting')
+  " Note: ddc.vim must be registered manually.
+  if exists('g:loaded_denops') && denops#server#status() ==# 'running'
     silent! call ddc#_register()
   else
     autocmd ddc User DenopsReady silent! call ddc#_register()
@@ -40,6 +41,20 @@ function! ddc#_register() abort
   call denops#plugin#register('ddc',
         \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'),
         \ { 'mode': 'skip' })
+endfunction
+
+function! ddc#_denops_running() abort
+  return exists('g:loaded_denops')
+        \ && denops#server#status() ==# 'running'
+        \ && denops#plugin#is_loaded('ddc')
+endfunction
+
+function! ddc#_on_event(event) abort
+  if !ddc#_denops_running()
+    return
+  endif
+
+  call denops#notify('ddc', 'onEvent', [a:event])
 endfunction
 
 function! ddc#complete() abort
@@ -155,25 +170,29 @@ function! ddc#_inline(highlight) abort
 endfunction
 
 function! ddc#register_source(dict) abort
-  if !exists('g:ddc#_initialized')
+  if ddc#_denops_running()
+    call denops#notify('ddc', 'registerSource', [a:dict])
+  else
     execute printf('autocmd User DDCReady call ' .
           \ 'denops#notify("ddc", "registerSource", [%s])',
           \ a:dict)
-  else
-    call denops#notify('ddc', 'registerSource', [a:dict])
   endif
 endfunction
 function! ddc#register_filter(dict) abort
-  if !exists('g:ddc#_initialized')
+  if ddc#_denops_running()
+    call denops#notify('ddc', 'registerFilter', [a:dict])
+  else
     execute printf('autocmd User DDCReady call ' .
           \ 'denops#notify("ddc", "registerFilter", [%s])',
           \ a:dict)
-  else
-    call denops#notify('ddc', 'registerFilter', [a:dict])
   endif
 endfunction
 
 function! ddc#refresh_candidates() abort
+  if !ddc#_denops_running()
+    return
+  endif
+
   call denops#notify('ddc', 'onEvent',
         \ [g:ddc#_event =~# '^Manual' ? 'ManualRefresh' : 'AutoRefresh'])
 endfunction
