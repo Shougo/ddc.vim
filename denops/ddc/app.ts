@@ -173,7 +173,6 @@ export async function main(denops: Denops) {
 
     await batch(denops, async (denops: Denops) => {
       await vars.g.set(denops, "ddc#_event", context.event);
-      await vars.g.set(denops, "ddc#_prev_input", "");
       await vars.g.set(denops, "ddc#_complete_pos", -1);
       await vars.g.set(denops, "ddc#_candidates", []);
       if (pumvisible) {
