@@ -16,7 +16,7 @@ export function vimoption2ts(option: string): string {
         patterns.push(",");
       }
     } else if (pattern == "\\") {
-      patterns.push("\\");
+      patterns.push("\\\\");
     } else if (pattern == "-") {
       hasDash = true;
     } else {
@@ -33,7 +33,8 @@ export function vimoption2ts(option: string): string {
 }
 
 Deno.test("vimoption2ts", () => {
-  assertEquals(vimoption2ts("@,48-57,_,\\"), "@0-9_\\");
+  assertEquals(vimoption2ts("@,48-57,_,\\"), "@0-9_\\\\");
   assertEquals(vimoption2ts("@,-,48-57,_"), "@0-9_-");
   assertEquals(vimoption2ts("@,,,48-57,_"), "@,0-9_");
+  assertEquals(vimoption2ts("@,48-57,_,-,+,\\,!~"), "@0-9_+\\\\!~-");
 });
