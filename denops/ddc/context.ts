@@ -287,7 +287,7 @@ export class ContextBuilder {
     const iskeyword = await op.iskeyword.getLocal(denops);
     userOptions.keywordPattern = userOptions.keywordPattern.replaceAll(
       /\\k/g,
-      () => "[a-zA-Z" + vimoption2ts(iskeyword) + "]",
+      () => "[" + vimoption2ts(iskeyword) + "]",
     );
 
     const context = {
