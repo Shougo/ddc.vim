@@ -15,6 +15,8 @@ export function vimoption2ts(option: string): string {
       if (patterns.indexOf(",") < 0) {
         patterns.push(",");
       }
+    } else if (pattern == "@") {
+      patterns.push("a-zA-Z");
     } else if (pattern == "\\") {
       patterns.push("\\\\");
     } else if (pattern == "-") {
@@ -33,8 +35,8 @@ export function vimoption2ts(option: string): string {
 }
 
 Deno.test("vimoption2ts", () => {
-  assertEquals(vimoption2ts("@,48-57,_,\\"), "@0-9_\\\\");
-  assertEquals(vimoption2ts("@,-,48-57,_"), "@0-9_-");
-  assertEquals(vimoption2ts("@,,,48-57,_"), "@,0-9_");
-  assertEquals(vimoption2ts("@,48-57,_,-,+,\\,!~"), "@0-9_+\\\\!~-");
+  assertEquals(vimoption2ts("@,48-57,_,\\"), "a-zA-Z0-9_\\\\");
+  assertEquals(vimoption2ts("@,-,48-57,_"), "a-zA-Z0-9_-");
+  assertEquals(vimoption2ts("@,,,48-57,_"), "a-zA-Z,0-9_");
+  assertEquals(vimoption2ts("@,48-57,_,-,+,\\,!~"), "a-zA-Z0-9_+\\\\!~-");
 });
