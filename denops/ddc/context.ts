@@ -229,6 +229,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   const bufnr = fn.bufnr(denops);
   const lineNr = fn.line(denops, ".");
   const enabledEskk = _call(denops, "eskk#is_enabled", false);
+  const enabledSkkeleton = _call(denops, "skkeleton#is_enabled", false);
   const iminsert = op.iminsert.getLocal(denops);
   const mode: string = event == "InsertEnter"
     ? "i"
@@ -244,7 +245,8 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     event: event,
     filetype: await filetype,
     input: await input,
-    isLmap: !(await enabledEskk) && (await iminsert) == 1,
+    isLmap: !(await enabledEskk) && !(await enabledSkkeleton) &&
+      (await iminsert) == 1,
     lineNr: await lineNr,
     mode: mode,
     nextInput: await nextInput,
