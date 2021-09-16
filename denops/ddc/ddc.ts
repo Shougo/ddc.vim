@@ -109,7 +109,7 @@ export class Ddc {
     const mod = await import(toFileUrl(path).href);
     const filter = new mod.Filter();
     filter.name = name;
-    filter?.apiVersion ? filter.onInit({ denops }) : filter.onInit(denops);
+    filter.onInit({ denops });
     this.filters[filter.name] = filter;
     if (filter.events && filter.events.length != 0) {
       this.registerAutocmd(denops, filter.events);
@@ -520,15 +520,11 @@ async function checkFilterOnInit(
   }
 
   try {
-    (filter?.apiVersion)
-      ? await filter.onInit({
-        denops,
-        filterOptions,
-        filterParams,
-      })
-      : await filter.onInit( // @ts-ignore: For deprecated sources
-        denops,
-      );
+    await filter.onInit({
+      denops,
+      filterOptions,
+      filterParams,
+    });
 
     filter.isInitialized = true;
   } catch (e: unknown) {
@@ -592,21 +588,13 @@ async function callFilterOnEvent(
   await checkFilterOnInit(filter, denops, filterOptions, filterParams);
 
   try {
-    (filter?.apiVersion)
-      ? filter.onEvent({
-        denops,
-        context,
-        options,
-        filterOptions,
-        filterParams,
-      })
-      : filter.onEvent(
-        denops, // @ts-ignore: For deprecated sources
-        context,
-        options,
-        filterOptions,
-        filterParams,
-      );
+    filter.onEvent({
+      denops,
+      context,
+      options,
+      filterOptions,
+      filterParams,
+    });
   } catch (e: unknown) {
     if (e instanceof TimeoutError) {
       // Ignore timeout error
@@ -717,26 +705,16 @@ async function callFilterFilter(
   await checkFilterOnInit(filter, denops, filterOptions, filterParams);
 
   try {
-    return (filter?.apiVersion)
-      ? await filter.filter({
-        denops,
-        context,
-        options,
-        sourceOptions,
-        filterOptions,
-        filterParams,
-        completeStr,
-        candidates,
-      })
-      : await filter.filter(
-        denops, // @ts-ignore: For deprecated sources
-        context,
-        options,
-        filterOptions,
-        filterParams,
-        completeStr,
-        candidates,
-      );
+    return await filter.filter({
+      denops,
+      context,
+      options,
+      sourceOptions,
+      filterOptions,
+      filterParams,
+      completeStr,
+      candidates,
+    });
   } catch (e: unknown) {
     if (e instanceof TimeoutError) {
       // Ignore timeout error

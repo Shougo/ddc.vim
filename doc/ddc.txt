@@ -1,6 +1,6 @@
 *ddc.txt*	Dark deno powered completion framework for neovim/Vim8
 
-Version: 0.6
+Version: 0.7
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
@@ -771,6 +771,9 @@ https://github.com/LumaKernel/ddc-file
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.09.16
+* Remove old filters spec support
 
 2021.09.14
 * Check all denops API call
