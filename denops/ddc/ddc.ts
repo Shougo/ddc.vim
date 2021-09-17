@@ -106,7 +106,6 @@ export class Ddc {
       const source = new mod.Source();
       source.name = name;
       this.sources[source.name] = source;
-      console.log(source);
       if (source.events && source.events.length != 0) {
         this.registerAutocmd(denops, source.events);
       }
