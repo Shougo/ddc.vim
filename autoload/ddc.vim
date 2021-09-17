@@ -20,6 +20,7 @@ function! ddc#enable() abort
 
   augroup ddc
     autocmd!
+    autocmd CompleteDone * call ddc#_substitute_suffix()
   augroup END
 
   " Force context_filetype call
@@ -237,4 +238,30 @@ function! ddc#can_complete() abort
   return !empty(get(g:, 'ddc#_candidates', []))
         \ && get(g:, 'ddc#_complete_pos', -1) >= 0
         \ && !ddc#_cannot_complete()
+endfunction
+
+function! ddc#_substitute_suffix() abort
+  if !has_key(v:completed_item, 'user_data')
+    return
+  endif
+
+  let user_data = v:completed_item.user_data
+  let user_dict = type(user_data) ==# v:t_string && user_data !=# '' ?
+        \ json_decode(user_data) : user_data
+  if empty(user_dict)
+        \ || !has_key(a:user_dict, 'old_suffix')
+        \ || !has_key(a:user_dict, 'new_suffix')
+    return
+  endif
+
+  let old_suffix = user_dict.old_suffix
+  let new_suffix = user_dict.new_suffix
+
+  let next_text = ddc#util#get_next_input('CompleteDone')
+  if stridx(next_text, old_suffix) != 0
+    return
+  endif
+
+  let next_text = new_suffix . next_text[len(old_suffix):]
+  call setline('.', ddc#util#get_input('CompleteDone') . next_text)
 endfunction
