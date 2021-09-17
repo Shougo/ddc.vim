@@ -248,8 +248,8 @@ function! ddc#_substitute_suffix() abort
   let user_dict = type(user_data) ==# v:t_string && user_data !=# '' ?
         \ json_decode(user_data) : user_data
   if empty(user_dict)
-        \ || !has_key(a:user_dict, 'old_suffix')
-        \ || !has_key(a:user_dict, 'new_suffix')
+        \ || !has_key(user_dict, 'old_suffix')
+        \ || !has_key(user_dict, 'new_suffix')
     return
   endif
 
