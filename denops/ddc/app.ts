@@ -157,7 +157,6 @@ export async function main(denops: Denops) {
 
       if (context.input.endsWith(found[1])) {
         // Skip completion and reindent if matched.
-        // Note: feedkeys("\<C-f>") didn't work for me.
         await denops.call("ddc#util#indent_current_line");
         return true;
       }
