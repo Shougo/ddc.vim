@@ -154,7 +154,7 @@ function! ddc#_inline(highlight) abort
           \ 0, s:ddc_namespace, line('.') - 1, col('.') - 1, {
           \ 'virt_text': [[word[len(complete_str):], a:highlight]],
           \ 'virt_text_pos': 'overlay',
-          \ 'virt_text_win_col': col('.') - 1,
+          \ 'virt_text_win_col': screencol() - 1,
           \ 'hl_mode': 'combine',
           \ 'priority': 0,
           \ })
