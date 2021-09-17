@@ -6,6 +6,7 @@ import { batch, Denops, ensureObject, fn, op, vars } from "./deps.ts";
 type RegisterArg = {
   path: string;
   name: string;
+  type: "source" | "filter";
 };
 
 export async function main(denops: Denops) {
@@ -13,13 +14,13 @@ export async function main(denops: Denops) {
   const contextBuilder = new ContextBuilder();
 
   denops.dispatcher = {
-    async registerSource(arg1: unknown): Promise<void> {
+    async register(arg1: unknown): Promise<void> {
       const arg = arg1 as RegisterArg;
-      await ddc.registerSource(denops, arg.path, arg.name);
-    },
-    async registerFilter(arg1: unknown): Promise<void> {
-      const arg = arg1 as RegisterArg;
-      await ddc.registerFilter(denops, arg.path, arg.name);
+      if (arg.type == "source") {
+        await ddc.registerSource(denops, arg.path, arg.name);
+      } else if (arg.type == "filter") {
+        await ddc.registerFilter(denops, arg.path, arg.name);
+      }
     },
     patchGlobal(arg1: unknown): Promise<void> {
       ensureObject(arg1);

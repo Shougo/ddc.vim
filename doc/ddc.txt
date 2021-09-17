@@ -217,21 +217,22 @@ ddc#refresh_candidates()
 		It calls the auto completion of ddc to refresh current
 		candidates.
 
-						*ddc#register_filter()*
-ddc#register_filter({dict})
+							*ddc#register()*
+ddc#register({dict})
 		Register filter.
 		The {dict} must have following keys.
 
 		name: The filter name
 		path: The filter path
+		type: "source" or "filter"
+
+						*ddc#register_filter()*
+ddc#register_filter({dict})
+		Note: deprecated.
 
 						*ddc#register_source()*
 ddc#register_source({dict})
-		Register source.
-		The {dict} must have following keys.
-
-		name: The source name
-		path: The source path
+		Note: deprecated.
 
 
 CUSTOM FUNCTIONS 					*ddc-custom-functions*
@@ -771,6 +772,9 @@ https://github.com/LumaKernel/ddc-file
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.09.17
+* ddc#register_source() and ddc#register_filter() are deprecated
 
 2021.09.16
 * Remove old filters spec support
