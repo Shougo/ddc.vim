@@ -4,6 +4,60 @@
 " License: MIT license
 "=============================================================================
 
+function! ddc#custom#patch_global(key_or_dict, ...) abort
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  call s:patch_global(dict)
+endfunction
+
+function! ddc#custom#patch_filetype(ft, key_or_dict, ...) abort
+  let filetypes = s:normalize_string_or_list(a:ft)
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  for filetype in filetypes
+    call s:patch_filetype(filetype, dict)
+  endfor
+endfunction
+
+function! ddc#custom#patch_buffer(key_or_dict, ...) abort
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  let n = bufnr('%')
+  call s:patch_buffer(n, dict)
+endfunction
+
+function! ddc#custom#alias(type, alias, base) abort
+  if ddc#_denops_running()
+    call denops#notify('ddc', 'alias', [a:type, a:alias, a:base])
+  else
+    execute printf('autocmd User DDCReady call ' .
+          \ 'denops#notify("ddc", "alias", ["%s", "%s", "%s"])',
+          \ a:type, a:alias, a:base)
+  endif
+endfunction
+
+" This should be called manually, so wait until DDCReady by the user himself.
+function! ddc#custom#get_global() abort
+  if !ddc#_denops_running()
+    return {}
+  endif
+
+  return denops#request('ddc', 'getGlobal', [])
+endfunction
+
+function! ddc#custom#get_filetype() abort
+  if !ddc#_denops_running()
+    return {}
+  endif
+
+  return denops#request('ddc', 'getFiletype', [])
+endfunction
+
+function! ddc#custom#get_buffer() abort
+  if !ddc#_denops_running()
+    return {}
+  endif
+
+  return denops#request('ddc', 'getBuffer', [])
+endfunction
+
 function! s:patch_global(dict) abort
   if ddc#_denops_running()
     call denops#notify('ddc', 'patchGlobal', [a:dict])
@@ -32,50 +86,6 @@ function! s:patch_buffer(bufnr, dict) abort
           \ 'denops#notify("ddc", "patchBuffer", [%s, %s])',
           \ a:bufnr, a:dict)
   endif
-endfunction
-
-function! ddc#custom#patch_global(key_or_dict, ...) abort
-  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
-  call s:patch_global(dict)
-endfunction
-
-function! ddc#custom#patch_filetype(ft, key_or_dict, ...) abort
-  let filetypes = s:normalize_string_or_list(a:ft)
-  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
-  for filetype in filetypes
-    call s:patch_filetype(filetype, dict)
-  endfor
-endfunction
-
-function! ddc#custom#patch_buffer(key_or_dict, ...) abort
-  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
-  let n = bufnr('%')
-  call s:patch_buffer(n, dict)
-endfunction
-
-" This should be called manually, so wait until DDCReady by the user himself.
-function! ddc#custom#get_global() abort
-  if !ddc#_denops_running()
-    return {}
-  endif
-
-  return denops#request('ddc', 'getGlobal', [])
-endfunction
-
-function! ddc#custom#get_filetype() abort
-  if !ddc#_denops_running()
-    return {}
-  endif
-
-  return denops#request('ddc', 'getFiletype', [])
-endfunction
-
-function! ddc#custom#get_buffer() abort
-  if !ddc#_denops_running()
-    return {}
-  endif
-
-  return denops#request('ddc', 'getBuffer', [])
 endfunction
 
 function! s:normalize_key_or_dict(key_or_dict, value) abort

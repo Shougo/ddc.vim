@@ -237,6 +237,24 @@ ddc#register_source({dict})
 
 CUSTOM FUNCTIONS 					*ddc-custom-functions*
 
+							*ddc#custom#alias()*
+ddc#custom#alias({type}, {alias-name}, {base-name})
+		Define {alias-name} alias based on {base-name}.
+		{type} must be "source" or "filter".
+		Note: It must be called before sources/filters initialization.
+>
+		call ddc#custom#alias('source', 'foo', 'around')
+		call ddc#custom#patch_global('sources', ['foo'])
+		call ddc#custom#patch_global('sourceOptions', {
+		      \ '_': {
+		      \   'matchers': ['matcher_head'],
+		      \   'sorters': ['sorter_rank'],
+		      \   'converters': ['converter_remove_overlap'],
+		      \ },
+		      \ 'around': {'mark': 'A'},
+		      \ 'foo': {'mark': 'foo'},
+		      \ })
+<
 						*ddc#custom#get_buffer()*
 ddc#custom#get_buffer()
 		Get buffer specific options.

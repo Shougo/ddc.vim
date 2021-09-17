@@ -49,6 +49,8 @@ type DdcResult = {
 export class Ddc {
   private sources: Record<string, BaseSource> = {};
   private filters: Record<string, BaseFilter> = {};
+  private aliasSources: Record<string, string> = {};
+  private aliasFilters: Record<string, string> = {};
   private checkPaths: Record<string, boolean> = {};
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
@@ -83,6 +85,14 @@ export class Ddc {
     });
   }
 
+  registerAlias(type: string, alias: string, base: string) {
+    if (type == "source") {
+      this.aliasSources[alias] = base;
+    } else if (type == "filter") {
+      this.aliasFilters[alias] = base;
+    }
+  }
+
   async registerSource(denops: Denops, path: string, name: string) {
     if (path in this.checkPaths) {
       return;
@@ -91,11 +101,25 @@ export class Ddc {
     this.checkPaths[path] = true;
 
     const mod = await import(toFileUrl(path).href);
-    const source = new mod.Source();
-    source.name = name;
-    this.sources[source.name] = source;
-    if (source.events && source.events.length != 0) {
-      this.registerAutocmd(denops, source.events);
+
+    const addSource = (name: string) => {
+      const source = new mod.Source();
+      source.name = name;
+      this.sources[source.name] = source;
+      console.log(source);
+      if (source.events && source.events.length != 0) {
+        this.registerAutocmd(denops, source.events);
+      }
+    };
+
+    addSource(name);
+
+    // Check alias
+    const aliases = Object.keys(this.aliasSources).filter(
+      (k) => this.aliasSources[k] == name,
+    );
+    for (const alias of aliases) {
+      addSource(alias);
     }
   }
 
@@ -107,12 +131,25 @@ export class Ddc {
     this.checkPaths[path] = true;
 
     const mod = await import(toFileUrl(path).href);
-    const filter = new mod.Filter();
-    filter.name = name;
-    filter.onInit({ denops });
-    this.filters[filter.name] = filter;
-    if (filter.events && filter.events.length != 0) {
-      this.registerAutocmd(denops, filter.events);
+
+    const addFilter = (name: string) => {
+      const filter = new mod.Filter();
+      filter.name = name;
+      filter.onInit({ denops });
+      this.filters[filter.name] = filter;
+      if (filter.events && filter.events.length != 0) {
+        this.registerAutocmd(denops, filter.events);
+      }
+    };
+
+    addFilter(name);
+
+    // Check alias
+    const aliases = Object.keys(this.aliasFilters).filter(
+      (k) => this.aliasFilters[k] == name,
+    );
+    for (const alias of aliases) {
+      addFilter(alias);
     }
   }
 
