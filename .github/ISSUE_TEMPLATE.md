@@ -12,7 +12,7 @@
 
  * denops.vim version (SHA1):
 
- * deno version(`deno -v` output):
+ * deno version(`deno -V` output):
 
  * OS:
 
