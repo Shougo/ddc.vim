@@ -79,5 +79,5 @@ export type DdcCandidate = Candidate & {
 };
 
 export type DdcUserData = {
-  __sourceName: string;
+  __sourceName?: string;
 };
