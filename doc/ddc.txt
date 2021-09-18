@@ -644,7 +644,7 @@ filter			(function)			(Required)
 		It is called to filter candidates.
 
 				*ddc-filter-attribute-onEvent*
-onEvent			(function)			(Required)
+onEvent			(function)			(Optional)
 		Called for the autocommands.
 		It is useful to make cache.
 
@@ -653,7 +653,7 @@ onInit			(function)			(Optional)
 		Called before call filter functions.
 
 				*ddc-filter-attribute-params*
-params			(function)			(Optional)
+params			(function)			(Required)
 		Called to get filter params.
 
 
