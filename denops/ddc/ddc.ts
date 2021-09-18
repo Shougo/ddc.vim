@@ -501,9 +501,12 @@ function charposToBytepos(input: string, pos: number): number {
   return (new TextEncoder()).encode(input.slice(0, pos)).length;
 }
 
-function sourceArgs(
+function sourceArgs<
+  Params extends Record<string, unknown>,
+  UserData extends Record<string, unknown>,
+>(
   options: DdcOptions,
-  source: BaseSource,
+  source: BaseSource<Params, UserData>,
 ): [SourceOptions, Record<string, unknown>] {
   const o = foldMerge(
     mergeSourceOptions,
@@ -517,10 +520,12 @@ function sourceArgs(
   return [o, p];
 }
 
-function filterArgs(
+function filterArgs<
+  Params extends Record<string, unknown>,
+>(
   filterOptions: Record<string, Partial<FilterOptions>>,
   filterParams: Record<string, Partial<Record<string, unknown>>>,
-  filter: BaseFilter,
+  filter: BaseFilter<Params>,
 ): [FilterOptions, Record<string, unknown>] {
   // TODO: '_'?
   const optionsOf = (filter: BaseFilter) =>
@@ -637,14 +642,17 @@ async function callSourceOnEvent(
   }
 }
 
-async function callSourceOnCompleteDone(
-  source: BaseSource,
+async function callSourceOnCompleteDone<
+  Params extends Record<string, unknown>,
+  UserData extends Record<string, unknown>,
+>(
+  source: BaseSource<Params, UserData>,
   denops: Denops,
   context: Context,
   options: DdcOptions,
   sourceOptions: SourceOptions,
-  sourceParams: Record<string, unknown>,
-  userData: DdcUserData,
+  sourceParams: Params,
+  userData: UserData,
 ) {
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
@@ -655,7 +663,9 @@ async function callSourceOnCompleteDone(
       options,
       sourceOptions,
       sourceParams,
-      userData,
+      // This is preventing users from accessing the internal properties.
+      // deno-lint-ignore no-explicit-any
+      userData: userData as any,
     });
   } catch (e: unknown) {
     if (e instanceof TimeoutError) {
@@ -709,15 +719,18 @@ async function callSourceGetCompletePosition(
   }
 }
 
-async function callSourceGatherCandidates(
-  source: BaseSource,
+async function callSourceGatherCandidates<
+  Params extends Record<string, unknown>,
+  UserData extends Record<string, unknown>,
+>(
+  source: BaseSource<Params, UserData>,
   denops: Denops,
   context: Context,
   options: DdcOptions,
   sourceOptions: SourceOptions,
-  sourceParams: Record<string, unknown>,
+  sourceParams: Params,
   completeStr: string,
-): Promise<Candidate[]> {
+): Promise<Candidate<UserData>[]> {
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
   try {
@@ -843,7 +856,7 @@ Deno.test("sourceArgs", () => {
       },
     },
   };
-  class S extends BaseSource {
+  class S extends BaseSource<{ min: number; max: number }> {
     params() {
       return {
         "min": 0,
@@ -851,7 +864,7 @@ Deno.test("sourceArgs", () => {
       };
     }
     gatherCandidates(
-      _args: GatherCandidatesArguments | Denops,
+      _args: GatherCandidatesArguments<{ min: number; max: number }> | Denops,
       _context?: Context,
       _options?: DdcOptions,
       _sourceOptions?: SourceOptions,
@@ -891,7 +904,7 @@ Deno.test("filterArgs", () => {
       min: 100,
     },
   };
-  class F extends BaseFilter {
+  class F extends BaseFilter<{ min: number; max: number }> {
     params() {
       return {
         "min": 0,
@@ -899,7 +912,7 @@ Deno.test("filterArgs", () => {
       };
     }
     filter(
-      _args: FilterArguments | Denops,
+      _args: FilterArguments<{ min: number; max: number }> | Denops,
       _context?: Context,
       _options?: DdcOptions,
       _sourceOptions?: SourceOptions,

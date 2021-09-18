@@ -62,22 +62,28 @@ export type FilterOptions = {
   placeholder: void;
 };
 
-export type Candidate = {
+export type Candidate<
+  UserData extends Record<string, unknown> = Record<string, unknown>,
+> = {
   word: string;
   abbr?: string;
   menu?: string;
   info?: string;
   kind?: string;
   dup?: boolean;
-  "user_data"?: DdcUserData;
+  // To prevent users from supplying internal variables.
+  "user_data"?: UserData & { __sourceName?: never };
 };
 
 // For internal type
-export type DdcCandidate = Candidate & {
-  icase: boolean;
-  equal: boolean;
-};
-
 export type DdcUserData = {
   __sourceName: string;
+  [userKey: string]: unknown;
 };
+
+export type DdcCandidate =
+  & Candidate<DdcUserData>
+  & {
+    icase: boolean;
+    equal: boolean;
+  };
