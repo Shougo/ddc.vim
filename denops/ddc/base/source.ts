@@ -3,52 +3,61 @@ import {
   Context,
   DdcEvent,
   DdcOptions,
-  DdcUserData,
   SourceOptions,
 } from "../types.ts";
 import { Denops } from "../deps.ts";
 
-export type OnInitArguments = {
+export type OnInitArguments<Params extends Record<string, unknown>> = {
   denops: Denops;
   sourceOptions: SourceOptions;
-  sourceParams: Record<string, unknown>;
+  sourceParams: Params;
 };
 
-export type OnEventArguments = {
-  denops: Denops;
-  context: Context;
-  options: DdcOptions;
-  sourceOptions: SourceOptions;
-  sourceParams: Record<string, unknown>;
-};
-
-export type OnCompleteDoneArguments = {
+export type OnEventArguments<Params extends Record<string, unknown>> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
   sourceOptions: SourceOptions;
-  sourceParams: Record<string, unknown>;
-  userData: DdcUserData;
+  sourceParams: Params;
 };
 
-export type GetCompletePositionArguments = {
+export type OnCompleteDoneArguments<
+  Params extends Record<string, unknown>,
+  UserData extends Record<string, unknown>,
+> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
   sourceOptions: SourceOptions;
-  sourceParams: Record<string, unknown>;
+  sourceParams: Params;
+  // To prevent users from accessing internal variables.
+  userData: UserData & { __sourceName?: never };
 };
 
-export type GatherCandidatesArguments = {
+export type GetCompletePositionArguments<
+  Params extends Record<string, unknown>,
+> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
   sourceOptions: SourceOptions;
-  sourceParams: Record<string, unknown>;
-  completeStr: string;
+  sourceParams: Params;
 };
 
-export abstract class BaseSource {
+export type GatherCandidatesArguments<Params extends Record<string, unknown>> =
+  {
+    denops: Denops;
+    context: Context;
+    options: DdcOptions;
+    sourceOptions: SourceOptions;
+    sourceParams: Params;
+    completeStr: string;
+  };
+
+export abstract class BaseSource<
+  Params extends Record<string, unknown> = Record<string, unknown>,
+  UserData extends Record<string, unknown> = Record<string, unknown>,
+> {
   name = "";
   isBytePos = false;
   events: DdcEvent[] = [];
@@ -57,14 +66,16 @@ export abstract class BaseSource {
   // Use overload methods
   apiVersion = 3;
 
-  async onInit(_args: OnInitArguments): Promise<void> {}
+  async onInit(_args: OnInitArguments<Params>): Promise<void> {}
 
-  async onEvent(_args: OnEventArguments): Promise<void> {}
+  async onEvent(_args: OnEventArguments<Params>): Promise<void> {}
 
-  async onCompleteDone(_args: OnCompleteDoneArguments): Promise<void> {}
+  async onCompleteDone(
+    _args: OnCompleteDoneArguments<Params, UserData>,
+  ): Promise<void> {}
 
   getCompletePosition(
-    args: GetCompletePositionArguments,
+    args: GetCompletePositionArguments<Params>,
   ): Promise<number> {
     const matchPos = args.context.input.search(
       new RegExp("(" + args.options.keywordPattern + ")$"),
@@ -74,12 +85,10 @@ export abstract class BaseSource {
   }
 
   abstract gatherCandidates(
-    {}: GatherCandidatesArguments,
-  ): Promise<Candidate[]>;
+    {}: GatherCandidatesArguments<Params>,
+  ): Promise<Candidate<UserData>[]>;
 
-  params(): Record<string, unknown> {
-    return {} as Record<string, unknown>;
-  }
+  abstract params(): Params;
 }
 
 export function defaultSourceOptions(): SourceOptions {

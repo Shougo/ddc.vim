@@ -8,32 +8,34 @@ import {
 } from "../types.ts";
 import { Denops } from "../deps.ts";
 
-export type OnInitArguments = {
+export type OnInitArguments<Params extends Record<string, unknown>> = {
   denops: Denops;
   filterOptions: FilterOptions;
-  filterParams: Record<string, unknown>;
+  filterParams: Params;
 };
 
-export type OnEventArguments = {
+export type OnEventArguments<Params extends Record<string, unknown>> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
   filterOptions: FilterOptions;
-  filterParams: Record<string, unknown>;
+  filterParams: Params;
 };
 
-export type FilterArguments = {
+export type FilterArguments<Params extends Record<string, unknown>> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   filterOptions: FilterOptions;
-  filterParams: Record<string, unknown>;
+  filterParams: Params;
   completeStr: string;
   candidates: Candidate[];
 };
 
-export abstract class BaseFilter {
+export abstract class BaseFilter<
+  Params extends Record<string, unknown> = Record<string, unknown>,
+> {
   name = "";
   events: DdcEvent[] = [];
   isInitialized = false;
@@ -41,15 +43,13 @@ export abstract class BaseFilter {
   // Use overload methods
   apiVersion = 3;
 
-  async onInit(_args: OnInitArguments): Promise<void> {}
+  async onInit(_args: OnInitArguments<Params>): Promise<void> {}
 
-  async onEvent(_args: OnEventArguments): Promise<void> {}
+  async onEvent(_args: OnEventArguments<Params>): Promise<void> {}
 
-  abstract filter({}: FilterArguments): Promise<Candidate[]>;
+  abstract filter({}: FilterArguments<Params>): Promise<Candidate[]>;
 
-  params(): Record<string, unknown> {
-    return {} as Record<string, unknown>;
-  }
+  abstract params(): Params;
 }
 
 export function defaultFilterOptions(): FilterOptions {
