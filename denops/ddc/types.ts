@@ -71,19 +71,18 @@ export type Candidate<
   info?: string;
   kind?: string;
   dup?: boolean;
-  // To prevent users from supplying internal variables.
-  "user_data"?: UserData & { __sourceName?: never };
+  "user_data"?: UserData | string;
 };
 
 // For internal type
 export type DdcUserData = {
-  __sourceName: string;
   [userKey: string]: unknown;
 };
 
 export type DdcCandidate =
   & Candidate<DdcUserData>
   & {
-    icase: boolean;
+    __sourceName: string;
     equal: boolean;
+    icase: boolean;
   };

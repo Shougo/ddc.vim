@@ -1,6 +1,6 @@
 *ddc.txt*	Dark deno powered completion framework for neovim/Vim8
 
-Version: 0.9
+Version: 0.10
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
@@ -565,6 +565,8 @@ getCompletePosition	(function)			(Optional)
 onCompleteDone		(function)			(Optional)
 		Called after the completion.
 		It is useful to substitute text after completion.
+		Note: |ddc-candidate-attribute-user_data| must be "UserData"
+		to use the feature.
 
 				*ddc-source-attribute-onEvent*
 onEvent			(function)			(Optional)
@@ -613,8 +615,8 @@ dup			(boolean)			(Optional)
 		item with the same word is already present.
 
 					*ddc-candidate-attribute-user_data*
-user_data		(Record<string, JSONValue>)	(Optional)
-		The source specific data.  It must be object type.
+user_data		(UserData | string)	(Optional)
+		The source specific data.
 
 ==============================================================================
 CREATE FILTER						*ddc-create-filter*
@@ -801,6 +803,7 @@ COMPATIBILITY						*ddc-compatibility*
 
 2021.09.19
 * "params" is required for both sources and filters.
+* Allow string "user_data".
 
 2021.09.18
 * "user_data" must be Record<string, JSONValue> type.

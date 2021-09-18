@@ -269,9 +269,10 @@ export class Ddc {
     denops: Denops,
     context: Context,
     options: DdcOptions,
+    sourceName: string,
     userData: DdcUserData,
   ): Promise<void> {
-    const source = this.sources[userData.__sourceName];
+    const source = this.sources[sourceName];
     if (!source || !source.onCompleteDone) {
       return;
     }
@@ -380,12 +381,14 @@ export class Ddc {
       const candidates = fcs.map((c) => (
         {
           ...c,
+          __sourceName: s.name,
           abbr: formatAbbr(c.word, c.abbr),
           dup: o.dup,
-          icase: true,
           equal: true,
+          icase: true,
+          kind: c.kind ? c.kind : "",
+          info: c.info ? c.info : "",
           menu: formatMenu(o.mark, c.menu),
-          user_data: Object.assign({ __sourceName: s.name }, c.user_data),
         }
       ));
       if (!candidates.length) {

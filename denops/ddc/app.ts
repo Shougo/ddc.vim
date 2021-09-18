@@ -122,8 +122,9 @@ export async function main(denops: Denops) {
 
       await doCompletion(denops, context, options);
     },
-    async onCompleteDone(arg1: unknown): Promise<void> {
-      const userData = arg1 as DdcUserData;
+    async onCompleteDone(arg1: unknown, arg2: unknown): Promise<void> {
+      const sourceName = arg1 as string;
+      const userData = arg2 as DdcUserData;
       const maybe = await contextBuilder.createContext(denops, "CompleteDone");
       if (!maybe) return;
       const [context, options] = maybe;
@@ -132,6 +133,7 @@ export async function main(denops: Denops) {
         denops,
         context,
         options,
+        sourceName,
         userData,
       );
     },

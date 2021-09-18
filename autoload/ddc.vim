@@ -241,11 +241,25 @@ endfunction
 
 function! ddc#_on_complete_done() abort
   if !ddc#_denops_running()
-        \ || !has_key(v:completed_item, 'user_data')
+        \ || empty(v:completed_item)
         \ || type(v:completed_item.user_data) != v:t_dict
-        \ || !has_key(v:completed_item.user_data, '__sourceName')
     return
   endif
 
-  call denops#request('ddc', 'onCompleteDone', [v:completed_item.user_data])
+  " Search selected candidate from previous candidates
+  let candidates = filter(copy(g:ddc#_candidates), { _, val
+        \ -> val.word ==# v:completed_item.word
+        \ && val.abbr ==# v:completed_item.abbr
+        \ && val.info ==# v:completed_item.info
+        \ && val.kind ==# v:completed_item.kind
+        \ && val.menu ==# v:completed_item.menu
+        \ && has_key(val, 'user_data')
+        \ && val.user_data ==# v:completed_item.user_data
+        \ })
+  if empty(candidates)
+    return
+  endif
+
+  call denops#request('ddc', 'onCompleteDone',
+        \ [candidates[0].__sourceName, v:completed_item.user_data])
 endfunction
