@@ -3,6 +3,7 @@ import {
   Context,
   DdcCandidate,
   DdcOptions,
+  DdcUserData,
   FilterOptions,
   SourceOptions,
 } from "./types.ts";
@@ -264,6 +265,29 @@ export class Ddc {
     }
   }
 
+  async onCompleteDone(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+    userData: DdcUserData,
+  ): Promise<void> {
+    const source = this.sources[userData.__sourceName];
+    if (!source || !source.onCompleteDone) {
+      return;
+    }
+
+    const [sourceOptions, sourceParams] = sourceArgs(options, source);
+    await callSourceOnCompleteDone(
+      source,
+      denops,
+      context,
+      options,
+      sourceOptions,
+      sourceParams,
+      userData,
+    );
+  }
+
   async gatherResults(
     denops: Denops,
     context: Context,
@@ -357,11 +381,11 @@ export class Ddc {
         {
           ...c,
           abbr: formatAbbr(c.word, c.abbr),
-          source: s.name,
           dup: o.dup,
           icase: true,
           equal: true,
           menu: formatMenu(o.mark, c.menu),
+          user_data: Object.assign({ __sourceName: s.name }, c.user_data),
         }
       ));
       if (!candidates.length) {
@@ -613,30 +637,32 @@ async function callSourceOnEvent(
   }
 }
 
-async function callFilterOnEvent(
-  filter: BaseFilter,
+async function callSourceOnCompleteDone(
+  source: BaseSource,
   denops: Denops,
   context: Context,
   options: DdcOptions,
-  filterOptions: FilterOptions,
-  filterParams: Record<string, unknown>,
+  sourceOptions: SourceOptions,
+  sourceParams: Record<string, unknown>,
+  userData: DdcUserData,
 ) {
-  await checkFilterOnInit(filter, denops, filterOptions, filterParams);
+  await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
   try {
-    filter.onEvent({
+    await source.onCompleteDone({
       denops,
       context,
       options,
-      filterOptions,
-      filterParams,
+      sourceOptions,
+      sourceParams,
+      userData,
     });
   } catch (e: unknown) {
     if (e instanceof TimeoutError) {
       // Ignore timeout error
     } else {
       console.error(
-        `[ddc.vim] filter: ${filter.name} "onEvent()" is failed`,
+        `[ddc.vim] source: ${source.name} "onCompleteDone()" is failed`,
       );
       console.error(e);
     }
@@ -724,6 +750,36 @@ async function callSourceGatherCandidates(
     }
 
     return [];
+  }
+}
+
+async function callFilterOnEvent(
+  filter: BaseFilter,
+  denops: Denops,
+  context: Context,
+  options: DdcOptions,
+  filterOptions: FilterOptions,
+  filterParams: Record<string, unknown>,
+) {
+  await checkFilterOnInit(filter, denops, filterOptions, filterParams);
+
+  try {
+    filter.onEvent({
+      denops,
+      context,
+      options,
+      filterOptions,
+      filterParams,
+    });
+  } catch (e: unknown) {
+    if (e instanceof TimeoutError) {
+      // Ignore timeout error
+    } else {
+      console.error(
+        `[ddc.vim] filter: ${filter.name} "onEvent()" is failed`,
+      );
+      console.error(e);
+    }
   }
 }
 

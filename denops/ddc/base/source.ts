@@ -3,6 +3,7 @@ import {
   Context,
   DdcEvent,
   DdcOptions,
+  DdcUserData,
   SourceOptions,
 } from "../types.ts";
 import { Denops } from "../deps.ts";
@@ -19,6 +20,15 @@ export type OnEventArguments = {
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Record<string, unknown>;
+};
+
+export type OnCompleteDoneArguments = {
+  denops: Denops;
+  context: Context;
+  options: DdcOptions;
+  sourceOptions: SourceOptions;
+  sourceParams: Record<string, unknown>;
+  userData: DdcUserData;
 };
 
 export type GetCompletePositionArguments = {
@@ -50,6 +60,8 @@ export abstract class BaseSource {
   async onInit(_args: OnInitArguments): Promise<void> {}
 
   async onEvent(_args: OnEventArguments): Promise<void> {}
+
+  async onCompleteDone(_args: OnCompleteDoneArguments): Promise<void> {}
 
   getCompletePosition(
     args: GetCompletePositionArguments,

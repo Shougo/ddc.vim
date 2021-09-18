@@ -69,12 +69,15 @@ export type Candidate = {
   info?: string;
   kind?: string;
   dup?: boolean;
-  "user_data"?: unknown;
+  "user_data"?: DdcUserData;
 };
 
 // For internal type
 export type DdcCandidate = Candidate & {
   icase: boolean;
   equal: boolean;
-  source: SourceName;
+};
+
+export type DdcUserData = {
+  __sourceName: string;
 };

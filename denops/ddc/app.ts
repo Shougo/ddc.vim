@@ -1,6 +1,6 @@
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
-import { Context, DdcEvent, DdcOptions } from "./types.ts";
+import { Context, DdcEvent, DdcOptions, DdcUserData } from "./types.ts";
 import { batch, Denops, ensureObject, fn, op, vars } from "./deps.ts";
 
 type RegisterArg = {
@@ -121,6 +121,19 @@ export async function main(denops: Denops) {
       }
 
       await doCompletion(denops, context, options);
+    },
+    async onCompleteDone(arg1: unknown): Promise<void> {
+      const userData = arg1 as DdcUserData;
+      const maybe = await contextBuilder.createContext(denops, "CompleteDone");
+      if (!maybe) return;
+      const [context, options] = maybe;
+
+      await ddc.onCompleteDone(
+        denops,
+        context,
+        options,
+        userData,
+      );
     },
   };
 
