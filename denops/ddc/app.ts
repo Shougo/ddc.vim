@@ -55,8 +55,8 @@ export async function main(denops: Denops) {
     getBuffer(): Promise<Record<number, Partial<DdcOptions>>> {
       return Promise.resolve(contextBuilder.getBuffer());
     },
-    async _cacheWorld(arg1: unknown): Promise<unknown> {
-      return await contextBuilder._cacheWorld(denops, arg1 as DdcEvent);
+    getCurrent(): Promise<DdcOptions> {
+      return Promise.resolve(contextBuilder.getCurrent(denops));
     },
     async manualComplete(arg1: unknown): Promise<void> {
       const sources = arg1 as string[];

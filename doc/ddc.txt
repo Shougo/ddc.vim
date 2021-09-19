@@ -268,6 +268,10 @@ ddc#custom#alias({type}, {alias-name}, {base-name})
 ddc#custom#get_buffer()
 		Get current buffer specific options.
 
+						*ddc#custom#get_current()*
+ddc#custom#get_current()
+		Get current options.
+
 						*ddc#custom#get_filetype()*
 ddc#custom#get_filetype()
 		Get filetype specific options.
@@ -805,6 +809,22 @@ want to implement it anymore.
 But other people has implemented it instead.
 
 https://github.com/LumaKernel/ddc-file
+
+
+Q: I want to enable "skkeleton" source when "skkeleton" is enabled only.
+
+A: >
+  autocmd User skkeleton-enable-pre call s:skkeleton_pre()
+  function! s:skkeleton_pre() abort
+    " Save current sources
+    let s:sources = get(ddc#custom#get_current(), 'sources', [])
+    call ddc#custom#patch_buffer('sources', ['skkeleton'])
+  endfunction
+  autocmd User skkeleton-disable-pre call s:skkeleton_post()
+  function! s:skkeleton_post() abort
+    " Restore current sources
+    call ddc#custom#patch_buffer('sources', s:sources)
+  endfunction
 
 
 ==============================================================================

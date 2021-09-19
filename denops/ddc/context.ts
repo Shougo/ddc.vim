@@ -285,14 +285,6 @@ export class ContextBuilder {
       return null;
     }
     if (world.isLmap || world.changedByCompletion) return null;
-    const userOptions = this.custom.get(world.filetype, world.bufnr);
-
-    // Convert keywordPattern
-    const iskeyword = await op.iskeyword.getLocal(denops);
-    userOptions.keywordPattern = userOptions.keywordPattern.replaceAll(
-      /\\k/g,
-      () => "[" + vimoption2ts(iskeyword) + "]",
-    );
 
     const context = {
       changedTick: world.changedTick,
@@ -302,7 +294,20 @@ export class ContextBuilder {
       lineNr: world.lineNr,
       nextInput: world.nextInput,
     };
-    return [context, userOptions];
+    return [context, await this._getUserOptions(denops, world)];
+  }
+
+  async _getUserOptions(denops: Denops, world: World): Promise<DdcOptions> {
+    const userOptions = this.custom.get(world.filetype, world.bufnr);
+
+    // Convert keywordPattern
+    const iskeyword = await op.iskeyword.getLocal(denops);
+    userOptions.keywordPattern = userOptions.keywordPattern.replaceAll(
+      /\\k/g,
+      () => "[" + vimoption2ts(iskeyword) + "]",
+    );
+
+    return userOptions;
   }
 
   getGlobal(): Partial<DdcOptions> {
@@ -313,6 +318,10 @@ export class ContextBuilder {
   }
   getBuffer(): Record<number, Partial<DdcOptions>> {
     return this.custom.buffer;
+  }
+  async getCurrent(denops: Denops): Promise<DdcOptions> {
+    const world = await this._cacheWorld(denops, "Manual");
+    return this._getUserOptions(denops, world);
   }
 
   patchGlobal(options: Partial<DdcOptions>) {

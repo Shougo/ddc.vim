@@ -58,6 +58,14 @@ function! ddc#custom#get_buffer() abort
   return get(denops#request('ddc', 'getBuffer', []), bufnr('%'), {})
 endfunction
 
+function! ddc#custom#get_current() abort
+  if !ddc#_denops_running()
+    return {}
+  endif
+
+  return denops#request('ddc', 'getCurrent', [])
+endfunction
+
 function! s:patch_global(dict) abort
   if ddc#_denops_running()
     call denops#notify('ddc', 'patchGlobal', [a:dict])
