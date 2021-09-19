@@ -40,6 +40,7 @@ export function defaultDdcOptions(): DdcOptions {
   return {
     autoCompleteDelay: 0,
     autoCompleteEvents: ["InsertEnter", "TextChangedI", "TextChangedP"],
+    backspaceCompletion: false,
     completionMode: "popupmenu",
     filterOptions: {},
     filterParams: {},
