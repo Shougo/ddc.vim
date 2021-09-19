@@ -161,23 +161,42 @@ export class Ddc {
 
     this.prevRuntimepath = runtimepath;
 
-    const sources = await fn.globpath(
+    const sources = (await fn.globpath(
       denops,
       runtimepath,
-      "denops/ddc-sources/*.ts",
+      "denops/@ddc-sources/*.ts",
       1,
       1,
-    ) as string[];
-    const filters = await fn.globpath(
-      denops,
-      runtimepath,
-      "denops/ddc-filters/*.ts",
-      1,
-      1,
-    ) as string[];
+    ) as string[]).concat(
+      await fn.globpath(
+        denops,
+        runtimepath,
+        "denops/ddc-sources/*.ts",
+        1,
+        1,
+      ) as string[],
+    );
+
     await Promise.all(sources.map((path) => {
       this.registerSource(denops, path, parse(path).name);
     }));
+
+    const filters = (await fn.globpath(
+      denops,
+      runtimepath,
+      "denops/@ddc-filters/*.ts",
+      1,
+      1,
+    ) as string[]).concat(
+      await fn.globpath(
+        denops,
+        runtimepath,
+        "denops/ddc-filters/*.ts",
+        1,
+        1,
+      ) as string[],
+    );
+
     await Promise.all(filters.map((path) => {
       this.registerFilter(denops, path, parse(path).name);
     }));

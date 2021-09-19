@@ -1,6 +1,6 @@
 *ddc.txt*	Dark deno powered completion framework for neovim/Vim8
 
-Version: 0.12
+Version: 0.13
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
@@ -392,7 +392,7 @@ Note: The default sources are empty.  You need to
 configure them to use ddc.
 
 The sources must be registered by |ddc#register_source()| or put under
-"denops/ddc-sources/*.ts".
+"denops/@ddc-sources/*.ts".
 
 ------------------------------------------------------------------------------
 SOURCE OPTIONS						*ddc-source-options*
@@ -519,7 +519,7 @@ Note: The default matchers/sorters/converters are empty.  You need to
 configure them to use ddc.
 
 The filters must be registered by |ddc#register_filter()| or put under
-"denops/ddc-filters/*.ts".
+"denops/@ddc-filters/*.ts".
 
 ------------------------------------------------------------------------------
 FILTER OPTIONS						*ddc-filter-options*
@@ -829,6 +829,10 @@ A: >
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.09.20
+* "denops/@ddc-sources/*.ts" or "denops/@ddc-filters/*.ts" files are
+  autoloaded for denops compatibility.
 
 2021.09.19
 * "params" is required for both sources and filters.
