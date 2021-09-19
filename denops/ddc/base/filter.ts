@@ -8,13 +8,17 @@ import {
 } from "../types.ts";
 import { Denops } from "../deps.ts";
 
-export type OnInitArguments<Params extends Record<string, unknown>> = {
+export type OnInitArguments<
+  Params extends Record<string, unknown> = Record<string, unknown>,
+> = {
   denops: Denops;
   filterOptions: FilterOptions;
   filterParams: Params;
 };
 
-export type OnEventArguments<Params extends Record<string, unknown>> = {
+export type OnEventArguments<
+  Params extends Record<string, unknown> = Record<string, unknown>,
+> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -22,7 +26,9 @@ export type OnEventArguments<Params extends Record<string, unknown>> = {
   filterParams: Params;
 };
 
-export type FilterArguments<Params extends Record<string, unknown>> = {
+export type FilterArguments<
+  Params extends Record<string, unknown> = Record<string, unknown>,
+> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
