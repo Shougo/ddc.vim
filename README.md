@@ -1,11 +1,11 @@
 # ddc.vim
 
-Note: It is still beta version.  But it is almost stable.
+Note: It is still beta version. But it is almost stable.
 
 > Dark deno powered completion framework for neovim/Vim8
 
-If you don't want to configure plugins, you don't have to use the plugin.
-It does not work with zero configuration.  You can use other plugins.
+If you don't want to configure plugins, you don't have to use the plugin. It
+does not work with zero configuration. You can use other plugins.
 
 [![Doc](https://img.shields.io/badge/doc-%3Ah%20ddc-orange.svg)](doc/ddc.txt)
 
@@ -16,13 +16,11 @@ extensible and asynchronous completion framework for neovim/Vim8.
 
 ddc.vim will display completions via `complete()` by default.
 
+I have created [Japanese article](https://zenn.dev/shougo/articles/ddc-vim-beta)
+for ddc.vim recently. You can read it by translation service.
 
-I have created [Japanese article](https://zenn.dev/shougo/articles/ddc-vim-beta) for ddc.vim recently.
-You can read it by translation service.
-
-
-The development is supported by [github sponsors](https://github.com/sponsors/Shougo/). Thank you!
-
+The development is supported by
+[github sponsors](https://github.com/sponsors/Shougo/). Thank you!
 
 <!-- vim-markdown-toc GFM -->
 
@@ -34,20 +32,18 @@ The development is supported by [github sponsors](https://github.com/sponsors/Sh
 
 <!-- vim-markdown-toc -->
 
-
 ## Introduction
 
-I have chosen denops.vim framework to create new plugin.
-Because denops.vim is better than neovim Python interface.
+I have chosen denops.vim framework to create new plugin. Because denops.vim is
+better than neovim Python interface.
 
-* Easy to setup
-* Minimal dependency
-* Stability
-* neovim/Vim8 compatibility
-* Speed
-* Library
-* Easy to hack
-
+- Easy to setup
+- Minimal dependency
+- Stability
+- neovim/Vim8 compatibility
+- Speed
+- Library
+- Easy to hack
 
 ## Install
 
@@ -91,12 +87,9 @@ call dein#add('vim-denops/denops.vim')
 call dein#end()
 ```
 
-**Note:** Ddc.vim does not include any sources and filters.
-You must install them you want manually.
-You can search ddc plugins(sources and filters) from
+**Note:** Ddc.vim does not include any sources and filters. You must install
+them you want manually. You can search ddc plugins(sources and filters) from
 [here](https://github.com/topics/ddc-vim).
-
-
 
 ### Requirements
 
@@ -104,7 +97,6 @@ Ddc.vim requires both Deno and denops.vim.
 
 - <https://deno.land/>
 - <https://github.com/vim-denops/denops.vim>
-
 
 ## Configuration
 
@@ -157,24 +149,22 @@ call ddc#enable()
 
 See `:help ddc-options` for a complete list of options.
 
-
 ## Screenshots
 
 Please see: https://github.com/Shougo/ddc.vim/issues/32
 
 ![nvim-lsp](https://user-images.githubusercontent.com/41495/129931010-258d3917-7379-4b40-b3cc-2313c9fbe600.png)
 
-
 ## Plans
 
-* [x] Custom ddc options support
-* [x] Custom source options support
-* [x] Implement source orders
-* [x] Implement sorter_rank
-* [x] virtual text completion mode
-* [x] Split sources and filters
-* [x] Implement LSP source
-* [x] Manual completion support
-* [x] Implement converter_remove_overlap
-* [x] iskeyword support
-* [x] Sources/Filters auto loading without registers
+- [x] Custom ddc options support
+- [x] Custom source options support
+- [x] Implement source orders
+- [x] Implement sorter_rank
+- [x] virtual text completion mode
+- [x] Split sources and filters
+- [x] Implement LSP source
+- [x] Manual completion support
+- [x] Implement converter_remove_overlap
+- [x] iskeyword support
+- [x] Sources/Filters auto loading without registers
