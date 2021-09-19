@@ -7,17 +7,13 @@ import {
 } from "../types.ts";
 import { Denops } from "../deps.ts";
 
-export type OnInitArguments<
-  Params extends Record<string, unknown> = Record<string, unknown>,
-> = {
+export type OnInitArguments<Params extends Record<string, unknown>> = {
   denops: Denops;
   sourceOptions: SourceOptions;
   sourceParams: Params;
 };
 
-export type OnEventArguments<
-  Params extends Record<string, unknown> = Record<string, unknown>,
-> = {
+export type OnEventArguments<Params extends Record<string, unknown>> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -26,7 +22,7 @@ export type OnEventArguments<
 };
 
 export type OnCompleteDoneArguments<
-  Params extends Record<string, unknown> = Record<string, unknown>,
+  Params extends Record<string, unknown>,
   UserData extends unknown = unknown,
 > = {
   denops: Denops;
@@ -39,7 +35,7 @@ export type OnCompleteDoneArguments<
 };
 
 export type GetCompletePositionArguments<
-  Params extends Record<string, unknown> = Record<string, unknown>,
+  Params extends Record<string, unknown>,
 > = {
   denops: Denops;
   context: Context;
@@ -48,19 +44,18 @@ export type GetCompletePositionArguments<
   sourceParams: Params;
 };
 
-export type GatherCandidatesArguments<
-  Params extends Record<string, unknown> = Record<string, unknown>,
-> = {
-  denops: Denops;
-  context: Context;
-  options: DdcOptions;
-  sourceOptions: SourceOptions;
-  sourceParams: Params;
-  completeStr: string;
-};
+export type GatherCandidatesArguments<Params extends Record<string, unknown>> =
+  {
+    denops: Denops;
+    context: Context;
+    options: DdcOptions;
+    sourceOptions: SourceOptions;
+    sourceParams: Params;
+    completeStr: string;
+  };
 
 export abstract class BaseSource<
-  Params extends Record<string, unknown> = Record<string, unknown>,
+  Params extends Record<string, unknown>,
   UserData extends unknown = unknown,
 > {
   name = "";
