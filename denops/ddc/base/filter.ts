@@ -33,9 +33,7 @@ export type FilterArguments<Params extends Record<string, unknown>> = {
   candidates: Candidate[];
 };
 
-export abstract class BaseFilter<
-  Params extends Record<string, unknown> = Record<string, unknown>,
-> {
+export abstract class BaseFilter<Params extends Record<string, unknown>> {
   name = "";
   events: DdcEvent[] = [];
   isInitialized = false;

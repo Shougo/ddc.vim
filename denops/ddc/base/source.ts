@@ -23,7 +23,7 @@ export type OnEventArguments<Params extends Record<string, unknown>> = {
 
 export type OnCompleteDoneArguments<
   Params extends Record<string, unknown>,
-  UserData extends unknown,
+  UserData extends unknown = unknown,
 > = {
   denops: Denops;
   context: Context;
@@ -55,7 +55,7 @@ export type GatherCandidatesArguments<Params extends Record<string, unknown>> =
   };
 
 export abstract class BaseSource<
-  Params extends Record<string, unknown> = Record<string, unknown>,
+  Params extends Record<string, unknown>,
   UserData extends unknown = unknown,
 > {
   name = "";
