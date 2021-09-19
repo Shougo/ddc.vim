@@ -32,7 +32,7 @@ jobs:
 
       - name: Check Format
         run: |
-          deno fmt --check denops
+          deno fmt --check denops Makefile .github
 
   deno-test:
     runs-on: ubuntu-latest

@@ -16,6 +16,6 @@ test:
 	deno test --unstable -A ${TSTEST}
 
 format:
-	deno fmt denops README.md
+	deno fmt denops README.md .github
 
 .PHONY: lint lint/vim lint/deno test format
