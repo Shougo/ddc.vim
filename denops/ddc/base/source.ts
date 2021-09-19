@@ -23,7 +23,7 @@ export type OnEventArguments<Params extends Record<string, unknown>> = {
 
 export type OnCompleteDoneArguments<
   Params extends Record<string, unknown>,
-  UserData extends Record<string, unknown>,
+  UserData extends unknown,
 > = {
   denops: Denops;
   context: Context;
@@ -31,7 +31,7 @@ export type OnCompleteDoneArguments<
   sourceOptions: SourceOptions;
   sourceParams: Params;
   // To prevent users from accessing internal variables.
-  userData: UserData & { __sourceName?: never };
+  userData: UserData;
 };
 
 export type GetCompletePositionArguments<
@@ -56,7 +56,7 @@ export type GatherCandidatesArguments<Params extends Record<string, unknown>> =
 
 export abstract class BaseSource<
   Params extends Record<string, unknown> = Record<string, unknown>,
-  UserData extends Record<string, unknown> = Record<string, unknown>,
+  UserData extends unknown = unknown,
 > {
   name = "";
   isBytePos = false;

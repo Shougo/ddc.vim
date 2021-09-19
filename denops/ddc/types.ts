@@ -63,7 +63,7 @@ export type FilterOptions = {
 };
 
 export type Candidate<
-  UserData extends Record<string, unknown> = Record<string, unknown>,
+  UserData extends unknown = unknown,
 > = {
   word: string;
   abbr?: string;
@@ -71,13 +71,11 @@ export type Candidate<
   info?: string;
   kind?: string;
   dup?: boolean;
-  "user_data"?: UserData | string;
+  "user_data"?: UserData;
 };
 
 // For internal type
-export type DdcUserData = {
-  [userKey: string]: unknown;
-};
+export type DdcUserData = unknown;
 
 export type DdcCandidate =
   & Candidate<DdcUserData>

@@ -506,7 +506,7 @@ function charposToBytepos(input: string, pos: number): number {
 
 function sourceArgs<
   Params extends Record<string, unknown>,
-  UserData extends Record<string, unknown>,
+  UserData extends unknown,
 >(
   options: DdcOptions,
   source: BaseSource<Params, UserData>,
@@ -647,7 +647,7 @@ async function callSourceOnEvent(
 
 async function callSourceOnCompleteDone<
   Params extends Record<string, unknown>,
-  UserData extends Record<string, unknown>,
+  UserData extends unknown,
 >(
   source: BaseSource<Params, UserData>,
   denops: Denops,
@@ -724,7 +724,7 @@ async function callSourceGetCompletePosition(
 
 async function callSourceGatherCandidates<
   Params extends Record<string, unknown>,
-  UserData extends Record<string, unknown>,
+  UserData extends unknown,
 >(
   source: BaseSource<Params, UserData>,
   denops: Denops,
