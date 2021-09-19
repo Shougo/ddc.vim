@@ -18,4 +18,4 @@ test:
 format:
 	deno fmt denops README.md
 
-.PHONY: lint test format
+.PHONY: lint lint/vim lint/deno test format
