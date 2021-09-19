@@ -48,8 +48,8 @@ type DdcResult = {
 };
 
 export class Ddc {
-  private sources: Record<string, BaseSource> = {};
-  private filters: Record<string, BaseFilter> = {};
+  private sources: Record<string, BaseSource<Record<string, unknown>>> = {};
+  private filters: Record<string, BaseFilter<Record<string, unknown>>> = {};
   private aliasSources: Record<string, string> = {};
   private aliasFilters: Record<string, string> = {};
   private checkPaths: Record<string, boolean> = {};
@@ -57,10 +57,10 @@ export class Ddc {
   private events: string[] = [];
   private prevRuntimepath = "";
 
-  private foundSources(names: string[]): BaseSource[] {
+  private foundSources(names: string[]): BaseSource<Record<string, unknown>>[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
   }
-  private foundFilters(names: string[]): BaseFilter[] {
+  private foundFilters(names: string[]): BaseFilter<Record<string, unknown>>[] {
     return names.map((n) => this.filters[n]).filter((v) => v);
   }
 
@@ -429,7 +429,9 @@ export class Ddc {
     const sorters = this.foundFilters(sourceOptions.sorters);
     const converters = this.foundFilters(sourceOptions.converters);
 
-    async function callFilters(filters: BaseFilter[]): Promise<Candidate[]> {
+    async function callFilters(
+      filters: BaseFilter<Record<string, unknown>>[],
+    ): Promise<Candidate[]> {
       for (const filter of filters) {
         const [o, p] = filterArgs(filterOptions, filterParams, filter);
         cdd = await callFilterFilter(
@@ -531,11 +533,11 @@ function filterArgs<
   filter: BaseFilter<Params>,
 ): [FilterOptions, Record<string, unknown>] {
   // TODO: '_'?
-  const optionsOf = (filter: BaseFilter) =>
+  const optionsOf = (filter: BaseFilter<Record<string, unknown>>) =>
     foldMerge(mergeFilterOptions, defaultFilterOptions, [
       filterOptions[filter.name],
     ]);
-  const paramsOf = (filter: BaseFilter) =>
+  const paramsOf = (filter: BaseFilter<Record<string, unknown>>) =>
     foldMerge(mergeFilterParams, defaultFilterParams, [
       filter.params(),
       filterParams[filter.name],
@@ -544,7 +546,7 @@ function filterArgs<
 }
 
 async function checkSourceOnInit(
-  source: BaseSource,
+  source: BaseSource<Record<string, unknown>>,
   denops: Denops,
   sourceOptions: SourceOptions,
   sourceParams: Record<string, unknown>,
@@ -578,7 +580,7 @@ async function checkSourceOnInit(
 }
 
 async function checkFilterOnInit(
-  filter: BaseFilter,
+  filter: BaseFilter<Record<string, unknown>>,
   denops: Denops,
   filterOptions: FilterOptions,
   filterParams: Record<string, unknown>,
@@ -608,7 +610,7 @@ async function checkFilterOnInit(
 }
 
 async function callSourceOnEvent(
-  source: BaseSource,
+  source: BaseSource<Record<string, unknown>>,
   denops: Denops,
   context: Context,
   options: DdcOptions,
@@ -683,7 +685,7 @@ async function callSourceOnCompleteDone<
 }
 
 async function callSourceGetCompletePosition(
-  source: BaseSource,
+  source: BaseSource<Record<string, unknown>>,
   denops: Denops,
   context: Context,
   options: DdcOptions,
@@ -770,7 +772,7 @@ async function callSourceGatherCandidates<
 }
 
 async function callFilterOnEvent(
-  filter: BaseFilter,
+  filter: BaseFilter<Record<string, unknown>>,
   denops: Denops,
   context: Context,
   options: DdcOptions,
@@ -800,7 +802,7 @@ async function callFilterOnEvent(
 }
 
 async function callFilterFilter(
-  filter: BaseFilter,
+  filter: BaseFilter<Record<string, unknown>>,
   denops: Denops,
   context: Context,
   options: DdcOptions,
