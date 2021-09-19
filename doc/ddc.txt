@@ -93,6 +93,15 @@ autoCompleteEvents
 
 		Default: ["InsertEnter", "TextChangedI", "TextChangedP"]
 
+				*ddc-option-backspaceCompletion*
+backspaceCompletion
+		If it is enabled, ddc.vim will complete even when backspace is
+		typed.
+		It is disabled by default since backspace completion will
+		cause completion flicker.
+
+		Default: v:false
+
 						*ddc-option-completionMode*
 completionMode
 		The completion mode. It must be following string.

@@ -29,6 +29,7 @@ type CompletionMode = "inline" | "popupmenu" | "manual";
 export type DdcOptions = {
   autoCompleteDelay: number;
   autoCompleteEvents: DdcEvent[];
+  backspaceCompletion: boolean;
   completionMode: CompletionMode;
   filterOptions: Record<string, Partial<FilterOptions>>;
   filterParams: Record<string, Partial<Record<string, unknown>>>;
