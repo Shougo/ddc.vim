@@ -55,7 +55,7 @@ function! ddc#custom#get_buffer() abort
     return {}
   endif
 
-  return denops#request('ddc', 'getBuffer', [])
+  return get(denops#request('ddc', 'getBuffer', []), bufnr('%'), {})
 endfunction
 
 function! s:patch_global(dict) abort

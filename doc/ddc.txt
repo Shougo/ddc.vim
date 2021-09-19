@@ -257,7 +257,7 @@ ddc#custom#alias({type}, {alias-name}, {base-name})
 <
 						*ddc#custom#get_buffer()*
 ddc#custom#get_buffer()
-		Get buffer specific options.
+		Get current buffer specific options.
 
 						*ddc#custom#get_filetype()*
 ddc#custom#get_filetype()
@@ -804,6 +804,7 @@ COMPATIBILITY						*ddc-compatibility*
 2021.09.19
 * "params" is required for both sources and filters.
 * Allow string "user_data".
+* ddc#custom#get_buffer() returns current buffer values.
 
 2021.09.18
 * "user_data" must be Record<string, JSONValue> type.
