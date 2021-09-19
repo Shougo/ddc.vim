@@ -219,7 +219,7 @@ ddc#refresh_candidates()
 
 							*ddc#register()*
 ddc#register({dict})
-		Register filter.
+		Register source or filter.
 		The {dict} must have following keys.
 
 		name: The filter name
