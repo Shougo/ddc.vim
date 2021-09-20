@@ -26,6 +26,26 @@ export async function main(denops: Denops) {
       ddc.registerAlias(arg1 as string, arg2 as string, arg3 as string);
       return Promise.resolve();
     },
+    setGlobal(arg1: unknown): Promise<void> {
+      ensureObject(arg1);
+      const options = arg1 as Record<string, unknown>;
+      contextBuilder.setGlobal(options);
+      return Promise.resolve();
+    },
+    setFiletype(arg1: unknown, arg2: unknown): Promise<void> {
+      ensureObject(arg1);
+      const options = arg1 as Record<string, unknown>;
+      const filetype = arg2 as string;
+      contextBuilder.setFiletype(filetype, options);
+      return Promise.resolve();
+    },
+    setBuffer(arg1: unknown, arg2: unknown): Promise<void> {
+      ensureObject(arg1);
+      const options = arg1 as Record<string, unknown>;
+      const bufnr = arg2 as number;
+      contextBuilder.setBuffer(bufnr, options);
+      return Promise.resolve();
+    },
     patchGlobal(arg1: unknown): Promise<void> {
       ensureObject(arg1);
       const options = arg1 as Record<string, unknown>;

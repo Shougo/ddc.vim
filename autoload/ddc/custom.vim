@@ -18,24 +18,21 @@ endfunction
 function! ddc#custom#patch_buffer(key_or_dict, ...) abort
   let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
   let n = bufnr('%')
-  call s:notify('patchBuffer', [dict, bufnr])
+  call s:notify('patchBuffer', [dict, n])
 endfunction
 
-function! ddc#custom#clear_global(key_or_dict, ...) abort
-  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
-  call s:notify('patchGlobal', [dict])
+function! ddc#custom#set_global(dict) abort
+  call s:notify('setGlobal', [a:dict])
 endfunction
-function! ddc#custom#clear_filetype(ft, key_or_dict, ...) abort
+function! ddc#custom#set_filetype(ft, dict) abort
   let filetypes = s:normalize_string_or_list(a:ft)
-  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
   for filetype in filetypes
-    call s:notify('patchFiletype', [dict, filetype])
+    call s:notify('setFiletype', [a:dict, filetype])
   endfor
 endfunction
-function! ddc#custom#clear_buffer(key_or_dict, ...) abort
-  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+function! ddc#custom#set_buffer(dict) abort
   let n = bufnr('%')
-  call s:notify('patchBuffer', [dict, bufnr])
+  call s:notify('setBuffer', [a:dict, n])
 endfunction
 
 function! ddc#custom#alias(type, alias, base) abort

@@ -300,6 +300,22 @@ ddc#custom#patch_global({dict})
 		If {dict} is available, the key is {option-name} and the value
 		is {value}. See |ddc-options| for available {option-name}.
 
+						*ddc#custom#set_buffer()*
+ddc#custom#set_buffer({dict})
+		Overwrites local options on current buffer.
+		The {dict} is the same as for |ddc#custom#set_global()|.
+
+						*ddc#custom#set_filetype()*
+ddc#custom#set_filetype({filetype}, {dict})
+		Overwrites options used for filetypes. {filetype} accepts a
+		string or a list of strings.
+		The {dict} is the same as for |ddc#custom#set_global()|.
+
+						*ddc#custom#set_global()*
+ddc#custom#set_global({dict})
+		The {dict} key is {option-name} and the value is {value}. See
+		|ddc-options| for available {option-name}.
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
 
@@ -816,14 +832,14 @@ Q: I want to enable "skkeleton" source when "skkeleton" is enabled only.
 A: >
   autocmd User skkeleton-enable-pre call s:skkeleton_pre()
   function! s:skkeleton_pre() abort
-    " Save current sources
-    let s:sources = get(ddc#custom#get_current(), 'sources', [])
+    " Overwrite sources
+    let s:prev_buffer_config = ddc#custom#get_buffer()
     call ddc#custom#patch_buffer('sources', ['skkeleton'])
   endfunction
   autocmd User skkeleton-disable-pre call s:skkeleton_post()
   function! s:skkeleton_post() abort
-    " Restore current sources
-    call ddc#custom#patch_buffer('sources', s:sources)
+    " Restore sources
+    call ddc#custom#set_buffer(s:prev_buffer_config)
   endfunction
 
 

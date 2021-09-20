@@ -324,6 +324,16 @@ export class ContextBuilder {
     return this._getUserOptions(denops, world);
   }
 
+  setGlobal(options: Partial<DdcOptions>) {
+    this.custom.setGlobal(options);
+  }
+  setFiletype(ft: string, options: Partial<DdcOptions>) {
+    this.custom.setFiletype(ft, options);
+  }
+  setBuffer(bufnr: number, options: Partial<DdcOptions>) {
+    this.custom.setBuffer(bufnr, options);
+  }
+
   patchGlobal(options: Partial<DdcOptions>) {
     this.custom.patchGlobal(options);
   }
