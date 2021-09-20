@@ -302,17 +302,18 @@ ddc#custom#patch_global({dict})
 
 						*ddc#custom#set_buffer()*
 ddc#custom#set_buffer({dict})
-		Overwrites local options on current buffer.
+		Overwrites all local options on current buffer.
 		The {dict} is the same as for |ddc#custom#set_global()|.
 
 						*ddc#custom#set_filetype()*
 ddc#custom#set_filetype({filetype}, {dict})
-		Overwrites options used for filetypes. {filetype} accepts a
-		string or a list of strings.
+		Overwrites all options used for filetypes. {filetype} accepts
+		a string or a list of strings.
 		The {dict} is the same as for |ddc#custom#set_global()|.
 
 						*ddc#custom#set_global()*
 ddc#custom#set_global({dict})
+		Overwrites all global config options.
 		The {dict} key is {option-name} and the value is {value}. See
 		|ddc-options| for available {option-name}.
 
