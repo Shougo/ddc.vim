@@ -6,21 +6,36 @@
 
 function! ddc#custom#patch_global(key_or_dict, ...) abort
   let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
-  call s:patch_global(dict)
+  call s:notify('patchGlobal', [dict])
 endfunction
-
 function! ddc#custom#patch_filetype(ft, key_or_dict, ...) abort
   let filetypes = s:normalize_string_or_list(a:ft)
   let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
   for filetype in filetypes
-    call s:patch_filetype(filetype, dict)
+    call s:notify('patchFiletype', [dict, filetype])
   endfor
 endfunction
-
 function! ddc#custom#patch_buffer(key_or_dict, ...) abort
   let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
   let n = bufnr('%')
-  call s:patch_buffer(n, dict)
+  call s:notify('patchBuffer', [dict, bufnr])
+endfunction
+
+function! ddc#custom#clear_global(key_or_dict, ...) abort
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  call s:notify('patchGlobal', [dict])
+endfunction
+function! ddc#custom#clear_filetype(ft, key_or_dict, ...) abort
+  let filetypes = s:normalize_string_or_list(a:ft)
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  for filetype in filetypes
+    call s:notify('patchFiletype', [dict, filetype])
+  endfor
+endfunction
+function! ddc#custom#clear_buffer(key_or_dict, ...) abort
+  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  let n = bufnr('%')
+  call s:notify('patchBuffer', [dict, bufnr])
 endfunction
 
 function! ddc#custom#alias(type, alias, base) abort
@@ -41,7 +56,6 @@ function! ddc#custom#get_global() abort
 
   return denops#request('ddc', 'getGlobal', [])
 endfunction
-
 function! ddc#custom#get_filetype() abort
   if !ddc#_denops_running()
     return {}
@@ -49,7 +63,6 @@ function! ddc#custom#get_filetype() abort
 
   return denops#request('ddc', 'getFiletype', [])
 endfunction
-
 function! ddc#custom#get_buffer() abort
   if !ddc#_denops_running()
     return {}
@@ -57,7 +70,6 @@ function! ddc#custom#get_buffer() abort
 
   return get(denops#request('ddc', 'getBuffer', []), bufnr('%'), {})
 endfunction
-
 function! ddc#custom#get_current() abort
   if !ddc#_denops_running()
     return {}
@@ -66,33 +78,13 @@ function! ddc#custom#get_current() abort
   return denops#request('ddc', 'getCurrent', [])
 endfunction
 
-function! s:patch_global(dict) abort
+function! s:notify(method, args) abort
   if ddc#_denops_running()
-    call denops#notify('ddc', 'patchGlobal', [a:dict])
+    call denops#notify('ddc', a:method, a:args)
   else
     execute printf('autocmd User DDCReady call ' .
-          \ 'denops#notify("ddc", "patchGlobal", [%s])',
-          \ a:dict)
-  endif
-endfunction
-
-function! s:patch_filetype(ft, dict) abort
-  if ddc#_denops_running()
-    call denops#notify('ddc', 'patchFiletype', [a:ft, a:dict])
-  else
-    execute printf('autocmd User DDCReady call ' .
-          \ 'denops#notify("ddc", "patchFiletype", ["%s", %s])',
-          \ a:ft, a:dict)
-  endif
-endfunction
-
-function! s:patch_buffer(bufnr, dict) abort
-  if ddc#_denops_running()
-    call denops#notify('ddc', 'patchBuffer', [a:bufnr, a:dict])
-  else
-    execute printf('autocmd User DDCReady call ' .
-          \ 'denops#notify("ddc", "patchBuffer", [%s, %s])',
-          \ a:bufnr, a:dict)
+          \ 'denops#notify("ddc", "%s", %s)',
+          \ a:method, string(a:args))
   endif
 endfunction
 

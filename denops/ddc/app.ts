@@ -33,16 +33,16 @@ export async function main(denops: Denops) {
       return Promise.resolve();
     },
     patchFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      const filetype = arg1 as string;
-      ensureObject(arg2);
-      const options = arg2 as Record<string, unknown>;
+      ensureObject(arg1);
+      const options = arg1 as Record<string, unknown>;
+      const filetype = arg2 as string;
       contextBuilder.patchFiletype(filetype, options);
       return Promise.resolve();
     },
     patchBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      const bufnr = arg1 as number;
-      ensureObject(arg2);
-      const options = arg2 as Record<string, unknown>;
+      ensureObject(arg1);
+      const options = arg1 as Record<string, unknown>;
+      const bufnr = arg2 as number;
       contextBuilder.patchBuffer(bufnr, options);
       return Promise.resolve();
     },
