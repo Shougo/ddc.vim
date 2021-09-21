@@ -533,7 +533,7 @@ function sourceArgs<
     [options.sourceOptions["_"], options.sourceOptions[source.name]],
   );
   const p = foldMerge(mergeSourceParams, defaultSourceParams, [
-    source.params(),
+    source.params ? source.params() : null,
     options.sourceParams[source.name],
   ]);
   return [o, p];
