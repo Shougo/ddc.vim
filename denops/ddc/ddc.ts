@@ -570,15 +570,11 @@ async function checkSourceOnInit(
   }
 
   try {
-    (source?.apiVersion)
-      ? await source.onInit({
-        denops,
-        sourceOptions,
-        sourceParams,
-      })
-      : await source.onInit( // @ts-ignore: For deprecated sources
-        denops,
-      );
+    await source.onInit({
+      denops,
+      sourceOptions,
+      sourceParams,
+    });
 
     source.isInitialized = true;
   } catch (e: unknown) {
@@ -634,21 +630,13 @@ async function callSourceOnEvent(
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
   try {
-    (source?.apiVersion)
-      ? await source.onEvent({
-        denops,
-        context,
-        options,
-        sourceOptions,
-        sourceParams,
-      })
-      : await source.onEvent(
-        denops, // @ts-ignore: For deprecated sources
-        context,
-        options,
-        sourceOptions,
-        sourceParams,
-      );
+    await source.onEvent({
+      denops,
+      context,
+      options,
+      sourceOptions,
+      sourceParams,
+    });
   } catch (e: unknown) {
     if (e instanceof TimeoutError) {
       // Ignore timeout error
@@ -709,21 +697,13 @@ async function callSourceGetCompletePosition(
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
   try {
-    return (source?.apiVersion)
-      ? await source.getCompletePosition({
-        denops,
-        context,
-        options,
-        sourceOptions,
-        sourceParams,
-      })
-      : await source.getCompletePosition(
-        denops, // @ts-ignore: For deprecated sources
-        context,
-        options,
-        sourceOptions,
-        sourceParams,
-      );
+    return await source.getCompletePosition({
+      denops,
+      context,
+      options,
+      sourceOptions,
+      sourceParams,
+    });
   } catch (e: unknown) {
     if (e instanceof TimeoutError) {
       // Ignore timeout error
@@ -753,23 +733,14 @@ async function callSourceGatherCandidates<
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
   try {
-    const promise = (source?.apiVersion)
-      ? source.gatherCandidates({
-        denops,
-        context,
-        options,
-        sourceOptions,
-        sourceParams,
-        completeStr,
-      })
-      : source.gatherCandidates(
-        denops, // @ts-ignore: For deprecated sources
-        context,
-        options,
-        sourceOptions,
-        sourceParams,
-        completeStr,
-      );
+    const promise = source.gatherCandidates({
+      denops,
+      context,
+      options,
+      sourceOptions,
+      sourceParams,
+      completeStr,
+    });
     return await deadline(promise, sourceOptions.timeout);
   } catch (e: unknown) {
     if (e instanceof TimeoutError || e instanceof DeadlineError) {

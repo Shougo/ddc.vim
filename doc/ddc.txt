@@ -847,6 +847,9 @@ A: >
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
+2021.09.22
+* Remove old sources spec support
+
 2021.09.20
 * "denops/@ddc-sources/*.ts" or "denops/@ddc-filters/*.ts" files are
   autoloaded for denops compatibility.
