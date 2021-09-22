@@ -1,4 +1,4 @@
-*ddc.txt*	Dark deno powered completion framework for neovim/Vim8
+*ddc.txt*	Dark deno-powered completion framework for neovim/Vim8
 
 Version: 0.14
 Author: Shougo <Shougo.Matsu at gmail.com>
@@ -32,7 +32,7 @@ Compatibility		|ddc-compatibility|
 ==============================================================================
 INTRODUCTION						*ddc-introduction*
 
-*ddc* is the abbreviation of "dark deno powered completion".  It provides an
+*ddc* is the abbreviation of "dark deno-powered completion".  It provides an
 asynchronous keyword completion system in the current buffer.
 
 If you don't want to configure plugins, you don't have to use the plugin.
