@@ -104,7 +104,7 @@ export async function main(denops: Denops) {
         options,
       );
 
-      if (event == "InsertLeave") {
+      if (event != "InsertEnter" && await fn.mode(denops) != "i") {
         await denops.call("ddc#_clear");
         return;
       }
