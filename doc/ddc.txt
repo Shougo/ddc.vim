@@ -347,6 +347,7 @@ ddc#manual_complete([{sources}])
 		source or a list of sources name.
 		Note: It must be in |:map-<expr>|.
 
+
 ==============================================================================
 EXAMPLES						*ddc-examples*
 >
@@ -410,6 +411,8 @@ configure them to use ddc.
 
 The sources must be registered by |ddc#register_source()| or put under
 "denops/@ddc-sources/*.ts".
+
+Note: The name is named by file name.
 
 ------------------------------------------------------------------------------
 SOURCE OPTIONS						*ddc-source-options*
@@ -538,6 +541,8 @@ configure them to use ddc.
 The filters must be registered by |ddc#register_filter()| or put under
 "denops/@ddc-filters/*.ts".
 
+Note: The name is named by file name.
+
 ------------------------------------------------------------------------------
 FILTER OPTIONS						*ddc-filter-options*
 
@@ -563,7 +568,6 @@ Source class must extend the Base class.
 Note: The sources must be written in Typescript language.
 
 Note: If you call Vim functions in your source, it is not asynchronous.
-
 
 ------------------------------------------------------------------------------
 SOURCE ATTRIBUTES				*ddc-source-attributes*
@@ -611,7 +615,6 @@ onInit			(function)			(Optional)
 params			(function)			(Required)
 		Called to get source params.
 
-
 ------------------------------------------------------------------------------
 CANDIDATE ATTRIBUTES				*ddc-candidate-attributes*
 
@@ -648,6 +651,7 @@ dup			(boolean)			(Optional)
 user_data		(UserData | string)	(Optional)
 		The source specific data.
 
+
 ==============================================================================
 CREATE FILTER						*ddc-create-filter*
 
@@ -659,7 +663,6 @@ Filter class must extend the Base class.
 Note: The filters must be written in Typescript language.
 
 Note: If you call Vim functions in your source, it is not asynchronous.
-
 
 ------------------------------------------------------------------------------
 FILTER ATTRIBUTES				*ddc-filter-attributes*
