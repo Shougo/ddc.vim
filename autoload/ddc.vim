@@ -78,7 +78,7 @@ function! ddc#_cannot_complete() abort
         \ || (!noinsert && info.selected >= 0)
         \ || !exists('g:ddc#_complete_pos')
 endfunction
-function! ddc#_complete(is_native) abort
+function! ddc#_complete() abort
   if ddc#_cannot_complete()
     return
   endif
@@ -93,7 +93,7 @@ function! ddc#_complete(is_native) abort
     let g:ddc#_candidates = []
   endif
 
-  if a:is_native
+  if ddc#_is_native_menu()
     " Note: It may be called in map-<expr>
     silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   elseif empty(g:ddc#_candidates)
@@ -121,8 +121,7 @@ function! s:overwrite_completeopt() abort
   endif
 endfunction
 function! ddc#_is_native_menu() abort
-  return get(ddc#custom#get_current(),
-        \ 'completionMenu', 'native') ==# 'native'
+  return !exists('g:ddc#_is_native_menu') || g:ddc#_is_native_menu
 endfunction
 
 function! ddc#_clear() abort

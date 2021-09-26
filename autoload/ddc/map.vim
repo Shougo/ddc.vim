@@ -13,14 +13,12 @@ function! ddc#map#complete() abort
 
   call ddc#_clear_inline()
 
-  let is_native = ddc#_is_native_menu()
-
-  if has('nvim') || !is_native
-    call ddc#_complete(is_native)
+  if has('nvim') || !ddc#_is_native_menu()
+    call ddc#_complete()
   else
     " Debounce for Vim8
     call timer_stop(s:completion_timer)
-    let s:completion_timer = timer_start(10, { -> ddc#_complete(is_native) })
+    let s:completion_timer = timer_start(10, { -> ddc#_complete() })
   endif
 endfunction
 

@@ -249,6 +249,11 @@ export async function main(denops: Denops) {
           "ddc#_overwrite_completeopt",
           options.overwriteCompleteopt,
         );
+        await vars.g.set(
+          denops,
+          "ddc#_is_native_menu",
+          options.completionMenu == "native",
+        );
 
         if (
           options.completionMode == "popupmenu" ||
@@ -275,6 +280,7 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_overwrite_completeopt", false);
     await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_popup_id", -1);
+    await vars.g.set(denops, "ddc#_is_native_menu", true);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
 
