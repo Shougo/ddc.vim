@@ -105,7 +105,6 @@ export async function main(denops: Denops) {
       );
 
       if (event != "InsertEnter" && await fn.mode(denops) != "i") {
-        await denops.call("ddc#_clear");
         return;
       }
 
@@ -275,6 +274,7 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_now", 0);
     await vars.g.set(denops, "ddc#_overwrite_completeopt", false);
     await vars.g.set(denops, "ddc#_prev_input", "");
+    await vars.g.set(denops, "ddc#_popup_id", -1);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
 

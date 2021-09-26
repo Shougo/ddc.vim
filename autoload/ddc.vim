@@ -28,6 +28,7 @@ function! ddc#enable() abort
   augroup ddc
     autocmd!
     autocmd CompleteDone * call ddc#_on_complete_done()
+    autocmd InsertLeave * call ddc#_clear()
   augroup END
 
   " Force context_filetype call
@@ -51,6 +52,10 @@ function! ddc#_register() abort
         \ { 'mode': 'skip' })
 endfunction
 
+function! ddc#pumvisible() abort
+  return g:ddc#_popup_id > 0
+endfunction
+
 function! ddc#_denops_running() abort
   return exists('g:loaded_denops')
         \ && denops#server#status() ==# 'running'
@@ -72,7 +77,7 @@ function! ddc#complete() abort
     unlet g:ddc#_save_completeopt
   endif
 
-  call ddc#_clear()
+  call s:clear_inline()
 
   " Debounce for Vim8
   if has('nvim')
@@ -107,7 +112,14 @@ function! ddc#_complete() abort
   endif
 
   " Note: It may be called in map-<expr>
-  silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+  "silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+
+  if empty(g:ddc#_candidates)
+    call ddc#_clear()
+  else
+    let g:ddc#_popup_id = ddc#popup#open(
+          \ g:ddc#_complete_pos + 1, g:ddc#_candidates)
+  endif
 endfunction
 function! s:overwrite_completeopt() abort
   if !exists('g:ddc#_save_completeopt')
@@ -128,6 +140,12 @@ function! s:overwrite_completeopt() abort
 endfunction
 
 function! ddc#_clear() abort
+  call ddc#popup#close(g:ddc#_popup_id)
+  let g:ddc#_popup_id = -1
+
+  call s:clear_inline()
+endfunction
+function! s:clear_inline() abort
   if !exists('*nvim_buf_set_virtual_text')
     return
   endif

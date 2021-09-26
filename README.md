@@ -168,3 +168,4 @@ Please see: https://github.com/Shougo/ddc.vim/issues/32
 - [x] Implement converter_remove_overlap
 - [x] iskeyword support
 - [x] Sources/Filters auto loading without registers
+- [ ] Original popup window implementation
