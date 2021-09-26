@@ -52,10 +52,6 @@ function! ddc#_register() abort
         \ { 'mode': 'skip' })
 endfunction
 
-function! ddc#pumvisible() abort
-  return g:ddc#_popup_id > 0
-endfunction
-
 function! ddc#_denops_running() abort
   return exists('g:loaded_denops')
         \ && denops#server#status() ==# 'running'
@@ -82,7 +78,7 @@ function! ddc#_cannot_complete() abort
         \ || (!noinsert && info.selected >= 0)
         \ || !exists('g:ddc#_complete_pos')
 endfunction
-function! ddc#_complete() abort
+function! ddc#_complete(is_native) abort
   if ddc#_cannot_complete()
     return
   endif
@@ -97,10 +93,10 @@ function! ddc#_complete() abort
     let g:ddc#_candidates = []
   endif
 
-  " Note: It may be called in map-<expr>
-  "silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
-
-  if empty(g:ddc#_candidates)
+  if a:is_native
+    " Note: It may be called in map-<expr>
+    silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+  elseif empty(g:ddc#_candidates)
     call ddc#_clear()
   else
     let g:ddc#_popup_id = ddc#popup#open(
@@ -123,6 +119,10 @@ function! s:overwrite_completeopt() abort
     set completeopt-=noinsert
     set completeopt+=noselect
   endif
+endfunction
+function! ddc#_is_native_menu() abort
+  return get(ddc#custom#get_current(),
+        \ 'completionMenu', 'native') ==# 'native'
 endfunction
 
 function! ddc#_clear() abort
@@ -209,18 +209,14 @@ endfunction
 function! ddc#manual_complete(...) abort
   return call('ddc#map#manual_complete', a:000)
 endfunction
-
 function! ddc#insert_candidate(number) abort
   return ddc#map#insert_candidate(a:number)
 endfunction
 function! ddc#complete_common_string() abort
   return ddc#map#complete_common_string()
 endfunction
-
 function! ddc#can_complete() abort
-  return !empty(get(g:, 'ddc#_candidates', []))
-        \ && get(g:, 'ddc#_complete_pos', -1) >= 0
-        \ && !ddc#_cannot_complete()
+  return ddc#map#can_complete()
 endfunction
 
 function! ddc#_on_complete_done() abort

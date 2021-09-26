@@ -102,15 +102,27 @@ backspaceCompletion
 
 		Default: v:false
 
+						*ddc-option-completionMenu*
+completionMenu
+		The completion popup menu type. It must be following string.
+
+		"native": Use |ins-completion-menu|.
+		"original": Use original popup menu.
+			It use floating windows for neovim or popup for Vim8
+			feature.
+			Note: It is experimental feature.
+
+		Default: "native"
+
 						*ddc-option-completionMode*
 completionMode
 		The completion mode. It must be following string.
 
-		"popupmenu": Use |ins-completion-menu|.
+		"popupmenu": Use popup menu.
 		"inline": Use virtual text by |nvim_buf_set_extmark()|.  It is
 			neovim only.
-		"manual": You can display popupmenu manually by
-			|ddc#complete()|.
+		"manual": You can display popup menu manually by
+			|ddc#map#complete()|.
 
 		Default: "popupmenu"
 
@@ -320,8 +332,8 @@ ddc#custom#set_global({dict})
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
 
-							*ddc#can_complete()*
-ddc#can_complete()
+						*ddc#map#can_complete()*
+ddc#map#can_complete()
 		Return |v:true| if current word completion is available.
 
 							*ddc#map#complete()*
@@ -391,7 +403,7 @@ EXAMPLES						*ddc-examples*
 	inoremap <silent><expr> <TAB>
 	\ pumvisible() ? '<C-n>' :
 	\ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
-	\ '<TAB>' : ddc#manual_complete()
+	\ '<TAB>' : ddc#map#manual_complete()
 
 	" <S-TAB>: completion back.
 	inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
@@ -730,13 +742,13 @@ A: >
 Q: The Linked/chained completion exists like vim-mucomplete?
 
 A: It is not implemented, but you can emulate the behavior by
-   |ddc#manual_complete()| like this. >
+   |ddc#map#manual_complete()| like this. >
 
 	let g:chains = ['around', 'zsh', 'deoppet']
 	function! MyChainCompletion() abort
 	  let head = g:chains[0]
 	  let g:chains = g:chains[1:] + [head]
-	  return ddc#manual_complete([head])
+	  return ddc#map#manual_complete([head])
 	endfunction
 	inoremap <silent><expr> <C-t>  MyChainCompletion()
 

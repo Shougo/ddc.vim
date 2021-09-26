@@ -5,6 +5,10 @@
 "=============================================================================
 
 function! ddc#popup#open(startcol, candidates) abort
+  let width = max(map(copy(a:candidates),
+        \             { _, val -> strwidth(val.word) }))
+  let height = min(len(a:candidates) + [&pumheight])
+
   if has('nvim')
     if !exists('s:popup_buf')
       let s:popup_buf = nvim_create_buf(v:false, v:true)
@@ -12,9 +16,6 @@ function! ddc#popup#open(startcol, candidates) abort
     call nvim_buf_set_lines(s:popup_buf, 0, -1, v:true,
           \ map(copy(a:candidates), { _, val -> val.word }))
     let pos = [line('.'), a:startcol - 1]
-    let width = max(map(copy(a:candidates),
-          \              { _, val -> strwidth(val.word) }))
-    let height = len(a:candidates)
     if exists('s:popup_pos') && pos == s:popup_pos
       " Resize window
       call nvim_win_set_width(s:popup_id, width)
@@ -44,6 +45,8 @@ function! ddc#popup#open(startcol, candidates) abort
           \ 'pos': 'topleft',
           \ 'line': 'cursor+1',
           \ 'col': a:startcol,
+          \ 'maxwidth': width,
+          \ 'maxheight': height,
           \ })
   endif
 

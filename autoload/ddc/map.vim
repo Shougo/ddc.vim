@@ -13,18 +13,30 @@ function! ddc#map#complete() abort
 
   call ddc#_clear_inline()
 
-  " Debounce for Vim8
-  if has('nvim')
-    call ddc#_complete()
+  let is_native = ddc#_is_native_menu()
+
+  if has('nvim') || !is_native
+    call ddc#_complete(is_native)
   else
+    " Debounce for Vim8
     call timer_stop(s:completion_timer)
-    let s:completion_timer = timer_start(10, { -> ddc#_complete() })
+    let s:completion_timer = timer_start(10, { -> ddc#_complete(is_native) })
   endif
 endfunction
 
 function! ddc#map#manual_complete(...) abort
   return printf("\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
         \ string([get(a:000, 0, [])]))
+endfunction
+
+function! ddc#map#pumvisible() abort
+  return g:ddc#_popup_id > 0
+endfunction
+
+function! ddc#map#can_complete() abort
+  return !empty(get(g:, 'ddc#_candidates', []))
+        \ && get(g:, 'ddc#_complete_pos', -1) >= 0
+        \ && !ddc#_cannot_complete()
 endfunction
 
 function! ddc#map#complete_common_string() abort
