@@ -324,24 +324,24 @@ KEY MAPPINGS 						*ddc-key-mappings*
 ddc#can_complete()
 		Return |v:true| if current word completion is available.
 
-							*ddc#complete()*
-ddc#complete()
+							*ddc#map#complete()*
+ddc#map#complete()
 		Open current completion popup menu.
 		Note: It must be in |:map-<expr>|.
 
-						*ddc#complete_common_string()*
-ddc#complete_common_string()
+					*ddc#map#complete_common_string()*
+ddc#map#complete_common_string()
 		Complete common string in candidates.
 		This can be useful when candidates have a long common prefix.
 		Note: It must be in |:map-<expr>|.
 
-						*ddc#insert_candidate()*
-ddc#insert_candidate({index})
+						*ddc#map#insert_candidate()*
+ddc#map#insert_candidate({index})
 		Insert the candidate at index {index}. Indices start at 0.
 		Note: It must be in |:map-<expr>|.
 
-					    	*ddc#manual_complete()*
-ddc#manual_complete([{sources}])
+					    	*ddc#map#manual_complete()*
+ddc#map#manual_complete([{sources}])
 		Manual trigger ddc completion.
 		You can provide a list of {sources}: It can be the name of a
 		source or a list of sources name.

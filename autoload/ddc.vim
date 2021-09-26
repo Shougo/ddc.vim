@@ -71,21 +71,7 @@ function! ddc#_on_event(event) abort
 endfunction
 
 function! ddc#complete() abort
-  if exists('g:ddc#_save_completeopt') && g:ddc#_overwrite_completeopt
-    " Restore completeopt
-    let &completeopt = g:ddc#_save_completeopt
-    unlet g:ddc#_save_completeopt
-  endif
-
-  call s:clear_inline()
-
-  " Debounce for Vim8
-  if has('nvim')
-    call ddc#_complete()
-  else
-    call timer_stop(s:completion_timer)
-    let s:completion_timer = timer_start(10, { -> ddc#_complete() })
-  endif
+  return ddc#map#complete()
 endfunction
 function! ddc#_cannot_complete() abort
   let info = complete_info()
@@ -143,9 +129,9 @@ function! ddc#_clear() abort
   call ddc#popup#close(g:ddc#_popup_id)
   let g:ddc#_popup_id = -1
 
-  call s:clear_inline()
+  call ddc#_clear_inline()
 endfunction
-function! s:clear_inline() abort
+function! ddc#_clear_inline() abort
   if !exists('*nvim_buf_set_virtual_text')
     return
   endif
@@ -221,41 +207,14 @@ function! ddc#refresh_candidates() abort
 endfunction
 
 function! ddc#manual_complete(...) abort
-  return printf("\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
-        \ string([get(a:000, 0, [])]))
+  return call('ddc#map#manual_complete', a:000)
 endfunction
 
 function! ddc#insert_candidate(number) abort
-  let word = get(g:ddc#_candidates, a:number, {'word': ''}).word
-  if word ==# ''
-    return ''
-  endif
-
-  " Get cursor word.
-  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
-  return (pumvisible() ? "\<C-e>" : '')
-        \ . repeat("\<BS>", strchars(complete_str)) . word
+  return ddc#map#insert_candidate(a:number)
 endfunction
-
 function! ddc#complete_common_string() abort
-  if empty(g:ddc#_candidates) || g:ddc#_complete_pos < 0
-    return ''
-  endif
-
-  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
-  let common_str = g:ddc#_candidates[0].word
-  for candidate in g:ddc#_candidates[1:]
-    while stridx(tolower(candidate.word), tolower(common_str)) != 0
-      let common_str = common_str[: -2]
-    endwhile
-  endfor
-
-  if common_str ==# '' || complete_str ==? common_str
-    return ''
-  endif
-
-  return (pumvisible() ? "\<C-e>" : '')
-        \ . repeat("\<BS>", strchars(complete_str)) . common_str
+  return ddc#map#complete_common_string()
 endfunction
 
 function! ddc#can_complete() abort
