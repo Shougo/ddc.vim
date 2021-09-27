@@ -84,7 +84,8 @@ function! ddc#_complete() abort
   endif
 
   if g:ddc#_complete_pos >= 0
-    if g:ddc#_event !=# 'Manual' && g:ddc#_overwrite_completeopt
+    if ddc#_is_native_menu() && g:ddc#_overwrite_completeopt
+          \ && g:ddc#_event !=# 'Manual'
       call s:overwrite_completeopt()
     endif
   else
