@@ -125,7 +125,9 @@ function! ddc#_is_native_menu() abort
 endfunction
 
 function! ddc#_clear() abort
-  call ddc#popup#close(g:ddc#_popup_id)
+  if exists('g:ddc#_popup_id')
+    call ddc#popup#close(g:ddc#_popup_id)
+  endif
   let g:ddc#_popup_id = -1
 
   call ddc#_clear_inline()
