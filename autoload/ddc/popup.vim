@@ -4,10 +4,18 @@
 " License: MIT license
 "=============================================================================
 
+let s:ddc_namespace = nvim_create_namespace('ddc')
+
 function! ddc#popup#open(startcol, candidates) abort
   let width = max(map(copy(a:candidates),
         \             { _, val -> strwidth(val.word) }))
-  let height = min(len(a:candidates) + [&pumheight])
+  let height = len(a:candidates)
+  if &pumheight > 0
+    let height = min([height, &pumheight])
+  endif
+  let height = max([height, 1])
+  echomsg len(a:candidates)
+  echomsg height
 
   if has('nvim')
     if !exists('s:popup_buf')
@@ -35,10 +43,13 @@ function! ddc#popup#open(startcol, candidates) abort
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
             \ }
-      let id = nvim_open_win(s:popup_buf, 0, opts)
+      let id = nvim_open_win(s:popup_buf, v:false, opts)
 
       let s:popup_pos = pos
       let s:popup_id = id
+      let s:popup_cursor = 0
+      let s:popup_height = height
+      let s:popup_width = width
     endif
   else
     let s:popup_id = popup_create(a:candidates, {
@@ -65,4 +76,32 @@ function! ddc#popup#close(id) abort
   endif
 
   let s:popup_id = -1
+endfunction
+
+function! ddc#popup#select_next() abort
+  " Clear current highlight
+  if has('nvim')
+    call nvim_buf_clear_namespace(s:popup_buf, s:ddc_namespace, 0, -1)
+  else
+  endif
+
+  let s:popup_cursor += 1
+  if s:popup_cursor > s:popup_height
+    " Reset
+    let s:popup_cursor = 0
+    return ''
+  endif
+
+  if has('nvim')
+    call nvim_buf_add_highlight(
+          \ s:popup_buf,
+          \ s:ddc_namespace,
+          \ 'PmenuSel',
+          \ s:popup_cursor - 1,
+          \ 0, -1
+          \ )
+  else
+  endif
+
+  return ''
 endfunction
