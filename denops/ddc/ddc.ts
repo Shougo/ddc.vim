@@ -785,7 +785,7 @@ async function callSourceGetCompletePosition(
       // Ignore timeout error
     } else {
       console.error(
-        `[ddc.vim] source: ${source.name} "getCompletePoistion()" is failed`,
+        `[ddc.vim] source: ${source.name} "getCompletePosition()" is failed`,
       );
       console.error(e);
     }
