@@ -12,6 +12,7 @@ let s:popup = {
       \ 'pos': [],
       \ 'height': -1,
       \ 'width': -1,
+      \ 'len': 0,
       \}
 
 function! ddc#popup#open(startcol, candidates) abort
@@ -30,7 +31,7 @@ function! ddc#popup#open(startcol, candidates) abort
     call nvim_buf_set_lines(s:popup.buf, 0, -1, v:true,
           \ map(copy(a:candidates), { _, val -> val.word }))
     let pos = [line('.'), a:startcol - 1]
-    if pos == s:popup.pos
+    if pos == s:popup.pos && s:popup.id > 0
       " Resize window
       call nvim_win_set_width(s:popup.id, width)
       call nvim_win_set_height(s:popup.id, height)
@@ -54,9 +55,6 @@ function! ddc#popup#open(startcol, candidates) abort
 
       let s:popup.id = id
       let s:popup.pos = pos
-      let s:popup.cursor = 0
-      let s:popup.height = height
-      let s:popup.width = width
     endif
   else
     let s:popup.id = popup_create(a:candidates, {
@@ -67,6 +65,11 @@ function! ddc#popup#open(startcol, candidates) abort
           \ 'maxheight': height,
           \ })
   endif
+
+  let s:popup.cursor = 0
+  let s:popup.height = height
+  let s:popup.width = width
+  let s:popup.len = len(a:candidates)
 
   return s:popup.id
 endfunction
@@ -85,18 +88,21 @@ function! ddc#popup#close(id) abort
   let s:popup.id = -1
 endfunction
 
-function! ddc#popup#select_next() abort
+function! ddc#popup#select_relative(delta) abort
   " Clear current highlight
   if has('nvim')
     call nvim_buf_clear_namespace(s:popup.buf, s:ddc_namespace, 0, -1)
   else
   endif
 
-  let s:popup.cursor += 1
-  if s:popup.cursor > s:popup.height
+  let s:popup.cursor += a:delta
+  if s:popup.cursor > s:popup.len || s:popup.cursor == 0
     " Reset
     let s:popup.cursor = 0
     return ''
+  elseif s:popup.cursor < 0
+    " Reset
+    let s:popup.cursor = s:popup.len
   endif
 
   if has('nvim')
