@@ -4,7 +4,9 @@
 " License: MIT license
 "=============================================================================
 
-let s:ddc_namespace = nvim_create_namespace('ddc')
+if has('nvim')
+  let s:ddc_namespace = nvim_create_namespace('ddc')
+endif
 let s:pum = {
       \ 'buf': -1,
       \ 'candidates': [],
@@ -19,11 +21,11 @@ let s:pum = {
       \}
 let g:pum#skip_next_complete = v:false
 
-function! ddc#pum#_get() abort
+function! pum#_get() abort
   return s:pum
 endfunction
 
-function! ddc#pum#open(startcol, candidates) abort
+function! pum#open(startcol, candidates) abort
   if v:version < 820 && !has('nvim-0.6')
     call s:print_error(
           \ 'ddc requires Vim 8.2+ or neovim 0.6.0+.')
@@ -51,7 +53,7 @@ function! ddc#pum#open(startcol, candidates) abort
       call nvim_win_set_width(s:pum.id, width)
       call nvim_win_set_height(s:pum.id, height)
     else
-      call ddc#pum#close()
+      call pum#close()
 
       " Create new window
       let opts = {
@@ -91,7 +93,7 @@ function! ddc#pum#open(startcol, candidates) abort
   return s:pum.id
 endfunction
 
-function! ddc#pum#close() abort
+function! pum#close() abort
   if s:pum.id <= 0
     return
   endif
@@ -105,7 +107,7 @@ function! ddc#pum#close() abort
   let s:pum.id = -1
 endfunction
 
-function! ddc#pum#select_relative(delta) abort
+function! pum#select_relative(delta) abort
   " Clear current highlight
   if has('nvim')
     call nvim_buf_clear_namespace(s:pum.buf, s:ddc_namespace, 0, -1)
@@ -136,14 +138,14 @@ function! ddc#pum#select_relative(delta) abort
   return ''
 endfunction
 
-function! ddc#pum#insert_relative(delta) abort
+function! pum#insert_relative(delta) abort
   if s:pum.cursor >= 0
     let prev_word = s:pum.candidates[s:pum.cursor - 1].word
   else
     let prev_word = s:pum.orig_input
   endif
 
-  call ddc#pum#select_relative(a:delta)
+  call pum#select_relative(a:delta)
   if s:pum.cursor <= 0 || s:pum.id <= 0
     return
   endif

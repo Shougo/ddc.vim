@@ -100,7 +100,7 @@ function! ddc#_complete() abort
   elseif empty(g:ddc#_candidates)
     call ddc#_clear()
   else
-    let g:ddc#_popup_id = ddc#popup#open(
+    let g:ddc#_popup_id = pum#open(
           \ g:ddc#_complete_pos + 1, g:ddc#_candidates)
   endif
 endfunction
@@ -127,7 +127,7 @@ endfunction
 
 function! ddc#_clear() abort
   if exists('g:ddc#_popup_id')
-    call ddc#popup#close(g:ddc#_popup_id)
+    call pum#close()
   endif
   let g:ddc#_popup_id = -1
 
