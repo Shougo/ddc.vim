@@ -174,6 +174,13 @@ export async function main(denops: Denops) {
       return true;
     }
 
+    const skipNext = await vars.g.get(
+      denops, "pum#skip_next_complete", false) as boolean;
+    if (skipNext) {
+      await vars.g.set(denops, "pum#skip_next_complete", false);
+      return true;
+    }
+
     // Skip special buffers.
     const buftype = await op.buftype.getLocal(denops);
     if (
