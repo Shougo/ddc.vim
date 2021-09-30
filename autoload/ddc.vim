@@ -8,6 +8,13 @@ let s:completion_timer = -1
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 
 function! ddc#enable() abort
+  " Dummy call
+  silent! call denops#plugin#is_loaded('ddc')
+  if !exists('*denops#plugin#is_loaded')
+    call ddc#util#print_error('ddc requires denops.vim.')
+    return
+  endif
+
   if denops#plugin#is_loaded('ddc')
     return
   endif
