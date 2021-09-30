@@ -19,6 +19,10 @@ let s:pum = {
       \}
 let g:pum#skip_next_complete = v:false
 
+function! ddc#pum#_get() abort
+  return s:pum
+endfunction
+
 function! ddc#pum#open(startcol, candidates) abort
   if v:version < 820 && !has('nvim-0.6')
     call s:print_error(
@@ -47,9 +51,7 @@ function! ddc#pum#open(startcol, candidates) abort
       call nvim_win_set_width(s:pum.id, width)
       call nvim_win_set_height(s:pum.id, height)
     else
-      if s:pum.id > 0
-        call ddc#pum#close(s:pum.id)
-      endif
+      call ddc#pum#close()
 
       " Create new window
       let opts = {
@@ -89,15 +91,15 @@ function! ddc#pum#open(startcol, candidates) abort
   return s:pum.id
 endfunction
 
-function! ddc#pum#close(id) abort
-  if a:id <= 0
+function! ddc#pum#close() abort
+  if s:pum.id <= 0
     return
   endif
 
   if has('nvim')
-    call nvim_win_close(a:id, v:true)
+    call nvim_win_close(s:pum.id, v:true)
   else
-    call popup_close(a:id)
+    call popup_close(s:pum.id)
   endif
 
   let s:pum.id = -1
