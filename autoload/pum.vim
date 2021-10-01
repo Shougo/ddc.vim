@@ -7,23 +7,32 @@
 if has('nvim')
   let s:ddc_namespace = nvim_create_namespace('ddc')
 endif
-let s:pum = {
-      \ 'buf': -1,
-      \ 'candidates': [],
-      \ 'cursor': -1,
-      \ 'height': -1,
-      \ 'id': -1,
-      \ 'len': 0,
-      \ 'orig_input': '',
-      \ 'pos': [],
-      \ 'startcol': -1,
-      \ 'width': -1,
-      \}
 let g:pum#skip_next_complete = v:false
 
 function! pum#_get() abort
   return s:pum
 endfunction
+function! pum#_init() abort
+  if exists('s:pum')
+    call pum#close()
+  endif
+
+  let s:pum = {
+        \ 'buf': -1,
+        \ 'candidates': [],
+        \ 'cursor': -1,
+        \ 'height': -1,
+        \ 'id': -1,
+        \ 'len': 0,
+        \ 'orig_input': '',
+        \ 'pos': [],
+        \ 'startcol': -1,
+        \ 'width': -1,
+        \}
+endfunction
+
+call pum#_init()
+
 
 function! pum#open(startcol, candidates) abort
   if v:version < 820 && !has('nvim-0.6')

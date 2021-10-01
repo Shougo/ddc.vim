@@ -5,7 +5,7 @@ function! s:suite.before_each() abort
 endfunction
 
 function! s:suite.after_each() abort
-  call pum#close()
+  call pum#_init()
 endfunction
 
 function! s:suite.open() abort
