@@ -47,7 +47,7 @@ function! ddc#util#get_input(event) abort
   return input
 endfunction
 function! ddc#util#get_next_input(event) abort
-  let text = mode ==# 'c' ? getcmdline() : getline('.')
+  let text = mode() ==# 'c' ? getcmdline() : getline('.')
   return text[len(ddc#util#get_input(a:event)) :]
 endfunction
 
