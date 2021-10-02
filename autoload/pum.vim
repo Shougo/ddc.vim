@@ -79,8 +79,9 @@ function! pum#open(startcol, items) abort
   endif
   let height = max([height, 1])
 
+  let spos = screenpos('.', line('.'), a:startcol)
   let pos = mode() ==# 'c' ?
-        \ [&lines - height - 1, a:startcol] : [line('.'), a:startcol - 1]
+        \ [&lines - height - 1, a:startcol] : [spos.row, spos.col - 1]
 
   if has('nvim')
     if s:pum.buf < 0
