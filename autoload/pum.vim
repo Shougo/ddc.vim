@@ -8,6 +8,9 @@ if has('nvim')
   let s:ddc_namespace = nvim_create_namespace('ddc')
 endif
 let g:pum#skip_next_complete = v:false
+if !exists('g:pum#highlight_select')
+  let g:pum#highlight_select = 'PmenuSel'
+endif
 
 function! pum#_get() abort
   return s:pum
@@ -124,7 +127,7 @@ function! pum#open(startcol, candidates) abort
       " Add prop types
       call prop_type_delete('pum_cursor')
       call prop_type_add('pum_cursor', {
-            \ 'highlight': 'PmenuSel',
+            \ 'highlight': g:pum#highlight_select,
             \ })
     endif
   endif
@@ -188,7 +191,7 @@ function! pum#select_relative(delta) abort
     call nvim_buf_add_highlight(
           \ s:pum.buf,
           \ s:ddc_namespace,
-          \ 'PmenuSel',
+          \ g:pum#highlight_select,
           \ s:pum.cursor - 1,
           \ 0, -1
           \ )
