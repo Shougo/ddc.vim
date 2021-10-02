@@ -39,9 +39,9 @@ call pum#_init()
 
 
 function! pum#open(startcol, items) abort
-  if v:version < 802 && !has('nvim-0.6')
+  if !has('patch-8.2.1978') && !has('nvim-0.6')
     call s:print_error(
-          \ 'pum.vim requires Vim 8.2+ or neovim 0.6.0+.')
+          \ 'pum.vim requires Vim 8.2.1978+ or neovim 0.6.0+.')
     return -1
   endif
 
