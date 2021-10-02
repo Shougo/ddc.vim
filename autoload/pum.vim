@@ -113,7 +113,7 @@ function! pum#open(startcol, items) abort
   else
     let options = {
           \ 'pos': 'topleft',
-          \ 'line': mode() ==# 'c' ? pos[0] + 1 : pos[0],
+          \ 'line': pos[0] + 1,
           \ 'col': pos[1] + 1,
           \ 'maxwidth': width,
           \ 'maxheight': height,
