@@ -175,7 +175,10 @@ export async function main(denops: Denops) {
     }
 
     const skipNext = await vars.g.get(
-      denops, "pum#skip_next_complete", false) as boolean;
+      denops,
+      "pum#skip_next_complete",
+      false,
+    ) as boolean;
     if (skipNext) {
       await vars.g.set(denops, "pum#skip_next_complete", false);
       return true;
