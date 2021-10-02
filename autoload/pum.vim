@@ -37,7 +37,7 @@ call pum#_init()
 function! pum#open(startcol, candidates) abort
   if v:version < 802 && !has('nvim-0.6')
     call s:print_error(
-          \ 'ddc requires Vim 8.2+ or neovim 0.6.0+.')
+          \ 'pum.vim requires Vim 8.2+ or neovim 0.6.0+.')
     return -1
   endif
 
@@ -234,9 +234,8 @@ function! pum#visible() abort
 endfunction
 
 function! s:print_error(string) abort
-  let name = 'popup'
   echohl Error
-  echomsg printf('[%s] %s', name,
+  echomsg printf('[pum] %s', name,
         \ type(a:string) ==# v:t_string ? a:string : string(a:string))
   echohl None
 endfunction
