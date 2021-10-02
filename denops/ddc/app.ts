@@ -108,6 +108,17 @@ export async function main(denops: Denops) {
         return;
       }
 
+      const skipNext = await vars.g.get(
+        denops,
+        "pum#skip_next_complete",
+        false,
+      ) as boolean;
+      if (skipNext) {
+        await vars.g.set(denops, "pum#skip_next_complete", false);
+        // Note: skip_next_complete does not close the popupmenu.
+        return;
+      }
+
       const isAutoComplete = event != "AutoRefresh" && event != "ManualRefresh";
 
       if (
@@ -171,16 +182,6 @@ export async function main(denops: Denops) {
       prevInput.startsWith(context.input));
     if (checkBackSpace && options.completionMode == "popupmenu") {
       await vars.g.set(denops, "ddc#_prev_input", context.input);
-      return true;
-    }
-
-    const skipNext = await vars.g.get(
-      denops,
-      "pum#skip_next_complete",
-      false,
-    ) as boolean;
-    if (skipNext) {
-      await vars.g.set(denops, "pum#skip_next_complete", false);
       return true;
     }
 

@@ -24,6 +24,7 @@ function! pum#_init() abort
         \ 'buf': -1,
         \ 'candidates': [],
         \ 'cursor': -1,
+        \ 'current_word': '',
         \ 'height': -1,
         \ 'id': -1,
         \ 'len': 0,
@@ -154,6 +155,7 @@ function! pum#close() abort
     call popup_close(s:pum.id)
   endif
 
+  let s:pum.current_word = ''
   let s:pum.id = -1
 endfunction
 
@@ -223,13 +225,18 @@ function! pum#insert_relative(delta) abort
 endfunction
 
 function! pum#confirm() abort
-  call s:insert_current_word()
+  if s:pum.cursor > 0 && s:pum.current_word ==# ''
+    call s:insert_current_word(s:pum.orig_input)
+  endif
   call pum#close()
   return ''
 endfunction
 
 function! pum#cancel() abort
-  call s:insert(s:pum.orig_input)
+  if s:pum.cursor > 0 && s:pum.current_word !=# ''
+    call s:insert(s:pum.orig_input, s:pum.current_word)
+  endif
+  call pum#close()
   return ''
 endfunction
 
@@ -244,6 +251,8 @@ function! s:insert(word, prev_word) abort
   " Note: ":undojoin" is needed to prevent undo breakage
   undojoin | call setline('.', prev_input . a:word . next_input)
   call cursor(0, s:pum.startcol + len(a:word))
+
+  let s:pum.current_word = a:word
 
   " Note: The text changes fires TextChanged events.  It must be ignored.
   let g:pum#skip_next_complete = v:true
