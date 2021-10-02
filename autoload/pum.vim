@@ -22,7 +22,7 @@ function! pum#_init() abort
 
   let s:pum = {
         \ 'buf': -1,
-        \ 'candidates': [],
+        \ 'items': [],
         \ 'cursor': -1,
         \ 'current_word': '',
         \ 'height': -1,
@@ -38,27 +38,27 @@ endfunction
 call pum#_init()
 
 
-function! pum#open(startcol, candidates) abort
+function! pum#open(startcol, items) abort
   if v:version < 802 && !has('nvim-0.6')
     call s:print_error(
           \ 'pum.vim requires Vim 8.2+ or neovim 0.6.0+.')
     return -1
   endif
 
-  let max_abbr = max(map(copy(a:candidates), { _, val ->
+  let max_abbr = max(map(copy(a:items), { _, val ->
         \ strwidth(get(val, 'abbr', val.word))
         \ }))
-  let max_kind = max(map(copy(a:candidates), { _, val ->
+  let max_kind = max(map(copy(a:items), { _, val ->
         \ strwidth(get(val, 'kind', ''))
         \ }))
-  let max_menu = max(map(copy(a:candidates), { _, val ->
+  let max_menu = max(map(copy(a:items), { _, val ->
         \ strwidth(get(val, 'menu', ''))
         \ }))
   let format = printf('%%-%ds%%-%ds%%-%ds',
         \ max_abbr + (max_kind != 0 ? 1: 0),
         \ max_kind + (max_menu != 0 ? 1: 0),
         \ max_menu)
-  let lines = map(copy(a:candidates), { _, val -> printf(format,
+  let lines = map(copy(a:items), { _, val -> printf(format,
         \ get(val, 'abbr', val.word),
         \ get(val, 'kind', ''),
         \ get(val, 'menu', ''))
@@ -73,13 +73,14 @@ function! pum#open(startcol, candidates) abort
     let width += 1
   endif
 
-  let height = len(a:candidates)
+  let height = len(a:items)
   if &pumheight > 0
     let height = min([height, &pumheight])
   endif
   let height = max([height, 1])
 
-  let pos = [line('.'), a:startcol - 1]
+  let pos = mode() ==# 'c' ?
+        \ [&lines - height - 1, a:startcol] : [line('.'), a:startcol - 1]
 
   if has('nvim')
     if s:pum.buf < 0
@@ -112,8 +113,8 @@ function! pum#open(startcol, candidates) abort
   else
     let options = {
           \ 'pos': 'topleft',
-          \ 'line': 'cursor+1',
-          \ 'col': a:startcol,
+          \ 'line': pos[0],
+          \ 'col': pos[1] + 1,
           \ 'maxwidth': width,
           \ 'maxheight': height,
           \ }
@@ -133,11 +134,16 @@ function! pum#open(startcol, candidates) abort
     endif
   endif
 
+  " Note: :redraw is needed for command line completion
+  if mode() ==# 'c'
+    redraw
+  endif
+
   let s:pum.cursor = 0
   let s:pum.height = height
   let s:pum.width = width
-  let s:pum.len = len(a:candidates)
-  let s:pum.candidates = copy(a:candidates)
+  let s:pum.len = len(a:items)
+  let s:pum.items = copy(a:items)
   let s:pum.startcol = a:startcol
   let s:pum.orig_input = getline('.')[a:startcol - 1 : col('.')]
 
@@ -212,7 +218,7 @@ endfunction
 
 function! pum#insert_relative(delta) abort
   let prev_word = s:pum.cursor > 0 ?
-        \ s:pum.candidates[s:pum.cursor - 1].word :
+        \ s:pum.items[s:pum.cursor - 1].word :
         \ s:pum.orig_input
 
   call pum#select_relative(a:delta)
@@ -243,6 +249,15 @@ endfunction
 function! pum#visible() abort
   return s:pum.id > 0
 endfunction
+function! pum#complete_info() abort
+  return {
+        \ 'mode': '',
+        \ 'pumvisible': pum#visible(),
+        \ 'items': s:pum.items,
+        \ 'selected': s:pum.cursor - 1,
+        \ 'inserted': s:pum.current_word,
+        \ }
+endfunction
 
 function! s:insert(word, prev_word) abort
   let prev_input = getline('.')[: s:pum.startcol - 2]
@@ -259,7 +274,7 @@ function! s:insert(word, prev_word) abort
 endfunction
 function! s:insert_current_word(prev_word) abort
   let word = s:pum.cursor > 0 ?
-        \ s:pum.candidates[s:pum.cursor - 1].word :
+        \ s:pum.items[s:pum.cursor - 1].word :
         \ s:pum.orig_input
   call s:insert(word, a:prev_word)
 endfunction

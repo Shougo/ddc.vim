@@ -28,7 +28,7 @@ function! ddc#enable() abort
   augroup ddc
     autocmd!
     autocmd CompleteDone * call ddc#_on_complete_done()
-    autocmd InsertLeave * call ddc#_clear()
+    autocmd InsertLeave,CmdlineLeave * call ddc#_clear()
   augroup END
 
   " Force context_filetype call
@@ -70,14 +70,15 @@ function! ddc#complete() abort
   return ddc#map#complete()
 endfunction
 function! ddc#_cannot_complete() abort
-  let info = complete_info()
+  let info = ddc#complete_info()
   let noinsert = &completeopt =~# 'noinsert'
-  return mode() !=# 'i'
+  return (ddc#_is_native_menu() && mode() !=# 'i')
         \ || (info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
         \ || (!noinsert && info.selected >= 0)
         \ || !exists('g:ddc#_complete_pos')
 endfunction
+
 function! ddc#_complete() abort
   if ddc#_cannot_complete()
     return
@@ -221,6 +222,10 @@ function! ddc#complete_common_string() abort
 endfunction
 function! ddc#can_complete() abort
   return ddc#map#can_complete()
+endfunction
+
+function! ddc#complete_info() abort
+  return ddc#_is_native_menu() ? complete_info() : pum#complete_info()
 endfunction
 
 function! ddc#_on_complete_done() abort

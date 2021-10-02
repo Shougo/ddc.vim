@@ -104,7 +104,7 @@ export async function main(denops: Denops) {
         options,
       );
 
-      if (event != "InsertEnter" && await fn.mode(denops) != "i") {
+      if (event != "InsertEnter" && await fn.mode(denops) == "n") {
         return;
       }
 
