@@ -215,30 +215,49 @@ function! pum#insert_relative(delta) abort
 
   call pum#select_relative(a:delta)
   if s:pum.cursor < 0 || s:pum.id <= 0
-    return
+    return ''
   endif
 
-  let word = s:pum.cursor > 0 ?
-        \ s:pum.candidates[s:pum.cursor - 1].word :
-        \ s:pum.orig_input
-  let prev_input = getline('.')[: s:pum.startcol - 2]
-  let next_input = getline('.')[s:pum.startcol - 1:][len(prev_word):]
+  call s:insert_current_word(prev_word)
+  return ''
+endfunction
 
-  " Note: ":undojoin" is needed to prevent undo breakage
-  undojoin | call setline('.', prev_input . word . next_input)
-  call cursor(0, s:pum.startcol + len(word))
+function! pum#confirm() abort
+  call s:insert_current_word()
+  call pum#close()
+  return ''
+endfunction
 
-  " Note: The text changes fires TextChanged events.  It must be ignored.
-  let g:pum#skip_next_complete = v:true
+function! pum#cancel() abort
+  call s:insert(s:pum.orig_input)
+  return ''
 endfunction
 
 function! pum#visible() abort
   return s:pum.id > 0
 endfunction
 
+function! s:insert(word, prev_word) abort
+  let prev_input = getline('.')[: s:pum.startcol - 2]
+  let next_input = getline('.')[s:pum.startcol - 1:][len(a:prev_word):]
+
+  " Note: ":undojoin" is needed to prevent undo breakage
+  undojoin | call setline('.', prev_input . a:word . next_input)
+  call cursor(0, s:pum.startcol + len(a:word))
+
+  " Note: The text changes fires TextChanged events.  It must be ignored.
+  let g:pum#skip_next_complete = v:true
+endfunction
+function! s:insert_current_word(prev_word) abort
+  let word = s:pum.cursor > 0 ?
+        \ s:pum.candidates[s:pum.cursor - 1].word :
+        \ s:pum.orig_input
+  call s:insert(word, a:prev_word)
+endfunction
+
 function! s:print_error(string) abort
   echohl Error
-  echomsg printf('[pum] %s', name,
-        \ type(a:string) ==# v:t_string ? a:string : string(a:string))
+  echomsg printf('[pum] %s', type(a:string) ==# v:t_string ?
+        \ a:string : string(a:string))
   echohl None
 endfunction

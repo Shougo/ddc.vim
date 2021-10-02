@@ -218,14 +218,14 @@ export async function main(denops: Denops) {
     denops: Denops,
     context: Context,
   ): Promise<void> {
-    const pumvisible = await fn.pumvisible(denops);
+    const pumvisible = await denops.call("ddc#map#pumvisible");
 
     await batch(denops, async (denops: Denops) => {
       await vars.g.set(denops, "ddc#_event", context.event);
       await vars.g.set(denops, "ddc#_complete_pos", -1);
       await vars.g.set(denops, "ddc#_candidates", []);
       if (pumvisible) {
-        await denops.call("ddc#complete");
+        await denops.call("ddc#_clear");
       }
     });
   }
@@ -242,7 +242,7 @@ export async function main(denops: Denops) {
     );
 
     await (async function write() {
-      const pumvisible = await fn.pumvisible(denops);
+      const pumvisible = await denops.call("ddc#map#pumvisible");
       const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
       if (context.changedTick != await changedTick) {
         // Input is changed.  Skip invalid completion.

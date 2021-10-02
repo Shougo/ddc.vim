@@ -125,7 +125,9 @@ function! ddc#_is_native_menu() abort
 endfunction
 
 function! ddc#_clear() abort
-  if !ddc#_is_native_menu()
+  if ddc#_is_native_menu()
+    call complete(1, [])
+  else
     call pum#close()
   endif
 

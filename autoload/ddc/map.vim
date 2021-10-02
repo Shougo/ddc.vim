@@ -28,7 +28,12 @@ function! ddc#map#manual_complete(...) abort
 endfunction
 
 function! ddc#map#pumvisible() abort
-  return g:ddc#_popup_id > 0
+  return ddc#_is_native_menu() ? pumvisible() : pum#visible()
+endfunction
+
+function! ddc#map#cancel() abort
+  return !ddc#map#pumvisible() ? '' :
+        \ ddc#_is_native_menu() ? "\<C-e>" : "\<Cmd>call pum#cancel()\<CR>"
 endfunction
 
 function! ddc#map#can_complete() abort
@@ -54,8 +59,7 @@ function! ddc#map#complete_common_string() abort
     return ''
   endif
 
-  return (pumvisible() ? "\<C-e>" : '')
-        \ . repeat("\<BS>", strchars(complete_str)) . common_str
+  return ddc#map#cancel() . repeat("\<BS>", strchars(complete_str)) . common_str
 endfunction
 
 function! ddc#map#insert_candidate(number) abort
@@ -66,6 +70,5 @@ function! ddc#map#insert_candidate(number) abort
 
   " Get cursor word.
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
-  return (pumvisible() ? "\<C-e>" : '')
-        \ . repeat("\<BS>", strchars(complete_str)) . word
+  return ddc#map#cancel() . repeat("\<BS>", strchars(complete_str)) . word
 endfunction
