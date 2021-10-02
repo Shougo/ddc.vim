@@ -24,7 +24,7 @@ export type Context = {
   nextInput: string;
 };
 
-type CompletionMenu = "native" | "original";
+type CompletionMenu = "native" | "pum.vim";
 type CompletionMode = "inline" | "popupmenu" | "manual";
 
 export type DdcOptions = {

@@ -107,7 +107,7 @@ completionMenu
 		The completion popup menu type. It must be following string.
 
 		"native": Use |ins-completion-menu|.
-		"original": Use original popup menu.
+		"pum.vim": Use "pum.vim" popup menu.
 			It use floating windows for neovim or popup for Vim8
 			feature.
 			Note: It is experimental feature.

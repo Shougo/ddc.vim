@@ -41,8 +41,23 @@ function! pum#open(startcol, candidates) abort
     return -1
   endif
 
-  let width = max(map(copy(a:candidates),
-        \             { _, val -> strwidth(get(val, 'abbr', val.word)) }))
+  let max_abbr = max(map(copy(a:candidates), { _, val ->
+        \ strwidth(get(val, 'abbr', val.word))
+        \ }))
+  let max_kind = max(map(copy(a:candidates), { _, val ->
+        \ strwidth(get(val, 'kind', ''))
+        \ }))
+  let max_menu = max(map(copy(a:candidates), { _, val ->
+        \ strwidth(get(val, 'menu', ''))
+        \ }))
+  let format = printf('%%-%ds%%-%ds%%-%ds', max_abbr, max_kind, max_menu)
+  let lines = map(copy(a:candidates), { _, val -> printf(format,
+        \ get(val, 'abbr', val.word),
+        \ get(val, 'kind', ''),
+        \ get(val, 'menu', ''))
+        \ })
+
+  let width = max_abbr + max_kind + max_menu
   let height = len(a:candidates)
   if &pumheight > 0
     let height = min([height, &pumheight])
@@ -53,9 +68,7 @@ function! pum#open(startcol, candidates) abort
     if s:pum.buf < 0
       let s:pum.buf = nvim_create_buf(v:false, v:true)
     endif
-    call nvim_buf_set_lines(s:pum.buf, 0, -1, v:true,
-          \ map(copy(a:candidates),
-          \     { _, val -> get(val, 'abbr', val.word) }))
+    call nvim_buf_set_lines(s:pum.buf, 0, -1, v:true, lines)
     let pos = [line('.'), a:startcol - 1]
     if pos == s:pum.pos && s:pum.id > 0
       " Resize window
@@ -81,7 +94,7 @@ function! pum#open(startcol, candidates) abort
       let s:pum.pos = pos
     endif
   else
-    let s:pum.id = popup_create(a:candidates, {
+    let s:pum.id = popup_create(lines, {
           \ 'pos': 'topleft',
           \ 'line': 'cursor+1',
           \ 'col': a:startcol,
@@ -97,7 +110,6 @@ function! pum#open(startcol, candidates) abort
   let s:pum.candidates = copy(a:candidates)
   let s:pum.startcol = a:startcol
   let s:pum.orig_input = getline('.')[a:startcol - 1 : col('.')]
-  echomsg s:pum
 
   return s:pum.id
 endfunction
