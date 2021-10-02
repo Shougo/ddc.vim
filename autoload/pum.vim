@@ -113,7 +113,7 @@ function! pum#open(startcol, items) abort
   else
     let options = {
           \ 'pos': 'topleft',
-          \ 'line': pos[0],
+          \ 'line': mode() ==# 'c' ? pos[0] + 1 : pos[0],
           \ 'col': pos[1] + 1,
           \ 'maxwidth': width,
           \ 'maxheight': height,
@@ -134,8 +134,8 @@ function! pum#open(startcol, items) abort
     endif
   endif
 
-  " Note: :redraw is needed for command line completion
-  if mode() ==# 'c'
+  " Note: :redraw is needed for command line completion in neovim
+  if mode() ==# 'c' && has('nvim')
     redraw
   endif
 
