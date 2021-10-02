@@ -126,7 +126,9 @@ endfunction
 
 function! ddc#_clear() abort
   if ddc#_is_native_menu()
-    call complete(1, [])
+    if mode() ==# 'i'
+      call complete(1, [])
+    endif
   else
     call pum#close()
   endif
