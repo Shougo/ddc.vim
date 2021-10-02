@@ -100,8 +100,7 @@ function! ddc#_complete() abort
   elseif empty(g:ddc#_candidates)
     call ddc#_clear()
   else
-    let g:ddc#_popup_id = pum#open(
-          \ g:ddc#_complete_pos + 1, g:ddc#_candidates)
+    call pum#open(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   endif
 endfunction
 function! s:overwrite_completeopt() abort
@@ -126,10 +125,9 @@ function! ddc#_is_native_menu() abort
 endfunction
 
 function! ddc#_clear() abort
-  if exists('g:ddc#_popup_id')
+  if !ddc#_is_native_menu()
     call pum#close()
   endif
-  let g:ddc#_popup_id = -1
 
   call ddc#_clear_inline()
 endfunction

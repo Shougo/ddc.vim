@@ -35,7 +35,7 @@ call pum#_init()
 
 
 function! pum#open(startcol, candidates) abort
-  if v:version < 820 && !has('nvim-0.6')
+  if v:version < 802 && !has('nvim-0.6')
     call s:print_error(
           \ 'ddc requires Vim 8.2+ or neovim 0.6.0+.')
     return -1
@@ -75,12 +75,13 @@ function! pum#open(startcol, candidates) abort
   endif
   let height = max([height, 1])
 
+  let pos = [line('.'), a:startcol - 1]
+
   if has('nvim')
     if s:pum.buf < 0
       let s:pum.buf = nvim_create_buf(v:false, v:true)
     endif
     call nvim_buf_set_lines(s:pum.buf, 0, -1, v:true, lines)
-    let pos = [line('.'), a:startcol - 1]
     if pos == s:pum.pos && s:pum.id > 0
       " Resize window
       call nvim_win_set_width(s:pum.id, width)
@@ -105,13 +106,27 @@ function! pum#open(startcol, candidates) abort
       let s:pum.pos = pos
     endif
   else
-    let s:pum.id = popup_create(lines, {
+    let options = {
           \ 'pos': 'topleft',
           \ 'line': 'cursor+1',
           \ 'col': a:startcol,
           \ 'maxwidth': width,
           \ 'maxheight': height,
-          \ })
+          \ }
+
+    if s:pum.id > 0
+      call popup_move(s:pum.id, options)
+      call popup_settext(s:pum.id, lines)
+    else
+      let s:pum.id = popup_create(lines, options)
+      let s:pum.buf = winbufnr(s:pum.id)
+
+      " Add prop types
+      call prop_type_delete('pum_cursor')
+      call prop_type_add('pum_cursor', {
+            \ 'highlight': 'PmenuSel',
+            \ })
+    endif
   endif
 
   let s:pum.cursor = 0
@@ -140,16 +155,29 @@ function! pum#close() abort
 endfunction
 
 function! pum#select_relative(delta) abort
+  if s:pum.buf <= 0
+    return ''
+  endif
+
   " Clear current highlight
   if has('nvim')
     call nvim_buf_clear_namespace(s:pum.buf, s:ddc_namespace, 0, -1)
   else
+    call prop_remove({
+          \ 'type': 'pum_cursor', 'bufnr': s:pum.buf
+          \ })
   endif
 
   let s:pum.cursor += a:delta
   if s:pum.cursor > s:pum.len || s:pum.cursor == 0
     " Reset
     let s:pum.cursor = 0
+
+    " Redraw is needed for Vim
+    if !has('nvim')
+      redraw
+    endif
+
     return ''
   elseif s:pum.cursor < 0
     " Reset
@@ -165,33 +193,44 @@ function! pum#select_relative(delta) abort
           \ 0, -1
           \ )
   else
+    call prop_add(s:pum.cursor, 1, {
+          \ 'length': s:pum.width,
+          \ 'type': 'pum_cursor',
+          \ 'bufnr': s:pum.buf,
+          \ })
+
+    redraw
   endif
 
   return ''
 endfunction
 
 function! pum#insert_relative(delta) abort
-  if s:pum.cursor >= 0
-    let prev_word = s:pum.candidates[s:pum.cursor - 1].word
-  else
-    let prev_word = s:pum.orig_input
-  endif
+  let prev_word = s:pum.cursor > 0 ?
+        \ s:pum.candidates[s:pum.cursor - 1].word :
+        \ s:pum.orig_input
 
   call pum#select_relative(a:delta)
-  if s:pum.cursor <= 0 || s:pum.id <= 0
+  if s:pum.cursor < 0 || s:pum.id <= 0
     return
   endif
 
-  let candidate = s:pum.candidates[s:pum.cursor - 1]
+  let word = s:pum.cursor > 0 ?
+        \ s:pum.candidates[s:pum.cursor - 1].word :
+        \ s:pum.orig_input
   let prev_input = getline('.')[: s:pum.startcol - 2]
   let next_input = getline('.')[s:pum.startcol - 1:][len(prev_word):]
 
   " Note: ":undojoin" is needed to prevent undo breakage
-  undojoin | call setline('.', prev_input . candidate.word .next_input)
-  call cursor(0, s:pum.startcol + len(candidate.word))
+  undojoin | call setline('.', prev_input . word . next_input)
+  call cursor(0, s:pum.startcol + len(word))
 
   " Note: The text changes fires TextChanged events.  It must be ignored.
   let g:pum#skip_next_complete = v:true
+endfunction
+
+function! pum#visible() abort
+  return s:pum.id > 0
 endfunction
 
 function! s:print_error(string) abort
