@@ -28,7 +28,7 @@ function! ddc#enable() abort
   augroup ddc
     autocmd!
     autocmd CompleteDone * call ddc#_on_complete_done()
-    autocmd InsertLeave,CmdlineLeave * call ddc#_clear()
+    autocmd InsertLeave * call ddc#_clear()
   augroup END
 
   " Force context_filetype call
@@ -41,10 +41,25 @@ function! ddc#enable() abort
     autocmd ddc User DenopsReady silent! call ddc#_register()
   endif
 endfunction
+function! ddc#enable_cmdline_completion() abort
+  augroup ddc-cmdline
+    autocmd!
+    autocmd CmdlineLeave * call ddc#_clear()
+    autocmd CmdlineLeave * call ddc#disable_cmdline_completion()
+    autocmd CmdlineEnter   * call ddc#_on_event('CmdlineEnter')
+    autocmd CmdlineChanged * call ddc#_on_event('CmdlineChanged')
+  augroup END
+endfunction
+function! ddc#disable_cmdline_completion() abort
+  augroup ddc-cmdline
+    autocmd!
+  augroup END
+endfunction
 function! ddc#disable() abort
   augroup ddc
     autocmd!
   augroup END
+  call ddc#disable_cmdline_completion()
 endfunction
 function! ddc#_register() abort
   call denops#plugin#register('ddc',

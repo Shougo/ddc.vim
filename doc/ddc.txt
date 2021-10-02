@@ -858,6 +858,21 @@ A: >
     call ddc#custom#set_buffer(s:prev_buffer_config)
   endfunction
 
+Q: I want to enable command line completion by ddc.vim.
+
+A: >
+  call ddc#custom#patch_global('completionMenu', 'pum.vim')
+  call ddc#custom#patch_global('autoCompleteEvents',
+      \ ['InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
+  inoremap <Tab>   <Cmd>call pum#select_relative(+1)<CR>
+  inoremap <S-Tab> <Cmd>call pum#select_relative(-1)<CR>
+  inoremap <C-n>   <Cmd>call pum#insert_relative(+1)<CR>
+  inoremap <C-p>   <Cmd>call pum#insert_relative(-1)<CR>
+  inoremap <C-y>   <Cmd>call pum#confirm()<CR>
+  inoremap <C-e>   <Cmd>call pum#cancel()<CR>
+  nnoremap :       <Cmd>call ddc#enable_cmdline_completion()<CR>:
+
+Note: It is experimental support.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*

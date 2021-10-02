@@ -296,9 +296,6 @@ export async function main(denops: Denops) {
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
 
     ddc.registerAutocmd(denops, [
-      "CmdlineChanged",
-      "CmdlineEnter",
-      "CmdlineLeave",
       "InsertEnter",
       "InsertLeave",
       "TextChangedI",
