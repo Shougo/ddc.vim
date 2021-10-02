@@ -50,7 +50,10 @@ function! pum#open(startcol, candidates) abort
   let max_menu = max(map(copy(a:candidates), { _, val ->
         \ strwidth(get(val, 'menu', ''))
         \ }))
-  let format = printf('%%-%ds%%-%ds%%-%ds', max_abbr, max_kind, max_menu)
+  let format = printf('%%-%ds%%-%ds%%-%ds',
+        \ max_abbr + (max_kind != 0 ? 1: 0),
+        \ max_kind + (max_menu != 0 ? 1: 0),
+        \ max_menu)
   let lines = map(copy(a:candidates), { _, val -> printf(format,
         \ get(val, 'abbr', val.word),
         \ get(val, 'kind', ''),
@@ -58,6 +61,14 @@ function! pum#open(startcol, candidates) abort
         \ })
 
   let width = max_abbr + max_kind + max_menu
+  " Padding
+  if max_kind != 0
+    let width += 1
+  endif
+  if max_menu != 0
+    let width += 1
+  endif
+
   let height = len(a:candidates)
   if &pumheight > 0
     let height = min([height, &pumheight])
