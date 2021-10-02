@@ -35,8 +35,10 @@ endfunction
 
 function! ddc#util#get_input(event) abort
   let mode = a:event ==# 'InsertEnter' ? 'i' : mode()
-  let text = getline('.')
-  let input = (mode ==# 'i' ? (col('.')-1) : col('.')) >= len(text) ?
+  let text = mode ==# 'c' ? getcmdline() : getline('.')
+  let pos = mode ==# 'c' ? getcmdpos() - 1 :
+        \ mode ==# 'i' ? col('.') - 1 : col('.')
+  let input = pos >= len(text) ?
         \      text :
         \      matchstr(text,
         \         '^.*\%' . (mode ==# 'i' ? col('.') : col('.') - 1)
@@ -45,7 +47,8 @@ function! ddc#util#get_input(event) abort
   return input
 endfunction
 function! ddc#util#get_next_input(event) abort
-  return getline('.')[len(ddc#util#get_input(a:event)) :]
+  let text = mode ==# 'c' ? getcmdline() : getline('.')
+  return text[len(ddc#util#get_input(a:event)) :]
 endfunction
 
 function! ddc#util#indent_current_line() abort
