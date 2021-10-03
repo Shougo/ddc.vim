@@ -87,11 +87,12 @@ endfunction
 function! ddc#_cannot_complete() abort
   let info = ddc#complete_info()
   let noinsert = &completeopt =~# 'noinsert'
-  return (ddc#_is_native_menu() && mode() !=# 'i')
-        \ || (info.mode !=# '' && info.mode !=# 'eval')
+  let info_check = ddc#map#pumvisible() &&
+        \ ((info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
-        \ || (!noinsert && info.selected >= 0)
-        \ || !exists('g:ddc#_complete_pos')
+        \ || (!noinsert && info.selected >= 0))
+  return (ddc#_is_native_menu() && mode() !=# 'i')
+        \ || info_check || !exists('g:ddc#_complete_pos')
 endfunction
 
 function! ddc#_complete() abort
