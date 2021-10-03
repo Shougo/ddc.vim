@@ -108,6 +108,7 @@ completionMenu
 
 		"native": Use |ins-completion-menu|.
 		"pum.vim": Use "pum.vim" popup menu.
+			https://github.com/Shougo/pum.vim
 			It use floating windows for neovim or popup for Vim8
 			feature.
 			Note: It is experimental feature.
@@ -860,16 +861,19 @@ A: >
 
 Q: I want to enable command line completion by ddc.vim.
 
-A: >
+A: Note: pum.vim is needed.
+
+https://github.com/Shougo/pum.vim
+>
   call ddc#custom#patch_global('completionMenu', 'pum.vim')
   call ddc#custom#patch_global('autoCompleteEvents',
       \ ['InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
-  cnoremap <Tab>   <Cmd>call pum#select_relative(+1)<CR>
-  cnoremap <S-Tab> <Cmd>call pum#select_relative(-1)<CR>
-  cnoremap <C-n>   <Cmd>call pum#insert_relative(+1)<CR>
-  cnoremap <C-p>   <Cmd>call pum#insert_relative(-1)<CR>
-  cnoremap <C-y>   <Cmd>call pum#confirm()<CR>
-  cnoremap <C-e>   <Cmd>call pum#cancel()<CR>
+  cnoremap <Tab>   <Cmd>call pum#map#select_relative(+1)<CR>
+  cnoremap <S-Tab> <Cmd>call pum#map#select_relative(-1)<CR>
+  cnoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+  cnoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+  cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+  cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
   nnoremap :       <Cmd>call CommandlinePre()<CR>:
 
   function! CommandlinePre() abort
@@ -888,6 +892,7 @@ A: >
   endfunction
 
 Note: It is experimental support.
+
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
