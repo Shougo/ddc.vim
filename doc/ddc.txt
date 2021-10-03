@@ -10,9 +10,9 @@ Introduction		|ddc-introduction|
 Install			|ddc-install|
 Interface		|ddc-interface|
   Options		  |ddc-options|
-  Key mappings		  |ddc-key-mappings|
   Functions		  |ddc-functions|
   Custom Functions	  |ddc-custom-functions|
+  Key mappings		  |ddc-key-mappings|
 Examples		|ddc-examples|
 Sources			|ddc-sources|
   Source option	          |ddc-source-options|
