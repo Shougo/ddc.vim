@@ -146,7 +146,7 @@ function! pum#open(startcol, items) abort
   let s:pum.len = len(a:items)
   let s:pum.items = copy(a:items)
   let s:pum.startcol = a:startcol
-  let s:pum.orig_input = getline('.')[a:startcol - 1 : col('.')]
+  let s:pum.orig_input = s:getline()[a:startcol - 1 : s:col()]
 
   return s:pum.id
 endfunction
@@ -185,10 +185,7 @@ function! pum#select_relative(delta) abort
     " Reset
     let s:pum.cursor = 0
 
-    " Redraw is needed for Vim
-    if !has('nvim')
-      redraw
-    endif
+    call s:redraw()
 
     return ''
   elseif s:pum.cursor < 0
@@ -210,9 +207,9 @@ function! pum#select_relative(delta) abort
           \ 'type': 'pum_cursor',
           \ 'bufnr': s:pum.buf,
           \ })
-
-    redraw
   endif
+
+  call s:redraw()
 
   return ''
 endfunction
@@ -261,12 +258,13 @@ function! pum#complete_info() abort
 endfunction
 
 function! s:insert(word, prev_word) abort
-  let prev_input = getline('.')[: s:pum.startcol - 2]
-  let next_input = getline('.')[s:pum.startcol - 1:][len(a:prev_word):]
+  " Convert to 0 origin
+  let startcol = s:pum.startcol - 1
+  let prev_input = startcol == 0 ? '' : s:getline()[: startcol - 1]
+  let next_input = s:getline()[startcol:][len(a:prev_word):]
 
-  " Note: ":undojoin" is needed to prevent undo breakage
-  undojoin | call setline('.', prev_input . a:word . next_input)
-  call cursor(0, s:pum.startcol + len(a:word))
+  call s:setline(prev_input . a:word . next_input)
+  call s:cursor(s:pum.startcol + len(a:word))
 
   let s:pum.current_word = a:word
 
@@ -278,6 +276,39 @@ function! s:insert_current_word(prev_word) abort
         \ s:pum.items[s:pum.cursor - 1].word :
         \ s:pum.orig_input
   call s:insert(word, a:prev_word)
+endfunction
+
+function! s:getline() abort
+  return mode() ==# 'c' ? getcmdline() : getline('.')
+endfunction
+function! s:col() abort
+  return mode() ==# 'c' ? getcmdpos() : col('.')
+endfunction
+function! s:cursor(col) abort
+  return mode() ==# 'c' ? setcmdpos(a:col) : cursor(0, a:col)
+endfunction
+function! s:setline(text) abort
+  if mode() ==# 'c'
+    " setcmdline() is not exists...
+
+    " Clear cmdline
+    let chars = "\<C-e>\<C-u>"
+
+    " Note: for control chars
+    let chars .= join(map(split(a:text, '\zs'),
+          \ { _, val -> val <# ' ' ? "\<C-q>" . val : val }), '')
+
+    call feedkeys(chars, 'n')
+  else
+    " Note: ":undojoin" is needed to prevent undo breakage
+    undojoin | call setline('.', a:text)
+  endif
+endfunction
+function! s:redraw() abort
+  " Note: :redraw is needed for command line completion in neovim or Vim
+  if mode() ==# 'c' || !has('nvim')
+    redraw
+  endif
 endfunction
 
 function! s:print_error(string) abort
