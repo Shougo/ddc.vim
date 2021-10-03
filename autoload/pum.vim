@@ -261,7 +261,7 @@ function! s:insert(word, prev_word) abort
   " Convert to 0 origin
   let startcol = s:pum.startcol - 1
   let prev_input = startcol == 0 ? '' : s:getline()[: startcol - 1]
-  let next_input = s:getline()[startcol:][len(a:prev_word):]
+  let next_input = s:getline()[startcol :][len(a:prev_word):]
 
   call s:setline(prev_input . a:word . next_input)
   call s:cursor(s:pum.startcol + len(a:word))
