@@ -3,6 +3,7 @@
 " AUTHOR: Shougo Matsushita <Shougo.Matsu at gmail.com>
 " License: MIT license
 "=============================================================================
+let s:completion_timer = -1
 
 function! ddc#map#complete() abort
   if exists('g:ddc#_save_completeopt') && g:ddc#_overwrite_completeopt
