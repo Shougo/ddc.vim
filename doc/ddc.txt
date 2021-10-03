@@ -864,13 +864,28 @@ A: >
   call ddc#custom#patch_global('completionMenu', 'pum.vim')
   call ddc#custom#patch_global('autoCompleteEvents',
       \ ['InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
-  inoremap <Tab>   <Cmd>call pum#select_relative(+1)<CR>
-  inoremap <S-Tab> <Cmd>call pum#select_relative(-1)<CR>
-  inoremap <C-n>   <Cmd>call pum#insert_relative(+1)<CR>
-  inoremap <C-p>   <Cmd>call pum#insert_relative(-1)<CR>
-  inoremap <C-y>   <Cmd>call pum#confirm()<CR>
-  inoremap <C-e>   <Cmd>call pum#cancel()<CR>
-  nnoremap :       <Cmd>call ddc#enable_cmdline_completion()<CR>:
+  cnoremap <Tab>   <Cmd>call pum#select_relative(+1)<CR>
+  cnoremap <S-Tab> <Cmd>call pum#select_relative(-1)<CR>
+  cnoremap <C-n>   <Cmd>call pum#insert_relative(+1)<CR>
+  cnoremap <C-p>   <Cmd>call pum#insert_relative(-1)<CR>
+  cnoremap <C-y>   <Cmd>call pum#confirm()<CR>
+  cnoremap <C-e>   <Cmd>call pum#cancel()<CR>
+  nnoremap :       <Cmd>call CommandlinePre()<CR>:
+
+  function! CommandlinePre() abort
+    " Overwrite sources
+    let s:prev_buffer_config = ddc#custom#get_buffer()
+    call ddc#custom#patch_buffer('sources', ['necovim', 'around'])
+
+    autocmd CmdlineLeave * call CommandlinePost()
+
+    " Enable command line completion
+    call ddc#enable_cmdline_completion()
+  endfunction
+  function! CommandlinePost() abort
+    " Restore sources
+    call ddc#custom#set_buffer(s:prev_buffer_config)
+  endfunction
 
 Note: It is experimental support.
 
