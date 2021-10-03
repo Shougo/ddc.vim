@@ -104,8 +104,18 @@ export async function main(denops: Denops) {
         options,
       );
 
-      if (event != "InsertEnter" && await fn.mode(denops) != "i") {
-        await denops.call("ddc#_clear");
+      if (event != "InsertEnter" && await fn.mode(denops) == "n") {
+        return;
+      }
+
+      const skipNext = await vars.g.get(
+        denops,
+        "pum#skip_next_complete",
+        false,
+      ) as boolean;
+      if (skipNext) {
+        await vars.g.set(denops, "pum#skip_next_complete", false);
+        // Note: skip_next_complete does not close the popupmenu.
         return;
       }
 
@@ -209,14 +219,14 @@ export async function main(denops: Denops) {
     denops: Denops,
     context: Context,
   ): Promise<void> {
-    const pumvisible = await fn.pumvisible(denops);
+    const pumvisible = await denops.call("ddc#map#pumvisible");
 
     await batch(denops, async (denops: Denops) => {
       await vars.g.set(denops, "ddc#_event", context.event);
       await vars.g.set(denops, "ddc#_complete_pos", -1);
       await vars.g.set(denops, "ddc#_candidates", []);
       if (pumvisible) {
-        await denops.call("ddc#complete");
+        await denops.call("ddc#_clear");
       }
     });
   }
@@ -233,7 +243,7 @@ export async function main(denops: Denops) {
     );
 
     await (async function write() {
-      const pumvisible = await fn.pumvisible(denops);
+      const pumvisible = await denops.call("ddc#map#pumvisible");
       const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
       if (context.changedTick != await changedTick) {
         // Input is changed.  Skip invalid completion.
@@ -249,6 +259,11 @@ export async function main(denops: Denops) {
           denops,
           "ddc#_overwrite_completeopt",
           options.overwriteCompleteopt,
+        );
+        await vars.g.set(
+          denops,
+          "ddc#_is_native_menu",
+          options.completionMenu == "native",
         );
 
         if (
@@ -275,6 +290,8 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_now", 0);
     await vars.g.set(denops, "ddc#_overwrite_completeopt", false);
     await vars.g.set(denops, "ddc#_prev_input", "");
+    await vars.g.set(denops, "ddc#_popup_id", -1);
+    await vars.g.set(denops, "ddc#_is_native_menu", true);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
 

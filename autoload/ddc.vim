@@ -28,6 +28,7 @@ function! ddc#enable() abort
   augroup ddc
     autocmd!
     autocmd CompleteDone * call ddc#_on_complete_done()
+    autocmd InsertLeave * call ddc#_clear()
   augroup END
 
   " Force context_filetype call
@@ -40,10 +41,25 @@ function! ddc#enable() abort
     autocmd ddc User DenopsReady silent! call ddc#_register()
   endif
 endfunction
+function! ddc#enable_cmdline_completion() abort
+  augroup ddc-cmdline
+    autocmd!
+    autocmd CmdlineLeave * call ddc#_clear()
+    autocmd CmdlineLeave * call ddc#disable_cmdline_completion()
+    autocmd CmdlineEnter   * call ddc#_on_event('CmdlineEnter')
+    autocmd CmdlineChanged * call ddc#_on_event('CmdlineChanged')
+  augroup END
+endfunction
+function! ddc#disable_cmdline_completion() abort
+  augroup ddc-cmdline
+    autocmd!
+  augroup END
+endfunction
 function! ddc#disable() abort
   augroup ddc
     autocmd!
   augroup END
+  call ddc#disable_cmdline_completion()
 endfunction
 function! ddc#_register() abort
   call denops#plugin#register('ddc',
@@ -66,38 +82,26 @@ function! ddc#_on_event(event) abort
 endfunction
 
 function! ddc#complete() abort
-  if exists('g:ddc#_save_completeopt') && g:ddc#_overwrite_completeopt
-    " Restore completeopt
-    let &completeopt = g:ddc#_save_completeopt
-    unlet g:ddc#_save_completeopt
-  endif
-
-  call ddc#_clear()
-
-  " Debounce for Vim8
-  if has('nvim')
-    call ddc#_complete()
-  else
-    call timer_stop(s:completion_timer)
-    let s:completion_timer = timer_start(10, { -> ddc#_complete() })
-  endif
+  return ddc#map#complete()
 endfunction
 function! ddc#_cannot_complete() abort
-  let info = complete_info()
+  let info = ddc#complete_info()
   let noinsert = &completeopt =~# 'noinsert'
-  return mode() !=# 'i'
+  return (ddc#_is_native_menu() && mode() !=# 'i')
         \ || (info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
         \ || (!noinsert && info.selected >= 0)
         \ || !exists('g:ddc#_complete_pos')
 endfunction
+
 function! ddc#_complete() abort
   if ddc#_cannot_complete()
     return
   endif
 
   if g:ddc#_complete_pos >= 0
-    if g:ddc#_event !=# 'Manual' && g:ddc#_overwrite_completeopt
+    if ddc#_is_native_menu() && g:ddc#_overwrite_completeopt
+          \ && g:ddc#_event !=# 'Manual'
       call s:overwrite_completeopt()
     endif
   else
@@ -106,8 +110,14 @@ function! ddc#_complete() abort
     let g:ddc#_candidates = []
   endif
 
-  " Note: It may be called in map-<expr>
-  silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+  if ddc#_is_native_menu()
+    " Note: It may be called in map-<expr>
+    silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+  elseif empty(g:ddc#_candidates)
+    call ddc#_clear()
+  else
+    call pum#open(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+  endif
 endfunction
 function! s:overwrite_completeopt() abort
   if !exists('g:ddc#_save_completeopt')
@@ -126,8 +136,22 @@ function! s:overwrite_completeopt() abort
     set completeopt+=noselect
   endif
 endfunction
+function! ddc#_is_native_menu() abort
+  return !exists('g:ddc#_is_native_menu') || g:ddc#_is_native_menu
+endfunction
 
 function! ddc#_clear() abort
+  if ddc#_is_native_menu()
+    if mode() ==# 'i'
+      call complete(1, [])
+    endif
+  else
+    call pum#close()
+  endif
+
+  call ddc#_clear_inline()
+endfunction
+function! ddc#_clear_inline() abort
   if !exists('*nvim_buf_set_virtual_text')
     return
   endif
@@ -203,47 +227,20 @@ function! ddc#refresh_candidates() abort
 endfunction
 
 function! ddc#manual_complete(...) abort
-  return printf("\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
-        \ string([get(a:000, 0, [])]))
+  return call('ddc#map#manual_complete', a:000)
 endfunction
-
 function! ddc#insert_candidate(number) abort
-  let word = get(g:ddc#_candidates, a:number, {'word': ''}).word
-  if word ==# ''
-    return ''
-  endif
-
-  " Get cursor word.
-  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
-  return (pumvisible() ? "\<C-e>" : '')
-        \ . repeat("\<BS>", strchars(complete_str)) . word
+  return ddc#map#insert_candidate(a:number)
 endfunction
-
 function! ddc#complete_common_string() abort
-  if empty(g:ddc#_candidates) || g:ddc#_complete_pos < 0
-    return ''
-  endif
-
-  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
-  let common_str = g:ddc#_candidates[0].word
-  for candidate in g:ddc#_candidates[1:]
-    while stridx(tolower(candidate.word), tolower(common_str)) != 0
-      let common_str = common_str[: -2]
-    endwhile
-  endfor
-
-  if common_str ==# '' || complete_str ==? common_str
-    return ''
-  endif
-
-  return (pumvisible() ? "\<C-e>" : '')
-        \ . repeat("\<BS>", strchars(complete_str)) . common_str
+  return ddc#map#complete_common_string()
+endfunction
+function! ddc#can_complete() abort
+  return ddc#map#can_complete()
 endfunction
 
-function! ddc#can_complete() abort
-  return !empty(get(g:, 'ddc#_candidates', []))
-        \ && get(g:, 'ddc#_complete_pos', -1) >= 0
-        \ && !ddc#_cannot_complete()
+function! ddc#complete_info() abort
+  return ddc#_is_native_menu() ? complete_info() : pum#complete_info()
 endfunction
 
 function! ddc#_on_complete_done() abort

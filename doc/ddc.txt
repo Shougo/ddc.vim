@@ -1,6 +1,6 @@
 *ddc.txt*	Dark deno-powered completion framework for neovim/Vim8
 
-Version: 0.14
+Version: 0.15
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
@@ -10,9 +10,9 @@ Introduction		|ddc-introduction|
 Install			|ddc-install|
 Interface		|ddc-interface|
   Options		  |ddc-options|
-  Key mappings		  |ddc-key-mappings|
   Functions		  |ddc-functions|
   Custom Functions	  |ddc-custom-functions|
+  Key mappings		  |ddc-key-mappings|
 Examples		|ddc-examples|
 Sources			|ddc-sources|
   Source option	          |ddc-source-options|
@@ -102,15 +102,28 @@ backspaceCompletion
 
 		Default: v:false
 
+						*ddc-option-completionMenu*
+completionMenu
+		The completion popup menu type. It must be following string.
+
+		"native": Use |ins-completion-menu|.
+		"pum.vim": Use "pum.vim" popup menu.
+			https://github.com/Shougo/pum.vim
+			It use floating windows for neovim or popup for Vim8
+			feature.
+			Note: It is experimental feature.
+
+		Default: "native"
+
 						*ddc-option-completionMode*
 completionMode
 		The completion mode. It must be following string.
 
-		"popupmenu": Use |ins-completion-menu|.
+		"popupmenu": Use popup menu.
 		"inline": Use virtual text by |nvim_buf_set_extmark()|.  It is
 			neovim only.
-		"manual": You can display popupmenu manually by
-			|ddc#complete()|.
+		"manual": You can display popup menu manually by
+			|ddc#map#complete()|.
 
 		Default: "popupmenu"
 
@@ -320,28 +333,28 @@ ddc#custom#set_global({dict})
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
 
-							*ddc#can_complete()*
-ddc#can_complete()
+						*ddc#map#can_complete()*
+ddc#map#can_complete()
 		Return |v:true| if current word completion is available.
 
-							*ddc#complete()*
-ddc#complete()
+							*ddc#map#complete()*
+ddc#map#complete()
 		Open current completion popup menu.
 		Note: It must be in |:map-<expr>|.
 
-						*ddc#complete_common_string()*
-ddc#complete_common_string()
+					*ddc#map#complete_common_string()*
+ddc#map#complete_common_string()
 		Complete common string in candidates.
 		This can be useful when candidates have a long common prefix.
 		Note: It must be in |:map-<expr>|.
 
-						*ddc#insert_candidate()*
-ddc#insert_candidate({index})
+						*ddc#map#insert_candidate()*
+ddc#map#insert_candidate({index})
 		Insert the candidate at index {index}. Indices start at 0.
 		Note: It must be in |:map-<expr>|.
 
-					    	*ddc#manual_complete()*
-ddc#manual_complete([{sources}])
+					    	*ddc#map#manual_complete()*
+ddc#map#manual_complete([{sources}])
 		Manual trigger ddc completion.
 		You can provide a list of {sources}: It can be the name of a
 		source or a list of sources name.
@@ -391,7 +404,7 @@ EXAMPLES						*ddc-examples*
 	inoremap <silent><expr> <TAB>
 	\ pumvisible() ? '<C-n>' :
 	\ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
-	\ '<TAB>' : ddc#manual_complete()
+	\ '<TAB>' : ddc#map#manual_complete()
 
 	" <S-TAB>: completion back.
 	inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
@@ -730,13 +743,13 @@ A: >
 Q: The Linked/chained completion exists like vim-mucomplete?
 
 A: It is not implemented, but you can emulate the behavior by
-   |ddc#manual_complete()| like this. >
+   |ddc#map#manual_complete()| like this. >
 
 	let g:chains = ['around', 'zsh', 'deoppet']
 	function! MyChainCompletion() abort
 	  let head = g:chains[0]
 	  let g:chains = g:chains[1:] + [head]
-	  return ddc#manual_complete([head])
+	  return ddc#map#manual_complete([head])
 	endfunction
 	inoremap <silent><expr> <C-t>  MyChainCompletion()
 
@@ -845,6 +858,40 @@ A: >
     " Restore sources
     call ddc#custom#set_buffer(s:prev_buffer_config)
   endfunction
+
+Q: I want to enable command line completion by ddc.vim.
+
+A: Note: pum.vim is needed.
+
+https://github.com/Shougo/pum.vim
+>
+  call ddc#custom#patch_global('completionMenu', 'pum.vim')
+  call ddc#custom#patch_global('autoCompleteEvents',
+      \ ['InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
+  cnoremap <Tab>   <Cmd>call pum#map#select_relative(+1)<CR>
+  cnoremap <S-Tab> <Cmd>call pum#map#select_relative(-1)<CR>
+  cnoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+  cnoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+  cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+  cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+  nnoremap :       <Cmd>call CommandlinePre()<CR>:
+
+  function! CommandlinePre() abort
+    " Overwrite sources
+    let s:prev_buffer_config = ddc#custom#get_buffer()
+    call ddc#custom#patch_buffer('sources', ['necovim', 'around'])
+
+    autocmd CmdlineLeave * call CommandlinePost()
+
+    " Enable command line completion
+    call ddc#enable_cmdline_completion()
+  endfunction
+  function! CommandlinePost() abort
+    " Restore sources
+    call ddc#custom#set_buffer(s:prev_buffer_config)
+  endfunction
+
+Note: It is experimental support.
 
 
 ==============================================================================

@@ -1,6 +1,7 @@
 TS=$(shell find denops -name "*.ts")
 TSTEST=$(shell grep -rl "Deno.test" denops)
 
+
 lint: lint/vim lint/deno
 
 lint/vim:

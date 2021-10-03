@@ -24,12 +24,14 @@ export type Context = {
   nextInput: string;
 };
 
+type CompletionMenu = "native" | "pum.vim";
 type CompletionMode = "inline" | "popupmenu" | "manual";
 
 export type DdcOptions = {
   autoCompleteDelay: number;
   autoCompleteEvents: DdcEvent[];
   backspaceCompletion: boolean;
+  completionMenu: CompletionMenu;
   completionMode: CompletionMode;
   filterOptions: Record<string, Partial<FilterOptions>>;
   filterParams: Record<string, Partial<Record<string, unknown>>>;
