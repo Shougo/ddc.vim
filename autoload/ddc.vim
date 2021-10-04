@@ -86,7 +86,7 @@ endfunction
 function! ddc#_cannot_complete() abort
   let info = ddc#complete_info()
   let noinsert = &completeopt =~# 'noinsert'
-  let info_check = ddc#map#pumvisible() &&
+  let info_check = pumvisible() &&
         \ ((info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
         \ || (!noinsert && info.selected >= 0))
