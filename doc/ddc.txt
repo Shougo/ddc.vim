@@ -97,8 +97,9 @@ autoCompleteEvents
 backspaceCompletion
 		If it is enabled, ddc.vim will complete even when backspace is
 		typed.
-		It is disabled by default since backspace completion will
-		cause completion flicker.
+		Note: It is disabled by default since backspace completion
+		will cause completion flicker.
+		Note: The flicker can reduce by |ddc-option-completionMenu|.
 
 		Default: v:false
 
@@ -107,10 +108,11 @@ completionMenu
 		The completion popup menu type. It must be following string.
 
 		"native": Use |ins-completion-menu|.
-		"pum.vim": Use "pum.vim" popup menu.
+		"pum.vim": Use "pum.vim" popup menu instead.
 			https://github.com/Shougo/pum.vim
 			It use floating windows for neovim or popup for Vim8
 			feature.
+			It can reduce completion flicker.
 			Note: It is experimental feature.
 
 		Default: "native"
