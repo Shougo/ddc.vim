@@ -108,15 +108,13 @@ export async function main(denops: Denops) {
         return;
       }
 
-      const skipNext = await vars.g.get(
-        denops,
-        "pum#skip_next_complete",
-        false,
-      ) as boolean;
-      if (skipNext) {
-        await vars.g.set(denops, "pum#skip_next_complete", false);
-        // Note: skip_next_complete does not close the popupmenu.
-        return;
+      if (options.completionMenu != "native") {
+        // Check for pum.vim
+        const skipComplete = await denops.call("pum#skip_complete") as boolean;
+        if (skipComplete) {
+          // Note: pum#skip_complete() does not close the popupmenu.
+          return;
+        }
       }
 
       const isAutoComplete = event != "AutoRefresh" && event != "ManualRefresh";
