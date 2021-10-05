@@ -420,8 +420,17 @@ export class Ddc {
     const completePos = Math.min(...fs.map((v) => v[0]));
 
     // Flatten candidates
-    // Todo: Merge candidates by completePos
-    const candidates = fs.flatMap(([_, cs]) => cs);
+    const candidates = fs.flatMap(([pos, candidates]) =>
+      candidates.map((c) => {
+        // Note: Merge word by completePos
+        const word = context.input.substring(completePos, pos) + c.word;
+        return {
+          ...c,
+          word: word,
+          abbr: c.word == c.abbr ? word : c.abbr,
+        };
+      })
+    );
 
     // Convert2byte for Vim
     const completePosBytes = charposToBytepos(context.input, completePos);
