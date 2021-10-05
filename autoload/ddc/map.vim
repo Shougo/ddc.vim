@@ -24,8 +24,13 @@ function! ddc#map#complete() abort
 endfunction
 
 function! ddc#map#manual_complete(...) abort
+  if !ddc#_denops_running()
+    return ''
+  endif
+
+  let arg = get(a:000, 0, [])
   return printf("\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
-        \ string([get(a:000, 0, [])]))
+        \ string([type(arg) == v:t_list ? arg : [arg]]))
 endfunction
 
 function! ddc#map#pumvisible() abort
