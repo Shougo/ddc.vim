@@ -249,7 +249,7 @@ ddc#callback({id} [, {payload}])
 
 		id: String to identify the reciever. All sources and filters
 		  share the namespace, so please take care how naming.
-		  `source/${this.name}` or `filter/${this.name}` are
+		  `source/${this.name}` and `filter/${this.name}` are
 		  recommended.
 		paylaod: Aribtrary object passed as resolved. optional and
 		  defaulted to |v:null|
