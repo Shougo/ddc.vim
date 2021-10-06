@@ -108,7 +108,17 @@ export async function main(denops: Denops) {
         return;
       }
 
-      if (options.completionMenu != "native") {
+      if (options.completionMenu == "native") {
+        // Check for CompleteDone
+        const skipComplete = await vars.g.get(
+          denops,
+          "ddc#_skip_complete",
+        ) as boolean;
+        if (skipComplete) {
+          await vars.g.set(denops, "ddc#_skip_complete", false);
+          return;
+        }
+      } else {
         // Check for pum.vim
         const skipComplete = await denops.call("pum#skip_complete") as boolean;
         if (skipComplete) {
@@ -290,6 +300,7 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_popup_id", -1);
     await vars.g.set(denops, "ddc#_is_native_menu", true);
+    await vars.g.set(denops, "ddc#_skip_complete", false);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
 

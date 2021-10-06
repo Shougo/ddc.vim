@@ -249,12 +249,15 @@ function! ddc#complete_info() abort
 endfunction
 
 function! ddc#_on_complete_done() abort
-  if !ddc#_denops_running()
-        \ || empty(v:completed_item)
-        \ || type(v:completed_item.user_data) != v:t_dict
+  if !ddc#_denops_running() || empty(v:completed_item)
     return
   endif
 
+  let g:ddc#_skip_complete = v:true
+
+  if type(v:completed_item.user_data) != v:t_dict
+    return
+  endif
   " Search selected candidate from previous candidates
   let candidates = filter(copy(g:ddc#_candidates), { _, val
         \ -> val.word ==# v:completed_item.word
