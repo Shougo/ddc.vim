@@ -4,6 +4,7 @@ import {
   DdcEvent,
   DdcOptions,
   FilterOptions,
+  OnCallback,
   SourceOptions,
 } from "../types.ts";
 import { Denops } from "../deps.ts";
@@ -17,6 +18,7 @@ export type OnInitArguments<Params extends Record<string, unknown>> = {
 export type OnEventArguments<Params extends Record<string, unknown>> = {
   denops: Denops;
   context: Context;
+  onCallback: OnCallback;
   options: DdcOptions;
   filterOptions: FilterOptions;
   filterParams: Params;
@@ -25,6 +27,7 @@ export type OnEventArguments<Params extends Record<string, unknown>> = {
 export type FilterArguments<Params extends Record<string, unknown>> = {
   denops: Denops;
   context: Context;
+  onCallback: OnCallback;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   filterOptions: FilterOptions;

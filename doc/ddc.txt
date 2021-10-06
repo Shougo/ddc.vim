@@ -242,6 +242,18 @@ ddc#refresh_candidates()
 		It calls the auto completion of ddc to refresh current
 		candidates.
 
+							*ddc#callback()*
+ddc#callback({id} [, {payload}])
+		This is only for ddc plugin developers. It calls back to
+		surces and filters that registered with this id.
+
+		id: String to identify the reciever. All sources and filters
+		  share the namespace, so please take care how naming.
+		  `source/${this.name}` or `filter/${this.name}` are
+		  recommended.
+		paylaod: Aribtrary object passed as resolved. optional and
+		  defaulted to |v:null|
+
 							*ddc#register()*
 ddc#register({dict})
 		Register source or filter.

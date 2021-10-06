@@ -231,6 +231,15 @@ function! ddc#refresh_candidates() abort
         \ [g:ddc#_event =~# '^Manual' ? 'ManualRefresh' : 'AutoRefresh'])
 endfunction
 
+function! ddc#callback(id, ...) abort
+  if !ddc#_denops_running()
+    return
+  endif
+
+  let payload = get(a:000, 0, v:null)
+  call denops#notify('ddc', 'onCallback', [a:id, payload])
+endfunction
+
 function! ddc#manual_complete(...) abort
   return call('ddc#map#manual_complete', a:000)
 endfunction

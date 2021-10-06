@@ -5,6 +5,7 @@ import {
   DdcOptions,
   DdcUserData,
   FilterOptions,
+  OnCallback,
   SourceOptions,
 } from "./types.ts";
 import {
@@ -226,6 +227,7 @@ export class Ddc {
   async onEvent(
     denops: Denops,
     context: Context,
+    onCallback: OnCallback,
     options: DdcOptions,
   ): Promise<void> {
     let filterNames: string[] = [];
@@ -236,6 +238,7 @@ export class Ddc {
           source,
           denops,
           context,
+          onCallback,
           options,
           sourceOptions,
           sourceParams,
@@ -263,6 +266,7 @@ export class Ddc {
           filter,
           denops,
           context,
+          onCallback,
           options,
           o,
           p,
@@ -282,6 +286,7 @@ export class Ddc {
   async onCompleteDone(
     denops: Denops,
     context: Context,
+    onCallback: OnCallback,
     options: DdcOptions,
     sourceName: string,
     userData: DdcUserData,
@@ -296,6 +301,7 @@ export class Ddc {
       source,
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       sourceParams,
@@ -306,6 +312,7 @@ export class Ddc {
   async gatherResults(
     denops: Denops,
     context: Context,
+    onCallback: OnCallback,
     options: DdcOptions,
   ): Promise<[number, DdcCandidate[]]> {
     const sources = this.foundSources(options.sources)
@@ -315,6 +322,7 @@ export class Ddc {
         s,
         denops,
         context,
+        onCallback,
         options,
         o,
         p,
@@ -364,6 +372,7 @@ export class Ddc {
           s,
           denops,
           context,
+          onCallback,
           options,
           o,
           p,
@@ -384,6 +393,7 @@ export class Ddc {
       const fcs = await this.filterCandidates(
         denops,
         context,
+        onCallback,
         options,
         o,
         options.filterOptions,
@@ -441,6 +451,7 @@ export class Ddc {
   private async filterCandidates(
     denops: Denops,
     context: Context,
+    onCallback: OnCallback,
     options: DdcOptions,
     sourceOptions: SourceOptions,
     filterOptions: Record<string, Partial<FilterOptions>>,
@@ -461,6 +472,7 @@ export class Ddc {
           filter,
           denops,
           context,
+          onCallback,
           options,
           sourceOptions,
           o,
@@ -638,6 +650,7 @@ async function callSourceOnEvent(
   source: BaseSource<Record<string, unknown>>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Record<string, unknown>,
@@ -648,6 +661,7 @@ async function callSourceOnEvent(
     await source.onEvent({
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       sourceParams,
@@ -671,6 +685,7 @@ async function callSourceOnCompleteDone<
   source: BaseSource<Params, UserData>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Params,
@@ -682,6 +697,7 @@ async function callSourceOnCompleteDone<
     await source.onCompleteDone({
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       sourceParams,
@@ -705,6 +721,7 @@ async function callSourceGetCompletePosition(
   source: BaseSource<Record<string, unknown>>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Record<string, unknown>,
@@ -715,6 +732,7 @@ async function callSourceGetCompletePosition(
     return await source.getCompletePosition({
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       sourceParams,
@@ -740,6 +758,7 @@ async function callSourceGatherCandidates<
   source: BaseSource<Params, UserData>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Params,
@@ -751,6 +770,7 @@ async function callSourceGatherCandidates<
     const promise = source.gatherCandidates({
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       sourceParams,
@@ -775,6 +795,7 @@ async function callFilterOnEvent(
   filter: BaseFilter<Record<string, unknown>>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   filterOptions: FilterOptions,
   filterParams: Record<string, unknown>,
@@ -785,6 +806,7 @@ async function callFilterOnEvent(
     filter.onEvent({
       denops,
       context,
+      onCallback,
       options,
       filterOptions,
       filterParams,
@@ -805,6 +827,7 @@ async function callFilterFilter(
   filter: BaseFilter<Record<string, unknown>>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   filterOptions: FilterOptions,
@@ -818,6 +841,7 @@ async function callFilterFilter(
     return await filter.filter({
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       filterOptions,

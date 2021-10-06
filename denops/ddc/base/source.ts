@@ -3,6 +3,7 @@ import {
   Context,
   DdcEvent,
   DdcOptions,
+  OnCallback,
   SourceOptions,
 } from "../types.ts";
 import { Denops } from "../deps.ts";
@@ -16,6 +17,7 @@ export type OnInitArguments<Params extends Record<string, unknown>> = {
 export type OnEventArguments<Params extends Record<string, unknown>> = {
   denops: Denops;
   context: Context;
+  onCallback: OnCallback;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
@@ -27,6 +29,7 @@ export type OnCompleteDoneArguments<
 > = {
   denops: Denops;
   context: Context;
+  onCallback: OnCallback;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
@@ -39,6 +42,7 @@ export type GetCompletePositionArguments<
 > = {
   denops: Denops;
   context: Context;
+  onCallback: OnCallback;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
@@ -48,6 +52,7 @@ export type GatherCandidatesArguments<Params extends Record<string, unknown>> =
   {
     denops: Denops;
     context: Context;
+    onCallback: OnCallback;
     options: DdcOptions;
     sourceOptions: SourceOptions;
     sourceParams: Params;

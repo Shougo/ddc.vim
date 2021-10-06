@@ -2,6 +2,7 @@ import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
 import { Context, DdcEvent, DdcOptions, DdcUserData } from "./types.ts";
 import { batch, Denops, ensureObject, fn, op, vars } from "./deps.ts";
+import { createCallbackContext } from "./callback.ts";
 
 type RegisterArg = {
   path: string;
@@ -12,6 +13,7 @@ type RegisterArg = {
 export async function main(denops: Denops) {
   const ddc: Ddc = new Ddc();
   const contextBuilder = new ContextBuilder();
+  const cbContext = createCallbackContext();
 
   denops.dispatcher = {
     async register(arg1: unknown): Promise<void> {
@@ -101,6 +103,7 @@ export async function main(denops: Denops) {
       await ddc.onEvent(
         denops,
         context,
+        cbContext.once,
         options,
       );
 
@@ -160,6 +163,13 @@ export async function main(denops: Denops) {
 
       await doCompletion(denops, context, options);
     },
+    // deno-lint-ignore require-await
+    async onCallback(id: unknown, payload: unknown): Promise<void> {
+      if (typeof id !== "string") {
+        throw new TypeError("id must be string for callback");
+      }
+      cbContext.emit(id, payload);
+    },
     async onCompleteDone(arg1: unknown, arg2: unknown): Promise<void> {
       const sourceName = arg1 as string;
       const userData = arg2 as DdcUserData;
@@ -170,6 +180,7 @@ export async function main(denops: Denops) {
       await ddc.onCompleteDone(
         denops,
         context,
+        cbContext.once,
         options,
         sourceName,
         userData,
@@ -248,6 +259,7 @@ export async function main(denops: Denops) {
     const [completePos, candidates] = await ddc.gatherResults(
       denops,
       context,
+      cbContext.once,
       options,
     );
 
