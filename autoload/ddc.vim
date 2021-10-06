@@ -81,7 +81,12 @@ function! ddc#_on_event(event) abort
 endfunction
 
 function! ddc#complete() abort
-  return ddc#map#complete()
+  try
+    return ddc#map#complete()
+  catch
+    call ddc#util#print_error(v:throwpoint)
+    call ddc#util#print_error(v:exception)
+  endtry
 endfunction
 function! ddc#_cannot_complete() abort
   let info = ddc#complete_info()
