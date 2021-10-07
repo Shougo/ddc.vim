@@ -28,6 +28,7 @@ import {
   defaultFilterParams,
   FilterArguments,
 } from "./base/filter.ts";
+import { isDdcCallbackCancelError } from "./callback.ts";
 import {
   assertEquals,
   autocmd,
@@ -667,7 +668,7 @@ async function callSourceOnEvent(
       sourceParams,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
+    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -706,7 +707,7 @@ async function callSourceOnCompleteDone<
       userData: userData as any,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
+    if (isTimeoutError(e || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -738,7 +739,7 @@ async function callSourceGetCompletePosition(
       sourceParams,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
+    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -778,7 +779,10 @@ async function callSourceGatherCandidates<
     });
     return await deadline(promise, sourceOptions.timeout);
   } catch (e: unknown) {
-    if (isTimeoutError(e) || e instanceof DeadlineError) {
+    if (
+      isTimeoutError(e) || isDdcCallbackCancelError(e) ||
+      e instanceof DeadlineError
+    ) {
       // Ignore timeout error
     } else {
       console.error(

@@ -88,14 +88,14 @@ export type DdcCandidate =
     icase: boolean;
   };
 
-export interface CallbackContext {
-  emit(id: string, payload?: unknown): void;
-  once(id: string, timeout: number): Promise<unknown>;
-}
 /**
  * NOTE: no guarantees about ordering.
  * @param id
- * @param timeout timeout in miliseconds
  * @return payload
  */
-export type OnCallback = (id: string, timeout: number) => Promise<unknown>;
+export type OnCallback = (id: string) => Promise<unknown>;
+export interface CallbackContext {
+  emit(id: string, payload?: unknown): void;
+  revoke(): void;
+  createOnCallback(): OnCallback;
+}
