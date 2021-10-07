@@ -1,7 +1,7 @@
 import { assertEquals, spy } from "./deps.ts";
 import { CallbackContext } from "./types.ts";
 
-export class DdcCallbackCancelError extends Error {
+class DdcCallbackCancelError extends Error {
   constructor(message?: string) {
     super(message);
 
