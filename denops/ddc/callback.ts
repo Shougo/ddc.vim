@@ -71,8 +71,6 @@ export const createCallbackContext = (): CallbackContext => {
         };
         const cancel = () => {
           if (resolved) return;
-          handlers.delete(handler);
-          if (handlers.size === 0) handlersMap.delete(id);
           rejectOrig(
             new DdcCallbackCancelError(`Callback for ${id} is cancelled.`),
           );
