@@ -234,7 +234,7 @@ ddc#callback({id} [, {payload}])
 		  share the namespace, so please take care how naming.
 		  `source/${this.name}` and `filter/${this.name}` are
 		  recommended.
-		{paylaod}: Arbitrary object passed as resolved. The default
+		{payload}: Arbitrary object passed as resolved. The default
 		value is |v:null|
 
 							*ddc#disable()*
