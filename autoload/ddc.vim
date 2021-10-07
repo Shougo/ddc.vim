@@ -178,7 +178,7 @@ function! ddc#_inline(highlight) abort
   endif
 
   call nvim_buf_clear_namespace(0, s:ddc_namespace, 0, -1)
-  if empty(g:ddc#_candidates)
+  if empty(g:ddc#_candidates) || mode() !=# 'i'
     return
   endif
 
