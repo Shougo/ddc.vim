@@ -235,7 +235,7 @@ ddc#callback({id} [, {payload}])
 		  `source/${this.name}` and `filter/${this.name}` are
 		  recommended.
 		{payload}: Arbitrary object passed as resolved. The default
-		value is |v:null|
+		  value is |v:null|.
 
 							*ddc#disable()*
 ddc#disable()
