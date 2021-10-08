@@ -217,41 +217,70 @@ async function _call<T>(denops: Denops, f: string, def: T): Promise<T> {
 
 // Fetches current state
 async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
-  const changedByCompletion: Promise<boolean> = (async () => {
+  const changedByCompletionPromise: Promise<boolean> = (async () => {
     const completedItem =
       (await vars.v.get(denops, "completed_item")) as Record<string, unknown>;
     return event == "TextChangedP" && Object.keys(completedItem).length != 0;
   })();
-  const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
-  const filetype: Promise<string> = (async () => {
+  const changedTickPromise = vars.b.get(denops, "changedtick") as Promise<
+    number
+  >;
+  const filetypePromise: Promise<string> = (async () => {
     const context = await _call(denops, "context_filetype#get_filetype", "");
     if (context != "") return context;
     return (await op.filetype.getLocal(denops)) as string;
   })();
-  const bufnr = fn.bufnr(denops);
-  const lineNr = fn.line(denops, ".");
-  const enabledEskk = _call(denops, "eskk#is_enabled", false);
-  const enabledSkkeleton = _call(denops, "skkeleton#is_enabled", false);
-  const iminsert = op.iminsert.getLocal(denops);
+  const bufnrPromise: Promise<number> = fn.bufnr(denops);
+  const lineNrPromise: Promise<number> = fn.line(denops, ".");
+  const enabledEskkPromise = _call(denops, "eskk#is_enabled", false);
+  const enabledSkkeletonPromise = _call(denops, "skkeleton#is_enabled", false);
+  const iminsertPromise = op.iminsert.getLocal(denops);
   const mode: string = event == "InsertEnter"
     ? "i"
     : (await fn.mode(denops)) as string;
-  const input = denops.call("ddc#util#get_input", event) as Promise<string>;
-  const nextInput = denops.call("ddc#util#get_next_input", event) as Promise<
+  const inputPromise = denops.call("ddc#util#get_input", event) as Promise<
     string
   >;
+  const nextInputPromise = denops.call(
+    "ddc#util#get_next_input",
+    event,
+  ) as Promise<
+    string
+  >;
+  const [
+    bufnr,
+    changedByCompletion,
+    changedTick,
+    filetype,
+    input,
+    enabledEskk,
+    enabledSkkeleton,
+    iminsert,
+    lineNr,
+    nextInput,
+  ] = await Promise.all([
+    bufnrPromise,
+    changedByCompletionPromise,
+    changedTickPromise,
+    filetypePromise,
+    inputPromise,
+    enabledEskkPromise,
+    enabledSkkeletonPromise,
+    iminsertPromise,
+    lineNrPromise,
+    nextInputPromise,
+  ]);
   return {
-    bufnr: await bufnr,
-    changedByCompletion: await changedByCompletion,
-    changedTick: await changedTick,
-    event: event,
-    filetype: await filetype,
-    input: await input,
-    isLmap: !(await enabledEskk) && !(await enabledSkkeleton) &&
-      (await iminsert) == 1,
-    lineNr: await lineNr,
-    mode: mode,
-    nextInput: await nextInput,
+    bufnr,
+    changedByCompletion,
+    changedTick,
+    event,
+    filetype,
+    input,
+    isLmap: !enabledEskk && !enabledSkkeleton && iminsert == 1,
+    lineNr,
+    mode,
+    nextInput,
   };
 }
 
