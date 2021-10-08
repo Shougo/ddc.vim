@@ -807,7 +807,7 @@ async function callFilterOnEvent(
   await checkFilterOnInit(filter, denops, filterOptions, filterParams);
 
   try {
-    filter.onEvent({
+    await filter.onEvent({
       denops,
       context,
       onCallback,
@@ -816,7 +816,7 @@ async function callFilterOnEvent(
       filterParams,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
+    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -854,7 +854,7 @@ async function callFilterFilter(
       candidates,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
+    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
