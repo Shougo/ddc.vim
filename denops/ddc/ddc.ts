@@ -529,6 +529,12 @@ function charposToBytepos(input: string, pos: number): number {
   return (new TextEncoder()).encode(input.slice(0, pos)).length;
 }
 
+// isinstanceof may be failed
+// https://zenn.dev/luma/articles/2e891a24fe099c
+function isTimeoutError(e: unknown): e is TimeoutError {
+  return (e as TimeoutError).name == "TimeoutError";
+}
+
 function sourceArgs<
   Params extends Record<string, unknown>,
   UserData extends unknown,
@@ -587,7 +593,7 @@ async function checkSourceOnInit(
 
     source.isInitialized = true;
   } catch (e: unknown) {
-    if (e instanceof TimeoutError) {
+    if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -617,7 +623,7 @@ async function checkFilterOnInit(
 
     filter.isInitialized = true;
   } catch (e: unknown) {
-    if (e instanceof TimeoutError) {
+    if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -647,7 +653,7 @@ async function callSourceOnEvent(
       sourceParams,
     });
   } catch (e: unknown) {
-    if (e instanceof TimeoutError) {
+    if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -684,7 +690,7 @@ async function callSourceOnCompleteDone<
       userData: userData as any,
     });
   } catch (e: unknown) {
-    if (e instanceof TimeoutError) {
+    if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -714,7 +720,7 @@ async function callSourceGetCompletePosition(
       sourceParams,
     });
   } catch (e: unknown) {
-    if (e instanceof TimeoutError) {
+    if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -752,7 +758,7 @@ async function callSourceGatherCandidates<
     });
     return await deadline(promise, sourceOptions.timeout);
   } catch (e: unknown) {
-    if (e instanceof TimeoutError || e instanceof DeadlineError) {
+    if (isTimeoutError(e) || e instanceof DeadlineError) {
       // Ignore timeout error
     } else {
       console.error(
@@ -784,7 +790,7 @@ async function callFilterOnEvent(
       filterParams,
     });
   } catch (e: unknown) {
-    if (e instanceof TimeoutError) {
+    if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -820,7 +826,7 @@ async function callFilterFilter(
       candidates,
     });
   } catch (e: unknown) {
-    if (e instanceof TimeoutError) {
+    if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
       console.error(
