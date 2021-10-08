@@ -196,7 +196,8 @@ export async function main(denops: Denops) {
     // Skip special buffers.
     const buftype = await op.buftype.getLocal(denops);
     if (
-      buftype != "" && !options.specialBufferCompletion
+      buftype != "" && !options.specialBufferCompletion &&
+      await fn.mode(denops) != "c"
     ) {
       return true;
     }
