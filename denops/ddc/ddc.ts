@@ -707,7 +707,7 @@ async function callSourceOnCompleteDone<
       userData: userData as any,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e || isDdcCallbackCancelError(e)) {
+    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
