@@ -87,3 +87,15 @@ export type DdcCandidate =
     equal: boolean;
     icase: boolean;
   };
+
+/**
+ * NOTE: no guarantees about ordering.
+ * @param id
+ * @return payload
+ */
+export type OnCallback = (id: string) => Promise<unknown>;
+export interface CallbackContext {
+  emit(id: string, payload?: unknown): void;
+  revoke(): void;
+  createOnCallback(): OnCallback;
+}

@@ -5,6 +5,7 @@ import {
   DdcOptions,
   DdcUserData,
   FilterOptions,
+  OnCallback,
   SourceOptions,
 } from "./types.ts";
 import {
@@ -27,6 +28,7 @@ import {
   defaultFilterParams,
   FilterArguments,
 } from "./base/filter.ts";
+import { isDdcCallbackCancelError } from "./callback.ts";
 import {
   assertEquals,
   autocmd,
@@ -226,6 +228,7 @@ export class Ddc {
   async onEvent(
     denops: Denops,
     context: Context,
+    onCallback: OnCallback,
     options: DdcOptions,
   ): Promise<void> {
     let filterNames: string[] = [];
@@ -236,6 +239,7 @@ export class Ddc {
           source,
           denops,
           context,
+          onCallback,
           options,
           sourceOptions,
           sourceParams,
@@ -263,6 +267,7 @@ export class Ddc {
           filter,
           denops,
           context,
+          onCallback,
           options,
           o,
           p,
@@ -282,6 +287,7 @@ export class Ddc {
   async onCompleteDone(
     denops: Denops,
     context: Context,
+    onCallback: OnCallback,
     options: DdcOptions,
     sourceName: string,
     userData: DdcUserData,
@@ -296,6 +302,7 @@ export class Ddc {
       source,
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       sourceParams,
@@ -306,6 +313,7 @@ export class Ddc {
   async gatherResults(
     denops: Denops,
     context: Context,
+    onCallback: OnCallback,
     options: DdcOptions,
   ): Promise<[number, DdcCandidate[]]> {
     const sources = this.foundSources(options.sources)
@@ -315,6 +323,7 @@ export class Ddc {
         s,
         denops,
         context,
+        onCallback,
         options,
         o,
         p,
@@ -364,6 +373,7 @@ export class Ddc {
           s,
           denops,
           context,
+          onCallback,
           options,
           o,
           p,
@@ -384,6 +394,7 @@ export class Ddc {
       const fcs = await this.filterCandidates(
         denops,
         context,
+        onCallback,
         options,
         o,
         options.filterOptions,
@@ -441,6 +452,7 @@ export class Ddc {
   private async filterCandidates(
     denops: Denops,
     context: Context,
+    onCallback: OnCallback,
     options: DdcOptions,
     sourceOptions: SourceOptions,
     filterOptions: Record<string, Partial<FilterOptions>>,
@@ -461,6 +473,7 @@ export class Ddc {
           filter,
           denops,
           context,
+          onCallback,
           options,
           sourceOptions,
           o,
@@ -638,6 +651,7 @@ async function callSourceOnEvent(
   source: BaseSource<Record<string, unknown>>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Record<string, unknown>,
@@ -648,12 +662,13 @@ async function callSourceOnEvent(
     await source.onEvent({
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       sourceParams,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
+    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -671,6 +686,7 @@ async function callSourceOnCompleteDone<
   source: BaseSource<Params, UserData>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Params,
@@ -682,6 +698,7 @@ async function callSourceOnCompleteDone<
     await source.onCompleteDone({
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       sourceParams,
@@ -690,7 +707,7 @@ async function callSourceOnCompleteDone<
       userData: userData as any,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
+    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -705,6 +722,7 @@ async function callSourceGetCompletePosition(
   source: BaseSource<Record<string, unknown>>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Record<string, unknown>,
@@ -715,12 +733,13 @@ async function callSourceGetCompletePosition(
     return await source.getCompletePosition({
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       sourceParams,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
+    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -740,6 +759,7 @@ async function callSourceGatherCandidates<
   source: BaseSource<Params, UserData>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Params,
@@ -751,6 +771,7 @@ async function callSourceGatherCandidates<
     const promise = source.gatherCandidates({
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       sourceParams,
@@ -758,7 +779,10 @@ async function callSourceGatherCandidates<
     });
     return await deadline(promise, sourceOptions.timeout);
   } catch (e: unknown) {
-    if (isTimeoutError(e) || e instanceof DeadlineError) {
+    if (
+      isTimeoutError(e) || isDdcCallbackCancelError(e) ||
+      e instanceof DeadlineError
+    ) {
       // Ignore timeout error
     } else {
       console.error(
@@ -775,6 +799,7 @@ async function callFilterOnEvent(
   filter: BaseFilter<Record<string, unknown>>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   filterOptions: FilterOptions,
   filterParams: Record<string, unknown>,
@@ -782,15 +807,16 @@ async function callFilterOnEvent(
   await checkFilterOnInit(filter, denops, filterOptions, filterParams);
 
   try {
-    filter.onEvent({
+    await filter.onEvent({
       denops,
       context,
+      onCallback,
       options,
       filterOptions,
       filterParams,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
+    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
@@ -805,6 +831,7 @@ async function callFilterFilter(
   filter: BaseFilter<Record<string, unknown>>,
   denops: Denops,
   context: Context,
+  onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   filterOptions: FilterOptions,
@@ -818,6 +845,7 @@ async function callFilterFilter(
     return await filter.filter({
       denops,
       context,
+      onCallback,
       options,
       sourceOptions,
       filterOptions,
@@ -826,7 +854,7 @@ async function callFilterFilter(
       candidates,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
+    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       console.error(
