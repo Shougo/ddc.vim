@@ -65,6 +65,14 @@ export type FilterOptions = {
   placeholder: void;
 };
 
+export type PumHighlight = {
+  name: string;
+  type: "abbr" | "kind" | "menu";
+  "hl_group": string;
+  col: number;
+  width: number;
+};
+
 export type Candidate<
   UserData extends unknown = unknown,
 > = {
@@ -75,6 +83,7 @@ export type Candidate<
   kind?: string;
   dup?: boolean;
   "user_data"?: UserData;
+  highlights?: PumHighlight[];
 };
 
 // For internal type
