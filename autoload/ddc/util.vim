@@ -33,9 +33,14 @@ function! ddc#util#get_syn_names() abort
   return names
 endfunction
 
+function! ddc#util#get_text(mode) abort
+  return a:mode ==# 'c' ? getcmdline() :
+        \ a:mode ==# 't' && !has('nvim') ? term_getline('', '.')
+        \ : getline('.')
+endfunction
 function! ddc#util#get_input(event) abort
   let mode = a:event ==# 'InsertEnter' ? 'i' : mode()
-  let text = mode ==# 'c' ? getcmdline() : getline('.')
+  let text = ddc#util#get_text(mode)
   let pos = mode ==# 'c' ? getcmdpos() - 1 :
         \ mode ==# 'i' ? col('.') - 1 : col('.')
   let input = pos >= len(text) ?
@@ -47,7 +52,7 @@ function! ddc#util#get_input(event) abort
   return input
 endfunction
 function! ddc#util#get_next_input(event) abort
-  let text = mode() ==# 'c' ? getcmdline() : getline('.')
+  let text = ddc#util#get_text(mode())
   return text[len(ddc#util#get_input(a:event)) :]
 endfunction
 

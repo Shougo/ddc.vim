@@ -273,12 +273,6 @@ export async function main(denops: Denops) {
     );
 
     await (async function write() {
-      const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
-      if (context.changedTick != await changedTick) {
-        // Input is changed.  Skip invalid completion.
-        return;
-      }
-
       const pumvisible = await denops.call("ddc#map#pumvisible");
 
       await batch(denops, async (denops: Denops) => {
