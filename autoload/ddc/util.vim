@@ -40,7 +40,7 @@ function! ddc#util#get_text(mode) abort
 endfunction
 function! ddc#util#get_input(event) abort
   let mode = a:event ==# 'InsertEnter' ? 'i' : mode()
-  if &filetype ==# 'deol'
+  if &filetype ==# 'deol' && mode ==# 't'
     return deol#get_input()
   endif
 
