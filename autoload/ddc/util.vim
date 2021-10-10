@@ -40,18 +40,17 @@ function! ddc#util#get_text(mode) abort
 endfunction
 function! ddc#util#get_input(event) abort
   let mode = a:event ==# 'InsertEnter' ? 'i' : mode()
-  if &filetype ==# 'deol' && mode ==# 't'
-    return deol#get_input()
-  endif
-
   let is_insert = (mode ==# 'i') || (mode ==# 't')
   let text = ddc#util#get_text(mode)
-  let pos = mode ==# 'c' ? getcmdpos() - 1 :
-        \ is_insert ? col('.') - 1 : col('.')
+  let col = mode() ==# 't' && !has('nvim') ?
+        \ term_getcursor(bufnr('%'))[1] :
+        \ mode() ==# 'c' ? getcmdpos() : col('.')
+  let pos = mode ==# 'c' ? col - 1 :
+        \ is_insert ? col - 1 : col
   let input = pos >= len(text) ?
         \     text :
         \     matchstr(text,
-        \         '^.*\%' . (is_insert ? col('.') : col('.') - 1)
+        \         '^.*\%' . (is_insert ? col : col - 1)
         \         . 'c' . (is_insert ? '' : '.'))
 
   return input

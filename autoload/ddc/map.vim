@@ -25,7 +25,8 @@ endfunction
 
 function! ddc#map#manual_complete(...) abort
   if !ddc#_denops_running()
-    return ''
+    call ddc#enable()
+    call denops#plugin#wait('ddc')
   endif
 
   let arg = get(a:000, 0, [])
