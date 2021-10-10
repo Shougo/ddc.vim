@@ -40,14 +40,15 @@ function! ddc#util#get_text(mode) abort
 endfunction
 function! ddc#util#get_input(event) abort
   let mode = a:event ==# 'InsertEnter' ? 'i' : mode()
+  let is_insert = (mode ==# 'i') || (mode ==# 't')
   let text = ddc#util#get_text(mode)
   let pos = mode ==# 'c' ? getcmdpos() - 1 :
-        \ mode ==# 'i' ? col('.') - 1 : col('.')
+        \ is_insert ? col('.') - 1 : col('.')
   let input = pos >= len(text) ?
-        \      text :
-        \      matchstr(text,
-        \         '^.*\%' . (mode ==# 'i' ? col('.') : col('.') - 1)
-        \         . 'c' . (mode ==# 'i' ? '' : '.'))
+        \     text :
+        \     matchstr(text,
+        \         '^.*\%' . (is_insert ? col('.') : col('.') - 1)
+        \         . 'c' . (is_insert ? '' : '.'))
 
   return input
 endfunction
