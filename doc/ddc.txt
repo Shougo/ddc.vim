@@ -113,7 +113,6 @@ completionMenu
 			It use floating windows for neovim or popup for Vim8
 			feature.
 			It can reduce completion flicker.
-			Note: It is experimental feature.
 
 		Default: "native"
 
@@ -904,8 +903,6 @@ https://github.com/Shougo/pum.vim
     " Restore sources
     call ddc#custom#set_buffer(s:prev_buffer_config)
   endfunction
-
-Note: It is experimental support.
 
 
 ==============================================================================
