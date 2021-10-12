@@ -449,9 +449,9 @@ documentation instead.
 
 				    		*ddc-source-option-converters*
 converters		(string[])
-		It is a list of registered filter names that used with this
-		source.  Candidates will be processed in the order you specify
-		here.
+		It is a list of registered filter names to change candidates
+		attributes.
+		Candidates will be processed in the order you specify here.
 
 		Default: []
 
@@ -515,9 +515,9 @@ matcherKey		(string)
 
 				    		*ddc-source-option-matchers*
 matchers		(string[])
-		It is a list of registered filter names that used with this
-		source.  Candidates will be processed in the order you specify
-		here.
+		It is a list of registered filter names to filter candidates
+		by user input.
+		Candidates will be processed in the order you specify here.
 
 		Default: []
 
@@ -529,9 +529,8 @@ minAutoCompleteLength	(number)
 
 				    		*ddc-source-option-sorters*
 sorters			(string[])
-		It is a list of registered filter names that used with this
-		source.  Candidates will be processed in the order you specify
-		here.
+		It is a list of registered filter names to sort candidates.
+		Candidates will be processed in the order you specify here.
 
 		Default: []
 
@@ -557,6 +556,12 @@ FILTERS							*ddc-filters*
 Once candidates have been supplied by one or more sources, they are passed
 through the filters, which are matchers, converters or sorters. Sources can
 have specific filters.
+
+matchers: To filter candidates by user input
+sorters: To sort candidates
+converters: To change candidates attributes
+
+Call order is matchers -> sorters -> converters
 
 Note: The filters are not bundled in ddc.vim.  You need to install them
 to use ddc.vim.  Please search them by https://github.com/topics/ddc-filter
