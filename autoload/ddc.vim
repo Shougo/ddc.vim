@@ -268,6 +268,7 @@ function! ddc#_on_complete_done() abort
         \ g:pum#completed_item : v:completed_item
 
   if !ddc#_denops_running() || empty(completed_item)
+        \ || !has_key(completed_item, 'user_data')
     return
   endif
 
