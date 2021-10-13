@@ -14,7 +14,7 @@ function! ddc#map#complete() abort
 
   call ddc#_clear_inline()
 
-  if has('nvim') || !ddc#_is_native_menu()
+  if has('nvim') || ddc#_completion_menu() ==# 'pum.vim'
     call ddc#_complete()
   else
     " Debounce for Vim8
@@ -35,12 +35,14 @@ function! ddc#map#manual_complete(...) abort
 endfunction
 
 function! ddc#map#pumvisible() abort
-  return ddc#_is_native_menu() ? pumvisible() : pum#visible()
+  return ddc#_completion_menu() ==# 'pum.vim' ?
+        \ pum#visible() : pumvisible()
 endfunction
 
 function! ddc#map#cancel() abort
   return !ddc#map#pumvisible() ? '' :
-        \ ddc#_is_native_menu() ? "\<C-e>" : "\<Cmd>call pum#cancel()\<CR>"
+        \ ddc#_completion_menu() ==# 'pum.vim' ?
+        \ "\<Cmd>call pum#cancel()\<CR>" : "\<C-e>"
 endfunction
 
 function! ddc#map#can_complete() abort

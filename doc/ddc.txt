@@ -91,7 +91,9 @@ autoCompleteEvents
 		The auto completion fired events.  It must be list of
 		|autocmd-events| string.
 
-		Default: ["InsertEnter", "TextChangedI", "TextChangedP"]
+		Default: [
+			"InsertEnter", "TextChangedI", "TextChangedP",
+		]
 
 				*ddc-option-backspaceCompletion*
 backspaceCompletion
@@ -113,6 +115,7 @@ completionMenu
 			It use floating windows for neovim or popup for Vim8
 			feature.
 			It can reduce completion flicker.
+		"none": Disable popup menu.
 
 		Default: "native"
 

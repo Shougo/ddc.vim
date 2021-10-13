@@ -39,7 +39,11 @@ export function foldMerge<T>(
 export function defaultDdcOptions(): DdcOptions {
   return {
     autoCompleteDelay: 0,
-    autoCompleteEvents: ["InsertEnter", "TextChangedI", "TextChangedP"],
+    autoCompleteEvents: [
+      "InsertEnter",
+      "TextChangedI",
+      "TextChangedP",
+    ],
     backspaceCompletion: false,
     completionMenu: "native",
     completionMode: "popupmenu",

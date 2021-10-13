@@ -95,7 +95,9 @@ function! ddc#_cannot_complete() abort
         \ ((info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
         \ || (!noinsert && info.selected >= 0))
-  return (ddc#_is_native_menu() && mode() !=# 'i')
+  let menu = ddc#_completion_menu()
+  return (menu ==# 'native' && mode() !=# 'i')
+        \ || menu ==# 'none'
         \ || info_check || !exists('g:ddc#_complete_pos')
 endfunction
 
@@ -105,7 +107,7 @@ function! ddc#_complete() abort
   endif
 
   if g:ddc#_complete_pos >= 0
-    if ddc#_is_native_menu() && g:ddc#_overwrite_completeopt
+    if ddc#_completion_menu() ==# 'native' && g:ddc#_overwrite_completeopt
           \ && g:ddc#_event !=# 'Manual'
       call s:overwrite_completeopt()
     endif
@@ -115,12 +117,13 @@ function! ddc#_complete() abort
     let g:ddc#_candidates = []
   endif
 
-  if ddc#_is_native_menu()
+  let menu = ddc#_completion_menu()
+  if menu ==# 'native'
     " Note: It may be called in map-<expr>
     silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   elseif empty(g:ddc#_candidates)
     call ddc#_clear()
-  else
+  elseif menu ==# 'pum.vim'
     call pum#open(g:ddc#_complete_pos + 1, g:ddc#_candidates)
   endif
 endfunction
@@ -141,16 +144,16 @@ function! s:overwrite_completeopt() abort
     set completeopt+=noselect
   endif
 endfunction
-function! ddc#_is_native_menu() abort
-  return !exists('g:ddc#_is_native_menu') || g:ddc#_is_native_menu
+function! ddc#_completion_menu() abort
+  return get(g:, 'ddc#_completion_menu', 'native')
 endfunction
 
 function! ddc#_clear() abort
-  if ddc#_is_native_menu()
+  if ddc#_completion_menu() ==# 'native'
     if mode() ==# 'i'
       call complete(1, [])
     endif
-  else
+  elseif ddc#_completion_menu() ==# 'pum.vim'
     call pum#close()
   endif
 
@@ -179,6 +182,7 @@ function! ddc#_inline(highlight) abort
 
   call nvim_buf_clear_namespace(0, s:ddc_namespace, 0, -1)
   if empty(g:ddc#_candidates) || mode() !=# 'i'
+        \ || ddc#_completion_menu() ==# 'none'
     return
   endif
 
@@ -254,7 +258,8 @@ function! ddc#can_complete() abort
 endfunction
 
 function! ddc#complete_info() abort
-  return ddc#_is_native_menu() ? complete_info() : pum#complete_info()
+  return ddc#_completion_menu() ==# 'pum.vim' ?
+        \ pum#complete_info() : complete_info()
 endfunction
 
 function! ddc#_on_complete_done() abort

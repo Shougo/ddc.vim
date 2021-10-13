@@ -131,7 +131,7 @@ export async function main(denops: Denops) {
           await vars.g.set(denops, "ddc#_skip_complete", false);
           return;
         }
-      } else {
+      } else if (options.completionMenu == "pum.vim") {
         // Check for pum.vim
         const skipComplete = await denops.call("pum#skip_complete") as boolean;
         if (skipComplete) {
@@ -287,8 +287,8 @@ export async function main(denops: Denops) {
         );
         await vars.g.set(
           denops,
-          "ddc#_is_native_menu",
-          options.completionMenu == "native",
+          "ddc#_completion_menu",
+          options.completionMenu,
         );
 
         if (
@@ -316,7 +316,7 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_overwrite_completeopt", false);
     await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_popup_id", -1);
-    await vars.g.set(denops, "ddc#_is_native_menu", true);
+    await vars.g.set(denops, "ddc#_completion_menu", "native");
     await vars.g.set(denops, "ddc#_skip_complete", false);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
