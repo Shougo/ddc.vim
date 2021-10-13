@@ -27,6 +27,7 @@ function! ddc#enable() abort
   augroup ddc
     autocmd!
     autocmd CompleteDone * call ddc#_on_complete_done()
+    autocmd User PumCompleteDone call ddc#_on_complete_done()
     autocmd InsertLeave * call ddc#_clear()
   augroup END
 
@@ -263,29 +264,32 @@ function! ddc#complete_info() abort
 endfunction
 
 function! ddc#_on_complete_done() abort
-  if !ddc#_denops_running() || empty(v:completed_item)
+  let completed_item = ddc#_is_native_menu() ?
+        \ v:completed_item : g:pum#completed_item
+
+  if !ddc#_denops_running() || empty(completed_item)
     return
   endif
 
   let g:ddc#_skip_complete = v:true
 
-  if type(v:completed_item.user_data) != v:t_dict
+  if type(completed_item.user_data) != v:t_dict
     return
   endif
   " Search selected candidate from previous candidates
   let candidates = filter(copy(g:ddc#_candidates), { _, val
-        \ -> val.word ==# v:completed_item.word
-        \ && val.abbr ==# v:completed_item.abbr
-        \ && val.info ==# v:completed_item.info
-        \ && val.kind ==# v:completed_item.kind
-        \ && val.menu ==# v:completed_item.menu
+        \ -> val.word ==# completed_item.word
+        \ && val.abbr ==# completed_item.abbr
+        \ && val.info ==# completed_item.info
+        \ && val.kind ==# completed_item.kind
+        \ && val.menu ==# completed_item.menu
         \ && has_key(val, 'user_data')
-        \ && val.user_data ==# v:completed_item.user_data
+        \ && val.user_data ==# completed_item.user_data
         \ })
   if empty(candidates)
     return
   endif
 
   call denops#request('ddc', 'onCompleteDone',
-        \ [candidates[0].__sourceName, v:completed_item.user_data])
+        \ [candidates[0].__sourceName, completed_item.user_data])
 endfunction
