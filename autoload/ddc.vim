@@ -264,8 +264,8 @@ function! ddc#complete_info() abort
 endfunction
 
 function! ddc#_on_complete_done() abort
-  let completed_item = ddc#_is_native_menu() ?
-        \ v:completed_item : g:pum#completed_item
+  let completed_item = ddc#_completion_menu() ==# 'pum.vim' ?
+        \ g:pum#completed_item : v:completed_item
 
   if !ddc#_denops_running() || empty(completed_item)
     return
@@ -276,6 +276,7 @@ function! ddc#_on_complete_done() abort
   if type(completed_item.user_data) != v:t_dict
     return
   endif
+
   " Search selected candidate from previous candidates
   let candidates = filter(copy(g:ddc#_candidates), { _, val
         \ -> val.word ==# completed_item.word
