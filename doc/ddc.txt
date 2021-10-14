@@ -912,6 +912,11 @@ https://github.com/Shougo/pum.vim
     call ddc#custom#set_buffer(s:prev_buffer_config)
   endfunction
 
+Q: Terminal title flickers when completion menu opens in neovim.
+
+A: It is the problem of |nvim_win_set_option()|.  To avoid the problem, you
+need to use the function.
+https://github.com/hrsh7th/nvim-cmp/issues/309#issuecomment-940740456
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
