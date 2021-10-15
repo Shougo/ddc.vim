@@ -128,7 +128,6 @@ export async function main(denops: Denops) {
           "ddc#_skip_complete",
         ) as boolean;
         if (skipComplete) {
-          await vars.g.set(denops, "ddc#_skip_complete", false);
           return;
         }
       } else if (options.completionMenu == "pum.vim") {

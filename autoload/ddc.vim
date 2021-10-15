@@ -272,7 +272,11 @@ function! ddc#_on_complete_done() abort
     return
   endif
 
-  let g:ddc#_skip_complete = v:true
+  if ddc#_completion_menu() !=# 'pum.vim'
+    let g:ddc#_skip_complete = v:true
+    " Reset skip completion
+    autocmd ddc InsertCharPre * ++once let g:ddc#_skip_complete = v:false
+  endif
 
   if type(completed_item.user_data) != v:t_dict
     return
