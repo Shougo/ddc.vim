@@ -45,7 +45,10 @@ function! ddc#enable_cmdline_completion() abort
   augroup ddc-cmdline
     autocmd!
     autocmd CmdlineLeave * call ddc#_clear()
-    autocmd CmdlineLeave * call ddc#disable_cmdline_completion()
+    autocmd CmdlineLeave *
+          \ if get(v:event, 'cmdlevel', 1) == 1 |
+          \   call ddc#disable_cmdline_completion() |
+          \ endif
     autocmd CmdlineEnter   * call ddc#_on_event('CmdlineEnter')
     autocmd CmdlineChanged * call ddc#_on_event('CmdlineChanged')
   augroup END
@@ -54,6 +57,10 @@ function! ddc#disable_cmdline_completion() abort
   augroup ddc-cmdline
     autocmd!
   augroup END
+
+  if exists('#User#DDCCmdlineLeave')
+    doautocmd <nomodeline> User DDCCmdlineLeave
+  endif
 endfunction
 function! ddc#disable() abort
   augroup ddc
