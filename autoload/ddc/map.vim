@@ -29,6 +29,8 @@ function! ddc#map#manual_complete(...) abort
     call denops#plugin#wait('ddc')
   endif
 
+  call ddc#_autoload()
+
   let arg = get(a:000, 0, [])
   return printf("\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
         \ string([type(arg) == v:t_list ? arg : [arg]]))

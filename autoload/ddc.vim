@@ -85,12 +85,24 @@ function! ddc#_denops_running() abort
         \ && denops#plugin#is_loaded('ddc')
 endfunction
 
+function! ddc#initialize() abort
+  call ddc#_autoload()
+endfunction
+
 function! ddc#_on_event(event) abort
   if !ddc#_denops_running()
     return
   endif
 
   call denops#notify('ddc', 'onEvent', [a:event])
+endfunction
+
+function! ddc#_autoload() abort
+  if !ddc#_denops_running()
+    return
+  endif
+
+  call denops#notify('ddc', 'autoload', [])
 endfunction
 
 function! ddc#complete() abort

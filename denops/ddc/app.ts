@@ -32,6 +32,9 @@ export async function main(denops: Denops) {
         await ddc.registerFilter(denops, arg.path, arg.name);
       }
     },
+    async autoload(): Promise<void> {
+      await ddc.autoload(denops);
+    },
     alias(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
       ddc.registerAlias(arg1 as string, arg2 as string, arg3 as string);
       return Promise.resolve();
