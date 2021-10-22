@@ -181,6 +181,11 @@ export class Ddc {
         files,
       )).filter((path) => !(path in this.checkPaths));
 
+      denops.call('ddc#_benchmark')
+      console.log(sources);
+      await Promise.all(sources.map((path) => import(toFileUrl(path).href)));
+      denops.call('ddc#_benchmark')
+
       await Promise.all(sources.map((path) => {
         this.registerSource(denops, path, parse(path).name);
       }));
