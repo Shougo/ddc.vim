@@ -4,6 +4,7 @@ export { BaseFilter } from "./base/filter.ts";
 
 export type DdcEvent =
   | autocmd.AutocmdEvent
+  | "Initialize"
   | "Manual"
   | "AutoRefresh"
   | "ManualRefresh";

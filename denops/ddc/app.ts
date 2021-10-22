@@ -32,9 +32,6 @@ export async function main(denops: Denops) {
         await ddc.registerFilter(denops, arg.path, arg.name);
       }
     },
-    async autoload(): Promise<void> {
-      await ddc.autoload(denops);
-    },
     alias(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
       ddc.registerAlias(arg1 as string, arg2 as string, arg3 as string);
       return Promise.resolve();
@@ -109,8 +106,6 @@ export async function main(denops: Denops) {
       const maybe = await contextBuilder.createContext(denops, event);
       if (!maybe) return;
       const [context, options] = maybe;
-
-      await ddc.autoload(denops);
 
       cbContext.revoke();
       await ddc.onEvent(
@@ -322,6 +317,7 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_skip_complete", false);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
+    await denops.call("ddc#_on_event", "Initialize");
 
     ddc.registerAutocmd(denops, [
       "InsertEnter",

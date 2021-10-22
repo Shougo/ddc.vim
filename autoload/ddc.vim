@@ -87,24 +87,12 @@ function! ddc#_denops_running() abort
         \ && denops#plugin#is_loaded('ddc')
 endfunction
 
-function! ddc#initialize() abort
-  call ddc#_autoload()
-endfunction
-
 function! ddc#_on_event(event) abort
   if !ddc#_denops_running()
     return
   endif
 
   call denops#notify('ddc', 'onEvent', [a:event])
-endfunction
-
-function! ddc#_autoload() abort
-  if !ddc#_denops_running()
-    return
-  endif
-
-  call denops#notify('ddc', 'autoload', [])
 endfunction
 
 function! ddc#complete() abort
@@ -327,8 +315,12 @@ function! ddc#_on_complete_done() abort
         \ [candidates[0].__sourceName, completed_item.user_data])
 endfunction
 
-function! ddc#_benchmark() abort
+function! ddc#_benchmark(...) abort
+  let msg = get(a:000, 0, '')
+  if msg !=# ''
+    let msg .= ' '
+  endif
   let diff = reltimefloat(reltime(s:started))
-  call ddc#util#print_error(printf('%s: Took %f seconds.',
-        \ expand('<sfile>'), diff))
+  call ddc#util#print_error(printf('%s%s: Took %f seconds.',
+        \ msg, expand('<sfile>'), diff))
 endfunction

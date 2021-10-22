@@ -57,7 +57,6 @@ export class Ddc {
   private checkPaths: Record<string, boolean> = {};
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
-  private prevRuntimepath = "";
 
   private foundSources(names: string[]): BaseSource<Record<string, unknown>>[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
@@ -97,10 +96,6 @@ export class Ddc {
   }
 
   async registerSource(denops: Denops, path: string, name: string) {
-    if (path in this.checkPaths) {
-      return;
-    }
-
     this.checkPaths[path] = true;
 
     const mod = await import(toFileUrl(path).href);
@@ -126,10 +121,6 @@ export class Ddc {
   }
 
   async registerFilter(denops: Denops, path: string, name: string) {
-    if (path in this.checkPaths) {
-      return;
-    }
-
     this.checkPaths[path] = true;
 
     const mod = await import(toFileUrl(path).href);
@@ -155,68 +146,86 @@ export class Ddc {
     }
   }
 
-  async autoload(denops: Denops) {
-    const runtimepath = await op.runtimepath.getGlobal(denops);
-    if (runtimepath == this.prevRuntimepath) {
+  async autoload(denops: Denops, files: string[], isSource: boolean) {
+    if (files.length == 0) {
       return;
     }
 
-    this.prevRuntimepath = runtimepath;
+    const runtimepath = await op.runtimepath.getGlobal(denops);
 
     async function globpath(
       searches: string[],
+      files: string[],
     ): Promise<string[]> {
       let paths: string[] = [];
       for (const search of searches) {
-        paths = paths.concat(
-          await fn.globpath(
-            denops,
-            runtimepath,
-            search,
-            1,
-            1,
-          ) as string[],
-        );
+        for (const file of files) {
+          paths = paths.concat(
+            await fn.globpath(
+              denops,
+              runtimepath,
+              search + file + ".ts",
+              1,
+              1,
+            ) as string[],
+          );
+        }
       }
 
       return Promise.resolve(paths);
     }
 
-    const sources = await globpath(
-      ["denops/@ddc-sources/*.ts", "denops/ddc-sources/*.ts"],
-    );
+    if (isSource) {
+      const sources = (await globpath(
+        ["denops/@ddc-sources/", "denops/ddc-sources/"],
+        files,
+      )).filter((path) => !(path in this.checkPaths));
 
-    await Promise.all(sources.map((path) => {
-      this.registerSource(denops, path, parse(path).name);
-    }));
+      await Promise.all(sources.map((path) => {
+        this.registerSource(denops, path, parse(path).name);
+      }));
+    } else {
+      const filters = (await globpath(
+        ["denops/@ddc-filters/", "denops/ddc-filters/"],
+        files,
+      )).filter((path) => !(path in this.checkPaths));
 
-    const filters = await globpath(
-      ["denops/@ddc-filters/*.ts", "denops/ddc-filters/*.ts"],
-    );
-
-    await Promise.all(filters.map((path) => {
-      this.registerFilter(denops, path, parse(path).name);
-    }));
+      await Promise.all(filters.map((path) => {
+        this.registerFilter(denops, path, parse(path).name);
+      }));
+    }
   }
 
-  async checkInvalid(
+  async checkInvalidSources(
     denops: Denops,
-    options: DdcOptions,
-    filterNames: string[],
+    sources: string[],
   ) {
+    // Auto load invalid sources
+    const beforeSources = this.foundInvalidSources(sources);
+    await this.autoload(denops, beforeSources, true);
+
     // Check invalid sources
-    const invalidSources = this.foundInvalidSources(options.sources);
-    if (Object.keys(this.sources).length != 0 && invalidSources.length != 0) {
+    const invalidSources = this.foundInvalidSources(sources);
+    if (beforeSources == invalidSources && invalidSources.length != 0) {
       await denops.call(
         "ddc#util#print_error",
         "Invalid sources are detected!",
       );
       await denops.call("ddc#util#print_error", invalidSources);
     }
+  }
+
+  async checkInvalidFilters(
+    denops: Denops,
+    filterNames: string[],
+  ) {
+    // Auto load invalid filters
+    const beforeFilters = this.foundInvalidFilters([...new Set(filterNames)]);
+    await this.autoload(denops, beforeFilters, false);
 
     // Check invalid filters
     const invalidFilters = this.foundInvalidFilters([...new Set(filterNames)]);
-    if (Object.keys(this.filters).length != 0 && invalidFilters.length != 0) {
+    if (beforeFilters == invalidFilters && invalidFilters.length != 0) {
       await denops.call(
         "ddc#util#print_error",
         "Invalid filters are detected!",
@@ -231,6 +240,8 @@ export class Ddc {
     onCallback: OnCallback,
     options: DdcOptions,
   ): Promise<void> {
+    await this.checkInvalidSources(denops, options.sources);
+
     let filterNames: string[] = [];
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
@@ -256,6 +267,8 @@ export class Ddc {
     // Uniq.
     filterNames = [...new Set(filterNames)];
 
+    await this.checkInvalidFilters(denops, filterNames);
+
     for (const filter of this.foundFilters(filterNames)) {
       if (filter.events?.includes(context.event)) {
         const [o, p] = filterArgs(
@@ -273,14 +286,6 @@ export class Ddc {
           p,
         );
       }
-    }
-
-    if (
-      context.event == "InsertLeave" &&
-      Object.keys(this.sources).length != 0 &&
-      Object.keys(this.filters).length != 0
-    ) {
-      await this.checkInvalid(denops, options, filterNames);
     }
   }
 
@@ -460,6 +465,18 @@ export class Ddc {
     completeStr: string,
     cdd: Candidate[],
   ): Promise<Candidate[]> {
+    // Check invalid
+    const invalidFilters = this.foundInvalidFilters(
+      sourceOptions.matchers.concat(
+        sourceOptions.sorters,
+      ).concat(
+        sourceOptions.converters,
+      ),
+    );
+    if (invalidFilters.length != 0) {
+      return [];
+    }
+
     const matchers = this.foundFilters(sourceOptions.matchers);
     const sorters = this.foundFilters(sourceOptions.sorters);
     const converters = this.foundFilters(sourceOptions.converters);

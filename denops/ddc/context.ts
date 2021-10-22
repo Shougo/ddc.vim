@@ -313,7 +313,8 @@ export class ContextBuilder {
     this.lastWorld = world;
     if (
       event != "Manual" && event != "AutoRefresh" &&
-      event != "ManualRefresh" && event != "CompleteDone" &&
+      event != "Initialize" && event != "CompleteDone" &&
+      event != "ManualRefresh" &&
       isNegligible(old, world)
     ) {
       return null;
