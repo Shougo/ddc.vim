@@ -34,6 +34,8 @@ function! ddc#enable() abort
   " Force context_filetype call
   silent! call context_filetype#get_filetype()
 
+  let s:started = reltime()
+
   " Note: ddc.vim must be registered manually.
   if exists('g:loaded_denops') && denops#server#status() ==# 'running'
     silent! call ddc#_register()
@@ -107,6 +109,7 @@ endfunction
 
 function! ddc#complete() abort
   try
+    call ddc#_benchmark()
     return ddc#map#complete()
   catch
     call ddc#util#print_error(v:throwpoint)
@@ -323,4 +326,10 @@ function! ddc#_on_complete_done() abort
 
   call denops#request('ddc', 'onCompleteDone',
         \ [candidates[0].__sourceName, completed_item.user_data])
+endfunction
+
+function! ddc#_benchmark() abort
+  let diff = reltimefloat(reltime(s:started))
+  call ddc#util#print_error(printf('%s: Took %f seconds.',
+        \ expand('<sfile>'), diff))
 endfunction
