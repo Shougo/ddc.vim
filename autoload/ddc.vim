@@ -109,7 +109,6 @@ endfunction
 
 function! ddc#complete() abort
   try
-    call ddc#_benchmark()
     return ddc#map#complete()
   catch
     call ddc#util#print_error(v:throwpoint)
