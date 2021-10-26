@@ -204,7 +204,12 @@ function! ddc#_inline(highlight) abort
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos:]
   let word = g:ddc#_candidates[0].word
 
-  if stridx(word, complete_str) == 0
+  " Note: nvim_buf_set_extmark() should not use when LSP is enabled...
+  " https://github.com/hrsh7th/nvim-cmp/issues/404
+  let check_diagnostic = v:false
+  silent! let check_diagnostic = !empty(v:lua.vim.lsp.diagnostic.get_all())
+
+  if stridx(word, complete_str) == 0 && !check_diagnostic
     " Head matched: Follow cursor text
     call nvim_buf_set_extmark(
           \ 0, s:ddc_namespace, line('.') - 1, col('.') - 1, {
