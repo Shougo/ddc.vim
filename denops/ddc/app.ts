@@ -277,6 +277,7 @@ export async function main(denops: Denops) {
         await vars.g.set(denops, "ddc#_prev_input", context.input);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
         await vars.g.set(denops, "ddc#_candidates", candidates);
+        await vars.g.set(denops, "ddc#_sources", options.sources);
         await vars.g.set(
           denops,
           "ddc#_overwrite_completeopt",
@@ -308,6 +309,7 @@ export async function main(denops: Denops) {
   await batch(denops, async (denops: Denops) => {
     await vars.g.set(denops, "ddc#_candidates", []);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
+    await vars.g.set(denops, "ddc#_sources", []);
     await vars.g.set(denops, "ddc#_event", "Manual");
     await vars.g.set(denops, "ddc#_now", 0);
     await vars.g.set(denops, "ddc#_overwrite_completeopt", false);

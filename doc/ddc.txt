@@ -358,6 +358,11 @@ ddc#map#complete()
 		Open current completion popup menu.
 		Note: It must be in |:map-<expr>|.
 
+							*ddc#map#extend()*
+ddc#map#extend()
+		Confirm the candidate and extend current completion.
+		Note: It must be in |:map-<expr>|.
+
 					*ddc#map#complete_common_string()*
 ddc#map#complete_common_string()
 		Complete common string in candidates.

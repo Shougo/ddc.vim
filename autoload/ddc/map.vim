@@ -39,16 +39,29 @@ function! ddc#map#pumvisible() abort
         \ pum#visible() : pumvisible()
 endfunction
 
+function! ddc#map#confirm() abort
+  return !ddc#map#pumvisible() ? '' :
+        \ ddc#_completion_menu() ==# 'pum.vim' ?
+        \ "\<Cmd>call pum#map#confirm()\<CR>" : "\<C-y>"
+endfunction
+
 function! ddc#map#cancel() abort
   return !ddc#map#pumvisible() ? '' :
         \ ddc#_completion_menu() ==# 'pum.vim' ?
-        \ "\<Cmd>call pum#cancel()\<CR>" : "\<C-e>"
+        \ "\<Cmd>call pum#map#cancel()\<CR>" : "\<C-e>"
 endfunction
 
 function! ddc#map#can_complete() abort
   return !empty(get(g:, 'ddc#_candidates', []))
         \ && get(g:, 'ddc#_complete_pos', -1) >= 0
         \ && !ddc#_cannot_complete()
+endfunction
+
+function! ddc#map#extend() abort
+  if !exists('g:ddc#_sources')
+    return ''
+  endif
+  return ddc#map#confirm() . ddc#map#manual_complete(g:ddc#_sources)
 endfunction
 
 function! ddc#map#complete_common_string() abort
