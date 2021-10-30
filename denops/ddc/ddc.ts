@@ -266,6 +266,9 @@ export class Ddc {
         o.converters,
       );
     }
+    // Uniq.
+    filterNames = [...new Set(filterNames)];
+
     await this.checkInvalid(denops, options.sources, filterNames);
 
     for (const source of this.foundSources(options.sources)) {
@@ -282,9 +285,6 @@ export class Ddc {
         );
       }
     }
-
-    // Uniq.
-    filterNames = [...new Set(filterNames)];
 
     for (const filter of this.foundFilters(filterNames)) {
       if (filter.events?.includes(context.event)) {
