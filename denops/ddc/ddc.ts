@@ -178,7 +178,7 @@ export class Ddc {
     if (isSource) {
       const sources = (await globpath(
         ["denops/@ddc-sources/", "denops/ddc-sources/"],
-        files,
+        files.map((file) => this.aliasSources[file] ?? file),
       )).filter((path) => !(path in this.checkPaths));
 
       await Promise.all(sources.map((path) => {
@@ -187,7 +187,7 @@ export class Ddc {
     } else {
       const filters = (await globpath(
         ["denops/@ddc-filters/", "denops/ddc-filters/"],
-        files,
+        files.map((file) => this.aliasFilters[file] ?? file),
       )).filter((path) => !(path in this.checkPaths));
 
       await Promise.all(filters.map((path) => {
