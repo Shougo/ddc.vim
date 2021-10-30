@@ -206,17 +206,24 @@ function! ddc#_inline(highlight) abort
 
   " Note: nvim_buf_set_extmark() should not use when LSP is enabled...
   " https://github.com/hrsh7th/nvim-cmp/issues/404
-  let check_diagnostic = v:false
-  silent! let check_diagnostic = !empty(v:lua.vim.lsp.diagnostic.get_all())
+  "let check_diagnostic = v:false
+  "silent! let check_diagnostic = !empty(v:lua.vim.lsp.diagnostic.get_all()[0])
 
-  if stridx(word, complete_str) == 0 && !check_diagnostic
+  if stridx(word, complete_str) == 0 && col('.') == col('$')
+    let text = word[len(complete_str):]
+
+    if text == ''
+      return
+    endif
+
     " Head matched: Follow cursor text
     call nvim_buf_set_extmark(
           \ 0, s:ddc_namespace, line('.') - 1, col('.') - 1, {
-          \ 'virt_text': [[word[len(complete_str):], a:highlight]],
+          \ 'virt_text': [[text, a:highlight]],
           \ 'virt_text_pos': 'overlay',
           \ 'hl_mode': 'combine',
           \ 'priority': 0,
+          \ 'right_gravity': v:false,
           \ })
   else
     " Others: After cursor text
