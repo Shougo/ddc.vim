@@ -212,7 +212,7 @@ function! ddc#_inline(highlight) abort
   if stridx(word, complete_str) == 0 && col('.') == col('$')
     let text = word[len(complete_str):]
 
-    if text == ''
+    if text ==# ''
       return
     endif
 
