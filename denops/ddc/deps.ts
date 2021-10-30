@@ -12,6 +12,7 @@ export {
   ensureObject,
   ensureString,
 } from "https://deno.land/x/unknownutil@v0.1.1/mod.ts#^";
+export * as base64 from "https://deno.land/std@0.111.0/encoding/base64.ts";
 export { assertEquals } from "https://deno.land/std@0.111.0/testing/asserts.ts#^";
 export { parse, toFileUrl } from "https://deno.land/std@0.111.0/path/mod.ts#^";
 export {

@@ -32,6 +32,7 @@ import { isDdcCallbackCancelError } from "./callback.ts";
 import {
   assertEquals,
   autocmd,
+  base64,
   deadline,
   DeadlineError,
   Denops,
@@ -57,6 +58,8 @@ export class Ddc {
   private checkPaths: Record<string, boolean> = {};
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
+  // deno-lint-ignore no-explicit-any
+  private mods: Record<string, any> = {};
 
   private foundSources(names: string[]): BaseSource<Record<string, unknown>>[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
@@ -95,10 +98,11 @@ export class Ddc {
     }
   }
 
+  // deno-lint-ignore require-await
   async registerSource(denops: Denops, path: string, name: string) {
     this.checkPaths[path] = true;
 
-    const mod = await import(toFileUrl(path).href);
+    const mod = this.mods[toFileUrl(path).href];
 
     const addSource = (name: string) => {
       const source = new mod.Source();
@@ -120,10 +124,11 @@ export class Ddc {
     }
   }
 
+  // deno-lint-ignore require-await
   async registerFilter(denops: Denops, path: string, name: string) {
     this.checkPaths[path] = true;
 
-    const mod = await import(toFileUrl(path).href);
+    const mod = this.mods[toFileUrl(path).href];
 
     const addFilter = (name: string) => {
       const filter = new mod.Filter();
@@ -175,23 +180,40 @@ export class Ddc {
       return Promise.resolve(paths);
     }
 
-    if (isSource) {
-      const sources = (await globpath(
-        ["denops/@ddc-sources/", "denops/ddc-sources/"],
-        files.map((file) => this.aliasSources[file] ?? file),
-      )).filter((path) => !(path in this.checkPaths));
+    const sources = (await globpath(
+      ["denops/@ddc-sources/", "denops/ddc-sources/"],
+      files.map((file) => this.aliasSources[file] ?? file),
+    )).filter((path) => !(path in this.checkPaths));
 
-      await Promise.all(sources.map((path) => {
-        this.registerSource(denops, path, parse(path).name);
+    const filters = (await globpath(
+      ["denops/@ddc-filters/", "denops/ddc-filters/"],
+      files.map((file) => this.aliasFilters[file] ?? file),
+    )).filter((path) => !(path in this.checkPaths));
+
+    this.mods = {
+      ...this.mods,
+      ...(await import(
+        "data:charset=utf-8;base64," +
+          base64.encode([
+            ...[...sources, ...filters].map((path, i) =>
+              `import * as mod${i} from ${JSON.stringify(toFileUrl(path).href)}`
+            ),
+            `export const mods={`,
+            ...[...sources, ...filters].map((path, i) =>
+              `${JSON.stringify(toFileUrl(path).href)}:mod${i},`
+            ),
+            `}`,
+          ].join("\n"))
+      )).mods,
+    };
+
+    if (isSource) {
+      await Promise.all(sources.map(async (path) => {
+        await this.registerSource(denops, path, parse(path).name);
       }));
     } else {
-      const filters = (await globpath(
-        ["denops/@ddc-filters/", "denops/ddc-filters/"],
-        files.map((file) => this.aliasFilters[file] ?? file),
-      )).filter((path) => !(path in this.checkPaths));
-
-      await Promise.all(filters.map((path) => {
-        this.registerFilter(denops, path, parse(path).name);
+      await Promise.all(filters.map(async (path) => {
+        await this.registerFilter(denops, path, parse(path).name);
       }));
     }
   }
