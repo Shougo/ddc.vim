@@ -97,12 +97,14 @@ function! ddc#map#insert_candidate(number) abort
     return ''
   endif
 
+  call ddc#_clear_inline()
+
   " Get cursor word.
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
 
   let chars = ''
   " Note: Change backspace option to work <BS> correctly
-  let chars .= "\<Cmd>set backspace=\<CR>"
+  let chars .= "\<Cmd>set backspace=start\<CR>"
   let chars .= ddc#map#cancel()
   let chars .= repeat("\<BS>", strchars(complete_str))
   let chars .= word

@@ -202,7 +202,7 @@ function! ddc#_inline(highlight) abort
     return
   endif
 
-  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos:]
+  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
   let word = g:ddc#_candidates[0].word
 
   " Note: nvim_buf_set_extmark() should not use when LSP is enabled...
