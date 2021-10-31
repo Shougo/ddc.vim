@@ -83,7 +83,7 @@ function! ddc#map#complete_common_string() abort
 
   let chars = ''
   " Note: Change backspace option to work <BS> correctly
-  let chars .= "\<Cmd>set backspace=\<CR>"
+  let chars .= "\<Cmd>set backspace=start\<CR>"
   let chars .= ddc#map#cancel()
   let chars .= repeat("\<BS>", strchars(complete_str))
   let chars .= common_str
