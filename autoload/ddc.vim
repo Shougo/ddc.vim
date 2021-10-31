@@ -5,6 +5,7 @@
 "=============================================================================
 
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
+let s:inline_popup_id = -1
 
 function! ddc#enable() abort
   " Dummy call
@@ -176,27 +177,27 @@ function! ddc#_clear() abort
   call ddc#_clear_inline()
 endfunction
 function! ddc#_clear_inline() abort
-  if !exists('*nvim_buf_set_virtual_text')
-    return
-  endif
+  if exists('*nvim_buf_set_virtual_text')
+    if !exists('s:ddc_namespace')
+      let s:ddc_namespace = nvim_create_namespace('ddc')
+    endif
 
-  if !exists('s:ddc_namespace')
-    let s:ddc_namespace = nvim_create_namespace('ddc')
+    call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
+  elseif s:inline_popup_id > 0
+    call popup_close(s:inline_popup_id)
+    let s:inline_popup_id = -1
   endif
-
-  call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
 endfunction
 
 function! ddc#_inline(highlight) abort
-  if !exists('*nvim_buf_set_extmark')
-    return
+  if exists('*nvim_buf_set_extmark')
+    if exists('s:ddc_namespace')
+      call nvim_buf_clear_namespace(0, s:ddc_namespace, 0, -1)
+    else
+      let s:ddc_namespace = nvim_create_namespace('ddc')
+    endif
   endif
 
-  if !exists('s:ddc_namespace')
-    let s:ddc_namespace = nvim_create_namespace('ddc')
-  endif
-
-  call nvim_buf_clear_namespace(0, s:ddc_namespace, 0, -1)
   if empty(g:ddc#_candidates) || mode() !=# 'i'
         \ || ddc#_completion_menu() ==# 'none'
     return
@@ -205,35 +206,63 @@ function! ddc#_inline(highlight) abort
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
   let word = g:ddc#_candidates[0].word
 
-  " Note: nvim_buf_set_extmark() should not use when LSP is enabled...
+  " Note: nvim_buf_set_extmark() should not use when LSP is enabled?
   " https://github.com/hrsh7th/nvim-cmp/issues/404
   "let check_diagnostic = v:false
   "silent! let check_diagnostic = !empty(v:lua.vim.lsp.diagnostic.get_all()[0])
 
   if stridx(word, complete_str) == 0 && col('.') == col('$')
-    let text = word[len(complete_str):]
+    let word = word[len(complete_str):]
 
-    if text ==# ''
+    if word ==# ''
       return
     endif
 
-    " Head matched: Follow cursor text
-    call nvim_buf_set_extmark(
-          \ 0, s:ddc_namespace, line('.') - 1, col('.') - 1, {
-          \ 'virt_text': [[text, a:highlight]],
-          \ 'virt_text_pos': 'overlay',
-          \ 'hl_mode': 'combine',
-          \ 'priority': 0,
-          \ 'right_gravity': v:false,
-          \ })
+    if exists('*nvim_buf_set_extmark')
+      " Head matched: Follow cursor text
+      let col = col('.') - 1
+      let options = {
+            \ 'virt_text': [[word, a:highlight]],
+            \ 'virt_text_pos': 'overlay',
+            \ 'hl_mode': 'combine',
+            \ 'priority': 0,
+            \ 'right_gravity': v:false,
+            \ }
+    else
+      let col = col('.')
+    endif
   else
-    " Others: After cursor text
-    call nvim_buf_set_extmark(
-          \ 0, s:ddc_namespace, line('.') - 1, 0, {
+    if exists('*nvim_buf_set_extmark')
+      let col = 0
+      let options = {
           \ 'virt_text': [[word, a:highlight]],
           \ 'hl_mode': 'combine',
           \ 'priority': 0,
-          \ })
+          \ }
+    else
+      let col = col('$') + 1
+    endif
+  endif
+
+  if exists('*nvim_buf_set_extmark')
+    " Others: After cursor text
+    call nvim_buf_set_extmark(
+          \ 0, s:ddc_namespace, line('.') - 1, col, options)
+  else
+    let winopts = {
+          \ 'pos': 'topleft',
+          \ 'line': line('.'),
+          \ 'col': col,
+          \ 'highlight': a:highlight,
+          \ }
+
+    " Use popup instead
+    if s:inline_popup_id > 0
+      call popup_move(s:inline_popup_id, winopts)
+      call popup_settext(s:inline_popup_id, [word])
+    else
+      let s:inline_popup_id = popup_create([word], winopts)
+    endif
   endif
 endfunction
 

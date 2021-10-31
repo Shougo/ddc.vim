@@ -124,8 +124,8 @@ completionMode
 		The completion mode. It must be following string.
 
 		"popupmenu": Use popup menu.
-		"inline": Use virtual text by |nvim_buf_set_extmark()|.
-			Note: It is neovim only.
+		"inline": Use virtual text by |nvim_buf_set_extmark()| in
+			neovim or use |popu_create()| in Vim.
 			Note: It does not work in command line mode.
 		"manual": You can display popup menu manually by
 			|ddc#map#complete()|.
