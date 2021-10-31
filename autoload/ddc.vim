@@ -113,6 +113,7 @@ function! ddc#_cannot_complete() abort
   let menu = ddc#_completion_menu()
   return (menu ==# 'native' && mode() !=# 'i')
         \ || menu ==# 'none'
+        \ || g:ddc#_changedtick != b:changedtick
         \ || info_check || !exists('g:ddc#_complete_pos')
 endfunction
 

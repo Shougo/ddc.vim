@@ -288,6 +288,7 @@ export async function main(denops: Denops) {
           "ddc#_completion_menu",
           options.completionMenu,
         );
+        await vars.g.set(denops, "ddc#_changedtick", context.changedTick);
 
         if (
           options.completionMode == "popupmenu" ||
@@ -317,6 +318,7 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_popup_id", -1);
     await vars.g.set(denops, "ddc#_completion_menu", "native");
     await vars.g.set(denops, "ddc#_skip_complete", false);
+    await vars.g.set(denops, "ddc#_changedtick", 0);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
     await denops.call("ddc#_on_event", "Initialize");
