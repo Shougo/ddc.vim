@@ -83,11 +83,15 @@ function! ddc#map#complete_common_string() abort
 
   let chars = ''
   " Note: Change backspace option to work <BS> correctly
-  let chars .= "\<Cmd>set backspace=start\<CR>"
+  if mode() ==# 'i'
+    let chars .= "\<Cmd>set backspace=start\<CR>"
+  endif
   let chars .= ddc#map#cancel()
   let chars .= repeat("\<BS>", strchars(complete_str))
   let chars .= common_str
-  let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
+  if mode() ==# 'i'
+    let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
+  endif
   return chars
 endfunction
 
@@ -104,10 +108,14 @@ function! ddc#map#insert_candidate(number) abort
 
   let chars = ''
   " Note: Change backspace option to work <BS> correctly
-  let chars .= "\<Cmd>set backspace=start\<CR>"
+  if mode() ==# 'i'
+    let chars .= "\<Cmd>set backspace=start\<CR>"
+  endif
   let chars .= ddc#map#cancel()
   let chars .= repeat("\<BS>", strchars(complete_str))
   let chars .= word
-  let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
+  if mode() ==# 'i'
+    let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
+  endif
   return chars
 endfunction
