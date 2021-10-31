@@ -32,6 +32,7 @@ import { isDdcCallbackCancelError } from "./callback.ts";
 import {
   assertEquals,
   autocmd,
+  base64,
   deadline,
   DeadlineError,
   Denops,
@@ -57,6 +58,8 @@ export class Ddc {
   private checkPaths: Record<string, boolean> = {};
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
+  // deno-lint-ignore no-explicit-any
+  private mods: Record<string, any> = {};
 
   private foundSources(names: string[]): BaseSource<Record<string, unknown>>[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
@@ -98,7 +101,8 @@ export class Ddc {
   async registerSource(denops: Denops, path: string, name: string) {
     this.checkPaths[path] = true;
 
-    const mod = await import(toFileUrl(path).href);
+    const mod = this.mods[toFileUrl(path).href] ??
+      await import(toFileUrl(path).href);
 
     const addSource = (name: string) => {
       const source = new mod.Source();
@@ -123,7 +127,8 @@ export class Ddc {
   async registerFilter(denops: Denops, path: string, name: string) {
     this.checkPaths[path] = true;
 
-    const mod = await import(toFileUrl(path).href);
+    const mod = this.mods[toFileUrl(path).href] ??
+      await import(toFileUrl(path).href);
 
     const addFilter = (name: string) => {
       const filter = new mod.Filter();
@@ -146,8 +151,8 @@ export class Ddc {
     }
   }
 
-  async autoload(denops: Denops, files: string[], isSource: boolean) {
-    if (files.length == 0) {
+  async autoload(denops: Denops, sourceNames: string[], filterNames: string[]) {
+    if (sourceNames.length == 0 && filterNames.length == 0) {
       return;
     }
 
@@ -175,37 +180,53 @@ export class Ddc {
       return Promise.resolve(paths);
     }
 
-    if (isSource) {
-      const sources = (await globpath(
-        ["denops/@ddc-sources/", "denops/ddc-sources/"],
-        files.map((file) => this.aliasSources[file] ?? file),
-      )).filter((path) => !(path in this.checkPaths));
+    const sources = (await globpath(
+      ["denops/@ddc-sources/", "denops/ddc-sources/"],
+      sourceNames.map((file) => this.aliasSources[file] ?? file),
+    )).filter((path) => !(path in this.checkPaths));
 
-      await Promise.all(sources.map((path) => {
-        this.registerSource(denops, path, parse(path).name);
-      }));
-    } else {
-      const filters = (await globpath(
-        ["denops/@ddc-filters/", "denops/ddc-filters/"],
-        files.map((file) => this.aliasFilters[file] ?? file),
-      )).filter((path) => !(path in this.checkPaths));
+    const filters = (await globpath(
+      ["denops/@ddc-filters/", "denops/ddc-filters/"],
+      filterNames.map((file) => this.aliasFilters[file] ?? file),
+    )).filter((path) => !(path in this.checkPaths));
 
-      await Promise.all(filters.map((path) => {
-        this.registerFilter(denops, path, parse(path).name);
-      }));
-    }
+    this.mods = {
+      ...this.mods,
+      ...(await import(
+        "data:charset=utf-8;base64," +
+          base64.encode([
+            ...[...sources, ...filters].map((path, i) =>
+              `import * as mod${i} from ${JSON.stringify(toFileUrl(path).href)}`
+            ),
+            `export const mods={`,
+            ...[...sources, ...filters].map((path, i) =>
+              `${JSON.stringify(toFileUrl(path).href)}:mod${i},`
+            ),
+            `}`,
+          ].join("\n"))
+      )).mods,
+    };
+
+    await Promise.all(sources.map(async (path) => {
+      await this.registerSource(denops, path, parse(path).name);
+    }));
+    await Promise.all(filters.map(async (path) => {
+      await this.registerFilter(denops, path, parse(path).name);
+    }));
   }
 
-  async checkInvalidSources(
+  async checkInvalid(
     denops: Denops,
-    sources: string[],
+    sourceNames: string[],
+    filterNames: string[],
   ) {
     // Auto load invalid sources
-    const beforeSources = this.foundInvalidSources(sources);
-    await this.autoload(denops, beforeSources, true);
+    const beforeSources = this.foundInvalidSources(sourceNames);
+    const beforeFilters = this.foundInvalidFilters([...new Set(filterNames)]);
+    await this.autoload(denops, beforeSources, beforeFilters);
 
     // Check invalid sources
-    const invalidSources = this.foundInvalidSources(sources);
+    const invalidSources = this.foundInvalidSources(sourceNames);
     if (beforeSources == invalidSources && invalidSources.length != 0) {
       await denops.call(
         "ddc#util#print_error",
@@ -213,15 +234,6 @@ export class Ddc {
       );
       await denops.call("ddc#util#print_error", invalidSources);
     }
-  }
-
-  async checkInvalidFilters(
-    denops: Denops,
-    filterNames: string[],
-  ) {
-    // Auto load invalid filters
-    const beforeFilters = this.foundInvalidFilters([...new Set(filterNames)]);
-    await this.autoload(denops, beforeFilters, false);
 
     // Check invalid filters
     const invalidFilters = this.foundInvalidFilters([...new Set(filterNames)]);
@@ -240,9 +252,25 @@ export class Ddc {
     onCallback: OnCallback,
     options: DdcOptions,
   ): Promise<void> {
-    await this.checkInvalidSources(denops, options.sources);
-
     let filterNames: string[] = [];
+    for (const sourceName of options.sources) {
+      const o = foldMerge(
+        mergeSourceOptions,
+        defaultSourceOptions,
+        [options.sourceOptions["_"], options.sourceOptions[sourceName]],
+      );
+
+      filterNames = filterNames.concat(
+        o.matchers,
+        o.sorters,
+        o.converters,
+      );
+    }
+    // Uniq.
+    filterNames = [...new Set(filterNames)];
+
+    await this.checkInvalid(denops, options.sources, filterNames);
+
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
       if (source.events?.includes(context.event)) {
@@ -256,18 +284,7 @@ export class Ddc {
           sourceParams,
         );
       }
-
-      filterNames = filterNames.concat(
-        sourceOptions.matchers,
-        sourceOptions.sorters,
-        sourceOptions.converters,
-      );
     }
-
-    // Uniq.
-    filterNames = [...new Set(filterNames)];
-
-    await this.checkInvalidFilters(denops, filterNames);
 
     for (const filter of this.foundFilters(filterNames)) {
       if (filter.events?.includes(context.event)) {
