@@ -48,7 +48,7 @@ function! ddc#enable_cmdline_completion() abort
   augroup ddc-cmdline
     autocmd!
     autocmd CmdlineLeave * call ddc#_clear()
-    autocmd CmdlineEnter   * redraw | call ddc#_on_event('CmdlineEnter')
+    autocmd CmdlineEnter   * call ddc#_on_event('CmdlineEnter')
     autocmd CmdlineChanged * call ddc#_on_event('CmdlineChanged')
   augroup END
   if exists('##ModeChanged')
