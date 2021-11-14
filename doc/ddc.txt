@@ -232,7 +232,7 @@ ddc#callback({id} [, {payload}])
 		This is only for ddc plugin developers. It calls back to
 		sources and filters that registered with this id.
 
-		{id}: String to identify the reciever. All sources and filters
+		{id}: String to identify the receiver. All sources and filters
 		  share the namespace, so please take care how naming.
 		  `source/${this.name}` and `filter/${this.name}` are
 		  recommended.
@@ -241,7 +241,7 @@ ddc#callback({id} [, {payload}])
 
 							*ddc#disable()*
 ddc#disable()
-		Disable ddc.vim all features permanentlly.
+		Disable ddc.vim all features permanently.
 		It should be used when ddc.vim is broken.
 		It should not be used for temporary plugin disable.
 		Note: It changes the global state.
@@ -759,7 +759,7 @@ default, users have to check them.  It increases configuration cost.
 The config should work as users config.
 
 
-Q: I want to use inline suggestiong like fish shell.
+Q: I want to use inline suggestion like fish shell.
 
 A: >
 	inoremap <expr><C-t>       ddc#insert_candidate(0)
@@ -859,7 +859,7 @@ Please see below issues.
 * When trigger the source?
 * Slash may be comment or URL or divide operator
 * Hidden files
-* Tilde/Enviroment variables substitution
+* Tilde/Environment variables substitution
 * Link resolve
 
 The file path source is the most buggy source in deoplete sources. So I don't
