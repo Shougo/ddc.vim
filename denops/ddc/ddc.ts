@@ -190,22 +190,32 @@ export class Ddc {
       filterNames.map((file) => this.aliasFilters[file] ?? file),
     )).filter((path) => !(path in this.checkPaths));
 
-    this.mods = {
-      ...this.mods,
-      ...(await import(
-        "data:charset=utf-8;base64," +
-          base64.encode([
-            ...[...sources, ...filters].map((path, i) =>
-              `import * as mod${i} from ${JSON.stringify(toFileUrl(path).href)}`
-            ),
-            `export const mods={`,
-            ...[...sources, ...filters].map((path, i) =>
-              `${JSON.stringify(toFileUrl(path).href)}:mod${i},`
-            ),
-            `}`,
-          ].join("\n"))
-      )).mods,
-    };
+    try {
+      this.mods = {
+        ...this.mods,
+        ...(await import(
+          "data:charset=utf-8;base64," +
+            base64.encode([
+              ...[...sources, ...filters].map((path, i) =>
+                `import * as mod${i} from ${
+                  JSON.stringify(toFileUrl(path).href)
+                }`
+              ),
+              `export const mods={`,
+              ...[...sources, ...filters].map((path, i) =>
+                `${JSON.stringify(toFileUrl(path).href)}:mod${i},`
+              ),
+              `}`,
+            ].join("\n"))
+        )).mods,
+      };
+    } catch (e: unknown) {
+      console.error(
+        `[ddc.vim] sourceNames: ${sourceNames}, ` +
+          `filterNames: ${filterNames} import is failed`,
+      );
+      console.error(e);
+    }
 
     await Promise.all(sources.map(async (path) => {
       await this.registerSource(denops, path, parse(path).name);
