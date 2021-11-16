@@ -251,10 +251,6 @@ ddc#enable()
 		Enable ddc.vim features and you can use it.
 		Note: It changes the global state.
 
-						*ddc#refresh_candidates()*
-ddc#refresh_candidates()
-		Note: deprecated.
-
 							*ddc#register()*
 ddc#register({dict})
 		Register source or filter.
@@ -927,6 +923,9 @@ https://github.com/hrsh7th/nvim-cmp/issues/309#issuecomment-940740456
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.11.16
+* Remove ddc#refresh_candidates().
 
 2021.09.22
 * Remove old sources spec support

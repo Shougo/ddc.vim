@@ -137,18 +137,14 @@ export async function main(denops: Denops) {
         }
       }
 
-      const isAutoComplete = event != "AutoRefresh" && event != "ManualRefresh";
-
-      if (
-        isAutoComplete && await checkSkipCompletion(event, context, options)
-      ) {
+      if (await checkSkipCompletion(event, context, options)) {
         await cancelCompletion(denops, context);
 
         return;
       }
 
       // Check auto complete delay.
-      if (isAutoComplete && options.autoCompleteDelay > 0) {
+      if (options.autoCompleteDelay > 0) {
         // Cancel previous completion
         await cancelCompletion(denops, context);
 
@@ -293,8 +289,6 @@ export async function main(denops: Denops) {
         if (
           options.completionMode == "popupmenu" ||
           context.event == "Manual" ||
-          context.event == "AutoRefresh" ||
-          context.event == "ManualRefresh" ||
           pumvisible
         ) {
           await denops.call("ddc#complete");

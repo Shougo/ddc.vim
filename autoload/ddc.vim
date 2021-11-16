@@ -154,9 +154,7 @@ function! s:overwrite_completeopt() abort
   set completeopt+=menuone
   set completeopt-=menu
 
-  if &completeopt !~# 'noinsert\|noselect' || g:ddc#_event =~# 'Refresh$'
-    " Note: If it is async, noselect is needed to prevent without
-    " confirmation problem
+  if &completeopt !~# 'noinsert\|noselect'
     set completeopt-=noinsert
     set completeopt+=noselect
   endif
@@ -281,15 +279,6 @@ endfunction
 function! ddc#register_filter(dict) abort
   let a:dict.kind = 'filter'
   return ddc#register(a:dict)
-endfunction
-
-function! ddc#refresh_candidates() abort
-  if !ddc#_denops_running()
-    return
-  endif
-
-  call denops#notify('ddc', 'onEvent',
-        \ [g:ddc#_event =~# '^Manual' ? 'ManualRefresh' : 'AutoRefresh'])
 endfunction
 
 function! ddc#callback(id, ...) abort
