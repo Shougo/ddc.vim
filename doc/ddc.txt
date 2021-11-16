@@ -379,6 +379,8 @@ ddc#map#manual_complete([{sources}])
 		Manual trigger ddc completion.
 		You can provide a list of {sources}: It can be the name of a
 		source or a list of sources name.
+		Note: Manual completion ignores
+		|ddc-source-option-minAutoCompleteLength|.
 		Note: It must be in |:map-<expr>|.
 
 
