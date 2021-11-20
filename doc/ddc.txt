@@ -921,6 +921,28 @@ A: It is the problem of |nvim_win_set_option()|.  To avoid the problem, you
 need to use the function.
 https://github.com/hrsh7th/nvim-cmp/issues/309#issuecomment-940740456
 
+Q: I want to enable auto completion in fine-cmdline.nvim
+https://github.com/VonHeikemen/fine-cmdline.nvim
+
+A: Note: Experimental >
+
+  lua <<EOF
+  require('fine-cmdline').setup({
+    popup = {
+      buf_options = {
+        filetype = 'FineCmdlinePrompt'
+      }
+    },
+  })
+  EOF
+
+  call ddc#custom#patch_filetype(['FineCmdlinePrompt'], {
+      \ 'keywordPattern': '[0-9a-zA-Z_:#]*',
+      \ 'sources': ['cmdline', 'cmdline-history', 'around'],
+      \ 'specialBufferCompletion': v:true,
+      \ })
+
+
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
