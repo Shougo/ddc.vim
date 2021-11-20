@@ -928,11 +928,23 @@ A: Note: Experimental >
 
   lua <<EOF
   require('fine-cmdline').setup({
+    cmdline = {
+      enable_keymaps = false
+    },
     popup = {
       buf_options = {
         filetype = 'FineCmdlinePrompt'
       }
     },
+   hooks = {
+     set_keymaps = function(imap, feedkeys)
+       imap('<Esc>', fn.close)
+       imap('<C-c>', fn.close)
+
+       imap('<Up>', fn.up_history)
+       imap('<Down>', fn.down_history)
+     end
+   },
   })
   EOF
 
