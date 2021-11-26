@@ -536,6 +536,12 @@ export class Ddc {
       return cdd;
     }
 
+    if (sourceOptions.minKeywordLength > 0) {
+      cdd = cdd.filter((c: Candidate) =>
+        c.word.length >= sourceOptions.minKeywordLength
+      );
+    }
+
     if (sourceOptions.matcherKey != "") {
       cdd = cdd.map((c) => (
         {
@@ -557,12 +563,6 @@ export class Ddc {
           word: c.__word,
         }
       ));
-    }
-
-    if (sourceOptions.minKeywordLength > 0) {
-      cdd = cdd.filter((c: Candidate) =>
-        c.word.length >= sourceOptions.minKeywordLength
-      );
     }
 
     cdd = await callFilters(sorters);
