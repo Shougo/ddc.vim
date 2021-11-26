@@ -533,6 +533,13 @@ minAutoCompleteLength	(number)
 
 		Default: 2
 
+				    *ddc-source-option-minKeywordLength*
+minKeywordLength	(number)
+		The minimum word of length for candidates.
+		If it is 0, the feature is disabled.
+
+		Default: 0
+
 				    		*ddc-source-option-sorters*
 sorters			(string[])
 		It is a list of registered filter names to sort candidates.

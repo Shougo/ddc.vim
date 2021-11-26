@@ -109,6 +109,7 @@ export function defaultSourceOptions(): SourceOptions {
     maxAutoCompleteLength: 80,
     maxCandidates: 500,
     minAutoCompleteLength: 2,
+    minKeywordLength: 0,
     sorters: [],
     timeout: 2000,
   };

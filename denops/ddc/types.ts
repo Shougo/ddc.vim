@@ -55,6 +55,7 @@ export type SourceOptions = {
   maxAutoCompleteLength: number;
   maxCandidates: number;
   minAutoCompleteLength: number;
+  minKeywordLength: number;
   sorters: string[];
   timeout: number;
 };

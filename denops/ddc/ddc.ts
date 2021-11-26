@@ -559,6 +559,12 @@ export class Ddc {
       ));
     }
 
+    if (sourceOptions.minKeywordLength > 0) {
+      cdd = cdd.filter((c: Candidate) =>
+        c.word.length >= sourceOptions.minKeywordLength
+      );
+    }
+
     cdd = await callFilters(sorters);
 
     // Filter by maxCandidates
