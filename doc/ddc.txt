@@ -178,6 +178,15 @@ overwriteCompleteopt
 
 		Default: v:true
 
+						*ddc-option-postFilters*
+postFilters
+		It is a list of registered filter names.  It is called after
+		the candidates are filtered.
+		It is useful if you want to sort candidates regardless source
+		orders.
+
+		Default: []
+
 							*ddc-option-sources*
 sources
 		It is a list of registered source names.  You have to select

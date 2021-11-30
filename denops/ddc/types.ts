@@ -37,6 +37,7 @@ export type DdcOptions = {
   inlineHighlight: string;
   keywordPattern: string;
   overwriteCompleteopt: boolean;
+  postFilters: string[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;
   sources: SourceName[];

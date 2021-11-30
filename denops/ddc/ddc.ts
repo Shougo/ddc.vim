@@ -285,7 +285,7 @@ export class Ddc {
       );
     }
     // Uniq.
-    filterNames = [...new Set(filterNames)];
+    filterNames = [...new Set(filterNames.concat(options.postFilters))];
 
     await this.checkInvalid(denops, options.sources, filterNames);
 
@@ -469,7 +469,7 @@ export class Ddc {
     const completePos = Math.min(...fs.map((v) => v[0]));
 
     // Flatten candidates
-    const candidates = fs.flatMap(([pos, candidates]) =>
+    let candidates = fs.flatMap(([pos, candidates]) =>
       candidates.map((c) => {
         // Note: Merge word by completePos
         const word = context.input.substring(completePos, pos) + c.word;
@@ -480,6 +480,29 @@ export class Ddc {
         };
       })
     );
+
+    // Post filters
+    for (const filter of this.foundFilters(options.postFilters)) {
+      const [o, p] = filterArgs(
+        options.filterOptions,
+        options.filterParams,
+        filter,
+      );
+
+      // @ts-ignore: postFilters does not change candidates keys
+      candidates = await callFilterFilter(
+        filter,
+        denops,
+        context,
+        onCallback,
+        options,
+        defaultSourceOptions(),
+        o,
+        p,
+        context.input.slice(completePos),
+        candidates,
+      );
+    }
 
     // Convert2byte for Vim
     const completePosBytes = charposToBytepos(context.input, completePos);
@@ -500,7 +523,9 @@ export class Ddc {
   ): Promise<Candidate[]> {
     // Check invalid
     const invalidFilters = this.foundInvalidFilters(
-      sourceOptions.matchers.concat(
+      options.postFilters.concat(
+        sourceOptions.matchers,
+      ).concat(
         sourceOptions.sorters,
       ).concat(
         sourceOptions.converters,
