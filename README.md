@@ -1,7 +1,5 @@
 # ddc.vim
 
-Note: It is still beta version. But it is almost stable.
-
 > Dark deno-powered completion framework for neovim/Vim8
 
 If you don't want to configure plugins, you don't have to use the plugin. It

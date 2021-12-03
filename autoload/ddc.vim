@@ -11,7 +11,7 @@ function! ddc#enable() abort
   " Dummy call
   silent! call denops#plugin#is_loaded('ddc')
   if !exists('*denops#plugin#is_loaded')
-    call ddc#util#print_error('ddc requires denops.vim.')
+    call ddc#util#print_error('denops.vim is not released or too old.')
     return
   endif
 
