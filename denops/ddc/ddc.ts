@@ -133,7 +133,6 @@ export class Ddc {
     const addFilter = (name: string) => {
       const filter = new mod.Filter();
       filter.name = name;
-      filter.onInit({ denops });
       this.filters[filter.name] = filter;
       if (filter.events && filter.events.length != 0) {
         this.registerAutocmd(denops, filter.events);
