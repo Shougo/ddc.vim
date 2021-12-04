@@ -108,6 +108,7 @@ export function defaultSourceOptions(): SourceOptions {
     matchers: [],
     maxAutoCompleteLength: 80,
     maxCandidates: 500,
+    maxKeywordLength: 0,
     minAutoCompleteLength: 2,
     minKeywordLength: 0,
     sorters: [],

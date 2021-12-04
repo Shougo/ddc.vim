@@ -536,6 +536,13 @@ matchers		(string[])
 
 		Default: []
 
+				    *ddc-source-option-maxKeywordLength*
+maxKeywordLength	(number)
+		The maximum word of length for candidates.
+		If it is 0, the feature is disabled.
+
+		Default: 0
+
 				    *ddc-source-option-minAutoCompleteLength*
 minAutoCompleteLength	(number)
 		Length of keyword required for auto completion.
