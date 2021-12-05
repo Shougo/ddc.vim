@@ -363,16 +363,21 @@ ddc#map#complete()
 		Open current completion popup menu.
 		Note: It must be in |:map-<expr>|.
 
-							*ddc#map#extend()*
-ddc#map#extend()
-		Confirm the candidate and extend current completion.
-		Note: It must be in |:map-<expr>|.
-
 					*ddc#map#complete_common_string()*
 ddc#map#complete_common_string()
 		Complete common string in candidates.
 		This can be useful when candidates have a long common prefix.
 		Note: It must be in |:map-<expr>|.
+
+							*ddc#map#extend()*
+ddc#map#extend()
+		Confirm the candidate and extend current completion.
+		Note: It must be in |:map-<expr>|.
+
+					    	*ddc#map#inline_visible()*
+ddc#map#inline_visible()
+		Returns non-zero when the inline completion is visible, zero
+		otherwise.
 
 						*ddc#map#insert_candidate()*
 ddc#map#insert_candidate({index})
@@ -388,6 +393,11 @@ ddc#map#manual_complete([{sources}])
 		|ddc-source-option-minAutoCompleteLength|.
 		Note: It must be in |:map-<expr>|.
 
+					    	*ddc#map#pum_visible()*
+ddc#map#pum_visible()
+		Returns non-zero when the popup menu is visible, zero
+		otherwise.
+		Note: It works for both |pum.vim| and native popup menu.
 
 ==============================================================================
 EXAMPLES						*ddc-examples*
@@ -430,12 +440,12 @@ EXAMPLES						*ddc-examples*
 
 	" <TAB>: completion.
 	inoremap <silent><expr> <TAB>
-	\ pumvisible() ? '<C-n>' :
+	\ ddc#map#pum_visible() ? '<C-n>' :
 	\ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
 	\ '<TAB>' : ddc#map#manual_complete()
 
 	" <S-TAB>: completion back.
-	inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
+	inoremap <expr><S-TAB>  ddc#map#pum_visible() ? '<C-p>' : '<C-h>'
 
 	" Use ddc.
 	call ddc#enable()
@@ -980,6 +990,9 @@ A: Note: Experimental >
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.12.05
+* Rename ddc#map#pumvisible() to ddc#map#pum_visible().
 
 2021.11.16
 * Remove ddc#refresh_candidates().

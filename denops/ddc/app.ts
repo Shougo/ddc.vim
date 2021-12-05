@@ -241,13 +241,13 @@ export async function main(denops: Denops) {
     denops: Denops,
     context: Context,
   ): Promise<void> {
-    const pumvisible = await denops.call("ddc#map#pumvisible");
+    const visible = await denops.call("ddc#map#pum_visible");
 
     await batch(denops, async (denops: Denops) => {
       await vars.g.set(denops, "ddc#_event", context.event);
       await vars.g.set(denops, "ddc#_complete_pos", -1);
       await vars.g.set(denops, "ddc#_candidates", []);
-      if (pumvisible) {
+      if (visible) {
         await denops.call("ddc#_clear");
       }
     });
@@ -266,7 +266,7 @@ export async function main(denops: Denops) {
     );
 
     await (async function write() {
-      const pumvisible = await denops.call("ddc#map#pumvisible");
+      const visible = await denops.call("ddc#map#pum_visible");
 
       await batch(denops, async (denops: Denops) => {
         await vars.g.set(denops, "ddc#_event", context.event);
@@ -289,7 +289,7 @@ export async function main(denops: Denops) {
         if (
           options.completionMode == "popupmenu" ||
           context.event == "Manual" ||
-          pumvisible
+          visible
         ) {
           await denops.call("ddc#complete");
         } else if (options.completionMode == "inline") {
@@ -303,16 +303,17 @@ export async function main(denops: Denops) {
 
   await batch(denops, async (denops: Denops) => {
     await vars.g.set(denops, "ddc#_candidates", []);
+    await vars.g.set(denops, "ddc#_changedtick", 0);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
-    await vars.g.set(denops, "ddc#_sources", []);
+    await vars.g.set(denops, "ddc#_completion_menu", "native");
     await vars.g.set(denops, "ddc#_event", "Manual");
+    await vars.g.set(denops, "ddc#_inline_popup_id", -1);
     await vars.g.set(denops, "ddc#_now", 0);
     await vars.g.set(denops, "ddc#_overwrite_completeopt", false);
-    await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_popup_id", -1);
-    await vars.g.set(denops, "ddc#_completion_menu", "native");
+    await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_skip_complete", false);
-    await vars.g.set(denops, "ddc#_changedtick", 0);
+    await vars.g.set(denops, "ddc#_sources", []);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
     await denops.call("ddc#_on_event", "Initialize");

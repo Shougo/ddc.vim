@@ -5,7 +5,6 @@
 "=============================================================================
 
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
-let s:inline_popup_id = -1
 
 function! ddc#enable() abort
   " Dummy call
@@ -181,10 +180,11 @@ function! ddc#_clear_inline() abort
     endif
 
     call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
-  elseif s:inline_popup_id > 0
-    call popup_close(s:inline_popup_id)
-    let s:inline_popup_id = -1
+  elseif g:ddc#_inline_popup_id > 0
+    call popup_close(g:ddc#_inline_popup_id)
   endif
+
+  let g:ddc#_inline_popup_id = -1
 endfunction
 
 function! ddc#_inline(highlight) abort
@@ -246,6 +246,7 @@ function! ddc#_inline(highlight) abort
     " Others: After cursor text
     call nvim_buf_set_extmark(
           \ 0, s:ddc_namespace, line('.') - 1, col, options)
+    let g:ddc#_inline_popup_id = 1
   else
     let winopts = {
           \ 'pos': 'topleft',
@@ -255,11 +256,11 @@ function! ddc#_inline(highlight) abort
           \ }
 
     " Use popup instead
-    if s:inline_popup_id > 0
-      call popup_move(s:inline_popup_id, winopts)
-      call popup_settext(s:inline_popup_id, [word])
+    if g:ddc#_inline_popup_id > 0
+      call popup_move(g:ddc#_inline_popup_id, winopts)
+      call popup_settext(g:ddc#_inline_popup_id, [word])
     else
-      let s:inline_popup_id = popup_create([word], winopts)
+      let g:ddc#_inline_popup_id = popup_create([word], winopts)
     endif
   endif
 endfunction

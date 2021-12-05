@@ -34,19 +34,22 @@ function! ddc#map#manual_complete(...) abort
         \ string([type(arg) == v:t_list ? arg : [arg]]))
 endfunction
 
-function! ddc#map#pumvisible() abort
+function! ddc#map#pum_visible() abort
   return ddc#_completion_menu() ==# 'pum.vim' ?
         \ pum#visible() : pumvisible()
 endfunction
+function! ddc#map#inline_visible() abort
+  return get(g:, 'ddc#_inline_popup_id', -1) > 0
+endfunction
 
 function! ddc#map#confirm() abort
-  return !ddc#map#pumvisible() ? '' :
+  return !ddc#map#pum_visible() ? '' :
         \ ddc#_completion_menu() ==# 'pum.vim' ?
         \ "\<Cmd>call pum#map#confirm()\<CR>" : "\<C-y>"
 endfunction
 
 function! ddc#map#cancel() abort
-  return !ddc#map#pumvisible() ? '' :
+  return !ddc#map#pum_visible() ? '' :
         \ ddc#_completion_menu() ==# 'pum.vim' ?
         \ "\<Cmd>call pum#map#cancel()\<CR>" : "\<C-e>"
 endfunction
