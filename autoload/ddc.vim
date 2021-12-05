@@ -127,6 +127,18 @@ function! ddc#_complete() abort
           \ && g:ddc#_event !=# 'Manual'
       call s:overwrite_completeopt()
     endif
+
+    " Check displaywidth
+    " Note: If the input text is longer than 'textwidth', the completed text
+    " will be the next line.  It breaks auto completion behavior.
+    if &l:formatoptions =~# '[tca]' && &l:textwidth > 0
+      let input = getline('.')[: g:ddc#_complete_pos]
+      let displaywidth = max(map(copy(g:ddc#_candidates),
+            \ { _, val -> strdisplaywidth(input . val.word) })) + 1
+      if displaywidth >= &l:textwidth || virtcol('.') >= displaywidth
+        return
+      endif
+    endif
   else
     " Clear current popup
     let g:ddc#_complete_pos = 0

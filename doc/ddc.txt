@@ -987,12 +987,19 @@ A: Note: Experimental >
       \ 'specialBufferCompletion': v:true,
       \ })
 
+Q: The auto completion does not work if 'textwidth' is set.
+
+A: If the input text is longer than 'textwidth', the completed text
+will be the next line.  It breaks auto completion behavior.  So the auto
+completion is disabled.
+
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
 2021.12.05
 * Rename ddc#map#pumvisible() to ddc#map#pum_visible().
+* The auto completion is disabled if current text is longer than 'textwidth'.
 
 2021.11.16
 * Remove ddc#refresh_candidates().
