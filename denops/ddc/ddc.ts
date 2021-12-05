@@ -562,7 +562,7 @@ export class Ddc {
 
     if (sourceOptions.maxKeywordLength > 0) {
       cdd = cdd.filter((c: Candidate) =>
-        c.word.length >= sourceOptions.maxKeywordLength
+        c.word.length <= sourceOptions.maxKeywordLength
       );
     }
 
