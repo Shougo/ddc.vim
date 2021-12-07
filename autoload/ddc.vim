@@ -192,7 +192,7 @@ function! ddc#_clear_inline() abort
     endif
 
     call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
-  elseif g:ddc#_inline_popup_id > 0
+  elseif get(g:, 'ddc#_inline_popup_id', -1) > 0
     call popup_close(g:ddc#_inline_popup_id)
   endif
 
