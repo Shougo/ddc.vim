@@ -308,18 +308,18 @@ export class ContextBuilder {
   async createContext(
     denops: Denops,
     event: DdcEvent,
-  ): Promise<null | [Context, DdcOptions]> {
+  ): Promise<[boolean, Context, DdcOptions]> {
     const world = await this._cacheWorld(denops, event);
     const old = this.lastWorld;
     this.lastWorld = world;
+    let skip = false;
     if (
-      event != "Manual" &&
-      event != "Initialize" && event != "CompleteDone" &&
-      isNegligible(old, world)
+      (event != "Manual" &&
+        event != "Initialize" && event != "CompleteDone" &&
+        isNegligible(old, world)) || world.isLmap || world.changedByCompletion
     ) {
-      return null;
+      skip = true;
     }
-    if (world.isLmap || world.changedByCompletion) return null;
 
     const context = {
       changedTick: world.changedTick,
@@ -329,7 +329,11 @@ export class ContextBuilder {
       lineNr: world.lineNr,
       nextInput: world.nextInput,
     };
-    return [context, await this._getUserOptions(denops, world)];
+    return [
+      skip,
+      context,
+      await this._getUserOptions(denops, world),
+    ];
   }
 
   async _getUserOptions(denops: Denops, world: World): Promise<DdcOptions> {
