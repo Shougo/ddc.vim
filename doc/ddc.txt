@@ -1,6 +1,6 @@
 *ddc.txt*	Dark deno-powered completion framework for neovim/Vim8
 
-Version: 1.0
+Version: 1.1
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
@@ -996,6 +996,9 @@ completion is disabled.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2021.12.10
+* "denops/ddc-sources" and "denops/ddc-filters" files are not loaded.
 
 2021.12.05
 * Rename ddc#map#pumvisible() to ddc#map#pum_visible().

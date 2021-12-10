@@ -180,12 +180,12 @@ export class Ddc {
     }
 
     const sources = (await globpath(
-      ["denops/@ddc-sources/", "denops/ddc-sources/"],
+      ["denops/@ddc-sources/"],
       sourceNames.map((file) => this.aliasSources[file] ?? file),
     )).filter((path) => !(path in this.checkPaths));
 
     const filters = (await globpath(
-      ["denops/@ddc-filters/", "denops/ddc-filters/"],
+      ["denops/@ddc-filters/"],
       filterNames.map((file) => this.aliasFilters[file] ?? file),
     )).filter((path) => !(path in this.checkPaths));
 
