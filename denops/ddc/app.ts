@@ -91,9 +91,9 @@ export async function main(denops: Denops) {
     async manualComplete(arg1: unknown): Promise<void> {
       const sources = arg1 as string[];
 
-      const maybe = await contextBuilder.createContext(denops, "Manual");
-      if (!maybe) return;
-      const [context, options] = maybe;
+      const [skip, context, options] = await contextBuilder
+        .createContext(denops, "Manual");
+      if (skip) return;
       if (sources.length != 0) {
         options.sources = sources;
       }
@@ -103,17 +103,17 @@ export async function main(denops: Denops) {
     },
     async onEvent(arg1: unknown): Promise<void> {
       const event = arg1 as DdcEvent;
-      const maybe = await contextBuilder.createContext(denops, event);
-      if (!maybe) return;
-      const [context, options] = maybe;
-
-      cbContext.revoke();
+      const [skip, context, options] = await contextBuilder
+        .createContext(denops, event);
       await ddc.onEvent(
         denops,
         context,
         cbContext.createOnCallback(),
         options,
       );
+      if (skip) return;
+
+      cbContext.revoke();
 
       if (event != "InsertEnter" && await fn.mode(denops) == "n") {
         return;
@@ -174,9 +174,9 @@ export async function main(denops: Denops) {
     async onCompleteDone(arg1: unknown, arg2: unknown): Promise<void> {
       const sourceName = arg1 as string;
       const userData = arg2 as DdcUserData;
-      const maybe = await contextBuilder.createContext(denops, "CompleteDone");
-      if (!maybe) return;
-      const [context, options] = maybe;
+      const [skip, context, options] = await contextBuilder
+        .createContext(denops, "CompleteDone");
+      if (skip) return;
 
       cbContext.revoke();
       await ddc.onCompleteDone(
