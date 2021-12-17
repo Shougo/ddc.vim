@@ -101,8 +101,7 @@ export class Ddc {
   async registerSource(denops: Denops, path: string, name: string) {
     this.checkPaths[path] = true;
 
-    const mod = this.mods[toFileUrl(path).href] ??
-      await import(toFileUrl(path).href);
+    const mod = await import(toFileUrl(path).href);
 
     const addSource = (name: string) => {
       const source = new mod.Source();
@@ -127,8 +126,7 @@ export class Ddc {
   async registerFilter(denops: Denops, path: string, name: string) {
     this.checkPaths[path] = true;
 
-    const mod = this.mods[toFileUrl(path).href] ??
-      await import(toFileUrl(path).href);
+    const mod = await import(toFileUrl(path).href);
 
     const addFilter = (name: string) => {
       const filter = new mod.Filter();
@@ -188,33 +186,6 @@ export class Ddc {
       ["denops/@ddc-filters/"],
       filterNames.map((file) => this.aliasFilters[file] ?? file),
     )).filter((path) => !(path in this.checkPaths));
-
-    try {
-      this.mods = {
-        ...this.mods,
-        ...(await import(
-          "data:charset=utf-8;base64," +
-            base64.encode([
-              ...[...sources, ...filters].map((path, i) =>
-                `import * as mod${i} from ${
-                  JSON.stringify(toFileUrl(path).href)
-                }`
-              ),
-              `export const mods={`,
-              ...[...sources, ...filters].map((path, i) =>
-                `${JSON.stringify(toFileUrl(path).href)}:mod${i},`
-              ),
-              `}`,
-            ].join("\n"))
-        )).mods,
-      };
-    } catch (e: unknown) {
-      console.error(
-        `[ddc.vim] sourceNames: ${sourceNames}, ` +
-          `filterNames: ${filterNames} import is failed`,
-      );
-      console.error(e);
-    }
 
     await Promise.all(sources.map(async (path) => {
       await this.registerSource(denops, path, parse(path).name);
