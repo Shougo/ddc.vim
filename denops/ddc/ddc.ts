@@ -32,7 +32,6 @@ import { isDdcCallbackCancelError } from "./callback.ts";
 import {
   assertEquals,
   autocmd,
-  base64,
   deadline,
   DeadlineError,
   Denops,
