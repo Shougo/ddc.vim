@@ -216,11 +216,7 @@ export class Ddc {
 
     // Check invalid sources
     const invalidSources = this.foundInvalidSources(sourceNames);
-    if (
-      invalidSources.length > 0 &&
-      JSON.stringify(beforeSources.sort()) ==
-        JSON.stringify(invalidSources.sort())
-    ) {
+    if (invalidSources.length > 0) {
       await denops.call(
         "ddc#util#print_error",
         "Invalid sources are detected!",
@@ -230,11 +226,7 @@ export class Ddc {
 
     // Check invalid filters
     const invalidFilters = this.foundInvalidFilters([...new Set(filterNames)]);
-    if (
-      invalidFilters.length > 0 &&
-      JSON.stringify(beforeFilters.sort()) ==
-        JSON.stringify(invalidFilters.sort())
-    ) {
+    if (invalidFilters.length > 0) {
       await denops.call(
         "ddc#util#print_error",
         "Invalid filters are detected!",
