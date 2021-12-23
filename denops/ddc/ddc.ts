@@ -147,9 +147,13 @@ export class Ddc {
     }
   }
 
-  async autoload(denops: Denops, sourceNames: string[], filterNames: string[]) {
+  async autoload(
+    denops: Denops,
+    sourceNames: string[],
+    filterNames: string[],
+  ): Promise<string[]> {
     if (sourceNames.length == 0 && filterNames.length == 0) {
-      return;
+      return Promise.resolve([]);
     }
 
     const runtimepath = await op.runtimepath.getGlobal(denops);
@@ -192,6 +196,8 @@ export class Ddc {
     await Promise.all(filters.map(async (path) => {
       await this.registerFilter(denops, path, parse(path).name);
     }));
+
+    return Promise.resolve(sources.concat(filters));
   }
 
   async checkInvalid(
@@ -202,12 +208,15 @@ export class Ddc {
     // Auto load invalid sources
     const beforeSources = this.foundInvalidSources(sourceNames);
     const beforeFilters = this.foundInvalidFilters([...new Set(filterNames)]);
-    await this.autoload(denops, beforeSources, beforeFilters);
+    const loaded = await this.autoload(denops, beforeSources, beforeFilters);
+
+    if (loaded.length != 0) {
+      return;
+    }
 
     // Check invalid sources
     const invalidSources = this.foundInvalidSources(sourceNames);
     if (
-      Object.keys(this.sources).length > 0 &&
       invalidSources.length > 0 &&
       JSON.stringify(beforeSources.sort()) ==
         JSON.stringify(invalidSources.sort())
@@ -222,7 +231,6 @@ export class Ddc {
     // Check invalid filters
     const invalidFilters = this.foundInvalidFilters([...new Set(filterNames)]);
     if (
-      Object.keys(this.filters).length > 0 &&
       invalidFilters.length > 0 &&
       JSON.stringify(beforeFilters.sort()) ==
         JSON.stringify(invalidFilters.sort())
