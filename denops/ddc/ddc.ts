@@ -207,6 +207,7 @@ export class Ddc {
     // Check invalid sources
     const invalidSources = this.foundInvalidSources(sourceNames);
     if (
+      Object.keys(this.sources).length > 0 &&
       invalidSources.length > 0 &&
       JSON.stringify(beforeSources.sort()) ==
         JSON.stringify(invalidSources.sort())
@@ -221,6 +222,7 @@ export class Ddc {
     // Check invalid filters
     const invalidFilters = this.foundInvalidFilters([...new Set(filterNames)]);
     if (
+      Object.keys(this.filters).length > 0 &&
       invalidFilters.length > 0 &&
       JSON.stringify(beforeFilters.sort()) ==
         JSON.stringify(invalidFilters.sort())
