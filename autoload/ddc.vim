@@ -175,11 +175,11 @@ function! ddc#_completion_menu() abort
 endfunction
 
 function! ddc#_clear() abort
-  if ddc#_completion_menu() ==# 'native'
-    if mode() ==# 'i'
-      call complete(1, [])
-    endif
-  elseif ddc#_completion_menu() ==# 'pum.vim'
+  if ddc#_completion_menu() ==# 'native' && mode() ==# 'i'
+    call complete(1, [])
+  endif
+
+  if exists('*pum#close')
     call pum#close()
   endif
 
