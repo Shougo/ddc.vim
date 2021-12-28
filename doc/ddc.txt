@@ -993,6 +993,11 @@ A: If the input text is longer than 'textwidth', the completed text
 will be the next line.  It breaks auto completion behavior.  So the auto
 completion is disabled.
 
+Q: I want to disable ddc auto completion.
+
+A: >
+    call ddc#custom#patch_global('completionMode', 'manual')
+
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
