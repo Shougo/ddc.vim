@@ -138,7 +138,7 @@ export async function main(denops: Denops) {
       }
 
       if (await checkSkipCompletion(event, context, options)) {
-        await cancelCompletion(denops, context);
+        await cancelCompletion(denops, context, options);
 
         return;
       }
@@ -146,7 +146,7 @@ export async function main(denops: Denops) {
       // Check auto complete delay.
       if (options.autoCompleteDelay > 0) {
         // Cancel previous completion
-        await cancelCompletion(denops, context);
+        await cancelCompletion(denops, context, options);
 
         await new Promise((resolve) =>
           setTimeout(
@@ -240,6 +240,7 @@ export async function main(denops: Denops) {
   async function cancelCompletion(
     denops: Denops,
     context: Context,
+    options: DdcOptions,
   ): Promise<void> {
     const visible = await denops.call("ddc#map#pum_visible");
 
@@ -247,7 +248,8 @@ export async function main(denops: Denops) {
       await vars.g.set(denops, "ddc#_event", context.event);
       await vars.g.set(denops, "ddc#_complete_pos", -1);
       await vars.g.set(denops, "ddc#_candidates", []);
-      if (visible) {
+      if (visible && options.completionMode != "manual") {
+        // Close current popupmenu.
         await denops.call("ddc#_clear");
       }
     });
