@@ -216,17 +216,24 @@ export async function main(denops: Denops) {
     }
 
     // Check indentkeys.
-    const indentkeys = await op.indentkeys.getLocal(denops);
-    for (const pattern of indentkeys.split(",")) {
-      const found = pattern.match(/^0?=~?(.+)$/);
-      if (!found) {
-        continue;
-      }
+    // Note: re-indentation does not work for native popupmenu
+    const indentkeys = (await op.indentkeys.getLocal(denops)).split(",");
+    if (
+      options.completionMenu == "native" &&
+      mode == "i" &&
+      indentkeys.filter((pattern) => pattern == "!^F").length > 0
+    ) {
+      for (const pattern of indentkeys) {
+        const found = pattern.match(/^0?=~?(.+)$/);
+        if (!found) {
+          continue;
+        }
 
-      if (mode != "i" && context.input.endsWith(found[1])) {
-        // Skip completion and reindent if matched.
-        await denops.call("ddc#util#indent_current_line");
-        return true;
+        if (context.input.endsWith(found[1])) {
+          // Skip completion and reindent if matched.
+          await denops.call("ddc#util#indent_current_line");
+          return true;
+        }
       }
     }
 
