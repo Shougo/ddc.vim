@@ -208,9 +208,9 @@ export async function main(denops: Denops) {
 
     // Skip special buffers.
     const buftype = await op.buftype.getLocal(denops);
+    const mode = await fn.mode(denops);
     if (
-      buftype != "" && !options.specialBufferCompletion &&
-      await fn.mode(denops) != "c"
+      buftype != "" && !options.specialBufferCompletion && mode != "c"
     ) {
       return true;
     }
@@ -223,7 +223,7 @@ export async function main(denops: Denops) {
         continue;
       }
 
-      if (context.input.endsWith(found[1])) {
+      if (mode != "i" && context.input.endsWith(found[1])) {
         // Skip completion and reindent if matched.
         await denops.call("ddc#util#indent_current_line");
         return true;
