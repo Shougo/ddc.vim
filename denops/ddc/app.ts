@@ -223,8 +223,9 @@ export async function main(denops: Denops) {
       mode == "i" &&
       indentkeys.filter((pattern) => pattern == "!^F").length > 0
     ) {
-      for (const pattern of indentkeys) {
-        const found = pattern.match(/^0?=~?(.+)$/);
+      for (
+        const found of indentkeys.map((p) => p.match(/^0?=~?(.+)$/))
+      ) {
         if (!found) {
           continue;
         }
