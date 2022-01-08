@@ -1,11 +1,3 @@
-"=============================================================================
-" FILE: ddc.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license
-"=============================================================================
-
-let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
-
 function! ddc#enable() abort
   " Dummy call
   silent! call denops#plugin#is_loaded('ddc')
@@ -75,6 +67,8 @@ function! ddc#disable() abort
   augroup END
   call ddc#disable_cmdline_completion()
 endfunction
+
+let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 function! ddc#_register() abort
   call denops#plugin#register('ddc',
         \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'),

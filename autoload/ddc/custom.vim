@@ -1,9 +1,3 @@
-"=============================================================================
-" FILE: custom.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license
-"=============================================================================
-
 function! ddc#custom#patch_global(key_or_dict, ...) abort
   let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
   call s:notify('patchGlobal', [dict])

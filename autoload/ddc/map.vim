@@ -1,10 +1,3 @@
-"=============================================================================
-" FILE: map.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license
-"=============================================================================
-let s:completion_timer = -1
-
 function! ddc#map#complete() abort
   if exists('g:ddc#_save_completeopt') && g:ddc#_overwrite_completeopt
     " Restore completeopt
@@ -18,7 +11,9 @@ function! ddc#map#complete() abort
     call ddc#_complete()
   else
     " Debounce for Vim8
-    call timer_stop(s:completion_timer)
+    if exists('s:completion_timer')
+      call timer_stop(s:completion_timer)
+    endif
     let s:completion_timer = timer_start(10, { -> ddc#_complete() })
   endif
 endfunction
