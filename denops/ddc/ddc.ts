@@ -57,8 +57,6 @@ export class Ddc {
   private checkPaths: Record<string, boolean> = {};
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
-  // deno-lint-ignore no-explicit-any
-  private mods: Record<string, any> = {};
 
   private foundSources(names: string[]): BaseSource<Record<string, unknown>>[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
