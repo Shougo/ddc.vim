@@ -125,7 +125,7 @@ completionMode
 
 		"popupmenu": Use popup menu.
 		"inline": Use virtual text by |nvim_buf_set_extmark()| in
-			neovim or use |popu_create()| in Vim.
+			neovim or use |popup_create()| in Vim.
 			Note: It does not work in command line mode.
 		"manual": You can display popup menu manually by
 			|ddc#map#complete()|.
