@@ -1,6 +1,12 @@
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder } from "./context.ts";
-import { Context, DdcEvent, DdcOptions, DdcUserData } from "./types.ts";
+import {
+  Context,
+  DdcEvent,
+  DdcExtType,
+  DdcOptions,
+  DdcUserData,
+} from "./types.ts";
 import {
   batch,
   Denops,
@@ -15,7 +21,7 @@ import { createCallbackContext } from "./callback.ts";
 type RegisterArg = {
   path: string;
   name: string;
-  type: "source" | "filter";
+  type: DdcExtType;
 };
 
 export async function main(denops: Denops) {
@@ -33,7 +39,7 @@ export async function main(denops: Denops) {
       }
     },
     alias(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
-      ddc.registerAlias(arg1 as string, arg2 as string, arg3 as string);
+      ddc.registerAlias(arg1 as DdcExtType, arg2 as string, arg3 as string);
       return Promise.resolve();
     },
     setGlobal(arg1: unknown): Promise<void> {

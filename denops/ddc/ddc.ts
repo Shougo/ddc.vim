@@ -2,6 +2,7 @@ import {
   Candidate,
   Context,
   DdcCandidate,
+  DdcExtType,
   DdcOptions,
   DdcUserData,
   FilterOptions,
@@ -87,7 +88,7 @@ export class Ddc {
     });
   }
 
-  registerAlias(type: string, alias: string, base: string) {
+  registerAlias(type: DdcExtType, alias: string, base: string) {
     if (type == "source") {
       this.aliasSources[alias] = base;
     } else if (type == "filter") {

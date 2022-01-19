@@ -2,6 +2,8 @@ import { autocmd } from "./deps.ts";
 export { BaseSource } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
 
+export type DdcExtType = "source" | "filter";
+
 export type DdcEvent =
   | autocmd.AutocmdEvent
   | "Initialize"
