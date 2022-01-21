@@ -474,6 +474,9 @@ export class Ddc {
       );
     }
 
+    // Remove emtpy candidates
+    candidates = candidates.filter((c) => c.word != "");
+
     // Convert2byte for Vim
     const completePosBytes = charposToBytepos(context.input, completePos);
 
