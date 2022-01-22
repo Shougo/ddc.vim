@@ -129,7 +129,8 @@ function! ddc#_complete() abort
       let input = getline('.')[: g:ddc#_complete_pos]
       let displaywidth = max(map(copy(g:ddc#_candidates),
             \ { _, val -> strdisplaywidth(input . val.word) })) + 1
-      if displaywidth >= &l:textwidth || virtcol('.') >= displaywidth
+      let col = mode() ==# 'c' ? getcmdpos() : virtcol('.')
+      if displaywidth >= &l:textwidth || col >= displaywidth
         return
       endif
     endif
