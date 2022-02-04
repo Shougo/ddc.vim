@@ -1,6 +1,6 @@
 *ddc.txt*	Dark deno-powered completion framework for neovim/Vim8
 
-Version: 1.2
+Version: 1.3
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
@@ -42,7 +42,7 @@ It does not work with zero configuration.  You can use other plugins.
 ==============================================================================
 INSTALL							*ddc-install*
 
-Note: Ddc.vim requires Neovim (0.5.0+) or Vim8.2.0662+ (latest is
+Note: Ddc.vim requires Neovim (0.6.0+) or Vim8.2.0662+ (latest is
 recommended).
 
 Please install both Deno and "denops.vim".
@@ -1001,6 +1001,9 @@ A: >
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.02.04
+* neovim 0.6 is required.
 
 2021.12.10
 * "denops/ddc-sources" and "denops/ddc-filters" files are not loaded.
