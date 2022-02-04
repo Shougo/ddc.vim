@@ -83,7 +83,7 @@ export abstract class BaseSource<
     args: GetCompletePositionArguments<Params>,
   ): Promise<number> {
     const matchPos = args.context.input.search(
-      new RegExp("(" + args.options.keywordPattern + ")$"),
+      new RegExp("(?:" + args.options.keywordPattern + ")$"),
     );
     const completePos = matchPos != null ? matchPos : -1;
     return Promise.resolve(completePos);
