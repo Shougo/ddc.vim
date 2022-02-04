@@ -340,7 +340,7 @@ export class Ddc {
       );
       const forceCompletion = o.forceCompletionPattern.length != 0 &&
         context.input.search(
-            new RegExp("(" + o.forceCompletionPattern + ")$"),
+            new RegExp("(?:" + o.forceCompletionPattern + ")$"),
           ) != -1;
       // Note: If forceCompletion and not matched getCompletePosition(),
       // Use cursor position instead.
