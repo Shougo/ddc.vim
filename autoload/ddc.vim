@@ -38,24 +38,30 @@ endfunction
 function! ddc#enable_cmdline_completion() abort
   augroup ddc-cmdline
     autocmd!
-    autocmd CmdlineLeave * call ddc#_clear()
-    autocmd CmdlineEnter   * call ddc#_on_event('CmdlineEnter')
-    autocmd CmdlineChanged * call ddc#_on_event('CmdlineChanged')
+    autocmd CmdlineLeave <buffer> call ddc#_clear()
+    autocmd CmdlineEnter <buffer>   call ddc#_on_event('CmdlineEnter')
+    autocmd CmdlineChanged <buffer> call ddc#_on_event('CmdlineChanged')
   augroup END
   if exists('##ModeChanged')
     autocmd ddc-cmdline ModeChanged c:n
           \ call ddc#disable_cmdline_completion()
   else
-    autocmd ddc-cmdline CmdlineLeave *
+    autocmd ddc-cmdline CmdlineLeave <buffer>
           \ if get(v:event, 'cmdlevel', 1) == 1 |
           \   call ddc#disable_cmdline_completion() |
           \ endif
   endif
+
+  " Note: command line window must be disabled
+  let s:save_cedit = &cedit
+  set cedit=
 endfunction
 function! ddc#disable_cmdline_completion() abort
   augroup ddc-cmdline
     autocmd!
   augroup END
+
+  let &cedit = s:save_cedit
 
   if exists('#User#DDCCmdlineLeave')
     doautocmd <nomodeline> User DDCCmdlineLeave

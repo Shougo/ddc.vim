@@ -260,6 +260,12 @@ ddc#enable()
 		Enable ddc.vim features and you can use it.
 		Note: It changes the global state.
 
+					*ddc#enable_cmdline_completion()*
+ddc#enable_cmdline_completion()
+		Enable ddc.vim command line completion feature.
+		Note: It must be called in command line mode.
+		Note: It disable command line window(|cmdwin|) feature.
+
 							*ddc#register()*
 ddc#register({dict})
 		Register source or filter.
@@ -935,7 +941,7 @@ https://github.com/Shougo/pum.vim
 
   function! CommandlinePre() abort
     " Overwrite sources
-    let s:prev_buffer_config = ddc#custom#get_buffer()
+    let b:prev_buffer_config = ddc#custom#get_buffer()
     call ddc#custom#patch_buffer('sources', ['necovim', 'around'])
 
     autocmd User DDCCmdlineLeave ++once call CommandlinePost()
@@ -945,7 +951,10 @@ https://github.com/Shougo/pum.vim
   endfunction
   function! CommandlinePost() abort
     " Restore sources
-    call ddc#custom#set_buffer(s:prev_buffer_config)
+    if exists('b:prev_buffer_config')
+      call ddc#custom#set_buffer(s:prev_buffer_config)
+      unlet b:prev_buffer_config
+    endif
   endfunction
 
 Q: Terminal title flickers when completion menu opens in neovim.
