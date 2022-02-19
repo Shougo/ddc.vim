@@ -1,6 +1,7 @@
 import {
   Candidate,
   Context,
+  DdcCompleteItems,
   DdcEvent,
   DdcOptions,
   OnCallback,
@@ -91,7 +92,7 @@ export abstract class BaseSource<
 
   abstract gatherCandidates(
     {}: GatherCandidatesArguments<Params>,
-  ): Promise<Candidate<UserData>[]>;
+  ): Promise<DdcCompleteItems<UserData>>;
 
   abstract params(): Params;
 }

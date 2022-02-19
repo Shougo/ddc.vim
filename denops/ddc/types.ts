@@ -7,7 +7,8 @@ export type DdcExtType = "source" | "filter";
 export type DdcEvent =
   | autocmd.AutocmdEvent
   | "Initialize"
-  | "Manual";
+  | "Manual"
+  | "Incomplete";
 
 export type SourceName = string;
 
@@ -88,6 +89,13 @@ export type Candidate<
   dup?: boolean;
   "user_data"?: UserData;
   highlights?: PumHighlight[];
+};
+
+export type DdcCompleteItems<
+  UserData extends unknown = unknown,
+> = Candidate<UserData>[] | {
+  items: Candidate<UserData>[];
+  isIncomplete: boolean;
 };
 
 // For internal type
