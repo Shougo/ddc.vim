@@ -355,10 +355,6 @@ export class Ddc {
       const incomplete = this.prevResults[s.name]?.isIncomplete ?? false;
       const triggerForIncomplete = !forceCompletion && incomplete &&
         context.lineNr == this.prevResults[s.name].lineNr;
-      if (triggerForIncomplete) {
-        context.event = "Incomplete";
-        delete this.prevResults[s.name];
-      }
       if (
         completePos < 0 ||
         (!forceCompletion &&
@@ -378,7 +374,7 @@ export class Ddc {
       const prevInput = context.input.slice(0, completePos);
 
       if (
-        !result ||
+        !result || triggerForIncomplete ||
         prevInput != result.prevInput ||
         !completeStr.startsWith(result.completeStr) ||
         context.lineNr != result.lineNr ||
@@ -395,6 +391,7 @@ export class Ddc {
           o,
           p,
           completeStr,
+          triggerForIncomplete,
         );
         if ("isIncomplete" in item) {
           if (!item.items.length) {
@@ -846,6 +843,7 @@ async function callSourceGatherCandidates<
   sourceOptions: SourceOptions,
   sourceParams: Params,
   completeStr: string,
+  isIncomplete: boolean,
 ): Promise<DdcCompleteItems<UserData>> {
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
@@ -858,6 +856,7 @@ async function callSourceGatherCandidates<
       sourceOptions,
       sourceParams,
       completeStr,
+      isIncomplete,
     });
     return await deadline(promise, sourceOptions.timeout);
   } catch (e: unknown) {

@@ -7,8 +7,7 @@ export type DdcExtType = "source" | "filter";
 export type DdcEvent =
   | autocmd.AutocmdEvent
   | "Initialize"
-  | "Manual"
-  | "Incomplete";
+  | "Manual";
 
 export type SourceName = string;
 

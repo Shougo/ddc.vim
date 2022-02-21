@@ -58,6 +58,7 @@ export type GatherCandidatesArguments<Params extends Record<string, unknown>> =
     sourceOptions: SourceOptions;
     sourceParams: Params;
     completeStr: string;
+    isIncomplete?: boolean;
   };
 
 export abstract class BaseSource<
