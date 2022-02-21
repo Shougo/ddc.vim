@@ -26,6 +26,14 @@ function! ddc#util#get_syn_names() abort
   endtry
   return names
 endfunction
+function! ddc#util#get_treesitter_nodes() abort
+  try
+    return v:lua.require'ddc.context'.treesitter_nodes()
+  catch
+    " Ignore error
+    return []
+  endtry
+endfunction
 
 function! ddc#util#get_text(mode) abort
   return a:mode ==# 'c' ? getcmdline() :
