@@ -1,5 +1,4 @@
 import {
-  Candidate,
   Context,
   DdcCompleteItems,
   DdcEvent,
