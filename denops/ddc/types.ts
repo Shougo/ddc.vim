@@ -90,6 +90,13 @@ export type Candidate<
   highlights?: PumHighlight[];
 };
 
+export type DdcCompleteItems<
+  UserData extends unknown = unknown,
+> = Candidate<UserData>[] | {
+  items: Candidate<UserData>[];
+  isIncomplete: boolean;
+};
+
 // For internal type
 export type DdcUserData = unknown;
 

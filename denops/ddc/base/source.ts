@@ -1,6 +1,6 @@
 import {
-  Candidate,
   Context,
+  DdcCompleteItems,
   DdcEvent,
   DdcOptions,
   OnCallback,
@@ -57,6 +57,7 @@ export type GatherCandidatesArguments<Params extends Record<string, unknown>> =
     sourceOptions: SourceOptions;
     sourceParams: Params;
     completeStr: string;
+    isIncomplete?: boolean;
   };
 
 export abstract class BaseSource<
@@ -91,7 +92,7 @@ export abstract class BaseSource<
 
   abstract gatherCandidates(
     {}: GatherCandidatesArguments<Params>,
-  ): Promise<Candidate<UserData>[]>;
+  ): Promise<DdcCompleteItems<UserData>>;
 
   abstract params(): Params;
 }

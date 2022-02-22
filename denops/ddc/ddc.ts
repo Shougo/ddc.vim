@@ -2,6 +2,7 @@ import {
   Candidate,
   Context,
   DdcCandidate,
+  DdcCompleteItems,
   DdcExtType,
   DdcOptions,
   DdcUserData,
@@ -48,6 +49,7 @@ type DdcResult = {
   completeStr: string;
   prevInput: string;
   lineNr: number;
+  isIncomplete: boolean;
 };
 
 export class Ddc {
@@ -350,6 +352,9 @@ export class Ddc {
         ? byteposToCharpos(context.input, pos)
         : pos;
       const completeStr = context.input.slice(completePos);
+      const incomplete = this.prevResults[s.name]?.isIncomplete ?? false;
+      const triggerForIncomplete = !forceCompletion && incomplete &&
+        context.lineNr == this.prevResults[s.name].lineNr;
       if (
         completePos < 0 ||
         (!forceCompletion &&
@@ -369,7 +374,7 @@ export class Ddc {
       const prevInput = context.input.slice(0, completePos);
 
       if (
-        !result ||
+        !result || triggerForIncomplete ||
         prevInput != result.prevInput ||
         !completeStr.startsWith(result.completeStr) ||
         context.lineNr != result.lineNr ||
@@ -377,7 +382,7 @@ export class Ddc {
         o.isVolatile
       ) {
         // Not matched.
-        const scs = await callSourceGatherCandidates(
+        const item = await callSourceGatherCandidates(
           s,
           denops,
           context,
@@ -386,17 +391,31 @@ export class Ddc {
           o,
           p,
           completeStr,
+          triggerForIncomplete,
         );
-        if (!scs.length) {
-          return;
+        if ("isIncomplete" in item) {
+          if (!item.items.length) {
+            return;
+          }
+          this.prevResults[s.name] = {
+            candidates: item.items.concat(),
+            completeStr: completeStr,
+            prevInput: prevInput,
+            lineNr: context.lineNr,
+            isIncomplete: item.isIncomplete,
+          };
+        } else {
+          if (!item.length) {
+            return;
+          }
+          this.prevResults[s.name] = {
+            candidates: item.concat(),
+            completeStr: completeStr,
+            prevInput: prevInput,
+            lineNr: context.lineNr,
+            isIncomplete: false,
+          };
         }
-
-        this.prevResults[s.name] = {
-          candidates: scs.concat(),
-          completeStr: completeStr,
-          prevInput: prevInput,
-          lineNr: context.lineNr,
-        };
       }
 
       const fcs = await this.filterCandidates(
@@ -824,7 +843,8 @@ async function callSourceGatherCandidates<
   sourceOptions: SourceOptions,
   sourceParams: Params,
   completeStr: string,
-): Promise<Candidate<UserData>[]> {
+  isIncomplete: boolean,
+): Promise<DdcCompleteItems<UserData>> {
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
   try {
@@ -836,6 +856,7 @@ async function callSourceGatherCandidates<
       sourceOptions,
       sourceParams,
       completeStr,
+      isIncomplete,
     });
     return await deadline(promise, sourceOptions.timeout);
   } catch (e: unknown) {
