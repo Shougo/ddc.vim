@@ -50,7 +50,7 @@ function! ddc#map#cancel() abort
 endfunction
 
 function! ddc#map#can_complete() abort
-  return !empty(get(g:, 'ddc#_candidates', []))
+  return !empty(get(g:, 'ddc#_items', []))
         \ && get(g:, 'ddc#_complete_pos', -1) >= 0
         \ && !ddc#_cannot_complete()
 endfunction
@@ -63,14 +63,14 @@ function! ddc#map#extend() abort
 endfunction
 
 function! ddc#map#complete_common_string() abort
-  if empty(g:ddc#_candidates) || g:ddc#_complete_pos < 0
+  if empty(g:ddc#_items) || g:ddc#_complete_pos < 0
     return ''
   endif
 
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
-  let common_str = g:ddc#_candidates[0].word
-  for candidate in g:ddc#_candidates[1:]
-    while stridx(tolower(candidate.word), tolower(common_str)) != 0
+  let common_str = g:ddc#_items[0].word
+  for item in g:ddc#_items[1:]
+    while stridx(tolower(item.word), tolower(common_str)) != 0
       let common_str = common_str[: -2]
     endwhile
   endfor
@@ -93,8 +93,8 @@ function! ddc#map#complete_common_string() abort
   return chars
 endfunction
 
-function! ddc#map#insert_candidate(number) abort
-  let word = get(g:ddc#_candidates, a:number, {'word': ''}).word
+function! ddc#map#insert_item(number) abort
+  let word = get(g:ddc#_items, a:number, {'word': ''}).word
   if word ==# ''
     return ''
   endif

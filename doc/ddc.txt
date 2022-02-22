@@ -1,6 +1,6 @@
 *ddc.txt*	Dark deno-powered completion framework for neovim/Vim8
 
-Version: 1.3
+Version: 2.0
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
@@ -22,7 +22,7 @@ Filters			|ddc-filters|
   Filter params		  |ddc-filter-params|
 Create source		|ddc-create-source|
   Source attributes	  |ddc-source-attributes|
-  Candidate attributes    |ddc-candidate-attributes|
+  Item attributes	  |ddc-item-attributes|
 Create filter		|ddc-create-filter|
   filter attributes	  |ddc-filter-attributes|
 FAQ			|ddc-faq|
@@ -181,8 +181,8 @@ overwriteCompleteopt
 						*ddc-option-postFilters*
 postFilters
 		It is a list of registered filter names.  It is called after
-		the candidates are filtered.
-		It is useful if you want to sort candidates regardless source
+		the items are filtered.
+		It is useful if you want to sort items regardless source
 		orders.
 
 		Default: []
@@ -191,7 +191,7 @@ postFilters
 sources
 		It is a list of registered source names.  You have to select
 		one or more sources to use completion.
-		Candidates from sources with smaller indexes will have smaller
+		Items from sources with smaller indexes will have smaller
 		indexes.
 
 		Default: []
@@ -371,13 +371,13 @@ ddc#map#complete()
 
 					*ddc#map#complete_common_string()*
 ddc#map#complete_common_string()
-		Complete common string in candidates.
-		This can be useful when candidates have a long common prefix.
+		Complete common string in items.
+		This can be useful when items have a long common prefix.
 		Note: It must be in |:map-<expr>|.
 
 							*ddc#map#extend()*
 ddc#map#extend()
-		Confirm the candidate and extend current completion.
+		Confirm the items and extend current completion.
 		Note: It must be in |:map-<expr>|.
 
 					    	*ddc#map#inline_visible()*
@@ -385,9 +385,9 @@ ddc#map#inline_visible()
 		Returns non-zero when the inline completion is visible, zero
 		otherwise.
 
-						*ddc#map#insert_candidate()*
-ddc#map#insert_candidate({index})
-		Insert the candidate at index {index}. Indices start at 0.
+						*ddc#map#insert_item()*
+ddc#map#insert_item({index})
+		Insert the item at index {index}. Indices start at 0.
 		Note: It must be in |:map-<expr>|.
 
 					    	*ddc#map#manual_complete()*
@@ -480,16 +480,16 @@ documentation instead.
 
 				    		*ddc-source-option-converters*
 converters		(string[])
-		It is a list of registered filter names to change candidates
+		It is a list of registered filter names to change items
 		attributes.
-		Candidates will be processed in the order you specify here.
+		Items will be processed in the order you specify here.
 
 		Default: []
 
 					*ddc-source-option-dup*
 dup			(boolean)			(Optional)
-		The candidates will be added even when the same word is
-		already present.
+		The items will be added even when the same word is already
+		present.
 
 		Default: v:false
 
@@ -509,17 +509,15 @@ ignoreCase		(boolean)
 
 				    	*ddc-source-option-isVolatile*
 isVolatile		(boolean)
-		If it is True, ddc refresh candidates always.
+		If it is True, ddc refresh items always.
 
 		Default: v:false
 
 				    	    	*ddc-source-option-mark*
 mark			(string)
-		A text icon indicating the source displayed with the
-		candidate.
-		Note: If the source set candidate menu, the source must set
-		it.  If the attribute is empty string, the candidate menu will
-		be disabled.
+		A text icon indicating the source displayed with the item.
+		Note: If the source set item menu, the source must set it.  If
+		the attribute is empty string, the item menu will be disabled.
 
 		Default: ""
 
@@ -530,10 +528,10 @@ maxAutoCompleteLength	(number)
 
 		Default: 80
 
-				    	*ddc-source-option-maxCandidates*
-maxCandidates		(number)
-		If there are more candidates than this value, ddc will ignore
-		the filtering.
+				    	*ddc-source-option-maxItems*
+maxItems		(number)
+		If there are more items than this value, ddc will ignore the
+		filtering.
 
 		Default: 500
 
@@ -546,15 +544,15 @@ matcherKey		(string)
 
 				    		*ddc-source-option-matchers*
 matchers		(string[])
-		It is a list of registered filter names to filter candidates
-		by user input.
-		Candidates will be processed in the order you specify here.
+		It is a list of registered filter names to filter items by
+		user input.
+		Items will be processed in the order you specify here.
 
 		Default: []
 
 				    *ddc-source-option-maxKeywordLength*
 maxKeywordLength	(number)
-		The maximum word of length for candidates.
+		The maximum word of length for items.
 		If it is 0, the feature is disabled.
 
 		Default: 0
@@ -567,22 +565,21 @@ minAutoCompleteLength	(number)
 
 				    *ddc-source-option-minKeywordLength*
 minKeywordLength	(number)
-		The minimum word of length for candidates.
+		The minimum word of length for items.
 		If it is 0, the feature is disabled.
 
 		Default: 0
 
 				    		*ddc-source-option-sorters*
 sorters			(string[])
-		It is a list of registered filter names to sort candidates.
-		Candidates will be processed in the order you specify here.
+		It is a list of registered filter names to sort items.
+		Items will be processed in the order you specify here.
 
 		Default: []
 
 			    		    *ddc-source-option-timeout*
 timeout			(number)
-		The |ddc-source-attribute-gatherCandidates| timeout for
-		completion.
+		The |ddc-source-attribute-gather| timeout for completion.
 
 		Default: 2000
 
@@ -598,13 +595,13 @@ Please read the source documentation.
 ==============================================================================
 FILTERS							*ddc-filters*
 
-Once candidates have been supplied by one or more sources, they are passed
-through the filters, which are matchers, converters or sorters. Sources can
-have specific filters.
+Once items have been supplied by one or more sources, they are passed through
+the filters, which are matchers, converters or sorters. Sources can have
+specific filters.
 
-matchers: To filter candidates by user input
-sorters: To sort candidates
-converters: To change candidates attributes
+matchers: To filter items by user input
+sorters: To sort items
+converters: To change items attributes
 
 Call order is matchers -> sorters -> converters
 
@@ -663,9 +660,14 @@ isBytePos		(boolean)			(Optional)
 
 		Default: false
 
+				*ddc-source-attribute-gather*
+gather			(function)			(Required)
+		It is called to gather items.
+
 				*ddc-source-attribute-gatherCandidates*
-gatherCandidates	(function)			(Required)
-		It is called to gather candidates.
+gatherCandidates	(function)
+		Note: It is deprecated.  Please use
+		|ddc-source-attribute-gather| instead.
 
 				*ddc-source-attribute-getCompletePosition*
 getCompletePosition	(function)			(Optional)
@@ -675,8 +677,8 @@ getCompletePosition	(function)			(Optional)
 onCompleteDone		(function)			(Optional)
 		Called after the completion.
 		It is useful to substitute text after completion.
-		Note: |ddc-candidate-attribute-user_data| must be "UserData"
-		to use the feature.
+		Note: |ddc-item-attribute-user_data| must be "UserData" to use
+		the feature.
 
 				*ddc-source-attribute-onEvent*
 onEvent			(function)			(Optional)
@@ -692,38 +694,38 @@ params			(function)			(Required)
 		Called to get source params.
 
 ------------------------------------------------------------------------------
-CANDIDATE ATTRIBUTES				*ddc-candidate-attributes*
+ITEM ATTRIBUTES				*ddc-item-attributes*
 
-					*ddc-candidate-attribute-name*
+					*ddc-item-attribute-name*
 word			(string)			(Required)
-		The completion word of a candidate. It is used for matching
+		The completion word of a item. It is used for matching
 		inputs.
 
-					*ddc-candidate-attribute-abbr*
+					*ddc-item-attribute-abbr*
 abbr			(string)			(Optional)
-		The abbreviation of a candidate. It is displayed in popup
+		The abbreviation of a item. It is displayed in popup
 		window.
 
-					*ddc-candidate-attribute-kind*
+					*ddc-item-attribute-kind*
 kind			(string)			(Optional)
-		The kind of a candidate. It is displayed in popup window.
+		The kind of a item. It is displayed in popup window.
 
-					*ddc-candidate-attribute-menu*
+					*ddc-item-attribute-menu*
 menu			(string)			(Optional)
-		The menu information of a candidate. It is displayed in popup
+		The menu information of a item. It is displayed in popup
 		window.
 
-					*ddc-candidate-attribute-info*
+					*ddc-item-attribute-info*
 info			(string)			(Optional)
-		The preview information of a candidate. If 'completeopt'
+		The preview information of a item. If 'completeopt'
 		contains "preview", it will be displayed in |preview-window|.
 
-					*ddc-candidate-attribute-dup*
+					*ddc-item-attribute-dup*
 dup			(boolean)			(Optional)
 		If true, the item will be displayed in the popup menu when an
 		item with the same word is already present.
 
-					*ddc-candidate-attribute-user_data*
+					*ddc-item-attribute-user_data*
 user_data		(UserData | string)	(Optional)
 		The source specific data.
 
@@ -752,7 +754,7 @@ events			(string[])			(Optional)
 
 				*ddc-filter-attribute-filter*
 filter			(function)			(Required)
-		It is called to filter candidates.
+		It is called to filter items.
 
 				*ddc-filter-attribute-onEvent*
 onEvent			(function)			(Optional)
@@ -799,7 +801,7 @@ The config should work as users config.
 Q: I want to use inline suggestion like fish shell.
 
 A: >
-	inoremap <expr><C-t>       ddc#insert_candidate(0)
+	inoremap <expr><C-t>       ddc#insert_item(0)
 	call ddc#custom#patch_global('completionMode', 'inline')
 
 
@@ -835,7 +837,7 @@ A: You can use it by the 'completeopt' option. >
 
 Q: How do I select one of the responses from the pop up?
 
-A: Please press <C-y> on the candidate.
+A: Please press <C-y> on the item.
 
 
 Q: I want to close the preview window after completion is done.
@@ -1010,6 +1012,11 @@ A: >
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.02.22
+* Rename maxCandidates to maxItems.
+* Rename ddc#map#insert_candidate() to ddc#map#insert_item().
+* Deprecate gatherCandidates attribute.
 
 2022.02.04
 * neovim 0.6 is required.

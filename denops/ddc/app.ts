@@ -261,7 +261,7 @@ export async function main(denops: Denops) {
     await batch(denops, async (denops: Denops) => {
       await vars.g.set(denops, "ddc#_event", context.event);
       await vars.g.set(denops, "ddc#_complete_pos", -1);
-      await vars.g.set(denops, "ddc#_candidates", []);
+      await vars.g.set(denops, "ddc#_items", []);
       if (visible && options.completionMode != "manual") {
         // Close current popupmenu.
         await denops.call("ddc#_clear");
@@ -274,7 +274,7 @@ export async function main(denops: Denops) {
     context: Context,
     options: DdcOptions,
   ): Promise<void> {
-    const [completePos, candidates] = await ddc.gatherResults(
+    const [completePos, items] = await ddc.gatherResults(
       denops,
       context,
       cbContext.createOnCallback(),
@@ -288,7 +288,7 @@ export async function main(denops: Denops) {
         await vars.g.set(denops, "ddc#_event", context.event);
         await vars.g.set(denops, "ddc#_prev_input", context.input);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
-        await vars.g.set(denops, "ddc#_candidates", candidates);
+        await vars.g.set(denops, "ddc#_items", items);
         await vars.g.set(denops, "ddc#_sources", options.sources);
         await vars.g.set(
           denops,
@@ -318,7 +318,7 @@ export async function main(denops: Denops) {
   }
 
   await batch(denops, async (denops: Denops) => {
-    await vars.g.set(denops, "ddc#_candidates", []);
+    await vars.g.set(denops, "ddc#_items", []);
     await vars.g.set(denops, "ddc#_changedtick", 0);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
     await vars.g.set(denops, "ddc#_completion_menu", "native");

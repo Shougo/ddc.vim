@@ -133,7 +133,7 @@ function! ddc#_complete() abort
     " will be the next line.  It breaks auto completion behavior.
     if &l:formatoptions =~# '[tca]' && &l:textwidth > 0
       let input = getline('.')[: g:ddc#_complete_pos]
-      let displaywidth = max(map(copy(g:ddc#_candidates),
+      let displaywidth = max(map(copy(g:ddc#_items),
             \ { _, val -> strdisplaywidth(input . val.word) })) + 1
       let col = mode() ==# 'c' ? getcmdpos() : virtcol('.')
       if displaywidth >= &l:textwidth || col >= displaywidth
@@ -143,17 +143,17 @@ function! ddc#_complete() abort
   else
     " Clear current popup
     let g:ddc#_complete_pos = 0
-    let g:ddc#_candidates = []
+    let g:ddc#_items = []
   endif
 
   let menu = ddc#_completion_menu()
   if menu ==# 'native'
     " Note: It may be called in map-<expr>
-    silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_candidates)
-  elseif empty(g:ddc#_candidates)
+    silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_items)
+  elseif empty(g:ddc#_items)
     call ddc#_clear()
   elseif menu ==# 'pum.vim'
-    call pum#open(g:ddc#_complete_pos + 1, g:ddc#_candidates)
+    call pum#open(g:ddc#_complete_pos + 1, g:ddc#_items)
   endif
 endfunction
 function! s:overwrite_completeopt() abort
@@ -209,13 +209,13 @@ function! ddc#_inline(highlight) abort
     endif
   endif
 
-  if empty(g:ddc#_candidates) || mode() !=# 'i'
+  if empty(g:ddc#_items) || mode() !=# 'i'
         \ || ddc#_completion_menu() ==# 'none'
     return
   endif
 
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
-  let word = g:ddc#_candidates[0].word
+  let word = g:ddc#_items[0].word
 
   " Note: nvim_buf_set_extmark() should not use when LSP is enabled?
   " https://github.com/hrsh7th/nvim-cmp/issues/404
@@ -307,8 +307,8 @@ endfunction
 function! ddc#manual_complete(...) abort
   return call('ddc#map#manual_complete', a:000)
 endfunction
-function! ddc#insert_candidate(number) abort
-  return ddc#map#insert_candidate(a:number)
+function! ddc#insert_item(number) abort
+  return ddc#map#insert_item(a:number)
 endfunction
 function! ddc#complete_common_string() abort
   return ddc#map#complete_common_string()
@@ -342,8 +342,8 @@ function! ddc#_on_complete_done() abort
     return
   endif
 
-  " Search selected candidate from previous candidates
-  let candidates = filter(copy(g:ddc#_candidates), { _, val
+  " Search selected item from previous items
+  let items = filter(copy(g:ddc#_items), { _, val
         \ -> val.word ==# completed_item.word
         \ && val.abbr ==# completed_item.abbr
         \ && val.info ==# completed_item.info
@@ -352,12 +352,12 @@ function! ddc#_on_complete_done() abort
         \ && has_key(val, 'user_data')
         \ && val.user_data ==# completed_item.user_data
         \ })
-  if empty(candidates)
+  if empty(items)
     return
   endif
 
   call denops#request('ddc', 'onCompleteDone',
-        \ [candidates[0].__sourceName, completed_item.user_data])
+        \ [items[0].__sourceName, completed_item.user_data])
 endfunction
 
 function! ddc#_benchmark(...) abort

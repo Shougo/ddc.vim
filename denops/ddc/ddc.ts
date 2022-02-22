@@ -1,12 +1,12 @@
 import {
-  Candidate,
   Context,
-  DdcCandidate,
-  DdcCompleteItems,
   DdcExtType,
+  DdcGatherItems,
+  DdcItem,
   DdcOptions,
   DdcUserData,
   FilterOptions,
+  Item,
   OnCallback,
   SourceOptions,
 } from "./types.ts";
@@ -22,7 +22,7 @@ import {
   BaseSource,
   defaultSourceOptions,
   defaultSourceParams,
-  GatherCandidatesArguments,
+  GatherArguments,
 } from "./base/source.ts";
 import {
   BaseFilter,
@@ -45,7 +45,7 @@ import {
 } from "./deps.ts";
 
 type DdcResult = {
-  candidates: Candidate[];
+  items: Item[];
   completeStr: string;
   prevInput: string;
   lineNr: number;
@@ -327,7 +327,7 @@ export class Ddc {
     context: Context,
     onCallback: OnCallback,
     options: DdcOptions,
-  ): Promise<[number, DdcCandidate[]]> {
+  ): Promise<[number, DdcItem[]]> {
     const sources = this.foundSources(options.sources)
       .map((s) => [s, ...sourceArgs(options, s)] as const);
     const rs = await Promise.all(sources.map(async ([s, o, p]) => {
@@ -382,7 +382,7 @@ export class Ddc {
         o.isVolatile
       ) {
         // Not matched.
-        const result = await callSourceGatherCandidates(
+        const result = await callSourceGather(
           s,
           denops,
           context,
@@ -394,26 +394,26 @@ export class Ddc {
           triggerForIncomplete,
         );
 
-        let candidates: Candidate[];
+        let items: Item[];
         let isIncomplete: boolean;
         if ("isIncomplete" in result) {
-          // DdcCompleteItems
+          // DdcGatherItems
           if (!result.items.length) {
             return;
           }
-          candidates = result.items.concat();
+          items = result.items.concat();
           isIncomplete = result.isIncomplete;
         } else {
-          // Candidate
+          // Item[]
           if (!result.length) {
             return;
           }
-          candidates = result.concat();
+          items = result.concat();
           isIncomplete = false;
         }
 
         this.prevResults[s.name] = {
-          candidates: candidates,
+          items: items,
           completeStr: completeStr,
           prevInput: prevInput,
           lineNr: context.lineNr,
@@ -421,7 +421,7 @@ export class Ddc {
         };
       }
 
-      const fcs = await this.filterCandidates(
+      const fis = await this.filterItems(
         denops,
         context,
         onCallback,
@@ -430,10 +430,10 @@ export class Ddc {
         options.filterOptions,
         options.filterParams,
         completeStr,
-        this.prevResults[s.name].candidates,
+        this.prevResults[s.name].items,
       );
 
-      const candidates = fcs.map((c) => (
+      const items = fis.map((c) => (
         {
           ...c,
           __sourceName: s.name,
@@ -446,10 +446,10 @@ export class Ddc {
           menu: formatMenu(o.mark, c.menu),
         }
       ));
-      if (!candidates.length) {
+      if (!items.length) {
         return;
       }
-      return [completePos, candidates] as const;
+      return [completePos, items] as const;
     }));
 
     // Remove invalid source
@@ -460,9 +460,9 @@ export class Ddc {
 
     const completePos = Math.min(...fs.map((v) => v[0]));
 
-    // Flatten candidates
-    let candidates = fs.flatMap(([pos, candidates]) =>
-      candidates.map((c) => {
+    // Flatten items
+    let items = fs.flatMap(([pos, items]) =>
+      items.map((c) => {
         // Note: Merge word by completePos
         const word = context.input.substring(completePos, pos) + c.word;
         return {
@@ -481,8 +481,8 @@ export class Ddc {
         filter,
       );
 
-      // @ts-ignore: postFilters does not change candidates keys
-      candidates = await callFilterFilter(
+      // @ts-ignore: postFilters does not change items keys
+      items = await callFilterFilter(
         filter,
         denops,
         context,
@@ -492,20 +492,20 @@ export class Ddc {
         o,
         p,
         context.input.slice(completePos),
-        candidates,
+        items,
       );
     }
 
-    // Remove emtpy candidates
-    candidates = candidates.filter((c) => c.word != "");
+    // Remove emtpy items
+    items = items.filter((c) => c.word != "");
 
     // Convert2byte for Vim
     const completePosBytes = charposToBytepos(context.input, completePos);
 
-    return [completePosBytes, candidates];
+    return [completePosBytes, items];
   }
 
-  private async filterCandidates(
+  private async filterItems(
     denops: Denops,
     context: Context,
     onCallback: OnCallback,
@@ -514,8 +514,8 @@ export class Ddc {
     filterOptions: Record<string, Partial<FilterOptions>>,
     filterParams: Record<string, Partial<Record<string, unknown>>>,
     completeStr: string,
-    cdd: Candidate[],
-  ): Promise<Candidate[]> {
+    cdd: Item[],
+  ): Promise<Item[]> {
     // Check invalid
     const invalidFilters = this.foundInvalidFilters(
       options.postFilters.concat(
@@ -536,7 +536,7 @@ export class Ddc {
 
     async function callFilters(
       filters: BaseFilter<Record<string, unknown>>[],
-    ): Promise<Candidate[]> {
+    ): Promise<Item[]> {
       for (const filter of filters) {
         const [o, p] = filterArgs(filterOptions, filterParams, filter);
         cdd = await callFilterFilter(
@@ -557,14 +557,14 @@ export class Ddc {
     }
 
     if (sourceOptions.maxKeywordLength > 0) {
-      cdd = cdd.filter((c: Candidate) =>
-        c.word.length <= sourceOptions.maxKeywordLength
+      cdd = cdd.filter((item: Item) =>
+        item.word.length <= sourceOptions.maxKeywordLength
       );
     }
 
     if (sourceOptions.minKeywordLength > 0) {
-      cdd = cdd.filter((c: Candidate) =>
-        c.word.length >= sourceOptions.minKeywordLength
+      cdd = cdd.filter((item: Item) =>
+        item.word.length >= sourceOptions.minKeywordLength
       );
     }
 
@@ -593,8 +593,8 @@ export class Ddc {
 
     cdd = await callFilters(sorters);
 
-    // Filter by maxCandidates
-    cdd = cdd.slice(0, sourceOptions.maxCandidates);
+    // Filter by maxItems
+    cdd = cdd.slice(0, sourceOptions.maxItems);
 
     cdd = await callFilters(converters);
 
@@ -834,7 +834,7 @@ async function callSourceGetCompletePosition(
   }
 }
 
-async function callSourceGatherCandidates<
+async function callSourceGather<
   Params extends Record<string, unknown>,
   UserData extends unknown,
 >(
@@ -847,11 +847,11 @@ async function callSourceGatherCandidates<
   sourceParams: Params,
   completeStr: string,
   isIncomplete: boolean,
-): Promise<DdcCompleteItems<UserData>> {
+): Promise<DdcGatherItems<UserData>> {
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
   try {
-    const promise = source.gatherCandidates({
+    const args = {
       denops,
       context,
       onCallback,
@@ -860,7 +860,11 @@ async function callSourceGatherCandidates<
       sourceParams,
       completeStr,
       isIncomplete,
-    });
+    };
+
+    const promise = source.apiVersion >= 4
+      ? source.gather(args)
+      : source.gatherCandidates(args);
     return await deadline(promise, sourceOptions.timeout);
   } catch (e: unknown) {
     if (
@@ -870,7 +874,7 @@ async function callSourceGatherCandidates<
       // Ignore timeout error
     } else {
       console.error(
-        `[ddc.vim] source: ${source.name} "gatherCandidates()" is failed`,
+        `[ddc.vim] source: ${source.name} "gather()" is failed`,
       );
       console.error(e);
     }
@@ -921,8 +925,8 @@ async function callFilterFilter(
   filterOptions: FilterOptions,
   filterParams: Record<string, unknown>,
   completeStr: string,
-  candidates: Candidate[],
-): Promise<Candidate[]> {
+  items: Item[],
+): Promise<Item[]> {
   await checkFilterOnInit(filter, denops, filterOptions, filterParams);
 
   try {
@@ -935,7 +939,8 @@ async function callFilterFilter(
       filterOptions,
       filterParams,
       completeStr,
-      candidates,
+      candidates: items,
+      items,
     });
   } catch (e: unknown) {
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
@@ -980,14 +985,14 @@ Deno.test("sourceArgs", () => {
         "max": 999,
       };
     }
-    gatherCandidates(
-      _args: GatherCandidatesArguments<{ min: number; max: number }> | Denops,
+    gather(
+      _args: GatherArguments<{ min: number; max: number }> | Denops,
       _context?: Context,
       _options?: DdcOptions,
       _sourceOptions?: SourceOptions,
       _sourceParams?: Record<string, unknown>,
       _completeStr?: string,
-    ): Promise<Candidate[]> {
+    ): Promise<Item[]> {
       return Promise.resolve([]);
     }
   }
@@ -998,7 +1003,7 @@ Deno.test("sourceArgs", () => {
     ...defaultSourceOptions(),
     mark: "S",
     matchers: ["matcher_head"],
-    maxCandidates: 500,
+    maxItems: 500,
     converters: [],
     sorters: [],
   });
@@ -1036,8 +1041,8 @@ Deno.test("filterArgs", () => {
       _filterOptions?: FilterOptions,
       _filterParams?: Record<string, unknown>,
       _completeStr?: string,
-      _candidates?: Candidate[],
-    ): Promise<Candidate[]> {
+      _items?: Item[],
+    ): Promise<Item[]> {
       return Promise.resolve([]);
     }
   }

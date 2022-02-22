@@ -56,7 +56,7 @@ export type SourceOptions = {
   matcherKey: string;
   matchers: string[];
   maxAutoCompleteLength: number;
-  maxCandidates: number;
+  maxItems: number;
   maxKeywordLength: number;
   minAutoCompleteLength: number;
   minKeywordLength: number;
@@ -77,7 +77,7 @@ export type PumHighlight = {
   width: number;
 };
 
-export type Candidate<
+export type Item<
   UserData extends unknown = unknown,
 > = {
   word: string;
@@ -90,18 +90,18 @@ export type Candidate<
   highlights?: PumHighlight[];
 };
 
-export type DdcCompleteItems<
+export type DdcGatherItems<
   UserData extends unknown = unknown,
-> = Candidate<UserData>[] | {
-  items: Candidate<UserData>[];
+> = Item<UserData>[] | {
+  items: Item<UserData>[];
   isIncomplete: boolean;
 };
 
 // For internal type
 export type DdcUserData = unknown;
 
-export type DdcCandidate =
-  & Candidate<DdcUserData>
+export type DdcItem =
+  & Item<DdcUserData>
   & {
     __sourceName: string;
     equal: boolean;

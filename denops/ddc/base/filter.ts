@@ -1,9 +1,9 @@
 import {
-  Candidate,
   Context,
   DdcEvent,
   DdcOptions,
   FilterOptions,
+  Item,
   OnCallback,
   SourceOptions,
 } from "../types.ts";
@@ -33,7 +33,8 @@ export type FilterArguments<Params extends Record<string, unknown>> = {
   filterOptions: FilterOptions;
   filterParams: Params;
   completeStr: string;
-  candidates: Candidate[];
+  candidates: Item[]; // Deprecated
+  items: Item[];
 };
 
 export abstract class BaseFilter<Params extends Record<string, unknown>> {
@@ -42,13 +43,13 @@ export abstract class BaseFilter<Params extends Record<string, unknown>> {
   isInitialized = false;
 
   // Use overload methods
-  apiVersion = 3;
+  apiVersion = 4;
 
   async onInit(_args: OnInitArguments<Params>): Promise<void> {}
 
   async onEvent(_args: OnEventArguments<Params>): Promise<void> {}
 
-  abstract filter({}: FilterArguments<Params>): Promise<Candidate[]>;
+  abstract filter({}: FilterArguments<Params>): Promise<Item[]>;
 
   abstract params(): Params;
 }

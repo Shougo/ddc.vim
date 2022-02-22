@@ -1,9 +1,9 @@
 import {
-  Candidate,
   Context,
-  DdcCompleteItems,
   DdcEvent,
+  DdcGatherItems,
   DdcOptions,
+  Item,
   OnCallback,
   SourceOptions,
 } from "../types.ts";
@@ -49,17 +49,16 @@ export type GetCompletePositionArguments<
   sourceParams: Params;
 };
 
-export type GatherCandidatesArguments<Params extends Record<string, unknown>> =
-  {
-    denops: Denops;
-    context: Context;
-    onCallback: OnCallback;
-    options: DdcOptions;
-    sourceOptions: SourceOptions;
-    sourceParams: Params;
-    completeStr: string;
-    isIncomplete?: boolean;
-  };
+export type GatherArguments<Params extends Record<string, unknown>> = {
+  denops: Denops;
+  context: Context;
+  onCallback: OnCallback;
+  options: DdcOptions;
+  sourceOptions: SourceOptions;
+  sourceParams: Params;
+  completeStr: string;
+  isIncomplete?: boolean;
+};
 
 export abstract class BaseSource<
   Params extends Record<string, unknown>,
@@ -90,9 +89,16 @@ export abstract class BaseSource<
     return Promise.resolve(completePos);
   }
 
-  abstract gatherCandidates(
-    {}: GatherCandidatesArguments<Params>,
-  ): Promise<DdcCompleteItems<UserData> | Candidate<UserData>[]>;
+  // Note: Deprecated!
+  gatherCandidates(
+    {}: GatherArguments<Params>,
+  ): Promise<Item<UserData>[]> {
+    return Promise.resolve([]);
+  }
+
+  abstract gather(
+    {}: GatherArguments<Params>,
+  ): Promise<DdcGatherItems<UserData>>;
 
   abstract params(): Params;
 }
@@ -108,7 +114,7 @@ export function defaultSourceOptions(): SourceOptions {
     matcherKey: "",
     matchers: [],
     maxAutoCompleteLength: 80,
-    maxCandidates: 500,
+    maxItems: 500,
     maxKeywordLength: 0,
     minAutoCompleteLength: 2,
     minKeywordLength: 0,
