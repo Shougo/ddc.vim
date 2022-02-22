@@ -382,7 +382,7 @@ export class Ddc {
         o.isVolatile
       ) {
         // Not matched.
-        const item = await callSourceGatherCandidates(
+        const result = await callSourceGatherCandidates(
           s,
           denops,
           context,
@@ -393,29 +393,32 @@ export class Ddc {
           completeStr,
           triggerForIncomplete,
         );
-        if ("isIncomplete" in item) {
-          if (!item.items.length) {
+
+        let candidates: Candidate[];
+        let isIncomplete: boolean;
+        if ("isIncomplete" in result) {
+          // DdcCompleteItems
+          if (!result.items.length) {
             return;
           }
-          this.prevResults[s.name] = {
-            candidates: item.items.concat(),
-            completeStr: completeStr,
-            prevInput: prevInput,
-            lineNr: context.lineNr,
-            isIncomplete: item.isIncomplete,
-          };
+          candidates = result.items.concat();
+          isIncomplete = result.isIncomplete;
         } else {
-          if (!item.length) {
+          // Candidate
+          if (!result.length) {
             return;
           }
-          this.prevResults[s.name] = {
-            candidates: item.concat(),
-            completeStr: completeStr,
-            prevInput: prevInput,
-            lineNr: context.lineNr,
-            isIncomplete: false,
-          };
+          candidates = result.concat();
+          isIncomplete = false;
         }
+
+        this.prevResults[s.name] = {
+          candidates: candidates,
+          completeStr: completeStr,
+          prevInput: prevInput,
+          lineNr: context.lineNr,
+          isIncomplete: isIncomplete,
+        };
       }
 
       const fcs = await this.filterCandidates(

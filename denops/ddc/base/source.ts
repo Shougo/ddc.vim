@@ -1,4 +1,5 @@
 import {
+  Candidate,
   Context,
   DdcCompleteItems,
   DdcEvent,
@@ -69,8 +70,7 @@ export abstract class BaseSource<
   events: DdcEvent[] = [];
   isInitialized = false;
 
-  // Use overload methods
-  apiVersion = 3;
+  apiVersion = 4;
 
   async onInit(_args: OnInitArguments<Params>): Promise<void> {}
 
@@ -92,7 +92,7 @@ export abstract class BaseSource<
 
   abstract gatherCandidates(
     {}: GatherCandidatesArguments<Params>,
-  ): Promise<DdcCompleteItems<UserData>>;
+  ): Promise<DdcCompleteItems<UserData> | Candidate<UserData>[]>;
 
   abstract params(): Params;
 }
