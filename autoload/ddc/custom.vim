@@ -38,6 +38,10 @@ function! ddc#custom#set_buffer(dict) abort
   call s:notify('setBuffer', [a:dict, n])
 endfunction
 
+function! ddc#custom#_call_context_func(name) abort
+  return call(s:context_funcs[a:name], [])
+endfunction
+
 function! ddc#custom#alias(type, alias, base) abort
   if ddc#_denops_running()
     call denops#notify('ddc', 'alias', [a:type, a:alias, a:base])

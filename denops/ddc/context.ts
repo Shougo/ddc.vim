@@ -153,12 +153,25 @@ class Custom {
   context: Record<string, ContextDdcOptions> = {};
   buffer: Record<number, Partial<DdcOptions>> = {};
 
-  get(ft: string, bufnr: number): DdcOptions {
+  async get(
+    denops: Denops | null,
+    ft: string,
+    bufnr: number,
+  ): Promise<DdcOptions> {
     const filetype = this.filetype[ft] || {};
+    const context =
+      this.context[ft] && denops &&
+        await denops.call(
+          "ddc#custom#_call_context_func",
+          this.context[ft].func,
+        )
+        ? this.context[ft].options
+        : {};
     const buffer = this.buffer[bufnr] || {};
     return foldMerge(mergeDdcOptions, defaultDdcOptions, [
       this.global,
       filetype,
+      context,
       buffer,
     ]);
   }
@@ -347,7 +360,11 @@ export class ContextBuilder {
   }
 
   async _getUserOptions(denops: Denops, world: World): Promise<DdcOptions> {
-    const userOptions = this.custom.get(world.filetype, world.bufnr);
+    const userOptions = await this.custom.get(
+      denops,
+      world.filetype,
+      world.bufnr,
+    );
 
     // Convert keywordPattern
     const iskeyword = await op.iskeyword.getLocal(denops);
@@ -511,7 +528,7 @@ Deno.test("mergeDdcOptions", () => {
       },
     })
     .patchBuffer(2, {});
-  assertEquals(custom.get("typescript", 1), {
+  assertEquals(custom.get(null, "typescript", 1), {
     ...defaultDdcOptions(),
     sources: ["around", "foo"],
     sourceOptions: {},
@@ -530,7 +547,7 @@ Deno.test("mergeDdcOptions", () => {
       },
     },
   });
-  assertEquals(custom.get("typescript", 2), {
+  assertEquals(custom.get(null, "typescript", 2), {
     ...defaultDdcOptions(),
     sources: [],
     sourceOptions: {},
@@ -546,7 +563,7 @@ Deno.test("mergeDdcOptions", () => {
       },
     },
   });
-  assertEquals(custom.get("cpp", 1), {
+  assertEquals(custom.get(null, "cpp", 1), {
     ...defaultDdcOptions(),
     sources: ["around", "foo"],
     sourceOptions: {},
