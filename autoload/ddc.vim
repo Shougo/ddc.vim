@@ -117,12 +117,8 @@ function! ddc#_cannot_complete() abort
         \ || info_check || !exists('g:ddc#_complete_pos')
 endfunction
 
-function! ddc#get_syntax_groups() abort
-  let curpos = getcurpos()[1:2]
-  return &l:syntax !=# '' ? ddc#util#get_syn_names(curpos) :
-        \ has('nvim') ? ddc#util#get_treesitter_nodes(
-        \                   [curpos[0] - 1, curpos[1] - 1]) :
-        \ []
+function! ddc#syntax_in(groups) abort
+  return ddc#syntax#in(a:groups)
 endfunction
 
 function! ddc#_complete() abort

@@ -6,36 +6,6 @@ function! ddc#util#print_error(string, ...) abort
   echohl None
 endfunction
 
-function! ddc#util#get_syn_names(curpos) abort
-  if col('$') >= 200
-    return []
-  endif
-
-  let names = []
-  try
-    " Note: synstack() seems broken in concealed text.
-    for id in synstack(a:curpos)
-      let name = synIDattr(id, 'name')
-      call add(names, name)
-      if synIDattr(synIDtrans(id), 'name') !=# name
-        call add(names, synIDattr(synIDtrans(id), 'name'))
-      endif
-    endfor
-  catch
-    " Ignore error
-  endtry
-  return names
-endfunction
-function! ddc#util#get_treesitter_nodes(curpos) abort
-  try
-    return luaeval(
-          \ 'require("ddc.syntax").get_treesitter_syntax_groups(_A)', a:curpos)
-  catch
-    " Ignore error
-    return []
-  endtry
-endfunction
-
 function! ddc#util#get_text(mode) abort
   return a:mode ==# 'c' ? getcmdline() :
         \ a:mode ==# 't' && !has('nvim') ? term_getline('', '.')

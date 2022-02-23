@@ -266,11 +266,6 @@ ddc#enable_cmdline_completion()
 		Note: It must be called in command line mode.
 		Note: It disable command line window(|cmdwin|) feature.
 
-						*ddc#get_syntax_groups()*
-ddc#get_syntax_groups()
-		Get current syntax groups.
-		Note: "nvim-treesitter" is used if it is installed.
-
 							*ddc#register()*
 ddc#register({dict})
 		Register source or filter.
@@ -279,6 +274,15 @@ ddc#register({dict})
 		name: The filter name
 		path: The filter path
 		type: "source" or "filter"
+
+						*ddc#syntax#get()*
+ddc#syntax#get()
+		Get current syntax groups.
+		Note: "nvim-treesitter" is used if it is installed.
+
+						*ddc#syntax#in()*
+ddc#syntax#in({checks})
+		Check {checks} groups in cursor.
 
 
 CUSTOM FUNCTIONS 					*ddc-custom-functions*
