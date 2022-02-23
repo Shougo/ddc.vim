@@ -286,14 +286,6 @@ function! ddc#register(dict) abort
           \ 'denops#notify("ddc", "register", [%s])', a:dict)
   endif
 endfunction
-function! ddc#register_source(dict) abort
-  let a:dict.kind = 'source'
-  return ddc#register(a:dict)
-endfunction
-function! ddc#register_filter(dict) abort
-  let a:dict.kind = 'filter'
-  return ddc#register(a:dict)
-endfunction
 
 function! ddc#callback(id, ...) abort
   if !ddc#_denops_running()

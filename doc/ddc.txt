@@ -275,14 +275,6 @@ ddc#register({dict})
 		path: The filter path
 		type: "source" or "filter"
 
-						*ddc#register_filter()*
-ddc#register_filter({dict})
-		Note: deprecated.
-
-						*ddc#register_source()*
-ddc#register_source({dict})
-		Note: deprecated.
-
 
 CUSTOM FUNCTIONS 					*ddc-custom-functions*
 
@@ -466,7 +458,7 @@ to use ddc.vim.  Please search them by https://github.com/topics/ddc-source
 Note: The default sources are empty.  You need to
 configure them to use ddc.
 
-The sources must be registered by |ddc#register_source()| or put under
+The sources must be registered by |ddc#register()| or put under
 "denops/@ddc-sources/*.ts".
 
 Note: The name is named by file name.
@@ -611,7 +603,7 @@ to use ddc.vim.  Please search them by https://github.com/topics/ddc-filter
 Note: The default matchers/sorters/converters are empty.  You need to
 configure them to use ddc.
 
-The filters must be registered by |ddc#register_filter()| or put under
+The filters must be registered by |ddc#register()| or put under
 "denops/@ddc-filters/*.ts".
 
 Note: The name is named by file name.
@@ -635,7 +627,7 @@ CREATE SOURCE						*ddc-create-source*
 
 To create source, you should read other sources implementation.
 
-The files must be registered by |ddc#register_source()|.
+The files must be registered by |ddc#register()|.
 Source class must extend the Base class.
 
 Note: The sources must be written in Typescript language.
@@ -735,7 +727,7 @@ CREATE FILTER						*ddc-create-filter*
 
 To create filter, you should read other filters implementation.
 
-The files must be registered by |ddc#register_filter()|.
+The files must be registered by |ddc#register()|.
 Filter class must extend the Base class.
 
 Note: The filters must be written in Typescript language.
@@ -1012,6 +1004,9 @@ A: >
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.02.23
+* Remove ddc#register_source() and ddc#register_filter().
 
 2022.02.22
 * Rename maxCandidates to maxItems.
