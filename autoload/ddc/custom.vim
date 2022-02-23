@@ -24,6 +24,15 @@ function! ddc#custom#set_filetype(ft, dict) abort
     call s:notify('setFiletype', [a:dict, filetype])
   endfor
 endfunction
+let s:context_funcs = {}
+function! ddc#custom#set_context(ft, func, dict) abort
+  let filetypes = s:normalize_string_or_list(a:ft)
+  let key = string(a:func)
+  let s:context_funcs[key] = a:func
+  for filetype in filetypes
+    call s:notify('setContext', [a:dict, filetype, key])
+  endfor
+endfunction
 function! ddc#custom#set_buffer(dict) abort
   let n = bufnr('%')
   call s:notify('setBuffer', [a:dict, n])
@@ -41,32 +50,20 @@ endfunction
 
 " This should be called manually, so wait until DDCReady by the user himself.
 function! ddc#custom#get_global() abort
-  if !ddc#_denops_running()
-    return {}
-  endif
-
-  return denops#request('ddc', 'getGlobal', [])
+  return ddc#_denops_running() ? denops#request('ddc', 'getGlobal', []) : {}
 endfunction
 function! ddc#custom#get_filetype() abort
-  if !ddc#_denops_running()
-    return {}
-  endif
-
-  return denops#request('ddc', 'getFiletype', [])
+  return ddc#_denops_running() ? denops#request('ddc', 'getFiletype', []) : {}
+endfunction
+function! ddc#custom#get_context() abort
+  return ddc#_denops_running() ? denops#request('ddc', 'getContext', []) : {}
 endfunction
 function! ddc#custom#get_buffer() abort
-  if !ddc#_denops_running()
-    return {}
-  endif
-
-  return get(denops#request('ddc', 'getBuffer', []), bufnr('%'), {})
+  return ddc#_denops_running() ?
+        \ get(denops#request('ddc', 'getBuffer', []), bufnr('%'), {}) : {}
 endfunction
 function! ddc#custom#get_current() abort
-  if !ddc#_denops_running()
-    return {}
-  endif
-
-  return denops#request('ddc', 'getCurrent', [])
+  return ddc#_denops_running() ? denops#request('ddc', 'getCurrent', []) : {}
 endfunction
 
 function! s:notify(method, args) abort

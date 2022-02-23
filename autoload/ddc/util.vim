@@ -6,7 +6,7 @@ function! ddc#util#print_error(string, ...) abort
   echohl None
 endfunction
 
-function! ddc#util#get_syn_names() abort
+function! ddc#util#get_syn_names(curpos) abort
   if col('$') >= 200
     return []
   endif
@@ -14,7 +14,7 @@ function! ddc#util#get_syn_names() abort
   let names = []
   try
     " Note: synstack() seems broken in concealed text.
-    for id in synstack(line('.'), (mode() ==# 'i' ? col('.')-1 : col('.')))
+    for id in synstack(a:curpos)
       let name = synIDattr(id, 'name')
       call add(names, name)
       if synIDattr(synIDtrans(id), 'name') !=# name
@@ -26,9 +26,10 @@ function! ddc#util#get_syn_names() abort
   endtry
   return names
 endfunction
-function! ddc#util#get_treesitter_nodes() abort
+function! ddc#util#get_treesitter_nodes(curpos) abort
   try
-    return v:lua.require'ddc.context'.treesitter_nodes()
+    return luaeval(
+          \ 'require("ddc.syntax").get_treesitter_syntax_groups(_A)', a:curpos)
   catch
     " Ignore error
     return []

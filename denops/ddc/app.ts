@@ -1,5 +1,5 @@
 import { Ddc } from "./ddc.ts";
-import { ContextBuilder } from "./context.ts";
+import { ContextBuilder, ContextDdcOptions } from "./context.ts";
 import {
   Context,
   DdcEvent,
@@ -55,6 +55,14 @@ export async function main(denops: Denops) {
       contextBuilder.setFiletype(filetype, options);
       return Promise.resolve();
     },
+    setContext(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
+      ensureObject(arg1);
+      const options = arg1 as Record<string, unknown>;
+      const filetype = arg2 as string;
+      const func = arg3 as string;
+      contextBuilder.setContext(filetype, func, options);
+      return Promise.resolve();
+    },
     setBuffer(arg1: unknown, arg2: unknown): Promise<void> {
       ensureObject(arg1);
       const options = arg1 as Record<string, unknown>;
@@ -87,6 +95,9 @@ export async function main(denops: Denops) {
     },
     getFiletype(): Promise<Record<string, Partial<DdcOptions>>> {
       return Promise.resolve(contextBuilder.getFiletype());
+    },
+    getContext(): Promise<Record<string, ContextDdcOptions>> {
+      return Promise.resolve(contextBuilder.getContext());
     },
     getBuffer(): Promise<Record<number, Partial<DdcOptions>>> {
       return Promise.resolve(contextBuilder.getBuffer());

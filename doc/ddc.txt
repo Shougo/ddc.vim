@@ -266,6 +266,11 @@ ddc#enable_cmdline_completion()
 		Note: It must be called in command line mode.
 		Note: It disable command line window(|cmdwin|) feature.
 
+						*ddc#get_syntax_groups()*
+ddc#get_syntax_groups()
+		Get current syntax groups.
+		Note: "nvim-treesitter" is used if it is installed.
+
 							*ddc#register()*
 ddc#register({dict})
 		Register source or filter.
@@ -308,6 +313,10 @@ ddc#custom#get_current()
 ddc#custom#get_filetype()
 		Get filetype specific options.
 
+						*ddc#custom#get_context()*
+ddc#custom#get_context()
+		Get context specific options.
+
 						*ddc#custom#get_global()*
 ddc#custom#get_global()
 		Get global options.
@@ -342,6 +351,15 @@ ddc#custom#set_filetype({filetype}, {dict})
 		Overwrites all options used for filetypes. {filetype} accepts
 		a string or a list of strings.
 		The {dict} is the same as for |ddc#custom#set_global()|.
+
+						*ddc#custom#set_context()*
+ddc#custom#set_context({filetype}, {func}, {dict})
+		Overwrites all options used for context.
+		{filetype} accepts a string or a list of strings.
+		{func} is function.  If {func} returns |v:true|, {dict} is used.
+		The {dict} is the same as for |ddc#custom#set_global()|.
+		Note: It overwrites filetype specific options, but not buffer
+		specific options.
 
 						*ddc#custom#set_global()*
 ddc#custom#set_global({dict})

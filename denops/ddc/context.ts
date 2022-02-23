@@ -16,6 +16,11 @@ type PartialMerge<T> = (a: Partial<T>, b: Partial<T>) => Partial<T>;
 type Merge<T> = (a: T, b: Partial<T>) => T;
 type Default<T> = () => T;
 
+export type ContextDdcOptions = {
+  func: string;
+  options: Partial<DdcOptions>;
+};
+
 function partialOverwrite<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
   return { ...a, ...b };
 }
@@ -145,6 +150,7 @@ function patchDdcOptions(
 class Custom {
   global: Partial<DdcOptions> = {};
   filetype: Record<string, Partial<DdcOptions>> = {};
+  context: Record<string, ContextDdcOptions> = {};
   buffer: Record<number, Partial<DdcOptions>> = {};
 
   get(ft: string, bufnr: number): DdcOptions {
@@ -163,6 +169,10 @@ class Custom {
   }
   setFiletype(ft: string, options: Partial<DdcOptions>): Custom {
     this.filetype[ft] = options;
+    return this;
+  }
+  setContext(ft: string, func: string, options: Partial<DdcOptions>): Custom {
+    this.context[ft] = { func, options };
     return this;
   }
   setBuffer(bufnr: number, options: Partial<DdcOptions>): Custom {
@@ -355,6 +365,9 @@ export class ContextBuilder {
   getFiletype(): Record<string, Partial<DdcOptions>> {
     return this.custom.filetype;
   }
+  getContext(): Record<string, ContextDdcOptions> {
+    return this.custom.context;
+  }
   getBuffer(): Record<number, Partial<DdcOptions>> {
     return this.custom.buffer;
   }
@@ -368,6 +381,9 @@ export class ContextBuilder {
   }
   setFiletype(ft: string, options: Partial<DdcOptions>) {
     this.custom.setFiletype(ft, options);
+  }
+  setContext(ft: string, func: string, options: Partial<DdcOptions>) {
+    this.custom.setContext(ft, func, options);
   }
   setBuffer(bufnr: number, options: Partial<DdcOptions>) {
     this.custom.setBuffer(bufnr, options);
