@@ -159,14 +159,13 @@ class Custom {
     bufnr: number,
   ): Promise<DdcOptions> {
     const filetype = this.filetype[ft] || {};
-    const context =
-      this.context[ft] && denops &&
+    const context = this.context[ft] && denops &&
         await denops.call(
           "ddc#custom#_call_context_func",
           this.context[ft].func,
         )
-        ? this.context[ft].options
-        : {};
+      ? this.context[ft].options
+      : {};
     const buffer = this.buffer[bufnr] || {};
     return foldMerge(mergeDdcOptions, defaultDdcOptions, [
       this.global,

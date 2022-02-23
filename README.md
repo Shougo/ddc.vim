@@ -157,17 +157,3 @@ Please see: https://github.com/Shougo/ddc.vim/issues/32
 ![command line completion](https://user-images.githubusercontent.com/41495/135711007-8c24c606-2c5d-41f5-a445-dce0127aa97a.png)
 
 ## Plans
-
-- [x] Custom ddc options support
-- [x] Custom source options support
-- [x] Implement source orders
-- [x] Implement sorter_rank
-- [x] virtual text completion mode
-- [x] Split sources and filters
-- [x] Implement LSP source
-- [x] Manual completion support
-- [x] Implement converter_remove_overlap
-- [x] iskeyword support
-- [x] Sources/Filters auto loading without registers
-- [x] Original popup window implementation
-- [x] Command line completion

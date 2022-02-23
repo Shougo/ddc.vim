@@ -1,6 +1,5 @@
 function! ddc#syntax#in(checks) abort
   let groups_names = ddc#syntax#get()
-  echomsg groups_names
   for check in type(a:checks) == v:t_list ? a:checks : [a:checks]
     if index(groups_names, check) >= 0
       return v:true
@@ -12,7 +11,8 @@ endfunction
 function! ddc#syntax#get() abort
   let curpos = getcurpos()[1:2]
   return &l:syntax !=# '' ? s:get_syn_names([curpos[0], curpos[1] - 1]) :
-        \ has('nvim') ? s:get_treesitter_nodes([curpos[0] - 1, curpos[1] - 1]) :
+        \ has('nvim') ? s:get_treesitter_nodes([curpos[0] - 1,
+        \   col('$') == col('.') ? curpos[1] - 2 : curpos[1] - 1]) :
         \ []
 endfunction
 

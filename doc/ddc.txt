@@ -364,6 +364,17 @@ ddc#custom#set_context({filetype}, {func}, {dict})
 		The {dict} is the same as for |ddc#custom#set_global()|.
 		Note: It overwrites filetype specific options, but not buffer
 		specific options.
+		Note: {func} is evaluated after user input and it affects
+		completion performance.
+>
+		call ddc#custom#set_context('go',
+		    \ { -> ddc#syntax#in('TSComment') }, {
+		    \ 'sources': ['nextword', 'around'],
+		    \ })
+		call ddc#custom#set_context('c',
+		    \ { -> ddc#syntax#in('Comment') }, {
+		    \ 'sources': ['nextword', 'around'],
+		    \ })
 
 						*ddc#custom#set_global()*
 ddc#custom#set_global({dict})
