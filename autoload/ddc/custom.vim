@@ -24,22 +24,16 @@ function! ddc#custom#set_filetype(ft, dict) abort
     call s:notify('setFiletype', [a:dict, filetype])
   endfor
 endfunction
-let s:context_funcs = {}
-function! ddc#custom#set_context(ft, func, dict) abort
+function! ddc#custom#set_context(ft, func) abort
   let filetypes = s:normalize_string_or_list(a:ft)
-  let key = string(a:func)
-  let s:context_funcs[key] = a:func
+  let id = denops#callback#register(a:func)
   for filetype in filetypes
-    call s:notify('setContext', [a:dict, filetype, key])
+    call s:notify('setContext', [filetype, id])
   endfor
 endfunction
 function! ddc#custom#set_buffer(dict) abort
   let n = bufnr('%')
   call s:notify('setBuffer', [a:dict, n])
-endfunction
-
-function! ddc#custom#_call_context_func(name) abort
-  return call(s:context_funcs[a:name], [])
 endfunction
 
 function! ddc#custom#alias(type, alias, base) abort
