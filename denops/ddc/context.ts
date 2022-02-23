@@ -491,7 +491,7 @@ Deno.test("patchDdcOptions", () => {
   });
 });
 
-Deno.test("mergeDdcOptions", () => {
+Deno.test("mergeDdcOptions", async () => {
   const custom = (new Custom())
     .setGlobal({
       sources: ["around"],
@@ -521,7 +521,7 @@ Deno.test("mergeDdcOptions", () => {
       },
     })
     .patchBuffer(2, {});
-  assertEquals(custom.get(null, "typescript", 1), {
+  assertEquals(await custom.get(null, "typescript", 1), {
     ...defaultDdcOptions(),
     sources: ["around", "foo"],
     sourceOptions: {},
@@ -540,7 +540,7 @@ Deno.test("mergeDdcOptions", () => {
       },
     },
   });
-  assertEquals(custom.get(null, "typescript", 2), {
+  assertEquals(await custom.get(null, "typescript", 2), {
     ...defaultDdcOptions(),
     sources: [],
     sourceOptions: {},
@@ -556,7 +556,7 @@ Deno.test("mergeDdcOptions", () => {
       },
     },
   });
-  assertEquals(custom.get(null, "cpp", 1), {
+  assertEquals(await custom.get(null, "cpp", 1), {
     ...defaultDdcOptions(),
     sources: ["around", "foo"],
     sourceOptions: {},
