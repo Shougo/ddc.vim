@@ -380,12 +380,6 @@ ddc#custom#set_context({filetype}, {func})
 		    \   'sources': ['nextword', 'around'],
 		    \ } : {} })
 
-						*ddc#custom#set_global()*
-ddc#custom#set_global({dict})
-		Overwrites all global config options.
-		The {dict} key is {option-name} and the value is {value}. See
-		|ddc-options| for available {option-name}.
-
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
 
