@@ -65,11 +65,11 @@ export abstract class BaseSource<
   UserData extends unknown = unknown,
 > {
   name = "";
-  isBytePos = false;
-  events: DdcEvent[] = [];
   isInitialized = false;
-
   apiVersion = 4;
+
+  events: DdcEvent[] = [];
+  isBytePos = false;
 
   async onInit(_args: OnInitArguments<Params>): Promise<void> {}
 

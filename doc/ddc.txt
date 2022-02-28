@@ -696,6 +696,8 @@ gatherCandidates	(function)
 getCompletePosition	(function)			(Optional)
 		It is called to get the position of the current completion.
 
+		Default : |ddc-option-keywordPattern| is used.
+
 					*ddc-source-attribute-onCompleteDone*
 onCompleteDone		(function)			(Optional)
 		Called after the completion.
@@ -719,15 +721,20 @@ params			(function)			(Required)
 ------------------------------------------------------------------------------
 ITEM ATTRIBUTES					*ddc-item-attributes*
 
-						*ddc-item-attribute-name*
-word			(string)			(Required)
-		The completion word of a item. It is used for matching
-		inputs.
-
 						*ddc-item-attribute-abbr*
 abbr			(string)			(Optional)
 		The abbreviation of a item. It is displayed in popup
 		window.
+
+						*ddc-item-attribute-dup*
+dup			(boolean)			(Optional)
+		If true, the item will be displayed in the popup menu when an
+		item with the same word is already present.
+
+						*ddc-item-attribute-info*
+info			(string)			(Optional)
+		The preview information of a item. If 'completeopt'
+		contains "preview", it will be displayed in |preview-window|.
 
 						*ddc-item-attribute-kind*
 kind			(string)			(Optional)
@@ -738,19 +745,14 @@ menu			(string)			(Optional)
 		The menu information of a item. It is displayed in popup
 		window.
 
-						*ddc-item-attribute-info*
-info			(string)			(Optional)
-		The preview information of a item. If 'completeopt'
-		contains "preview", it will be displayed in |preview-window|.
-
-						*ddc-item-attribute-dup*
-dup			(boolean)			(Optional)
-		If true, the item will be displayed in the popup menu when an
-		item with the same word is already present.
-
 						*ddc-item-attribute-user_data*
 user_data		(UserData | string)	(Optional)
 		The source specific data.
+
+						*ddc-item-attribute-name*
+word			(string)			(Required)
+		The completion word of a item. It is used for matching
+		inputs.
 
 
 ==============================================================================
