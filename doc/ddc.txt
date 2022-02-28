@@ -1,6 +1,5 @@
 *ddc.txt*	Dark deno-powered completion framework for neovim/Vim8
 
-Version: 2.0
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
