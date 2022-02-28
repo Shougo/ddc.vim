@@ -660,11 +660,11 @@ CREATE SOURCE						*ddc-create-source*
 To create source, you should read other sources implementation.
 
 The files must be registered by |ddc#register()|.
-Source class must extend the Base class.
+Source class must extend "BaseSource" class.
 
 Note: The sources must be written in Typescript language.
 
-Note: If you call Vim functions in your source, it is not asynchronous.
+Note: If you call Vim functions, it is not asynchronous.
 
 ------------------------------------------------------------------------------
 SOURCE ATTRIBUTES				*ddc-source-attributes*
@@ -760,11 +760,11 @@ CREATE FILTER						*ddc-create-filter*
 To create filter, you should read other filters implementation.
 
 The files must be registered by |ddc#register()|.
-Filter class must extend the Base class.
+Filter class must extend "BaseFilter" class.
 
 Note: The filters must be written in Typescript language.
 
-Note: If you call Vim functions in your source, it is not asynchronous.
+Note: If you call Vim functions, it is not asynchronous.
 
 ------------------------------------------------------------------------------
 FILTER ATTRIBUTES				*ddc-filter-attributes*
