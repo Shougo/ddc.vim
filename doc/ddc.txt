@@ -355,6 +355,11 @@ ddc#custom#set_filetype({filetype}, {dict})
 		a string or a list of strings.
 		The {dict} is the same as for |ddc#custom#set_global()|.
 
+						*ddc#custom#set_global()*
+ddc#custom#set_global({dict})
+		Overwrites all global options.
+		The {dict} is the same as for |ddc#custom#set_global()|.
+
 						*ddc#custom#set_context()*
 ddc#custom#set_context({filetype}, {func})
 		Overwrites all options used for context.
@@ -662,21 +667,21 @@ To create source, you should read other sources implementation.
 The files must be registered by |ddc#register()|.
 Source class must extend "BaseSource" class.
 
-Note: The sources must be written in Typescript language.
+Note: The sources must be written in TypeScript language.
 
 Note: If you call Vim functions, it is not asynchronous.
 
 ------------------------------------------------------------------------------
 SOURCE ATTRIBUTES				*ddc-source-attributes*
 
-					*ddc-source-attribute-events*
+						*ddc-source-attribute-events*
 events			(string[])			(Optional)
 		List of events for which |ddc-source-attribute-onEvent|
 		should get called.
 
 		Default: []
 
-					*ddc-source-attribute-isBytePos*
+    					*ddc-source-attribute-isBytePos*
 isBytePos		(boolean)			(Optional)
 		If |ddc-source-attribute-getCompletePosition| returns byte
 		position, it must be true.
@@ -684,72 +689,72 @@ isBytePos		(boolean)			(Optional)
 
 		Default: false
 
-				*ddc-source-attribute-gather*
+						*ddc-source-attribute-gather*
 gather			(function)			(Required)
 		It is called to gather items.
 
-				*ddc-source-attribute-gatherCandidates*
+	    			*ddc-source-attribute-gatherCandidates*
 gatherCandidates	(function)
 		Note: It is deprecated.  Please use
 		|ddc-source-attribute-gather| instead.
 
-				*ddc-source-attribute-getCompletePosition*
+	    			*ddc-source-attribute-getCompletePosition*
 getCompletePosition	(function)			(Optional)
 		It is called to get the position of the current completion.
 
-				*ddc-source-attribute-onCompleteDone*
+					*ddc-source-attribute-onCompleteDone*
 onCompleteDone		(function)			(Optional)
 		Called after the completion.
 		It is useful to substitute text after completion.
 		Note: |ddc-item-attribute-user_data| must be "UserData" to use
 		the feature.
 
-				*ddc-source-attribute-onEvent*
+						*ddc-source-attribute-onEvent*
 onEvent			(function)			(Optional)
 		Called for the autocommands.
 		It is useful to make cache.
 
-				*ddc-source-attribute-onInit*
+						*ddc-source-attribute-onInit*
 onInit			(function)			(Optional)
 		Called before call source functions.
 
-				*ddc-source-attribute-params*
+						*ddc-source-attribute-params*
 params			(function)			(Required)
 		Called to get source params.
 
 ------------------------------------------------------------------------------
-ITEM ATTRIBUTES				*ddc-item-attributes*
+ITEM ATTRIBUTES					*ddc-item-attributes*
 
-					*ddc-item-attribute-name*
+						*ddc-item-attribute-name*
 word			(string)			(Required)
 		The completion word of a item. It is used for matching
 		inputs.
 
-					*ddc-item-attribute-abbr*
+						*ddc-item-attribute-abbr*
 abbr			(string)			(Optional)
 		The abbreviation of a item. It is displayed in popup
 		window.
 
-					*ddc-item-attribute-kind*
+						*ddc-item-attribute-kind*
 kind			(string)			(Optional)
 		The kind of a item. It is displayed in popup window.
 
-					*ddc-item-attribute-menu*
+						*ddc-item-attribute-menu*
 menu			(string)			(Optional)
 		The menu information of a item. It is displayed in popup
 		window.
 
-					*ddc-item-attribute-info*
+						*ddc-item-attribute-info*
 info			(string)			(Optional)
 		The preview information of a item. If 'completeopt'
 		contains "preview", it will be displayed in |preview-window|.
 
-					*ddc-item-attribute-dup*
+						*ddc-item-attribute-dup*
 dup			(boolean)			(Optional)
 		If true, the item will be displayed in the popup menu when an
 		item with the same word is already present.
 
-					*ddc-item-attribute-user_data*
+						*ddc-item-attribute-user_data*
 user_data		(UserData | string)	(Optional)
 		The source specific data.
 
@@ -762,34 +767,34 @@ To create filter, you should read other filters implementation.
 The files must be registered by |ddc#register()|.
 Filter class must extend "BaseFilter" class.
 
-Note: The filters must be written in Typescript language.
+Note: The filters must be written in TypeScript language.
 
 Note: If you call Vim functions, it is not asynchronous.
 
 ------------------------------------------------------------------------------
 FILTER ATTRIBUTES				*ddc-filter-attributes*
 
-					*ddc-filter-attribute-events*
+						*ddc-filter-attribute-events*
 events			(string[])			(Optional)
 		List of events for which |ddc-filter-attribute-onEvent|
 		should get called.
 
 		Default: []
 
-				*ddc-filter-attribute-filter*
+						*ddc-filter-attribute-filter*
 filter			(function)			(Required)
 		It is called to filter items.
 
-				*ddc-filter-attribute-onEvent*
+						*ddc-filter-attribute-onEvent*
 onEvent			(function)			(Optional)
 		Called for the autocommands.
 		It is useful to make cache.
 
-				*ddc-filter-attribute-onInit*
+						*ddc-filter-attribute-onInit*
 onInit			(function)			(Optional)
 		Called before call filter functions.
 
-				*ddc-filter-attribute-params*
+						*ddc-filter-attribute-params*
 params			(function)			(Required)
 		Called to get filter params.
 
