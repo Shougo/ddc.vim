@@ -10,6 +10,7 @@ import {
 import {
   batch,
   Denops,
+  ensureNumber,
   ensureObject,
   ensureString,
   fn,
@@ -31,7 +32,7 @@ export async function main(denops: Denops) {
 
   denops.dispatcher = {
     async register(arg1: unknown): Promise<void> {
-      const arg = arg1 as RegisterArg;
+      const arg = ensureObject(arg1) as RegisterArg;
       if (arg.type == "source") {
         await ddc.registerSource(denops, arg.path, arg.name);
       } else if (arg.type == "filter") {
@@ -39,52 +40,50 @@ export async function main(denops: Denops) {
       }
     },
     alias(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
-      ddc.registerAlias(arg1 as DdcExtType, arg2 as string, arg3 as string);
+      ddc.registerAlias(
+        ensureString(arg1) as DdcExtType,
+        ensureString(arg2),
+        ensureString(arg3),
+      );
       return Promise.resolve();
     },
     setGlobal(arg1: unknown): Promise<void> {
-      ensureObject(arg1);
-      const options = arg1 as Record<string, unknown>;
+      const options = ensureObject(arg1);
       contextBuilder.setGlobal(options);
       return Promise.resolve();
     },
     setFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      ensureObject(arg1);
-      const options = arg1 as Record<string, unknown>;
-      const filetype = arg2 as string;
+      const options = ensureObject(arg1);
+      const filetype = ensureString(arg2);
       contextBuilder.setFiletype(filetype, options);
       return Promise.resolve();
     },
     setContext(arg1: unknown, arg2: unknown): Promise<void> {
-      const filetype = arg1 as string;
-      const id = arg2 as number;
+      const filetype = ensureString(arg1);
+      const id = ensureString(arg2);
       contextBuilder.setContext(filetype, id);
       return Promise.resolve();
     },
     setBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      ensureObject(arg1);
-      const options = arg1 as Record<string, unknown>;
-      const bufnr = arg2 as number;
+      const options = ensureObject(arg1);
+      const bufnr = ensureNumber(arg2);
       contextBuilder.setBuffer(bufnr, options);
       return Promise.resolve();
     },
     patchGlobal(arg1: unknown): Promise<void> {
-      ensureObject(arg1);
-      const options = arg1 as Record<string, unknown>;
+      const options = ensureObject(arg1);
       contextBuilder.patchGlobal(options);
       return Promise.resolve();
     },
     patchFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      ensureObject(arg1);
-      const options = arg1 as Record<string, unknown>;
-      const filetype = arg2 as string;
+      const options = ensureObject(arg1);
+      const filetype = ensureString(arg2);
       contextBuilder.patchFiletype(filetype, options);
       return Promise.resolve();
     },
     patchBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      ensureObject(arg1);
-      const options = arg1 as Record<string, unknown>;
-      const bufnr = arg2 as number;
+      const options = ensureObject(arg1);
+      const bufnr = ensureNumber(arg2);
       contextBuilder.patchBuffer(bufnr, options);
       return Promise.resolve();
     },
@@ -94,7 +93,7 @@ export async function main(denops: Denops) {
     getFiletype(): Promise<Record<string, Partial<DdcOptions>>> {
       return Promise.resolve(contextBuilder.getFiletype());
     },
-    getContext(): Promise<Record<string, number>> {
+    getContext(): Promise<Record<string, string>> {
       return Promise.resolve(contextBuilder.getContext());
     },
     getBuffer(): Promise<Record<number, Partial<DdcOptions>>> {
@@ -117,7 +116,7 @@ export async function main(denops: Denops) {
       await doCompletion(denops, context, options);
     },
     async onEvent(arg1: unknown): Promise<void> {
-      const event = arg1 as DdcEvent;
+      const event = ensureString(arg1) as DdcEvent;
       const [skip, context, options] = await contextBuilder
         .createContext(denops, event);
       await ddc.onEvent(
@@ -183,12 +182,11 @@ export async function main(denops: Denops) {
     },
     // deno-lint-ignore require-await
     async onCallback(id: unknown, payload: unknown): Promise<void> {
-      ensureString(id);
-      cbContext.emit(id, payload);
+      cbContext.emit(ensureString(id), payload);
     },
     async onCompleteDone(arg1: unknown, arg2: unknown): Promise<void> {
-      const sourceName = arg1 as string;
-      const userData = arg2 as DdcUserData;
+      const sourceName = ensureString(arg1);
+      const userData = ensureObject(arg2) as DdcUserData;
       const [skip, context, options] = await contextBuilder
         .createContext(denops, "CompleteDone");
       if (skip) return;

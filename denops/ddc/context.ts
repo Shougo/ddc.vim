@@ -1,4 +1,4 @@
-import { assertEquals, Denops, fn, op, vars } from "./deps.ts";
+import { assertEquals, Denops, ensureString, fn, op, vars } from "./deps.ts";
 import {
   Context,
   DdcEvent,
@@ -145,7 +145,7 @@ function patchDdcOptions(
 class Custom {
   global: Partial<DdcOptions> = {};
   filetype: Record<string, Partial<DdcOptions>> = {};
-  context: Record<string, number> = {};
+  context: Record<string, string> = {};
   buffer: Record<number, Partial<DdcOptions>> = {};
 
   async get(
@@ -177,7 +177,7 @@ class Custom {
     this.filetype[ft] = options;
     return this;
   }
-  setContext(ft: string, id: number): Custom {
+  setContext(ft: string, id: string): Custom {
     this.context[ft] = id;
     return this;
   }
@@ -249,7 +249,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   const filetypePromise: Promise<string> = (async () => {
     const context = await _call(denops, "context_filetype#get_filetype", "");
     if (context != "") return context;
-    return (await op.filetype.getLocal(denops)) as string;
+    return ensureString(await op.filetype.getLocal(denops));
   })();
   const bufnrPromise: Promise<number> = fn.bufnr(denops);
   const lineNrPromise: Promise<number> = fn.line(denops, ".");
@@ -258,7 +258,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   const iminsertPromise = op.iminsert.getLocal(denops);
   const mode: string = event == "InsertEnter"
     ? "i"
-    : (await fn.mode(denops)) as string;
+    : ensureString(await fn.mode(denops));
   const inputPromise = denops.call("ddc#util#get_input", event) as Promise<
     string
   >;
@@ -375,7 +375,7 @@ export class ContextBuilder {
   getFiletype(): Record<string, Partial<DdcOptions>> {
     return this.custom.filetype;
   }
-  getContext(): Record<string, number> {
+  getContext(): Record<string, string> {
     return this.custom.context;
   }
   getBuffer(): Record<number, Partial<DdcOptions>> {
@@ -392,7 +392,7 @@ export class ContextBuilder {
   setFiletype(ft: string, options: Partial<DdcOptions>) {
     this.custom.setFiletype(ft, options);
   }
-  setContext(ft: string, id: number) {
+  setContext(ft: string, id: string) {
     this.custom.setContext(ft, id);
   }
   setBuffer(bufnr: number, options: Partial<DdcOptions>) {

@@ -64,7 +64,7 @@ export const createCallbackContext = (): CallbackContext => {
       const handlers = handlersMap.get(id) ?? new Set();
       handlersMap.set(id, handlers);
       const promise = new Promise((resolveOrig, rejectOrig) => {
-        let resolved = false as boolean;
+        let resolved = false;
         const resolve = (value: unknown) => {
           resolveOrig(value);
           resolved = true;
