@@ -979,7 +979,7 @@ https://github.com/Shougo/pum.vim
   function! CommandlinePost() abort
     " Restore sources
     if exists('b:prev_buffer_config')
-      call ddc#custom#set_buffer(s:prev_buffer_config)
+      call ddc#custom#set_buffer(b:prev_buffer_config)
       unlet b:prev_buffer_config
     endif
   endfunction
