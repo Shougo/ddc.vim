@@ -16,7 +16,7 @@ export {
   DeadlineError,
 } from "https://deno.land/std@0.130.0/async/mod.ts";
 export { TimeoutError } from "https://deno.land/x/msgpack_rpc@v3.1.5/response_waiter.ts";
-export { spy } from "https://deno.land/x/mock@0.15.0/spy.ts";
+export { spy } from "https://deno.land/x/mock@0.15.0/mock.ts";
 export {
   ensureNumber,
   ensureObject,
