@@ -975,12 +975,15 @@ https://github.com/Shougo/pum.vim
 
     " Enable command line completion
     call ddc#enable_cmdline_completion()
+    call ddc#enable()
   endfunction
   function! CommandlinePost() abort
     " Restore sources
     if exists('b:prev_buffer_config')
       call ddc#custom#set_buffer(b:prev_buffer_config)
       unlet b:prev_buffer_config
+    else
+      call ddc#custom#set_buffer({})
     endif
   endfunction
 
