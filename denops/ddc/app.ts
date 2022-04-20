@@ -112,6 +112,14 @@ export async function main(denops: Denops) {
         options.sources = sources;
       }
 
+      // Call onEvent() is needed to load sources
+      await ddc.onEvent(
+        denops,
+        context,
+        cbContext.createOnCallback(),
+        options,
+      );
+
       cbContext.revoke();
       await doCompletion(denops, context, options);
     },
