@@ -36,6 +36,8 @@ function! ddc#enable() abort
   endif
 endfunction
 function! ddc#enable_cmdline_completion() abort
+  call ddc#enable()
+
   augroup ddc-cmdline
     autocmd!
     autocmd CmdlineLeave <buffer> call ddc#_clear()
