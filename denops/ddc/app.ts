@@ -263,6 +263,19 @@ export async function main(denops: Denops) {
       return true;
     }
 
+    if (mode == "c") {
+      // Completion type check only for input()
+      const cmdType = await fn.getcmdtype(denops);
+      const cmdlineCompletion = await vars.b.get(
+        denops,
+        "ddc_cmdline_completion",
+        0,
+      );
+      if (cmdType != "@" && !cmdlineCompletion) {
+        return true;
+      }
+    }
+
     return false;
   }
 
@@ -355,6 +368,7 @@ export async function main(denops: Denops) {
       "InsertLeave",
       "TextChangedI",
       "TextChangedP",
+      "CmdlineChanged",
     ]);
   });
 }
