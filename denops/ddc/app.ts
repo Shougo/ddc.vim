@@ -108,6 +108,12 @@ export async function main(denops: Denops) {
       const [skip, context, options] = await contextBuilder
         .createContext(denops, "Manual");
       if (skip) return;
+
+      const mode = await fn.mode(denops);
+      if (mode == "c") {
+        // Use cmdlineSources instead
+        options.sources = options.cmdlineSources;
+      }
       if (sources.length != 0) {
         options.sources = sources;
       }
@@ -127,6 +133,13 @@ export async function main(denops: Denops) {
       const event = ensureString(arg1) as DdcEvent;
       const [skip, context, options] = await contextBuilder
         .createContext(denops, event);
+
+      const mode = await fn.mode(denops);
+      if (mode == "c") {
+        // Use cmdlineSources instead
+        options.sources = options.cmdlineSources;
+      }
+
       await ddc.onEvent(
         denops,
         context,
@@ -261,19 +274,6 @@ export async function main(denops: Denops) {
 
     if (options.autoCompleteEvents.indexOf(event) < 0) {
       return true;
-    }
-
-    if (mode == "c") {
-      // Completion type check only for input()
-      const cmdType = await fn.getcmdtype(denops);
-      const cmdlineCompletion = await vars.b.get(
-        denops,
-        "ddc_cmdline_completion",
-        0,
-      );
-      if (cmdType != "@" && !cmdlineCompletion) {
-        return true;
-      }
     }
 
     return false;

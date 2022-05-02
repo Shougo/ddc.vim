@@ -32,6 +32,7 @@ export type DdcOptions = {
   autoCompleteDelay: number;
   autoCompleteEvents: DdcEvent[];
   backspaceCompletion: boolean;
+  cmdlineSources: SourceName[];
   completionMenu: CompletionMenu;
   completionMode: CompletionMode;
   filterOptions: Record<string, Partial<FilterOptions>>;

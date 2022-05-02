@@ -45,6 +45,7 @@ export function defaultDdcOptions(): DdcOptions {
       "TextChangedP",
     ],
     backspaceCompletion: false,
+    cmdlineSources: [],
     completionMenu: "native",
     completionMode: "popupmenu",
     filterOptions: {},
