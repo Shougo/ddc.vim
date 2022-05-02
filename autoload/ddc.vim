@@ -97,6 +97,8 @@ function! s:stopped() abort
     for custom in g:ddc#_customs
       call ddc#_notify(custom.method, custom.args)
     endfor
+
+    let g:ddc#_customs = []
   endif
 endfunction
 
