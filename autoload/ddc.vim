@@ -85,7 +85,31 @@ function! ddc#_register() abort
   call denops#plugin#register('ddc',
         \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'),
         \ { 'mode': 'skip' })
+
+  autocmd ddc User DenopsStopped call s:stopped()
 endfunction
+
+function! s:stopped() abort
+  unlet! g:ddc#_initialized
+
+  " Restore custom config
+  if exists('g:ddc#_customs')
+    for custom in g:ddc#_customs
+      call ddc#_notify(custom.method, custom.args)
+    endfor
+  endif
+endfunction
+
+function! ddc#_notify(method, args) abort
+  if ddc#_denops_running()
+    call denops#notify('ddc', a:method, a:args)
+  else
+    execute printf('autocmd User DDCReady call ' .
+          \ 'denops#notify("ddc", "%s", %s)',
+          \ a:method, string(a:args))
+  endif
+endfunction
+
 
 function! ddc#_denops_running() abort
   return exists('g:loaded_denops')
@@ -371,3 +395,5 @@ function! ddc#_benchmark(...) abort
   call ddc#util#print_error(printf('%s%s: Took %f seconds.',
         \ msg, expand('<sfile>'), diff))
 endfunction
+
+

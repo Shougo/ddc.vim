@@ -65,13 +65,14 @@ function! ddc#custom#get_current() abort
 endfunction
 
 function! s:notify(method, args) abort
-  if ddc#_denops_running()
-    call denops#notify('ddc', a:method, a:args)
-  else
-    execute printf('autocmd User DDCReady call ' .
-          \ 'denops#notify("ddc", "%s", %s)',
-          \ a:method, string(a:args))
+  " Save notify args
+  if !exists('g:ddc#_customs')
+    let g:ddc#_customs = []
   endif
+
+  call add(g:ddc#_customs, { 'method': a:method, 'args': a:args })
+
+  return ddc#_notify(a:method, a:args)
 endfunction
 
 function! s:normalize_key_or_dict(key_or_dict, value) abort
