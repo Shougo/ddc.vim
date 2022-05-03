@@ -32,7 +32,7 @@ function! ddc#complete#_complete() abort
     " Note: It may be called in map-<expr>
     silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_items)
   elseif empty(g:ddc#_items)
-    call ddc#_clear()
+    call ddc#complete#_clear()
   elseif menu ==# 'pum.vim'
     call pum#open(g:ddc#_complete_pos + 1, g:ddc#_items)
   endif
@@ -143,4 +143,67 @@ function! ddc#complete#_inline(highlight) abort
       let g:ddc#_inline_popup_id = popup_create([word], winopts)
     endif
   endif
+endfunction
+
+function! ddc#complete#_on_complete_done() abort
+  let completed_item = ddc#_completion_menu() ==# 'pum.vim' ?
+        \ g:pum#completed_item : v:completed_item
+
+  if !ddc#_denops_running() || empty(completed_item)
+        \ || !has_key(completed_item, 'user_data')
+    return
+  endif
+
+  if ddc#_completion_menu() !=# 'pum.vim'
+    let g:ddc#_skip_complete = v:true
+    " Reset skip completion
+    autocmd ddc InsertLeave,InsertCharPre * ++once
+          \ let g:ddc#_skip_complete = v:false
+  endif
+
+  if type(completed_item.user_data) != v:t_dict
+    return
+  endif
+
+  " Search selected item from previous items
+  let items = filter(copy(g:ddc#_items), { _, val
+        \ -> val.word ==# completed_item.word
+        \ && val.abbr ==# completed_item.abbr
+        \ && val.info ==# completed_item.info
+        \ && val.kind ==# completed_item.kind
+        \ && val.menu ==# completed_item.menu
+        \ && has_key(val, 'user_data')
+        \ && val.user_data ==# completed_item.user_data
+        \ })
+  if empty(items)
+    return
+  endif
+
+  call denops#request('ddc', 'onCompleteDone',
+        \ [items[0].__sourceName, completed_item.user_data])
+endfunction
+
+function! ddc#complete#_clear() abort
+  if ddc#_completion_menu() ==# 'native' && mode() ==# 'i'
+    call complete(1, [])
+  endif
+
+  if exists('*pum#close')
+    call pum#close()
+  endif
+
+  call ddc#complete#_clear_inline()
+endfunction
+function! ddc#complete#_clear_inline() abort
+  if exists('*nvim_buf_set_virtual_text')
+    if !exists('s:ddc_namespace')
+      let s:ddc_namespace = nvim_create_namespace('ddc')
+    endif
+
+    call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
+  elseif get(g:, 'ddc#_inline_popup_id', -1) > 0
+    call popup_close(g:ddc#_inline_popup_id)
+  endif
+
+  let g:ddc#_inline_popup_id = -1
 endfunction

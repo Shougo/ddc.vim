@@ -36,3 +36,13 @@ endfunction
 function! ddc#util#indent_current_line() abort
   call feedkeys("\<C-f>", 'n')
 endfunction
+
+function! ddc#util#benchmark(...) abort
+  let msg = get(a:000, 0, '')
+  if msg !=# ''
+    let msg .= ' '
+  endif
+  let diff = reltimefloat(reltime(g:ddc#_started))
+  call ddc#util#print_error(printf('%s%s: Took %f seconds.',
+        \ msg, expand('<sfile>'), diff))
+endfunction

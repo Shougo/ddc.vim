@@ -18,15 +18,15 @@ function! ddc#enable() abort
 
   augroup ddc
     autocmd!
-    autocmd CompleteDone * call ddc#_on_complete_done()
-    autocmd User PumCompleteDone call ddc#_on_complete_done()
-    autocmd InsertLeave * call ddc#_clear()
+    autocmd CompleteDone * call ddc#complete#_on_complete_done()
+    autocmd User PumCompleteDone call ddc#complete#_on_complete_done()
+    autocmd InsertLeave * call ddc#complete#_clear()
   augroup END
 
   " Force context_filetype call
   silent! call context_filetype#get_filetype()
 
-  let s:started = reltime()
+  let g:ddc#_started = reltime()
 
   " Note: ddc.vim must be registered manually.
   if exists('g:loaded_denops') && denops#server#status() ==# 'running'
@@ -40,8 +40,8 @@ function! ddc#enable_cmdline_completion() abort
 
   augroup ddc-cmdline
     autocmd!
-    autocmd CmdlineLeave <buffer> call ddc#_clear()
-    autocmd CmdlineEnter <buffer>   call ddc#_on_event('CmdlineEnter')
+    autocmd CmdlineLeave <buffer> call ddc#complete#_clear()
+    autocmd CmdlineEnter <buffer> call ddc#_on_event('CmdlineEnter')
   augroup END
   if exists('##ModeChanged')
     autocmd ddc-cmdline ModeChanged *:n
@@ -102,17 +102,6 @@ function! s:stopped() abort
   endif
 endfunction
 
-function! ddc#_notify(method, args) abort
-  if ddc#_denops_running()
-    call denops#notify('ddc', a:method, a:args)
-  else
-    execute printf('autocmd User DDCReady call ' .
-          \ 'denops#notify("ddc", "%s", %s)',
-          \ a:method, string(a:args))
-  endif
-endfunction
-
-
 function! ddc#_denops_running() abort
   return exists('g:loaded_denops')
         \ && denops#server#status() ==# 'running'
@@ -144,31 +133,6 @@ function! ddc#_completion_menu() abort
   return get(g:, 'ddc#_completion_menu', 'native')
 endfunction
 
-function! ddc#_clear() abort
-  if ddc#_completion_menu() ==# 'native' && mode() ==# 'i'
-    call complete(1, [])
-  endif
-
-  if exists('*pum#close')
-    call pum#close()
-  endif
-
-  call ddc#_clear_inline()
-endfunction
-function! ddc#_clear_inline() abort
-  if exists('*nvim_buf_set_virtual_text')
-    if !exists('s:ddc_namespace')
-      let s:ddc_namespace = nvim_create_namespace('ddc')
-    endif
-
-    call nvim_buf_clear_namespace(bufnr('%'), s:ddc_namespace, 0, -1)
-  elseif get(g:, 'ddc#_inline_popup_id', -1) > 0
-    call popup_close(g:ddc#_inline_popup_id)
-  endif
-
-  let g:ddc#_inline_popup_id = -1
-endfunction
-
 
 function! ddc#register(dict) abort
   if ddc#_denops_running()
@@ -176,6 +140,16 @@ function! ddc#register(dict) abort
   else
     execute printf('autocmd User DDCReady call ' .
           \ 'denops#notify("ddc", "register", [%s])', a:dict)
+  endif
+endfunction
+
+function! ddc#_notify(method, args) abort
+  if ddc#_denops_running()
+    call denops#notify('ddc', a:method, a:args)
+  else
+    execute printf('autocmd User DDCReady call ' .
+          \ 'denops#notify("ddc", "%s", %s)',
+          \ a:method, string(a:args))
   endif
 endfunction
 
@@ -204,52 +178,4 @@ endfunction
 function! ddc#complete_info() abort
   return ddc#_completion_menu() ==# 'pum.vim' ?
         \ pum#complete_info() : complete_info()
-endfunction
-
-function! ddc#_on_complete_done() abort
-  let completed_item = ddc#_completion_menu() ==# 'pum.vim' ?
-        \ g:pum#completed_item : v:completed_item
-
-  if !ddc#_denops_running() || empty(completed_item)
-        \ || !has_key(completed_item, 'user_data')
-    return
-  endif
-
-  if ddc#_completion_menu() !=# 'pum.vim'
-    let g:ddc#_skip_complete = v:true
-    " Reset skip completion
-    autocmd ddc InsertLeave,InsertCharPre * ++once
-          \ let g:ddc#_skip_complete = v:false
-  endif
-
-  if type(completed_item.user_data) != v:t_dict
-    return
-  endif
-
-  " Search selected item from previous items
-  let items = filter(copy(g:ddc#_items), { _, val
-        \ -> val.word ==# completed_item.word
-        \ && val.abbr ==# completed_item.abbr
-        \ && val.info ==# completed_item.info
-        \ && val.kind ==# completed_item.kind
-        \ && val.menu ==# completed_item.menu
-        \ && has_key(val, 'user_data')
-        \ && val.user_data ==# completed_item.user_data
-        \ })
-  if empty(items)
-    return
-  endif
-
-  call denops#request('ddc', 'onCompleteDone',
-        \ [items[0].__sourceName, completed_item.user_data])
-endfunction
-
-function! ddc#_benchmark(...) abort
-  let msg = get(a:000, 0, '')
-  if msg !=# ''
-    let msg .= ' '
-  endif
-  let diff = reltimefloat(reltime(s:started))
-  call ddc#util#print_error(printf('%s%s: Took %f seconds.',
-        \ msg, expand('<sfile>'), diff))
 endfunction

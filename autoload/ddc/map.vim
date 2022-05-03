@@ -5,7 +5,7 @@ function! ddc#map#complete() abort
     unlet g:ddc#_save_completeopt
   endif
 
-  call ddc#_clear_inline()
+  call ddc#complete#_clear_inline()
 
   if has('nvim') || ddc#_completion_menu() ==# 'pum.vim'
     call ddc#complete#_complete()
@@ -99,7 +99,7 @@ function! ddc#map#insert_item(number) abort
     return ''
   endif
 
-  call ddc#_clear_inline()
+  call ddc#complete#_clear_inline()
 
   " Get cursor word.
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]

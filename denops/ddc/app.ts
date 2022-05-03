@@ -292,7 +292,7 @@ export async function main(denops: Denops) {
       await vars.g.set(denops, "ddc#_items", []);
       if (visible && options.completionMode != "manual") {
         // Close current popupmenu.
-        await denops.call("ddc#_clear");
+        await denops.call("ddc#complete#_clear");
       }
     });
   }
