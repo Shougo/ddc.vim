@@ -337,7 +337,7 @@ export async function main(denops: Denops) {
         ) {
           await denops.call("ddc#complete");
         } else if (options.completionMode == "inline") {
-          await denops.call("ddc#_inline", options.inlineHighlight);
+          await denops.call("ddc#complete#_inline", options.inlineHighlight);
         } else if (options.completionMode == "manual") {
           // through
         }

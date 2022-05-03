@@ -8,7 +8,7 @@ function! ddc#map#complete() abort
   call ddc#_clear_inline()
 
   if has('nvim') || ddc#_completion_menu() ==# 'pum.vim'
-    call ddc#_complete()
+    call ddc#complete#_complete()
   else
     " Debounce for Vim8
     if exists('s:completion_timer')
@@ -52,7 +52,7 @@ endfunction
 function! ddc#map#can_complete() abort
   return !empty(get(g:, 'ddc#_items', []))
         \ && get(g:, 'ddc#_complete_pos', -1) >= 0
-        \ && !ddc#_cannot_complete()
+        \ && !ddc#complete#_cannot_complete()
 endfunction
 
 function! ddc#map#extend() abort
