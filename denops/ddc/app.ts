@@ -18,6 +18,7 @@ import {
   vars,
 } from "./deps.ts";
 import { createCallbackContext } from "./callback.ts";
+import { Lock } from "https://deno.land/x/async@v1.1.5/mod.ts";
 
 type RegisterArg = {
   path: string;
@@ -29,6 +30,7 @@ export async function main(denops: Denops) {
   const ddc: Ddc = new Ddc();
   const contextBuilder = new ContextBuilder();
   const cbContext = createCallbackContext();
+  const lock = new Lock();
 
   denops.dispatcher = {
     async register(arg1: unknown): Promise<void> {
@@ -131,75 +133,13 @@ export async function main(denops: Denops) {
     },
     async onEvent(arg1: unknown): Promise<void> {
       const event = ensureString(arg1) as DdcEvent;
-      const [skip, context, options] = await contextBuilder
-        .createContext(denops, event);
 
-      const mode = await fn.mode(denops);
-      if (mode == "c") {
-        // Use cmdlineSources instead
-        options.sources = options.cmdlineSources;
-      }
+      // Note: must be locked
+      await lock.with(async () => {
+        await _onEvent(event);
 
-      await ddc.onEvent(
-        denops,
-        context,
-        cbContext.createOnCallback(),
-        options,
-      );
-      if (skip) return;
-
-      cbContext.revoke();
-
-      if (event != "InsertEnter" && await fn.mode(denops) == "n") {
-        return;
-      }
-
-      if (options.completionMenu == "native") {
-        // Check for CompleteDone
-        const skipComplete = await vars.g.get(
-          denops,
-          "ddc#_skip_complete",
-        ) as boolean;
-        if (skipComplete) {
-          return;
-        }
-      } else if (options.completionMenu == "pum.vim") {
-        // Check for pum.vim
-        const skipComplete = await denops.call("pum#skip_complete") as boolean;
-        if (skipComplete) {
-          // Note: pum#skip_complete() does not close the popupmenu.
-          return;
-        }
-      }
-
-      if (await checkSkipCompletion(event, context, options)) {
-        await cancelCompletion(denops, context, options);
-
-        return;
-      }
-
-      // Check auto complete delay.
-      if (options.autoCompleteDelay > 0) {
-        // Cancel previous completion
-        await cancelCompletion(denops, context, options);
-
-        await new Promise((resolve) =>
-          setTimeout(
-            resolve,
-            options.autoCompleteDelay,
-          )
-        );
-
-        const changedTick = vars.b.get(denops, "changedtick") as Promise<
-          number
-        >;
-        if (context.changedTick != await changedTick) {
-          // Input is changed.  Skip invalid completion.
-          return;
-        }
-      }
-
-      await doCompletion(denops, context, options);
+        await vars.g.set(denops, "ddc#_locked", 0);
+      });
     },
     // deno-lint-ignore require-await
     async onCallback(id: unknown, payload: unknown): Promise<void> {
@@ -223,6 +163,79 @@ export async function main(denops: Denops) {
       );
     },
   };
+
+  async function _onEvent(event: DdcEvent): Promise<void> {
+    const [skip, context, options] = await contextBuilder
+      .createContext(denops, event);
+
+    const mode = await fn.mode(denops);
+    if (mode == "c") {
+      // Use cmdlineSources instead
+      options.sources = options.cmdlineSources;
+    }
+
+    await ddc.onEvent(
+      denops,
+      context,
+      cbContext.createOnCallback(),
+      options,
+    );
+
+    if (skip) return;
+
+    cbContext.revoke();
+
+    if (event != "InsertEnter" && await fn.mode(denops) == "n") {
+      return;
+    }
+
+    if (options.completionMenu == "native") {
+      // Check for CompleteDone
+      const skipComplete = await vars.g.get(
+        denops,
+        "ddc#_skip_complete",
+      ) as boolean;
+      if (skipComplete) {
+        return;
+      }
+    } else if (options.completionMenu == "pum.vim") {
+      // Check for pum.vim
+      const skipComplete = await denops.call("pum#skip_complete") as boolean;
+      if (skipComplete) {
+        // Note: pum#skip_complete() does not close the popupmenu.
+        return;
+      }
+    }
+
+    if (await checkSkipCompletion(event, context, options)) {
+      await cancelCompletion(denops, context, options);
+
+      return;
+    }
+
+    // Check auto complete delay.
+    if (options.autoCompleteDelay > 0) {
+      // Cancel previous completion
+      await cancelCompletion(denops, context, options);
+
+      await new Promise((resolve) =>
+        setTimeout(
+          resolve,
+          options.autoCompleteDelay,
+        )
+      );
+
+      const changedTick = vars.b.get(denops, "changedtick") as Promise<
+        number
+      >;
+      if (context.changedTick != await changedTick) {
+        // Input is changed.  Skip invalid completion.
+        return;
+      }
+    }
+
+    await doCompletion(denops, context, options);
+  }
 
   async function checkSkipCompletion(
     event: DdcEvent,
@@ -358,6 +371,7 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_skip_complete", false);
     await vars.g.set(denops, "ddc#_sources", []);
+    await vars.g.set(denops, "ddc#_locked", false);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
     await denops.cmd("autocmd! User DDCReady");
