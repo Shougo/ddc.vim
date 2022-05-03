@@ -109,6 +109,8 @@ cmdlineSources
 		It is a list of registered source names for |command-line-mode|.
 		Please see |ddc-option-sources|.
 
+		Note: If you set it, |input()| auto completion is enabled.
+
 		Note: "pum.vim" is needed for the feature.
 		https://github.com/Shougo/pum.vim
 
@@ -1060,6 +1062,9 @@ A: >
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.05.03
+* input() auto completion is enabled when "cmdlineSources" is set.
 
 2022.05.02
 * Use "cmdlineSources" for command line mode.
