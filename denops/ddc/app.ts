@@ -368,7 +368,10 @@ export async function main(denops: Denops) {
       "InsertLeave",
       "TextChangedI",
       "TextChangedP",
-      "CmdlineChanged",
     ]);
+    await denops.cmd(
+      "autocmd ddc CmdlineChanged * " +
+        "if getcmdtype() !=# ':' | call ddc#_on_event('CmdlineChanged') | endif",
+    );
   });
 }

@@ -42,6 +42,8 @@ function! ddc#enable_cmdline_completion() abort
     autocmd!
     autocmd CmdlineLeave <buffer> call ddc#complete#_clear()
     autocmd CmdlineEnter <buffer> call ddc#_on_event('CmdlineEnter')
+    autocmd CmdlineChanged <buffer> if getcmdtype() ==# ':' |
+          \ call ddc#_on_event('CmdlineChanged') | endif
   augroup END
   if exists('##ModeChanged')
     autocmd ddc-cmdline ModeChanged *:n
