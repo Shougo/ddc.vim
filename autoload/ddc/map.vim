@@ -14,7 +14,7 @@ function! ddc#map#complete() abort
     if exists('s:completion_timer')
       call timer_stop(s:completion_timer)
     endif
-    let s:completion_timer = timer_start(10, { -> ddc#_complete() })
+    let s:completion_timer = timer_start(10, { -> ddc#complete#_complete() })
   endif
 endfunction
 
