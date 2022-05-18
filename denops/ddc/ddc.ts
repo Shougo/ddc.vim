@@ -154,7 +154,7 @@ export class Ddc {
     filterNames: string[],
   ): Promise<string[]> {
     if (sourceNames.length == 0 && filterNames.length == 0) {
-      return Promise.resolve([]);
+      return [];
     }
 
     const runtimepath = await op.runtimepath.getGlobal(denops);
@@ -178,7 +178,7 @@ export class Ddc {
         }
       }
 
-      return Promise.resolve(paths);
+      return paths;
     }
 
     const sources = (await globpath(
@@ -198,7 +198,7 @@ export class Ddc {
       await this.registerFilter(denops, path, parse(path).name);
     }));
 
-    return Promise.resolve(sources.concat(filters));
+    return sources.concat(filters);
   }
 
   async checkInvalid(
