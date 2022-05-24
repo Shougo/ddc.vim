@@ -31,6 +31,7 @@ export async function main(denops: Denops) {
   const contextBuilder = new ContextBuilder();
   const cbContext = createCallbackContext();
   const lock = new Lock();
+  let _queuedEvent: DdcEvent | null = null;
 
   denops.dispatcher = {
     async register(arg1: unknown): Promise<void> {
@@ -134,12 +135,18 @@ export async function main(denops: Denops) {
     async onEvent(arg1: unknown): Promise<void> {
       const event = ensureString(arg1) as DdcEvent;
 
-      // Note: must be locked
-      await lock.with(async () => {
-        await _onEvent(event);
-
-        await vars.g.set(denops, "ddc#_locked", 0);
-      });
+      _queuedEvent = event;
+      if (!lock.locked()) {
+        // Note: must be locked
+        await lock.with(async () => {
+          while (_queuedEvent != null) {
+            const event = _queuedEvent;
+            _queuedEvent = null;
+            await _onEvent(event);
+          }
+          await vars.g.set(denops, "ddc#_locked", 0);
+        });
+      }
     },
     // deno-lint-ignore require-await
     async onCallback(id: unknown, payload: unknown): Promise<void> {
