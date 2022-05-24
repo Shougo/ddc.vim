@@ -31,7 +31,7 @@ export async function main(denops: Denops) {
   const contextBuilder = new ContextBuilder();
   const cbContext = createCallbackContext();
   const lock = new Lock();
-  let _queuedEvent: DdcEvent | null = null;
+  let queuedEvent: DdcEvent | null = null;
 
   denops.dispatcher = {
     async register(arg1: unknown): Promise<void> {
@@ -135,18 +135,20 @@ export async function main(denops: Denops) {
     async onEvent(arg1: unknown): Promise<void> {
       const event = ensureString(arg1) as DdcEvent;
 
-      _queuedEvent = event;
-      if (!lock.locked()) {
-        // Note: must be locked
-        await lock.with(async () => {
-          while (_queuedEvent != null) {
-            const event = _queuedEvent;
-            _queuedEvent = null;
-            await _onEvent(event);
-          }
-          await vars.g.set(denops, "ddc#_locked", 0);
-        });
+      queuedEvent = event;
+
+      if (lock.locked()) {
+        return;
       }
+
+      // Note: must be locked
+      await lock.with(async () => {
+        while (queuedEvent != null) {
+          const event = queuedEvent;
+          queuedEvent = null;
+          await _onEvent(event);
+        }
+      });
     },
     // deno-lint-ignore require-await
     async onCallback(id: unknown, payload: unknown): Promise<void> {
@@ -378,7 +380,6 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_skip_complete", false);
     await vars.g.set(denops, "ddc#_sources", []);
-    await vars.g.set(denops, "ddc#_locked", false);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
     await denops.cmd("autocmd! User DDCReady");

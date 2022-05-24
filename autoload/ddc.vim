@@ -117,7 +117,6 @@ function! ddc#_on_event(event) abort
     return
   endif
 
-  let g:ddc#_locked = v:true
   call denops#notify('ddc', 'onEvent', [a:event])
 endfunction
 
