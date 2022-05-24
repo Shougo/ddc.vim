@@ -133,9 +133,7 @@ export async function main(denops: Denops) {
       await doCompletion(denops, context, options);
     },
     async onEvent(arg1: unknown): Promise<void> {
-      const event = ensureString(arg1) as DdcEvent;
-
-      queuedEvent = event;
+      queuedEvent = ensureString(arg1) as DdcEvent;
 
       if (lock.locked()) {
         return;
