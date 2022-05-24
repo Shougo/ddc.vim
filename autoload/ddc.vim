@@ -112,8 +112,8 @@ function! ddc#_denops_running() abort
 endfunction
 
 function! ddc#_on_event(event) abort
-  " Note: If it is locked, skipped events.
-  if get(g:, 'ddc#_locked', v:true) || !ddc#_denops_running()
+  " Note: If denops isn't running, stop
+  if !ddc#_denops_running()
     return
   endif
 
