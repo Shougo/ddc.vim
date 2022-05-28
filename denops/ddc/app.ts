@@ -270,7 +270,7 @@ export async function main(denops: Denops) {
     }
 
     // Skip command line window.
-    const cmdwintype = await fn.getcmdtype(denops);
+    const cmdwintype = await fn.getcmdwintype(denops);
     if (cmdwintype != "") {
       return true;
     }
