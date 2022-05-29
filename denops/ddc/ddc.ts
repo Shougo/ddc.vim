@@ -607,12 +607,8 @@ function formatAbbr(word: string, abbr: string | undefined): string {
 }
 
 function formatMenu(prefix: string, menu: string | undefined): string {
-  menu = menu ? menu : "";
-  return prefix == ""
-    ? menu
-    : menu == ""
-    ? `[${prefix}]`
-    : `[${prefix}] ${menu}`;
+  menu = menu ?? "";
+  return prefix == "" ? menu : menu == "" ? prefix : `${prefix} ${menu}`;
 }
 
 function byteposToCharpos(input: string, pos: number): number {

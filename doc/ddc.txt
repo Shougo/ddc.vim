@@ -1063,6 +1063,9 @@ A: >
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
+2022.05.29
+* Remove "[]" from mark.  User should add "[]" by user config instead.
+
 2022.05.03
 * input() auto completion is enabled when "cmdlineSources" is set.
 
