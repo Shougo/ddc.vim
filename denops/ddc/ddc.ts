@@ -37,6 +37,7 @@ import {
   deadline,
   DeadlineError,
   Denops,
+  echoerr,
   fn,
   op,
   parse,
@@ -687,10 +688,16 @@ async function checkSourceOnInit(
     if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
-      console.error(
+      echoerr(
+        denops,
         `[ddc.vim] source: ${source.name} "onInit()" is failed`,
       );
-      console.error(e);
+      if (e instanceof Error) {
+        echoerr(denops, e.message);
+        if (e.stack) {
+          echoerr(denops, e.stack);
+        }
+      }
     }
   }
 }
@@ -717,10 +724,16 @@ async function checkFilterOnInit(
     if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
-      console.error(
+      echoerr(
+        denops,
         `[ddc.vim] filter: ${filter.name} "onInit()" is failed`,
       );
-      console.error(e);
+      if (e instanceof Error) {
+        echoerr(denops, e.message);
+        if (e.stack) {
+          echoerr(denops, e.stack);
+        }
+      }
     }
   }
 }
@@ -749,10 +762,16 @@ async function callSourceOnEvent(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      console.error(
+      echoerr(
+        denops,
         `[ddc.vim] source: ${source.name} "onEvent()" is failed`,
       );
-      console.error(e);
+      if (e instanceof Error) {
+        echoerr(denops, e.message);
+        if (e.stack) {
+          echoerr(denops, e.stack);
+        }
+      }
     }
   }
 }
@@ -788,10 +807,16 @@ async function callSourceOnCompleteDone<
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      console.error(
+      echoerr(
+        denops,
         `[ddc.vim] source: ${source.name} "onCompleteDone()" is failed`,
       );
-      console.error(e);
+      if (e instanceof Error) {
+        echoerr(denops, e.message);
+        if (e.stack) {
+          echoerr(denops, e.stack);
+        }
+      }
     }
   }
 }
@@ -820,10 +845,16 @@ async function callSourceGetCompletePosition(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      console.error(
+      echoerr(
+        denops,
         `[ddc.vim] source: ${source.name} "getCompletePosition()" is failed`,
       );
-      console.error(e);
+      if (e instanceof Error) {
+        echoerr(denops, e.message);
+        if (e.stack) {
+          echoerr(denops, e.stack);
+        }
+      }
     }
 
     return -1;
@@ -869,10 +900,16 @@ async function callSourceGather<
     ) {
       // Ignore timeout error
     } else {
-      console.error(
+      echoerr(
+        denops,
         `[ddc.vim] source: ${source.name} "gather()" is failed`,
       );
-      console.error(e);
+      if (e instanceof Error) {
+        echoerr(denops, e.message);
+        if (e.stack) {
+          echoerr(denops, e.stack);
+        }
+      }
     }
 
     return [];
@@ -903,10 +940,16 @@ async function callFilterOnEvent(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      console.error(
+      echoerr(
+        denops,
         `[ddc.vim] filter: ${filter.name} "onEvent()" is failed`,
       );
-      console.error(e);
+      if (e instanceof Error) {
+        echoerr(denops, e.message);
+        if (e.stack) {
+          echoerr(denops, e.stack);
+        }
+      }
     }
   }
 }
@@ -942,10 +985,16 @@ async function callFilterFilter(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      console.error(
+      echoerr(
+        denops,
         `[ddc.vim] filter: ${filter.name} "filter()" is failed`,
       );
-      console.error(e);
+      if (e instanceof Error) {
+        echoerr(denops, e.message);
+        if (e.stack) {
+          echoerr(denops, e.stack);
+        }
+      }
     }
 
     return [];

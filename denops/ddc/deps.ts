@@ -1,5 +1,9 @@
 export type { Denops } from "https://deno.land/x/denops_std@v3.3.1/mod.ts";
-export { execute } from "https://deno.land/x/denops_std@v3.3.1/helper/mod.ts";
+export {
+  echo,
+  echoerr,
+  execute,
+} from "https://deno.land/x/denops_std@v3.3.1/helper/mod.ts";
 export {
   batch,
   gather,
@@ -22,3 +26,4 @@ export {
   ensureObject,
   ensureString,
 } from "https://deno.land/x/unknownutil@v2.0.0/mod.ts";
+export { Lock } from "https://deno.land/x/async@v1.1.5/mod.ts";

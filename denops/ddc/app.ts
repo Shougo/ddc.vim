@@ -14,11 +14,11 @@ import {
   ensureObject,
   ensureString,
   fn,
+  Lock,
   op,
   vars,
 } from "./deps.ts";
 import { createCallbackContext } from "./callback.ts";
-import { Lock } from "https://deno.land/x/async@v1.1.5/mod.ts";
 
 type RegisterArg = {
   path: string;
