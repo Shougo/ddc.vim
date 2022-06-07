@@ -688,16 +688,11 @@ async function checkSourceOnInit(
     if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
-      echoerr(
+      errorException(
         denops,
+        e,
         `[ddc.vim] source: ${source.name} "onInit()" is failed`,
       );
-      if (e instanceof Error) {
-        echoerr(denops, e.message);
-        if (e.stack) {
-          echoerr(denops, e.stack);
-        }
-      }
     }
   }
 }
@@ -724,16 +719,11 @@ async function checkFilterOnInit(
     if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
-      echoerr(
+      errorException(
         denops,
+        e,
         `[ddc.vim] filter: ${filter.name} "onInit()" is failed`,
       );
-      if (e instanceof Error) {
-        echoerr(denops, e.message);
-        if (e.stack) {
-          echoerr(denops, e.stack);
-        }
-      }
     }
   }
 }
@@ -762,16 +752,11 @@ async function callSourceOnEvent(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      echoerr(
+      errorException(
         denops,
+        e,
         `[ddc.vim] source: ${source.name} "onEvent()" is failed`,
       );
-      if (e instanceof Error) {
-        echoerr(denops, e.message);
-        if (e.stack) {
-          echoerr(denops, e.stack);
-        }
-      }
     }
   }
 }
@@ -807,16 +792,11 @@ async function callSourceOnCompleteDone<
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      echoerr(
+      errorException(
         denops,
+        e,
         `[ddc.vim] source: ${source.name} "onCompleteDone()" is failed`,
       );
-      if (e instanceof Error) {
-        echoerr(denops, e.message);
-        if (e.stack) {
-          echoerr(denops, e.stack);
-        }
-      }
     }
   }
 }
@@ -845,16 +825,11 @@ async function callSourceGetCompletePosition(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      echoerr(
+      errorException(
         denops,
+        e,
         `[ddc.vim] source: ${source.name} "getCompletePosition()" is failed`,
       );
-      if (e instanceof Error) {
-        echoerr(denops, e.message);
-        if (e.stack) {
-          echoerr(denops, e.stack);
-        }
-      }
     }
 
     return -1;
@@ -900,16 +875,11 @@ async function callSourceGather<
     ) {
       // Ignore timeout error
     } else {
-      echoerr(
+      errorException(
         denops,
+        e,
         `[ddc.vim] source: ${source.name} "gather()" is failed`,
       );
-      if (e instanceof Error) {
-        echoerr(denops, e.message);
-        if (e.stack) {
-          echoerr(denops, e.stack);
-        }
-      }
     }
 
     return [];
@@ -940,16 +910,11 @@ async function callFilterOnEvent(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      echoerr(
+      errorException(
         denops,
+        e,
         `[ddc.vim] filter: ${filter.name} "onEvent()" is failed`,
       );
-      if (e instanceof Error) {
-        echoerr(denops, e.message);
-        if (e.stack) {
-          echoerr(denops, e.stack);
-        }
-      }
     }
   }
 }
@@ -985,19 +950,24 @@ async function callFilterFilter(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      echoerr(
+      errorException(
         denops,
+        e,
         `[ddc.vim] filter: ${filter.name} "filter()" is failed`,
       );
-      if (e instanceof Error) {
-        echoerr(denops, e.message);
-        if (e.stack) {
-          echoerr(denops, e.stack);
-        }
-      }
     }
 
     return [];
+  }
+}
+
+function errorException(denops: Denops, e: unknown, message: string) {
+  echoerr(denops, message);
+  if (e instanceof Error) {
+    echoerr(denops, e.message);
+    if (e.stack) {
+      echoerr(denops, e.stack);
+    }
   }
 }
 
