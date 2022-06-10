@@ -107,6 +107,7 @@ export function defaultSourceOptions(): SourceOptions {
   return {
     converters: [],
     dup: false,
+    enabledIf: "",
     forceCompletionPattern: "",
     ignoreCase: false,
     isVolatile: false,

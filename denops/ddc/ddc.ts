@@ -332,6 +332,11 @@ export class Ddc {
     const sources = this.foundSources(options.sources)
       .map((s) => [s, ...sourceArgs(options, s)] as const);
     const rs = await Promise.all(sources.map(async ([s, o, p]) => {
+      // Check enabled
+      if (o.enabledIf != "" && !(await denops.call("eval", o.enabledIf))) {
+        return;
+      }
+
       const pos = await callSourceGetCompletePosition(
         s,
         denops,

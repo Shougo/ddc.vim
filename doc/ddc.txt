@@ -530,6 +530,14 @@ dup			(boolean)			(Optional)
 
 		Default: v:false
 
+						*ddc-source-option-enabledIf*
+enabledIf		(string)
+		The text is evaluated to enable the source.
+		If the result is |v:true| or the text is empty string, the
+		source is enabled.
+
+		Default: ''
+
 				*ddc-source-option-forceCompletionPattern*
 forceCompletionPattern	(string)
 		If it matches the input, ddc ignores
