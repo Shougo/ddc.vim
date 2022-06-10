@@ -136,7 +136,9 @@ export async function main(denops: Denops) {
       queuedEvent = ensureString(arg1) as DdcEvent;
 
       if (lock.locked()) {
-        if (await denops.call("ddc#map#pum_visible")) {
+        const mode = await fn.mode(denops);
+        const visible = await denops.call("ddc#map#pum_visible");
+        if (mode != "c" && visible) {
           // Close current popupmenu.
           await denops.call("ddc#complete#_clear");
         }
