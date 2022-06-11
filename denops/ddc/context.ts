@@ -331,11 +331,11 @@ export class ContextBuilder {
     const old = this.lastWorld;
     this.lastWorld = world;
     let skip = false;
-    if (
-      (event != "Manual" &&
-        event != "Initialize" && event != "CompleteDone" &&
-        isNegligible(old, world)) || world.isLmap || world.changedByCompletion
-    ) {
+    const skipNegligible = (
+      event != "Manual" && event != "Initialize" && event != "CompleteDone" &&
+      isNegligible(old, world)
+    );
+    if (skipNegligible || world.isLmap || world.changedByCompletion) {
       skip = true;
     }
 
