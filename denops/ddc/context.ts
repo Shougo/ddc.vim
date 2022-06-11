@@ -310,7 +310,8 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
 function isNegligible(older: World, newer: World): boolean {
   return older.bufnr == newer.bufnr &&
     older.filetype == newer.filetype &&
-    older.input == newer.input;
+    older.input == newer.input &&
+    older.event == newer.event;
 }
 
 export class ContextBuilder {
