@@ -1069,6 +1069,13 @@ Q: I want to disable ddc auto completion.
 A: >
     call ddc#custom#patch_global('completionMode', 'manual')
 
+Q: ddc.vim starting is slow.
+
+A: It may be slow in Windows environment.  You should use denops shared server
+feature.
+
+https://github.com/vim-denops/denops.vim#shared-server
+
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
