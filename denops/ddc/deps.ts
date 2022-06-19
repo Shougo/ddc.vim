@@ -1,7 +1,6 @@
 export type { Denops } from "https://deno.land/x/denops_std@v3.3.2/mod.ts";
 export {
   echo,
-  echoerr,
   execute,
 } from "https://deno.land/x/denops_std@v3.3.2/helper/mod.ts";
 export {
