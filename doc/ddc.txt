@@ -275,7 +275,8 @@ ddc#enable()
 ddc#enable_cmdline_completion()
 		Enable ddc.vim command line completion feature.
 		Note: It must be called in command line mode.
-		Note: It disable command line window(|cmdwin|) feature.
+		Note: "pum.vim" is needed for the feature.
+		Note: It disables |command-line-window| feature.
 
 							*ddc#register()*
 ddc#register({dict})
@@ -1075,6 +1076,14 @@ A: It may be slow in Windows environment.  You should use denops shared server
 feature.
 
 https://github.com/vim-denops/denops.vim#shared-server
+
+Q: ddc.vim does not work in |command-line-window|.
+
+A: ddc.vim does not work in |command-line-window|.
+Because |command-line-window| occurs "Not Allowed here" errors and it is hard
+to fix in full asynchronous plugins.
+I don't recommend for you to use |command-line-window|.
+You can only use |ddc#map#manual_complete()| without "pum.vim".
 
 
 ==============================================================================
