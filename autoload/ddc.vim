@@ -117,6 +117,17 @@ function! ddc#_on_event(event) abort
     return
   endif
 
+  " Check the completion state
+  let info = ddc#complete_info()
+  let noinsert = &completeopt =~# 'noinsert'
+  let info_check = ddc#map#pum_visible() &&
+        \ ((info.mode !=# '' && info.mode !=# 'eval')
+        \ || (noinsert && info.selected > 0)
+        \ || (!noinsert && info.selected >= 0))
+  if info_check
+    return
+  endif
+
   call denops#notify('ddc', 'onEvent', [a:event])
 endfunction
 
