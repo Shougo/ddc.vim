@@ -275,12 +275,6 @@ export async function main(denops: Denops) {
       return true;
     }
 
-    // Skip command line window.
-    const cmdwintype = await fn.getcmdwintype(denops);
-    if (cmdwintype != "") {
-      return true;
-    }
-
     // Check indentkeys.
     // Note: re-indentation does not work for native popupmenu
     const indentkeys = (await op.indentkeys.getLocal(denops)).split(",");

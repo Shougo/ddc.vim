@@ -1079,11 +1079,12 @@ https://github.com/vim-denops/denops.vim#shared-server
 
 Q: ddc.vim does not work in |command-line-window|.
 
-A: ddc.vim does not work in |command-line-window|.
+A: ddc.vim does not work in |command-line-window| with "pum.vim".
 Because |command-line-window| occurs "Not Allowed here" errors and it is hard
 to fix in full asynchronous plugins.
 I don't recommend for you to use |command-line-window|.
-You can only use |ddc#map#manual_complete()| without "pum.vim".
+If you really want to need the completion, please enable
+|ddc-option-specialBufferCompletion| without "pum.vim"
 
 
 ==============================================================================
