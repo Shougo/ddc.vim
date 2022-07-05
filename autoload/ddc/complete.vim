@@ -149,11 +149,6 @@ function! ddc#complete#_on_complete_done() abort
   let completed_item = ddc#_completion_menu() ==# 'pum.vim' ?
         \ g:pum#completed_item : v:completed_item
 
-  if !ddc#_denops_running() || empty(completed_item)
-        \ || !has_key(completed_item, 'user_data')
-    return
-  endif
-
   if ddc#_completion_menu() !=# 'pum.vim'
     let g:ddc#_skip_complete = v:true
     " Reset skip completion
@@ -161,7 +156,9 @@ function! ddc#complete#_on_complete_done() abort
           \ let g:ddc#_skip_complete = v:false
   endif
 
-  if type(completed_item.user_data) != v:t_dict
+  if !ddc#_denops_running() || empty(completed_item)
+        \ || !has_key(completed_item, 'user_data')
+        \ || type(completed_item.user_data) != v:t_dict
     return
   endif
 

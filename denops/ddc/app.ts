@@ -255,7 +255,8 @@ export async function main(denops: Denops) {
     context: Context,
     options: DdcOptions,
   ): Promise<boolean> {
-    // Note: Don't complete when backspace by default, because of completion flicker.
+    // Note: Don't complete when backspace by default, because of completion
+    // flicker.
     const prevInput = await vars.g.get(denops, "ddc#_prev_input") as string;
     const checkBackSpace = (!options.backspaceCompletion &&
       context.input != prevInput &&
