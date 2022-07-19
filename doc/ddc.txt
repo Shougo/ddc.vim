@@ -1086,6 +1086,12 @@ I don't recommend for you to use |command-line-window|.
 If you really want to need the completion, please enable
 |ddc-option-specialBufferCompletion| without "pum.vim"
 
+Q: "copilot.vim" does not work when ddc.vim popup is visible.
+
+A: "copilot.vim" checks |pumvisible()|.  You should disable it. >
+
+	let g:copilot_hide_during_completion = 1
+
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
