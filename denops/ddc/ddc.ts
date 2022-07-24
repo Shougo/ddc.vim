@@ -695,7 +695,7 @@ async function checkSourceOnInit(
       await errorException(
         denops,
         e,
-        `[ddc.vim] source: ${source.name} "onInit()" is failed`,
+        `source: ${source.name} "onInit()" is failed`,
       );
     }
   }
@@ -726,7 +726,7 @@ async function checkFilterOnInit(
       await errorException(
         denops,
         e,
-        `[ddc.vim] filter: ${filter.name} "onInit()" is failed`,
+        `filter: ${filter.name} "onInit()" is failed`,
       );
     }
   }
@@ -759,7 +759,7 @@ async function callSourceOnEvent(
       await errorException(
         denops,
         e,
-        `[ddc.vim] source: ${source.name} "onEvent()" is failed`,
+        `source: ${source.name} "onEvent()" is failed`,
       );
     }
   }
@@ -799,7 +799,7 @@ async function callSourceOnCompleteDone<
       await errorException(
         denops,
         e,
-        `[ddc.vim] source: ${source.name} "onCompleteDone()" is failed`,
+        `source: ${source.name} "onCompleteDone()" is failed`,
       );
     }
   }
@@ -832,7 +832,7 @@ async function callSourceGetCompletePosition(
       await errorException(
         denops,
         e,
-        `[ddc.vim] source: ${source.name} "getCompletePosition()" is failed`,
+        `source: ${source.name} "getCompletePosition()" is failed`,
       );
     }
 
@@ -882,7 +882,7 @@ async function callSourceGather<
       await errorException(
         denops,
         e,
-        `[ddc.vim] source: ${source.name} "gather()" is failed`,
+        `source: ${source.name} "gather()" is failed`,
       );
     }
 
@@ -917,7 +917,7 @@ async function callFilterOnEvent(
       await errorException(
         denops,
         e,
-        `[ddc.vim] filter: ${filter.name} "onEvent()" is failed`,
+        `filter: ${filter.name} "onEvent()" is failed`,
       );
     }
   }
@@ -957,7 +957,7 @@ async function callFilterFilter(
       await errorException(
         denops,
         e,
-        `[ddc.vim] filter: ${filter.name} "filter()" is failed`,
+        `filter: ${filter.name} "filter()" is failed`,
       );
     }
 
