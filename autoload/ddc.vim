@@ -84,11 +84,6 @@ function! ddc#disable() abort
 endfunction
 
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
-if has('win32unix')
-  " Convert to Windows path for deno
-  let s:root_dir = system(join(
-        \ ['cygpath', '-w', shellescape(s:root_dir)], ' '))
-endif
 function! ddc#_register() abort
   call denops#plugin#register('ddc',
         \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'),
