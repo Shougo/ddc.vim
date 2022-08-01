@@ -84,12 +84,8 @@ function! ddc#complete#_inline(highlight) abort
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
   let word = g:ddc#_items[0].word
 
-  " Note: nvim_buf_set_extmark() should not use when LSP is enabled?
-  " https://github.com/hrsh7th/nvim-cmp/issues/404
-  "let check_diagnostic = v:false
-  "silent! let check_diagnostic = !empty(v:lua.vim.lsp.diagnostic.get_all()[0])
-
   if stridx(word, complete_str) == 0 && col('.') == col('$')
+    " Head matched: Follow cursor text
     let word = word[len(complete_str):]
 
     if word ==# ''
@@ -97,7 +93,6 @@ function! ddc#complete#_inline(highlight) abort
     endif
 
     if exists('*nvim_buf_set_extmark')
-      " Head matched: Follow cursor text
       let col = col('.') - 1
       let options = {
             \ 'virt_text': [[word, a:highlight]],
