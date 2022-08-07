@@ -1092,6 +1092,10 @@ A: "copilot.vim" checks |pumvisible()|.  You should disable it. >
 
 	let g:copilot_hide_during_completion = 0
 
+Q: ddc.vim does not work when "dps-ghosttext.vim" is enabled.
+
+A: "dps-ghosttext.vim" creates the special buffer which 'buftype' is "nofile".
+You need to enable |ddc-option-specialBufferCompletion| for it.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
