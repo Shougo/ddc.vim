@@ -395,6 +395,7 @@ export class Ddc {
           options,
           o,
           p,
+          completePos,
           completeStr,
           triggerForIncomplete,
         );
@@ -851,6 +852,7 @@ async function callSourceGather<
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Params,
+  completePos: number,
   completeStr: string,
   isIncomplete: boolean,
 ): Promise<DdcGatherItems<UserData>> {
@@ -864,6 +866,7 @@ async function callSourceGather<
       options,
       sourceOptions,
       sourceParams,
+      completePos,
       completeStr,
       isIncomplete,
     };

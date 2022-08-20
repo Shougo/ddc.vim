@@ -56,6 +56,7 @@ export type GatherArguments<Params extends Record<string, unknown>> = {
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
+  completePos: number;
   completeStr: string;
   isIncomplete?: boolean;
 };
