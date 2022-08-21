@@ -290,12 +290,12 @@ ddc#register({dict})
 		path: The filter path
 		type: "source" or "filter"
 
-						*ddc#syntax#get()*
+							*ddc#syntax#get()*
 ddc#syntax#get()
 		Get current syntax groups.
 		Note: "nvim-treesitter" is used if it is installed.
 
-						*ddc#syntax#in()*
+							*ddc#syntax#in()*
 ddc#syntax#in({checks})
 		Check {checks} groups in cursor.
 
@@ -303,6 +303,9 @@ ddc#syntax#in({checks})
 ddc#update_items({name}, {items})
 		Change source {name}'s items to {items} and refresh current
 		completion.
+		It is useful to create asynchronous sources.  But it increases
+		screen flicker.
+
 		Note: It does not work for volatile source.
 
 

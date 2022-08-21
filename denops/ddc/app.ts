@@ -138,7 +138,7 @@ export async function main(denops: Denops) {
       const name = ensureString(arg1);
       const items = ensureArray(arg2) as Item[];
 
-      await ddc.updateItems(name, items);
+      ddc.updateItems(name, items);
 
       const [skip, context, options] = await contextBuilder
         .createContext(denops, "Update");

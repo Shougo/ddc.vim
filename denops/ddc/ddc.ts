@@ -510,14 +510,11 @@ export class Ddc {
 
     return [completePosBytes, items];
   }
-  async updateItems(
+  updateItems(
     name: string,
     items: Item[],
   ) {
-    const result = s.name in this.prevResults
-      ? this.prevResults[s.name]
-      : null;
-
+    const result = name in this.prevResults ? this.prevResults[name] : null;
     if (!result) {
       return;
     }
