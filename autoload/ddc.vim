@@ -177,6 +177,14 @@ function! ddc#callback(id, ...) abort
   call denops#notify('ddc', 'onCallback', [a:id, payload])
 endfunction
 
+function! ddc#update_items(name, items) abort
+  if !ddc#_denops_running()
+    return
+  endif
+
+  call denops#notify('ddc', 'updateItems', [a:name, a:items])
+endfunction
+
 function! ddc#manual_complete(...) abort
   return call('ddc#map#manual_complete', a:000)
 endfunction

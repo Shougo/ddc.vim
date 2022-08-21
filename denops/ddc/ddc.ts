@@ -404,16 +404,10 @@ export class Ddc {
         let isIncomplete: boolean;
         if ("isIncomplete" in result) {
           // DdcGatherItems
-          if (!result.items.length) {
-            return;
-          }
           items = result.items.concat();
           isIncomplete = result.isIncomplete;
         } else {
           // Item[]
-          if (!result.length) {
-            return;
-          }
           items = result.concat();
           isIncomplete = false;
         }
@@ -509,6 +503,18 @@ export class Ddc {
     const completePosBytes = charposToBytepos(context.input, completePos);
 
     return [completePosBytes, items];
+  }
+  updateItems(
+    name: string,
+    items: Item[],
+  ) {
+    const result = name in this.prevResults ? this.prevResults[name] : null;
+    if (!result) {
+      return;
+    }
+
+    result.items = items;
+    result.isIncomplete = false;
   }
 
   private async filterItems(
