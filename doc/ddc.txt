@@ -252,6 +252,9 @@ ddc#callback({id} [, {payload}])
 		This is only for ddc plugin developers. It calls back to
 		sources and filters that registered with this id.
 
+		Note: It is for Vim script callback functions like LSP.  It
+		does not work for deno async functions.
+
 		{id}: String to identify the receiver. All sources and filters
 		  share the namespace, so please take care how naming.
 		  `source/${this.name}` and `filter/${this.name}` are
