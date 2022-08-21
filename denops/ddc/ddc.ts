@@ -510,6 +510,21 @@ export class Ddc {
 
     return [completePosBytes, items];
   }
+  async updateItems(
+    name: string,
+    items: Item[],
+  ) {
+    const result = s.name in this.prevResults
+      ? this.prevResults[s.name]
+      : null;
+
+    if (!result) {
+      return;
+    }
+
+    result.items = items;
+    result.isIncomplete = false;
+  }
 
   private async filterItems(
     denops: Denops,

@@ -299,6 +299,12 @@ ddc#syntax#get()
 ddc#syntax#in({checks})
 		Check {checks} groups in cursor.
 
+							*ddc#update_items()*
+ddc#update_items({name}, {items})
+		Change source {name}'s items to {items} and refresh current
+		completion.
+		Note: It does not work for volatile source.
+
 
 CUSTOM FUNCTIONS 					*ddc-custom-functions*
 

@@ -6,10 +6,12 @@ import {
   DdcExtType,
   DdcOptions,
   DdcUserData,
+  Item,
 } from "./types.ts";
 import {
   batch,
   Denops,
+  ensureArray,
   ensureNumber,
   ensureObject,
   ensureString,
@@ -128,6 +130,19 @@ export async function main(denops: Denops) {
         cbContext.createOnCallback(),
         options,
       );
+
+      cbContext.revoke();
+      await doCompletion(denops, context, options);
+    },
+    async updateItems(arg1: unknown, arg2: unknown): Promise<void> {
+      const name = ensureString(arg1);
+      const items = ensureArray(arg2) as Item[];
+
+      await ddc.updateItems(name, items);
+
+      const [skip, context, options] = await contextBuilder
+        .createContext(denops, "Update");
+      if (skip) return;
 
       cbContext.revoke();
       await doCompletion(denops, context, options);
