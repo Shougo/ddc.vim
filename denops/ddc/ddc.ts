@@ -462,7 +462,7 @@ export class Ddc {
     const completePos = Math.min(...fs.map((v) => v[0]));
 
     // Flatten items
-    let items = fs.flatMap(([pos, items]) =>
+    const items = fs.flatMap(([pos, items]) =>
       items.map((c) => {
         // Note: Merge word by completePos
         const word = context.input.substring(completePos, pos) + c.word;
