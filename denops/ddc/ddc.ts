@@ -439,6 +439,7 @@ export class Ddc {
           __sourceName: s.name,
           __dup: o.dup,
           abbr: formatAbbr(c.word, c.abbr),
+          dup: true,
           equal: true,
           icase: true,
           kind: c.kind ? c.kind : "",
@@ -474,29 +475,6 @@ export class Ddc {
       })
     );
 
-    // Post filters
-    for (const filter of this.foundFilters(options.postFilters)) {
-      const [o, p] = filterArgs(
-        options.filterOptions,
-        options.filterParams,
-        filter,
-      );
-
-      // @ts-ignore: postFilters does not change items keys
-      items = await callFilterFilter(
-        filter,
-        denops,
-        context,
-        onCallback,
-        options,
-        defaultSourceOptions(),
-        o,
-        p,
-        context.input.slice(completePos),
-        items,
-      );
-    }
-
     const seen = new Set();
     let retItems: DdcItem[] = [];
     for (const item of items) {
@@ -519,6 +497,29 @@ export class Ddc {
 
       seen.add(item.word);
       retItems.push(item);
+    }
+
+    // Post filters
+    for (const filter of this.foundFilters(options.postFilters)) {
+      const [o, p] = filterArgs(
+        options.filterOptions,
+        options.filterParams,
+        filter,
+      );
+
+      // @ts-ignore: postFilters does not change items keys
+      retItems = await callFilterFilter(
+        filter,
+        denops,
+        context,
+        onCallback,
+        options,
+        defaultSourceOptions(),
+        o,
+        p,
+        context.input.slice(completePos),
+        retItems,
+      );
     }
 
     // Convert2byte for Vim
