@@ -536,8 +536,8 @@ converters		(string[])
 
 		Default: []
 
-					*ddc-source-option-dup*
-dup			(boolean | string)		(Optional)
+						*ddc-source-option-dup*
+dup			(string)		(Optional)
 		It changes duplicated words behavior.
 
 		"force":  Duplicated words are overwritten.
