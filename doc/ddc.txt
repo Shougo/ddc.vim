@@ -1115,6 +1115,9 @@ You need to enable |ddc-option-specialBufferCompletion| for it.
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
+2022.09.06
+* "ddc-source-option-dup" must be string.
+
 2022.05.29
 * Remove "[]" from mark.  User should add "[]" by user config instead.
 
