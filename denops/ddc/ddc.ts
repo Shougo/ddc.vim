@@ -437,8 +437,8 @@ export class Ddc {
         {
           ...c,
           __sourceName: s.name,
+          __dup: o.dup,
           abbr: formatAbbr(c.word, c.abbr),
-          dup: o.dup,
           equal: true,
           icase: true,
           kind: c.kind ? c.kind : "",
@@ -465,6 +465,7 @@ export class Ddc {
       items.map((c) => {
         // Note: Merge word by completePos
         const word = context.input.substring(completePos, pos) + c.word;
+
         return {
           ...c,
           word: word,
@@ -496,13 +497,34 @@ export class Ddc {
       );
     }
 
-    // Remove emtpy items
-    items = items.filter((c) => c.word != "");
+    const seen = new Set();
+    let retItems: DdcItem[] = [];
+    for (const item of items) {
+      // Remove emtpy items
+      if (item.word == "") {
+        continue;
+      }
+
+      if (seen.has(item.word)) {
+        if (item.__dup == "force") {
+          // Force overwrite duplicated words
+          retItems = retItems.filter((c) => c.word != item.word);
+        } else if (item.__dup == "ignore") {
+          // Ignore duplicated words
+          continue;
+        } else {
+          // Keep duplicated words
+        }
+      }
+
+      seen.add(item.word);
+      retItems.push(item);
+    }
 
     // Convert2byte for Vim
     const completePosBytes = charposToBytepos(context.input, completePos);
 
-    return [completePosBytes, items];
+    return [completePosBytes, retItems];
   }
   updateItems(
     name: string,

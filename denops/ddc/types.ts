@@ -50,7 +50,7 @@ export type DdcOptions = {
 
 export type SourceOptions = {
   converters: string[];
-  dup: boolean;
+  dup: "keep" | "force" | "ignore";
   enabledIf: string;
   forceCompletionPattern: string;
   ignoreCase: boolean;
@@ -88,7 +88,6 @@ export type Item<
   menu?: string;
   info?: string;
   kind?: string;
-  dup?: boolean;
   "user_data"?: UserData;
   highlights?: PumHighlight[];
 };
@@ -107,6 +106,7 @@ export type DdcItem =
   & Item<DdcUserData>
   & {
     __sourceName: string;
+    __dup: "keep" | "force" | "ignore";
     equal: boolean;
     icase: boolean;
   };

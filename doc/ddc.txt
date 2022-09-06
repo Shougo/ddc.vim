@@ -537,11 +537,14 @@ converters		(string[])
 		Default: []
 
 					*ddc-source-option-dup*
-dup			(boolean)			(Optional)
-		The items will be added even when the same word is already
-		present.
+dup			(boolean | string)		(Optional)
+		It changes duplicated words behavior.
 
-		Default: v:false
+		"force":  Duplicated words are overwritten.
+		"keep":   Duplicated words are added.
+		"ignore": Duplicated words are removed.
+
+		Default: "ignore"
 
 						*ddc-source-option-enabledIf*
 enabledIf		(string)

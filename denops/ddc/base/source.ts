@@ -107,7 +107,7 @@ export abstract class BaseSource<
 export function defaultSourceOptions(): SourceOptions {
   return {
     converters: [],
-    dup: false,
+    dup: "ignore",
     enabledIf: "",
     forceCompletionPattern: "",
     ignoreCase: false,
