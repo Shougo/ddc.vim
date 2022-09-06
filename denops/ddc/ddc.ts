@@ -437,8 +437,9 @@ export class Ddc {
         {
           ...c,
           __sourceName: s.name,
+          __dup: o.dup,
           abbr: formatAbbr(c.word, c.abbr),
-          dup: o.dup,
+          dup: true,
           equal: true,
           icase: true,
           kind: c.kind ? c.kind : "",
@@ -461,10 +462,11 @@ export class Ddc {
     const completePos = Math.min(...fs.map((v) => v[0]));
 
     // Flatten items
-    let items = fs.flatMap(([pos, items]) =>
+    const items = fs.flatMap(([pos, items]) =>
       items.map((c) => {
         // Note: Merge word by completePos
         const word = context.input.substring(completePos, pos) + c.word;
+
         return {
           ...c,
           word: word,
@@ -472,6 +474,30 @@ export class Ddc {
         };
       })
     );
+
+    const seen = new Set();
+    let retItems: DdcItem[] = [];
+    for (const item of items) {
+      // Remove emtpy items
+      if (item.word == "") {
+        continue;
+      }
+
+      if (seen.has(item.word)) {
+        if (item.__dup == "force") {
+          // Force overwrite duplicated words
+          retItems = retItems.filter((c) => c.word != item.word);
+        } else if (item.__dup == "ignore") {
+          // Ignore duplicated words
+          continue;
+        } else {
+          // Keep duplicated words
+        }
+      }
+
+      seen.add(item.word);
+      retItems.push(item);
+    }
 
     // Post filters
     for (const filter of this.foundFilters(options.postFilters)) {
@@ -482,7 +508,7 @@ export class Ddc {
       );
 
       // @ts-ignore: postFilters does not change items keys
-      items = await callFilterFilter(
+      retItems = await callFilterFilter(
         filter,
         denops,
         context,
@@ -492,17 +518,14 @@ export class Ddc {
         o,
         p,
         context.input.slice(completePos),
-        items,
+        retItems,
       );
     }
-
-    // Remove emtpy items
-    items = items.filter((c) => c.word != "");
 
     // Convert2byte for Vim
     const completePosBytes = charposToBytepos(context.input, completePos);
 
-    return [completePosBytes, items];
+    return [completePosBytes, retItems];
   }
   updateItems(
     name: string,

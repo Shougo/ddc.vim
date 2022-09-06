@@ -536,12 +536,15 @@ converters		(string[])
 
 		Default: []
 
-					*ddc-source-option-dup*
-dup			(boolean)			(Optional)
-		The items will be added even when the same word is already
-		present.
+						*ddc-source-option-dup*
+dup			(string)		(Optional)
+		It changes duplicated words behavior.
 
-		Default: v:false
+		"force":  Duplicated words are overwritten.
+		"keep":   Duplicated words are added.
+		"ignore": Duplicated words are removed.
+
+		Default: "ignore"
 
 						*ddc-source-option-enabledIf*
 enabledIf		(string)
@@ -1111,6 +1114,9 @@ You need to enable |ddc-option-specialBufferCompletion| for it.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.09.06
+* "ddc-source-option-dup" must be string.
 
 2022.05.29
 * Remove "[]" from mark.  User should add "[]" by user config instead.
