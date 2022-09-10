@@ -765,9 +765,10 @@ abbr			(string)			(Optional)
 		window.
 
 						*ddc-item-attribute-columns*
-columns			(Column[])			(Optional)
-		The list of Column.
+columns			(dictionary)			(Optional)
 		It adds additional information.
+		The key is column name.
+		The value is column value.
 		Note: It is only supported in "pum.vim".
 
 						*ddc-item-attribute-dup*

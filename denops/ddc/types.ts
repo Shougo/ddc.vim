@@ -95,7 +95,7 @@ export type Item<
   kind?: string;
   "user_data"?: UserData;
   highlights?: PumHighlight[];
-  columns?: Column[];
+  columns?: Record<string, string>;
 };
 
 export type DdcGatherItems<
