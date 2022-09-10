@@ -764,6 +764,12 @@ abbr			(string)			(Optional)
 		The abbreviation of a item. It is displayed in popup
 		window.
 
+						*ddc-item-attribute-columns*
+columns			(Column[])			(Optional)
+		The list of Column.
+		It adds additional information.
+		Note: It is only supported in "pum.vim".
+
 						*ddc-item-attribute-dup*
 dup			(boolean)			(Optional)
 		If true, the item will be displayed in the popup menu when an

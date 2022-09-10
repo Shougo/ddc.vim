@@ -80,6 +80,11 @@ export type PumHighlight = {
   width: number;
 };
 
+export type Column = {
+  name: string;
+  value: string;
+};
+
 export type Item<
   UserData extends unknown = unknown,
 > = {
@@ -90,6 +95,7 @@ export type Item<
   kind?: string;
   "user_data"?: UserData;
   highlights?: PumHighlight[];
+  columns?: Column[];
 };
 
 export type DdcGatherItems<
