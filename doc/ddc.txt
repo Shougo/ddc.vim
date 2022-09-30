@@ -954,6 +954,9 @@ A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
    Or you can use ddc-nvim-lsp-doc plugin for nvim-lsp.
    https://github.com/matsui54/denops-popup-preview.vim
 
+   NOTE: float-preview.nvim does not support "completionItem/resolve"
+   behavior.  So ddc-nvim-lsp-doc is better.
+
 
 Q: Why don't create file/path source is for ddc.vim?
 
