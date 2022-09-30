@@ -940,6 +940,7 @@ A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
 
    Or you can use lsp_signature.nvim plugin for nvim-lsp.
    https://github.com/ray-x/lsp_signature.nvim
+   https://github.com/matsui54/denops-signature_help
 
 
 Q: I want to use floating preview window feature.
@@ -951,7 +952,7 @@ A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
    https://github.com/ncm2/float-preview.nvim
 
    Or you can use ddc-nvim-lsp-doc plugin for nvim-lsp.
-   https://github.com/matsui54/ddc-nvim-lsp-doc
+   https://github.com/matsui54/denops-popup-preview.vim
 
 
 Q: Why don't create file/path source is for ddc.vim?
