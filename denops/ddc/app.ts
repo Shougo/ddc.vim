@@ -387,6 +387,8 @@ export async function main(denops: Denops) {
     })();
   }
 
+  const checkTermOutput = await fn.exists(denops, '##TermOutput');
+
   await batch(denops, async (denops: Denops) => {
     await vars.g.set(denops, "ddc#_items", []);
     await vars.g.set(denops, "ddc#_changedtick", 0);
@@ -411,6 +413,11 @@ export async function main(denops: Denops) {
       "TextChangedI",
       "TextChangedP",
     ]);
+    if (checkTermOutput) {
+      ddc.registerAutocmd(denops, [
+        "TermOutput",
+      ]);
+    }
     await denops.cmd(
       "autocmd ddc CmdlineChanged * " +
         "if getcmdtype() ==# '=' || getcmdtype() ==# '@' |" +
