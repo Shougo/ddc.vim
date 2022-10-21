@@ -20,7 +20,7 @@ function! ddc#enable() abort
     autocmd!
     autocmd CompleteDone * call ddc#complete#_on_complete_done()
     autocmd User PumCompleteDone call ddc#complete#_on_complete_done()
-    autocmd InsertLeave * call ddc#complete#_clear()
+    autocmd InsertLeave * call ddc#_clear('InsertLeave')
   augroup END
 
   " Force context_filetype call
@@ -40,7 +40,7 @@ function! ddc#enable_cmdline_completion() abort
 
   augroup ddc-cmdline
     autocmd!
-    autocmd CmdlineLeave <buffer> call ddc#complete#_clear()
+    autocmd CmdlineLeave <buffer> call ddc#_clear('CmdlineLeave')
     autocmd CmdlineEnter <buffer> call ddc#_on_event('CmdlineEnter')
     autocmd CmdlineChanged <buffer>
           \ if getcmdtype() !=# '=' && getcmdtype() !=# '@' |
@@ -144,11 +144,6 @@ function! ddc#syntax_in(groups) abort
   return ddc#syntax#in(a:groups)
 endfunction
 
-function! ddc#_completion_menu() abort
-  return get(g:, 'ddc#_completion_menu', 'native')
-endfunction
-
-
 function! ddc#register(dict) abort
   if ddc#_denops_running()
     call denops#notify('ddc', 'register', [a:dict])
@@ -185,6 +180,14 @@ function! ddc#update_items(name, items) abort
   call denops#notify('ddc', 'updateItems', [a:name, a:items])
 endfunction
 
+function! ddc#_clear(event) abort
+  if !ddc#_denops_running()
+    return
+  endif
+
+  call denops#notify('ddc', 'clear', [a:event])
+endfunction
+
 function! ddc#manual_complete(...) abort
   return call('ddc#map#manual_complete', a:000)
 endfunction
@@ -199,6 +202,5 @@ function! ddc#can_complete() abort
 endfunction
 
 function! ddc#complete_info() abort
-  return ddc#_completion_menu() ==# 'pum.vim' ?
-        \ pum#complete_info() : complete_info()
+  return exists('*pum#complete_info') ? pum#complete_info() : complete_info()
 endfunction

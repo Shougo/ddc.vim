@@ -58,6 +58,9 @@ call plug#begin()
 Plug 'Shougo/ddc.vim'
 Plug 'vim-denops/denops.vim'
 
+" Install your UIs
+"Plug 'Shougo/ddc-ui-native'
+
 " Install your sources
 "Plug 'Shougo/ddc-around'
 
@@ -75,6 +78,9 @@ call dein#begin()
 
 call dein#add('Shougo/ddc.vim')
 call dein#add('vim-denops/denops.vim')
+
+" Install your UIs
+"call dein#add('Shougo/ddc-ui-native')
 
 " Install your sources
 "call dein#add('Shougo/ddc-around')
@@ -101,6 +107,14 @@ Ddc.vim requires both Deno and denops.vim.
 
 ```vim
 " Customize global settings
+
+" You must set the default ui.
+" Note: native ui
+" https://github.com/Shougo/ddc-ui-native
+call ddc#custom#patch_global({
+    \ 'ui': 'native',
+    \ })
+
 " Use around source.
 " https://github.com/Shougo/ddc-around
 call ddc#custom#patch_global('sources', ['around'])

@@ -1,17 +1,3 @@
-function! ddc#map#complete() abort
-  call ddc#complete#_clear_inline()
-
-  if has('nvim') || ddc#_completion_menu() ==# 'pum.vim'
-    call ddc#complete#_complete()
-  else
-    " Debounce for Vim8
-    if exists('s:completion_timer')
-      call timer_stop(s:completion_timer)
-    endif
-    let s:completion_timer = timer_start(10, { -> ddc#complete#_complete() })
-  endif
-endfunction
-
 function! ddc#map#manual_complete(...) abort
   if !ddc#_denops_running()
     call ddc#enable()
@@ -24,23 +10,11 @@ function! ddc#map#manual_complete(...) abort
 endfunction
 
 function! ddc#map#pum_visible() abort
-  return ddc#_completion_menu() ==# 'pum.vim' ?
-        \ pum#visible() : pumvisible()
+  let pum_visible = exists('*pum#visible') ? pum#visible() : v:false
+  return pum_visible || pumvisible()
 endfunction
 function! ddc#map#inline_visible() abort
   return get(g:, 'ddc#_inline_popup_id', -1) > 0
-endfunction
-
-function! ddc#map#confirm() abort
-  return !ddc#map#pum_visible() ? '' :
-        \ ddc#_completion_menu() ==# 'pum.vim' ?
-        \ "\<Cmd>call pum#map#confirm()\<CR>" : "\<C-y>"
-endfunction
-
-function! ddc#map#cancel() abort
-  return !ddc#map#pum_visible() ? '' :
-        \ ddc#_completion_menu() ==# 'pum.vim' ?
-        \ "\<Cmd>call pum#map#cancel()\<CR>" : "\<C-e>"
 endfunction
 
 function! ddc#map#can_complete() abort
@@ -49,14 +23,14 @@ function! ddc#map#can_complete() abort
         \ && !ddc#complete#_cannot_complete()
 endfunction
 
-function! ddc#map#extend() abort
+function! ddc#map#extend(confirm_key) abort
   if !exists('g:ddc#_sources')
     return ''
   endif
-  return ddc#map#confirm() . ddc#map#manual_complete(g:ddc#_sources)
+  return a:confirm_key . ddc#map#manual_complete(g:ddc#_sources)
 endfunction
 
-function! ddc#map#complete_common_string() abort
+function! ddc#map#complete_common_string(cancel_key) abort
   if empty(g:ddc#_items) || g:ddc#_complete_pos < 0
     return ''
   endif
@@ -78,7 +52,7 @@ function! ddc#map#complete_common_string() abort
   if mode() ==# 'i'
     let chars .= "\<Cmd>set backspace=start\<CR>"
   endif
-  let chars .= ddc#map#cancel()
+  let chars .= a:cancel_key
   let chars .= repeat("\<BS>", strchars(complete_str))
   let chars .= common_str
   if mode() ==# 'i'
@@ -93,7 +67,7 @@ function! ddc#map#insert_item(number) abort
     return ''
   endif
 
-  call ddc#complete#_clear_inline()
+  call ddc#complete#_hide_inline()
 
   " Get cursor word.
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
