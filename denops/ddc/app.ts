@@ -362,11 +362,6 @@ export async function main(denops: Denops) {
         await vars.g.set(denops, "ddc#_sources", options.sources);
         await vars.g.set(
           denops,
-          "ddc#_overwrite_completeopt",
-          options.overwriteCompleteopt,
-        );
-        await vars.g.set(
-          denops,
           "ddc#_completion_menu",
           options.completionMenu,
         );
@@ -397,7 +392,6 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_event", "Manual");
     await vars.g.set(denops, "ddc#_inline_popup_id", -1);
     await vars.g.set(denops, "ddc#_now", 0);
-    await vars.g.set(denops, "ddc#_overwrite_completeopt", false);
     await vars.g.set(denops, "ddc#_popup_id", -1);
     await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_skip_complete", false);

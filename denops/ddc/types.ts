@@ -40,12 +40,16 @@ export type DdcOptions = {
   filterParams: Record<string, Partial<Record<string, unknown>>>;
   inlineHighlight: string;
   keywordPattern: string;
-  overwriteCompleteopt: boolean;
   postFilters: string[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;
   sources: SourceName[];
   specialBufferCompletion: boolean;
+};
+
+export type UiOptions = {
+  // TODO: add options and remove placeholder
+  placeholder: void;
 };
 
 export type SourceOptions = {
