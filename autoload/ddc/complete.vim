@@ -1,38 +1,3 @@
-function! ddc#complete#_complete() abort
-  if ddc#complete#_cannot_complete()
-    return
-  endif
-
-  if g:ddc#_complete_pos >= 0
-    " Check displaywidth
-    " Note: If the input text is longer than 'textwidth', the completed text
-    " will be the next line.  It breaks auto completion behavior.
-    if &l:formatoptions =~# '[tca]' && &l:textwidth > 0
-      let input = getline('.')[: g:ddc#_complete_pos]
-      let displaywidth = max(map(copy(g:ddc#_items),
-            \ { _, val -> strdisplaywidth(input . val.word) })) + 1
-      let col = mode() ==# 'c' ? getcmdpos() : virtcol('.')
-      if displaywidth >= &l:textwidth || col >= displaywidth
-        return
-      endif
-    endif
-  else
-    " Clear current popup
-    let g:ddc#_complete_pos = 0
-    let g:ddc#_items = []
-  endif
-
-  let menu = ddc#_completion_menu()
-  if menu ==# 'native'
-    " Note: It may be called in map-<expr>
-    silent! call complete(g:ddc#_complete_pos + 1, g:ddc#_items)
-  elseif empty(g:ddc#_items)
-    call ddc#complete#_clear()
-  elseif menu ==# 'pum.vim'
-    call pum#open(g:ddc#_complete_pos + 1, g:ddc#_items)
-  endif
-endfunction
-
 function! ddc#complete#_cannot_complete() abort
   let info = ddc#complete_info()
   let noinsert = &completeopt =~# 'noinsert'
@@ -40,14 +5,29 @@ function! ddc#complete#_cannot_complete() abort
         \ ((info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
         \ || (!noinsert && info.selected >= 0))
-  let menu = ddc#_completion_menu()
-  return (menu ==# 'native' && mode() !=# 'i')
-        \ || menu ==# 'none'
-        \ || g:ddc#_changedtick != b:changedtick
-        \ || info_check || !exists('g:ddc#_complete_pos')
+  return g:ddc#_changedtick != b:changedtick || info_check
+endfunction
+function! ddc#complete#_skip(pos, items) abort
+  if a:pos < 0 || ddc#complete#_cannot_complete()
+    return v:true
+  endif
+
+  " Note: If the input text is longer than 'textwidth', the completed text
+  " will be the next line.  It breaks auto completion behavior.
+  if &l:formatoptions =~# '[tca]' && &l:textwidth > 0
+    let input = getline('.')[: a:pos]
+    let displaywidth = max(map(copy(a:items),
+          \ { _, val -> strdisplaywidth(input . val.word) })) + 1
+    let col = mode() ==# 'c' ? getcmdpos() : virtcol('.')
+    if displaywidth >= &l:textwidth || col >= displaywidth
+      return v:true
+    endif
+  endif
+
+  return v:false
 endfunction
 
-function! ddc#complete#_inline(highlight) abort
+function! ddc#complete#_show_inline(highlight) abort
   if exists('*nvim_buf_set_extmark')
     if exists('s:ddc_namespace')
       call nvim_buf_clear_namespace(0, s:ddc_namespace, 0, -1)
@@ -57,7 +37,6 @@ function! ddc#complete#_inline(highlight) abort
   endif
 
   if empty(g:ddc#_items) || mode() !=# 'i'
-        \ || ddc#_completion_menu() ==# 'none'
     return
   endif
 
@@ -121,13 +100,6 @@ function! ddc#complete#_inline(highlight) abort
 endfunction
 
 function! ddc#complete#_on_complete_done() abort
-  if ddc#_completion_menu() !=# 'pum.vim'
-    let g:ddc#_skip_complete = v:true
-    " Reset skip completion
-    autocmd ddc InsertLeave,InsertCharPre * ++once
-          \ let g:ddc#_skip_complete = v:false
-  endif
-
   if !ddc#_denops_running() || empty(v:completed_item)
         \ || !has_key(v:completed_item, 'user_data')
         \ || type(v:completed_item.user_data) != v:t_dict
@@ -152,18 +124,7 @@ function! ddc#complete#_on_complete_done() abort
         \ [items[0].__sourceName, v:completed_item.user_data])
 endfunction
 
-function! ddc#complete#_clear() abort
-  if ddc#_completion_menu() ==# 'native' && mode() ==# 'i'
-    call complete(1, [])
-  endif
-
-  if exists('*pum#close')
-    call pum#close()
-  endif
-
-  call ddc#complete#_clear_inline()
-endfunction
-function! ddc#complete#_clear_inline() abort
+function! ddc#complete#_hide_inline() abort
   if exists('*nvim_buf_set_virtual_text')
     if !exists('s:ddc_namespace')
       let s:ddc_namespace = nvim_create_namespace('ddc')

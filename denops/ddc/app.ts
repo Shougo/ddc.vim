@@ -155,7 +155,9 @@ export async function main(denops: Denops) {
         const visible = await denops.call("ddc#map#pum_visible");
         if (mode != "c" && visible) {
           // Close current popupmenu.
-          await denops.call("ddc#complete#_clear");
+          const [_, context, options] = await contextBuilder
+            .createContext(denops, queuedEvent);
+          await ddc.hide(denops, context, options);
         }
         return;
       }
@@ -190,6 +192,15 @@ export async function main(denops: Denops) {
         userData,
       );
     },
+    async clear(arg1: unknown): Promise<void> {
+      const event = ensureString(arg1) as DdcEvent;
+
+      const [_, context, options] = await contextBuilder.createContext(
+        denops,
+        event,
+      );
+      await ddc.hide(denops, context, options);
+    },
   };
 
   async function _onEvent(event: DdcEvent): Promise<void> {
@@ -217,22 +228,9 @@ export async function main(denops: Denops) {
       return;
     }
 
-    if (options.completionMenu == "native") {
-      // Check for CompleteDone
-      const skipComplete = await vars.g.get(
-        denops,
-        "ddc#_skip_complete",
-      ) as boolean;
-      if (skipComplete) {
-        return;
-      }
-    } else if (options.completionMenu == "pum.vim") {
-      // Check for pum.vim
-      const skipComplete = await denops.call("pum#skip_complete") as boolean;
-      if (skipComplete) {
-        // Note: pum#skip_complete() does not close the popupmenu.
-        return;
-      }
+    const skipComplete = await ddc.skipComplete(denops, context, options);
+    if (skipComplete) {
+      return;
     }
 
     if (await checkSkipCompletion(event, context, options)) {
@@ -291,29 +289,6 @@ export async function main(denops: Denops) {
       return true;
     }
 
-    // Check indentkeys.
-    // Note: re-indentation does not work for native popupmenu
-    const indentkeys = (await op.indentkeys.getLocal(denops)).split(",");
-    if (
-      options.completionMenu == "native" &&
-      mode == "i" &&
-      indentkeys.filter((pattern) => pattern == "!^F").length > 0
-    ) {
-      for (
-        const found of indentkeys.map((p) => p.match(/^0?=~?(.+)$/))
-      ) {
-        if (!found) {
-          continue;
-        }
-
-        if (context.input.endsWith(found[1])) {
-          // Skip completion and reindent if matched.
-          await denops.call("ddc#util#indent_current_line");
-          return true;
-        }
-      }
-    }
-
     if (options.autoCompleteEvents.indexOf(event) < 0) {
       return true;
     }
@@ -329,12 +304,10 @@ export async function main(denops: Denops) {
     const visible = await denops.call("ddc#map#pum_visible");
 
     await batch(denops, async (denops: Denops) => {
-      await vars.g.set(denops, "ddc#_event", context.event);
       await vars.g.set(denops, "ddc#_complete_pos", -1);
       await vars.g.set(denops, "ddc#_items", []);
       if (visible && options.completionMode != "manual") {
-        // Close current popupmenu.
-        await denops.call("ddc#complete#_clear");
+        await ddc.hide(denops, context, options);
       }
     });
   }
@@ -355,26 +328,25 @@ export async function main(denops: Denops) {
       const visible = await denops.call("ddc#map#pum_visible");
 
       await batch(denops, async (denops: Denops) => {
-        await vars.g.set(denops, "ddc#_event", context.event);
         await vars.g.set(denops, "ddc#_prev_input", context.input);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
         await vars.g.set(denops, "ddc#_items", items);
         await vars.g.set(denops, "ddc#_sources", options.sources);
-        await vars.g.set(
-          denops,
-          "ddc#_completion_menu",
-          options.completionMenu,
-        );
         await vars.g.set(denops, "ddc#_changedtick", context.changedTick);
 
-        if (
+        if (items.length == 0) {
+          await ddc.hide(denops, context, options);
+        } else if (
           options.completionMode == "popupmenu" ||
           context.event == "Manual" ||
           visible
         ) {
-          await denops.call("ddc#complete");
+          await ddc.show(denops, context, options, completePos, items);
         } else if (options.completionMode == "inline") {
-          await denops.call("ddc#complete#_inline", options.inlineHighlight);
+          await denops.call(
+            "ddc#complete#_show_inline",
+            options.inlineHighlight,
+          );
         } else if (options.completionMode == "manual") {
           // through
         }
@@ -382,19 +354,15 @@ export async function main(denops: Denops) {
     })();
   }
 
-  const checkTextChangedT = await fn.exists(denops, '##TextChangedT');
+  const checkTextChangedT = await fn.exists(denops, "##TextChangedT");
 
   await batch(denops, async (denops: Denops) => {
     await vars.g.set(denops, "ddc#_items", []);
     await vars.g.set(denops, "ddc#_changedtick", 0);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
-    await vars.g.set(denops, "ddc#_completion_menu", "native");
-    await vars.g.set(denops, "ddc#_event", "Manual");
     await vars.g.set(denops, "ddc#_inline_popup_id", -1);
-    await vars.g.set(denops, "ddc#_now", 0);
     await vars.g.set(denops, "ddc#_popup_id", -1);
     await vars.g.set(denops, "ddc#_prev_input", "");
-    await vars.g.set(denops, "ddc#_skip_complete", false);
     await vars.g.set(denops, "ddc#_sources", []);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");

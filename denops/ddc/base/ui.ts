@@ -1,9 +1,4 @@
-import {
-  Context,
-  DdcItem,
-  DdcOptions,
-  UiOptions,
-} from "../types.ts";
+import { Context, DdcItem, DdcOptions, UiOptions } from "../types.ts";
 import { Denops } from "../deps.ts";
 
 export type OnInitArguments<Params extends Record<string, unknown>> = {
@@ -12,7 +7,9 @@ export type OnInitArguments<Params extends Record<string, unknown>> = {
   uiParams: Params;
 };
 
-export type OnEventArguments<Params extends Record<string, unknown>> = {
+export type SkipCompleteArguments<
+  Params extends Record<string, unknown>,
+> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -20,7 +17,7 @@ export type OnEventArguments<Params extends Record<string, unknown>> = {
   uiParams: Params;
 };
 
-export type CompleteArguments<
+export type ShowArguments<
   Params extends Record<string, unknown>,
 > = {
   denops: Denops;
@@ -32,7 +29,7 @@ export type CompleteArguments<
   uiParams: Params;
 };
 
-export type ClearArguments<
+export type HideArguments<
   Params extends Record<string, unknown>,
 > = {
   denops: Denops;
@@ -51,11 +48,14 @@ export abstract class BaseUi<
 
   async onInit(_args: OnInitArguments<Params>): Promise<void> {}
 
-  async onEvent(_args: OnEventArguments<Params>): Promise<void> {}
+  // deno-lint-ignore require-await
+  async skipComplete(_args: SkipCompleteArguments<Params>): Promise<boolean> {
+    return false;
+  }
 
-  async complete(_args: CompleteArguments<Params>): Promise<void> {}
+  async show(_args: ShowArguments<Params>): Promise<void> {}
 
-  async clear(_args: ClearArguments<Params>): Promise<void> {}
+  async hide(_args: HideArguments<Params>): Promise<void> {}
 
   abstract params(): Params;
 }
@@ -64,8 +64,4 @@ export function defaultUiOptions(): UiOptions {
   return {
     placeholder: undefined,
   };
-}
-
-export function defaultUiParams(): Record<string, unknown> {
-  return {};
 }

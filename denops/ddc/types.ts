@@ -2,7 +2,7 @@ import { autocmd } from "./deps.ts";
 export { BaseSource } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
 
-export type DdcExtType = "source" | "filter";
+export type DdcExtType = "ui" | "source" | "filter";
 
 export type DdcEvent =
   | autocmd.AutocmdEvent
@@ -26,7 +26,6 @@ export type Context = {
   nextInput: string;
 };
 
-type CompletionMenu = "native" | "pum.vim" | "none";
 type CompletionMode = "inline" | "popupmenu" | "manual";
 
 export type DdcOptions = {
@@ -34,7 +33,6 @@ export type DdcOptions = {
   autoCompleteEvents: DdcEvent[];
   backspaceCompletion: boolean;
   cmdlineSources: SourceName[];
-  completionMenu: CompletionMenu;
   completionMode: CompletionMode;
   filterOptions: Record<string, Partial<FilterOptions>>;
   filterParams: Record<string, Partial<Record<string, unknown>>>;
@@ -45,6 +43,9 @@ export type DdcOptions = {
   sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;
   sources: SourceName[];
   specialBufferCompletion: boolean;
+  ui: string;
+  uiOptions: Record<SourceName, Partial<UiOptions>>;
+  uiParams: Record<SourceName, Partial<Record<string, unknown>>>;
 };
 
 export type UiOptions = {
