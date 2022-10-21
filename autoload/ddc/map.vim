@@ -1,10 +1,4 @@
 function! ddc#map#complete() abort
-  if exists('g:ddc#_save_completeopt') && g:ddc#_overwrite_completeopt
-    " Restore completeopt
-    let &completeopt = g:ddc#_save_completeopt
-    unlet g:ddc#_save_completeopt
-  endif
-
   call ddc#complete#_clear_inline()
 
   if has('nvim') || ddc#_completion_menu() ==# 'pum.vim'
