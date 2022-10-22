@@ -9,10 +9,6 @@ function! ddc#map#manual_complete(...) abort
         \ string([type(arg) == v:t_list ? arg : [arg]]))
 endfunction
 
-function! ddc#map#pum_visible() abort
-  let pum_visible = exists('*pum#visible') ? pum#visible() : v:false
-  return pum_visible || pumvisible()
-endfunction
 function! ddc#map#inline_visible() abort
   return get(g:, 'ddc#_inline_popup_id', -1) > 0
 endfunction
@@ -20,7 +16,7 @@ endfunction
 function! ddc#map#can_complete() abort
   return !empty(get(g:, 'ddc#_items', []))
         \ && get(g:, 'ddc#_complete_pos', -1) >= 0
-        \ && !ddc#complete#_cannot_complete()
+        \ && !ddc#complete#_check_complete_info()
 endfunction
 
 function! ddc#map#extend(confirm_key) abort
