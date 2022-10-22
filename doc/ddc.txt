@@ -764,8 +764,8 @@ hide			(function)			(Required)
 show			(function)			(Required)
 		It is called to show UI.
 
-					*ddc-source-ui-skipComplete*
-skipComplete		(function)			(Optional)
+					*ddc-source-ui-skipCompletion*
+skipCompletion		(function)			(Optional)
 		Called to skip current completion.
 		It returns True, to skip completion.
 

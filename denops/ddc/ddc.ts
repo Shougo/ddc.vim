@@ -598,7 +598,7 @@ export class Ddc {
     result.isIncomplete = false;
   }
 
-  async skipComplete(
+  async skipCompletion(
     denops: Denops,
     context: Context,
     options: DdcOptions,
@@ -614,7 +614,7 @@ export class Ddc {
 
     await checkUiOnInit(ui, denops, uiOptions, uiParams);
 
-    return await ui.skipComplete({
+    return await ui.skipCompletion({
       denops,
       context,
       options,

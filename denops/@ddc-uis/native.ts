@@ -23,7 +23,7 @@ export class Ui extends BaseUi<Params> {
     );
   }
 
-  async skipComplete(args: {
+  async skipCompletion(args: {
     denops: Denops;
   }): Promise<boolean> {
     // Check for CompleteDone
