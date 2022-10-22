@@ -171,15 +171,6 @@ keywordPattern
 
 		Default: '\k*'
 
-					*ddc-option-overwriteCompleteopt*
-overwriteCompleteopt
-		If it is enabled, ddc.vim overwrites 'completeopt'
-		automatically.
-		Note: If you disable the feature, you need to change
-		'completeopt' manually.
-
-		Default: v:true
-
 						*ddc-option-postFilters*
 postFilters
 		It is a list of registered filter names.  It is called after
@@ -1216,6 +1207,7 @@ COMPATIBILITY						*ddc-compatibility*
 * "ddc#map#extend()" requires {confirm-key}.
 * "ddc#map#complete_common_string()" requires {cancel-key}.
 * Remove "ddc#map#pum_visible()".
+* Remote "ddc-option-overwriteCompleteopt".
 
 2022.09.06
 * "ddc-source-option-dup" must be string.
