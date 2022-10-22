@@ -152,8 +152,7 @@ export async function main(denops: Denops) {
 
       if (lock.locked()) {
         const mode = await fn.mode(denops);
-        const visible = await denops.call("ddc#map#pum_visible");
-        if (mode != "c" && visible) {
+        if (mode != "c") {
           // Close current popupmenu.
           const [_, context, options] = await contextBuilder
             .createContext(denops, queuedEvent);
@@ -301,12 +300,10 @@ export async function main(denops: Denops) {
     context: Context,
     options: DdcOptions,
   ): Promise<void> {
-    const visible = await denops.call("ddc#map#pum_visible");
-
     await batch(denops, async (denops: Denops) => {
       await vars.g.set(denops, "ddc#_complete_pos", -1);
       await vars.g.set(denops, "ddc#_items", []);
-      if (visible && options.completionMode != "manual") {
+      if (options.completionMode != "manual") {
         await ddc.hide(denops, context, options);
       }
     });
@@ -325,8 +322,6 @@ export async function main(denops: Denops) {
     );
 
     await (async function write() {
-      const visible = await denops.call("ddc#map#pum_visible");
-
       await batch(denops, async (denops: Denops) => {
         await vars.g.set(denops, "ddc#_prev_input", context.input);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
@@ -338,8 +333,7 @@ export async function main(denops: Denops) {
           await ddc.hide(denops, context, options);
         } else if (
           options.completionMode == "popupmenu" ||
-          context.event == "Manual" ||
-          visible
+          context.event == "Manual"
         ) {
           await ddc.show(denops, context, options, completePos, items);
         } else if (options.completionMode == "inline") {

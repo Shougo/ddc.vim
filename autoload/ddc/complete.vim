@@ -1,14 +1,15 @@
-function! ddc#complete#_cannot_complete() abort
+function! ddc#complete#_check_complete_info() abort
+  let pum_visible = exists('*pum#visible') ? pum#visible() : v:false
   let info = ddc#complete_info()
   let noinsert = &completeopt =~# 'noinsert'
-  let info_check = ddc#map#pum_visible() &&
+  return pum_visible &&
         \ ((info.mode !=# '' && info.mode !=# 'eval')
         \ || (noinsert && info.selected > 0)
         \ || (!noinsert && info.selected >= 0))
-  return g:ddc#_changedtick != b:changedtick || info_check
 endfunction
 function! ddc#complete#_skip(pos, items) abort
-  if a:pos < 0 || ddc#complete#_cannot_complete()
+  if a:pos < 0 || g:ddc#_changedtick != b:changedtick
+        \ || ddc#complete#_check_complete_info()
     return v:true
   endif
 
