@@ -7,7 +7,7 @@ export type OnInitArguments<Params extends Record<string, unknown>> = {
   uiParams: Params;
 };
 
-export type SkipCompleteArguments<
+export type SkipCompletionArguments<
   Params extends Record<string, unknown>,
 > = {
   denops: Denops;
@@ -49,7 +49,9 @@ export abstract class BaseUi<
   async onInit(_args: OnInitArguments<Params>): Promise<void> {}
 
   // deno-lint-ignore require-await
-  async skipComplete(_args: SkipCompleteArguments<Params>): Promise<boolean> {
+  async skipCompletion(
+    _args: SkipCompletionArguments<Params>,
+  ): Promise<boolean> {
     return false;
   }
 

@@ -5,7 +5,7 @@ import { Denops } from "../ddc/deps.ts";
 export type Params = Record<never, never>;
 
 export class Ui extends BaseUi<Params> {
-  async skipComplete(args: {
+  async skipCompletion(args: {
     denops: Denops;
   }): Promise<boolean> {
     return await args.denops.call("pum#skip_complete") as boolean;

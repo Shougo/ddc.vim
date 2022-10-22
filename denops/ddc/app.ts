@@ -228,8 +228,8 @@ export async function main(denops: Denops) {
       return;
     }
 
-    const skipComplete = await ddc.skipComplete(denops, context, options);
-    if (skipComplete) {
+    const skipCompletion = await ddc.skipCompletion(denops, context, options);
+    if (skipCompletion) {
       return;
     }
 
