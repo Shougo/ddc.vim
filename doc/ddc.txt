@@ -1199,6 +1199,10 @@ You need to enable |ddc-option-specialBufferCompletion| for it.
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
+2022.10.22
+* Remove "ddc#map#pum_visible()".
+* Remove "ddc-option-overwriteCompleteopt".
+
 2022.10.21
 * Split completion UI
 * "ddc-option-completionMenu" is removed.  Please use "ddc-option-ui" instead.
@@ -1206,8 +1210,6 @@ COMPATIBILITY						*ddc-compatibility*
   manually.
 * "ddc#map#extend()" requires {confirm-key}.
 * "ddc#map#complete_common_string()" requires {cancel-key}.
-* Remove "ddc#map#pum_visible()".
-* Remote "ddc-option-overwriteCompleteopt".
 
 2022.09.06
 * "ddc-source-option-dup" must be string.
