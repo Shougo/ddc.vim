@@ -603,16 +603,10 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<boolean> {
-    const ui = this.uis[options.ui];
+    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
     if (!ui) {
       return true;
     }
-    const [uiOptions, uiParams] = uiArgs(
-      options,
-      ui,
-    );
-
-    await checkUiOnInit(ui, denops, uiOptions, uiParams);
 
     return await ui.skipCompletion({
       denops,
@@ -639,16 +633,10 @@ export class Ddc {
       return;
     }
 
-    const ui = this.uis[options.ui];
+    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
     if (!ui) {
       return;
     }
-    const [uiOptions, uiParams] = uiArgs(
-      options,
-      ui,
-    );
-
-    await checkUiOnInit(ui, denops, uiOptions, uiParams);
 
     await ui.show({
       denops,
@@ -668,16 +656,10 @@ export class Ddc {
   ) {
     await denops.call("ddc#complete#_hide_inline");
 
-    const ui = this.uis[options.ui];
+    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
     if (!ui) {
       return;
     }
-    const [uiOptions, uiParams] = uiArgs(
-      options,
-      ui,
-    );
-
-    await checkUiOnInit(ui, denops, uiOptions, uiParams);
 
     await ui.hide({
       denops,
@@ -782,6 +764,36 @@ export class Ddc {
     cdd = await callFilters(converters);
 
     return cdd;
+  }
+
+  private async getUi(
+    denops: Denops,
+    options: DdcOptions,
+  ): Promise<
+    [
+      BaseUi<Record<string, unknown>> | undefined,
+      UiOptions,
+      Record<string, unknown>,
+    ]
+  > {
+    const ui = this.uis[options.ui];
+    if (!ui) {
+      const message = `Invalid ui: "${options.ui}"`;
+      await denops.call(
+        "ddu#util#print_error",
+        message,
+      );
+      return [
+        undefined,
+        defaultUiOptions(),
+        defaultDummy(),
+      ];
+    }
+
+    const [uiOptions, uiParams] = uiArgs(options, ui);
+    await checkUiOnInit(ui, denops, uiOptions, uiParams);
+
+    return [ui, uiOptions, uiParams];
   }
 }
 
