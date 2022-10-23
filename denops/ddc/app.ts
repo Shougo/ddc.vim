@@ -284,7 +284,7 @@ export async function main(denops: Denops) {
       context.input != prevInput &&
       context.input.length + 1 == prevInput.length &&
       prevInput.startsWith(context.input));
-    if (checkBackSpace && options.completionMode == "popupmenu") {
+    if (checkBackSpace) {
       await vars.g.set(denops, "ddc#_prev_input", context.input);
       return true;
     }
@@ -313,9 +313,7 @@ export async function main(denops: Denops) {
     await batch(denops, async (denops: Denops) => {
       await vars.g.set(denops, "ddc#_complete_pos", -1);
       await vars.g.set(denops, "ddc#_items", []);
-      if (options.completionMode != "manual") {
-        await ddc.hide(denops, context, options);
-      }
+      await ddc.hide(denops, context, options);
     });
   }
 
@@ -342,13 +340,8 @@ export async function main(denops: Denops) {
 
       if (items.length == 0) {
         await ddc.hide(denops, context, options);
-      } else if (
-        options.completionMode == "popupmenu" ||
-        context.event == "Manual"
-      ) {
+      } else {
         await ddc.show(denops, context, options, completePos, items);
-      } else if (options.completionMode == "manual") {
-        // through
       }
     })();
   }

@@ -125,15 +125,6 @@ function! ddc#_on_event(event) abort
   call denops#notify('ddc', 'onEvent', [a:event])
 endfunction
 
-function! ddc#complete() abort
-  try
-    return ddc#map#complete()
-  catch
-    call ddc#util#print_error(v:throwpoint)
-    call ddc#util#print_error(v:exception)
-  endtry
-endfunction
-
 function! ddc#syntax_in(groups) abort
   return ddc#syntax#in(a:groups)
 endfunction

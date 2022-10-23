@@ -71,7 +71,7 @@ Options can be toggled through the use of |ddc#custom#patch_global()|.
 For example:
 >
     " Set a single option
-    call ddc#custom#patch_global('completionMode', 'manual')
+    call ddc#custom#patch_global('ui', 'native')
 
     " Pass a dictionary to set multiple options
     call ddc#custom#patch_global({
@@ -120,16 +120,6 @@ cmdlineSources
 		https://github.com/Shougo/pum.vim
 
 		Default: []
-
-						*ddc-option-completionMode*
-completionMode
-		The completion mode. It must be following string.
-
-		"popupmenu": Use popup menu.
-		"manual": You can display popup menu manually by
-			|ddc#map#complete()|.
-
-		Default: "popupmenu"
 
 						*ddc-option-filterOptions*
 filterOptions
@@ -409,8 +399,8 @@ ddc#map#can_complete()
 		Return |v:true| if current word completion is available.
 
 							*ddc#map#complete()*
-ddc#map#complete()
-		Open current completion popup menu.
+ddc#map#complete({ui})
+		Open current completion popup menu by {ui}.
 		Note: It must be in |:map-<expr>|.
 
 					*ddc#map#complete_common_string()*
@@ -1048,17 +1038,17 @@ https://github.com/LumaKernel/ddc-file
 Q: I want to enable "skkeleton" source when "skkeleton" is enabled only.
 
 A: >
-  autocmd User skkeleton-enable-pre call s:skkeleton_pre()
-  function! s:skkeleton_pre() abort
-    " Overwrite sources
-    let s:prev_buffer_config = ddc#custom#get_buffer()
-    call ddc#custom#patch_buffer('sources', ['skkeleton'])
-  endfunction
-  autocmd User skkeleton-disable-pre call s:skkeleton_post()
-  function! s:skkeleton_post() abort
-    " Restore sources
-    call ddc#custom#set_buffer(s:prev_buffer_config)
-  endfunction
+	autocmd User skkeleton-enable-pre call s:skkeleton_pre()
+	function! s:skkeleton_pre() abort
+	  " Overwrite sources
+	  let s:prev_buffer_config = ddc#custom#get_buffer()
+	  call ddc#custom#patch_buffer('sources', ['skkeleton'])
+	endfunction
+	autocmd User skkeleton-disable-pre call s:skkeleton_post()
+	function! s:skkeleton_post() abort
+	  " Restore sources
+	  call ddc#custom#set_buffer(s:prev_buffer_config)
+	endfunction
 
 Q: I want to enable command line completion by ddc.vim.
 
@@ -1067,47 +1057,48 @@ A: Note: "pum.vim" is required.
 https://github.com/Shougo/pum.vim
 https://github.com/Shougo/ddc-ui-pum
 >
-  call ddc#custom#patch_global('ui', 'pum')
-  call ddc#custom#patch_global('autoCompleteEvents',
-      \ ['InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
-  nnoremap :       <Cmd>call CommandlinePre()<CR>:
-
-  function! CommandlinePre() abort
-    cnoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
-    cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
-    cnoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
-    cnoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
-    cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
-    cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
-
-    " Overwrite sources
-    if !exists('b:prev_buffer_config')
-      let b:prev_buffer_config = ddc#custom#get_buffer()
-    endif
-    call ddc#custom#patch_buffer('cmdlineSources', ['necovim', 'around'])
-
-    autocmd User DDCCmdlineLeave ++once call CommandlinePost()
-    autocmd InsertEnter <buffer> ++once call CommandlinePost()
-
-    " Enable command line completion
-    call ddc#enable_cmdline_completion()
-  endfunction
-  function! CommandlinePost() abort
-    silent! cunmap <Tab>
-    silent! cunmap <S-Tab>
-    silent! cunmap <C-n>
-    silent! cunmap <C-p>
-    silent! cunmap <C-y>
-    silent! cunmap <C-e>
-
-    " Restore sources
-    if exists('b:prev_buffer_config')
-      call ddc#custom#set_buffer(b:prev_buffer_config)
-      unlet b:prev_buffer_config
-    else
-      call ddc#custom#set_buffer({})
-    endif
-  endfunction
+	call ddc#custom#patch_global('ui', 'pum')
+	call ddc#custom#patch_global('autoCompleteEvents', [
+	\ 'InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
+	nnoremap :       <Cmd>call CommandlinePre()<CR>:
+	
+	function! CommandlinePre() abort
+	  cnoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
+	  cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+	  cnoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+	  cnoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+	  cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+	  cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+	
+	  " Overwrite sources
+	  if !exists('b:prev_buffer_config')
+	    let b:prev_buffer_config = ddc#custom#get_buffer()
+	  endif
+	  call ddc#custom#patch_buffer('cmdlineSources',
+	  \ ['necovim', 'around'])
+	
+	  autocmd User DDCCmdlineLeave ++once call CommandlinePost()
+	  autocmd InsertEnter <buffer> ++once call CommandlinePost()
+	
+	  " Enable command line completion
+	  call ddc#enable_cmdline_completion()
+	endfunction
+	function! CommandlinePost() abort
+	  silent! cunmap <Tab>
+	  silent! cunmap <S-Tab>
+	  silent! cunmap <C-n>
+	  silent! cunmap <C-p>
+	  silent! cunmap <C-y>
+	  silent! cunmap <C-e>
+	
+	  " Restore sources
+	  if exists('b:prev_buffer_config')
+	    call ddc#custom#set_buffer(b:prev_buffer_config)
+	    unlet b:prev_buffer_config
+	  else
+	    call ddc#custom#set_buffer({})
+	  endif
+	endfunction
 
 Q: Terminal title flickers when completion menu opens in neovim.
 
@@ -1120,33 +1111,33 @@ https://github.com/VonHeikemen/fine-cmdline.nvim
 
 A: Note: Experimental >
 
-  lua <<EOF
-  require('fine-cmdline').setup({
-    cmdline = {
-      enable_keymaps = false
-    },
-    popup = {
-      buf_options = {
-        filetype = 'FineCmdlinePrompt'
-      }
-    },
-   hooks = {
-     set_keymaps = function(imap, feedkeys)
-       imap('<Esc>', fn.close)
-       imap('<C-c>', fn.close)
-
-       imap('<Up>', fn.up_history)
-       imap('<Down>', fn.down_history)
-     end
-   },
-  })
-  EOF
-
-  call ddc#custom#patch_filetype(['FineCmdlinePrompt'], {
-      \ 'keywordPattern': '[0-9a-zA-Z_:#]*',
-      \ 'sources': ['cmdline', 'cmdline-history', 'around'],
-      \ 'specialBufferCompletion': v:true,
-      \ })
+	lua <<EOF
+	require('fine-cmdline').setup({
+	  cmdline = {
+	    enable_keymaps = false
+	  },
+	  popup = {
+	    buf_options = {
+	      filetype = 'FineCmdlinePrompt'
+	    }
+	  },
+	 hooks = {
+	   set_keymaps = function(imap, feedkeys)
+	     imap('<Esc>', fn.close)
+	     imap('<C-c>', fn.close)
+	
+	     imap('<Up>', fn.up_history)
+	     imap('<Down>', fn.down_history)
+	   end
+	 },
+	})
+	EOF
+	
+	call ddc#custom#patch_filetype(['FineCmdlinePrompt'], {
+	    \ 'keywordPattern': '[0-9a-zA-Z_:#]*',
+	    \ 'sources': ['cmdline', 'cmdline-history', 'around'],
+	    \ 'specialBufferCompletion': v:true,
+	    \ })
 
 Q: The auto completion does not work if 'textwidth' is set.
 
@@ -1156,8 +1147,12 @@ completion is disabled.
 
 Q: I want to disable ddc auto completion.
 
-A: >
-    call ddc#custom#patch_global('completionMode', 'manual')
+A: You need to set ui manually.
+https://github.com/Shougo/ddc-ui-none
+https://github.com/Shougo/ddc-ui-native
+>
+	call ddc#custom#patch_global('ui', 'none')
+	inoremap <silent><expr> <TAB>  ddc#map#complete('native')
 
 Q: ddc.vim starting is slow.
 
@@ -1194,6 +1189,7 @@ COMPATIBILITY						*ddc-compatibility*
 * Remove "ddc-option-inlineHighlight".
 * "ddc#map#insert_item()" requires {cancel-key}.
 * Remove old mapping functions.
+* Remove "ddc-option-completionMode".
 
 2022.10.22
 * Remove "ddc#map#pum_visible()".

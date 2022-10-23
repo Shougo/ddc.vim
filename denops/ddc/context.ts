@@ -49,7 +49,6 @@ export function defaultDdcOptions(): DdcOptions {
     ],
     backspaceCompletion: false,
     cmdlineSources: [],
-    completionMode: "popupmenu",
     filterOptions: {},
     filterParams: {},
     keywordPattern: "\\k*",

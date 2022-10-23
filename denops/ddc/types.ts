@@ -26,14 +26,11 @@ export type Context = {
   nextInput: string;
 };
 
-type CompletionMode = "popupmenu" | "manual";
-
 export type DdcOptions = {
   autoCompleteDelay: number;
   autoCompleteEvents: DdcEvent[];
   backspaceCompletion: boolean;
   cmdlineSources: SourceName[];
-  completionMode: CompletionMode;
   filterOptions: Record<string, Partial<FilterOptions>>;
   filterParams: Record<string, Partial<Record<string, unknown>>>;
   keywordPattern: string;
