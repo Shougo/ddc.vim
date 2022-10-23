@@ -52,7 +52,6 @@ export function defaultDdcOptions(): DdcOptions {
     completionMode: "popupmenu",
     filterOptions: {},
     filterParams: {},
-    inlineHighlight: "Comment",
     keywordPattern: "\\k*",
     postFilters: [],
     sourceOptions: {},
@@ -243,6 +242,7 @@ type World = {
   lineNr: number;
   mode: string;
   nextInput: string;
+  runtimepath: string;
 };
 
 function initialWorld(): World {
@@ -257,6 +257,7 @@ function initialWorld(): World {
     lineNr: 0,
     mode: "",
     nextInput: "",
+    runtimepath: "",
   };
 }
 
@@ -287,7 +288,6 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   const lineNrPromise: Promise<number> = fn.line(denops, ".");
   const enabledEskkPromise = _call(denops, "eskk#is_enabled", false);
   const enabledSkkeletonPromise = _call(denops, "skkeleton#is_enabled", false);
-  const iminsertPromise = op.iminsert.getLocal(denops);
   const mode: string = event == "InsertEnter"
     ? "i"
     : ensureString(await fn.mode(denops));
@@ -311,6 +311,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     iminsert,
     lineNr,
     nextInput,
+    runtimepath,
   ] = await Promise.all([
     bufnrPromise,
     changedByCompletionPromise,
@@ -319,9 +320,10 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     inputPromise,
     enabledEskkPromise,
     enabledSkkeletonPromise,
-    iminsertPromise,
+    op.iminsert.getLocal(denops),
     lineNrPromise,
     nextInputPromise,
+    op.runtimepath.getGlobal(denops),
   ]);
   return {
     bufnr,
@@ -334,6 +336,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     lineNr,
     mode,
     nextInput,
+    runtimepath,
   };
 }
 
@@ -377,6 +380,7 @@ export class ContextBuilder {
       input: world.input,
       lineNr: world.lineNr,
       nextInput: world.nextInput,
+      runtimepath: world.runtimepath,
     };
     return [
       skip,

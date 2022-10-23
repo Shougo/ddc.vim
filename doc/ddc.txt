@@ -126,9 +126,6 @@ completionMode
 		The completion mode. It must be following string.
 
 		"popupmenu": Use popup menu.
-		"inline": Use virtual text by |nvim_buf_set_extmark()| in
-			neovim or use |popup_create()| in Vim.
-			Note: It does not work in command line mode.
 		"manual": You can display popup menu manually by
 			|ddc#map#complete()|.
 
@@ -157,12 +154,6 @@ filterParams
 		    \ 'matcher_head': {},
 		    \ })
 <
-						*ddc-option-inlineHighlight*
-inlineHighlight
-		The highlight of |ddc-option-completionMode|'s inline text.
-
-		Default: "Comment"
-
 					*ddc-option-keywordPattern*
 keywordPattern
 		It defines the keyword pattern for completion.
@@ -435,13 +426,8 @@ ddc#map#extend({confirm-key})
 		{confirm-key} is popup cancel key.
 		Note: It must be in |:map-<expr>|.
 
-					    	*ddc#map#inline_visible()*
-ddc#map#inline_visible()
-		Returns non-zero when the inline completion is visible, zero
-		otherwise.
-
 						*ddc#map#insert_item()*
-ddc#map#insert_item({index})
+ddc#map#insert_item({index}, {cancel-key})
 		Insert the item at index {index}. Indices start at 0.
 		Note: It must be in |:map-<expr>|.
 
@@ -943,9 +929,12 @@ The config should work as users config.
 
 Q: I want to use inline suggestion like fish shell.
 
-A: >
-	inoremap <expr><C-t>       ddc#insert_item(0)
-	call ddc#custom#patch_global('completionMode', 'inline')
+A: Note: "ddc-ui-inline" is required.
+
+https://github.com/Shougo/ddc-ui-inline
+>
+	inoremap <expr><C-t>       ddc#map#insert_item(0, "\<C-e>")
+	call ddc#custom#patch_global('ui', 'inline')
 
 
 Q: The Linked/chained completion exists like vim-mucomplete?
@@ -1073,7 +1062,7 @@ A: >
 
 Q: I want to enable command line completion by ddc.vim.
 
-A: Note: pum.vim is needed.
+A: Note: "pum.vim" is required.
 
 https://github.com/Shougo/pum.vim
 https://github.com/Shougo/ddc-ui-pum
@@ -1199,6 +1188,12 @@ You need to enable |ddc-option-specialBufferCompletion| for it.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.10.23
+* Remove "ddc#map#inline_visible".
+* Remove "ddc-option-inlineHighlight".
+* "ddc#map#insert_item()" requires {cancel-key}.
+* Remove old mapping functions.
 
 2022.10.22
 * Remove "ddc#map#pum_visible()".

@@ -5,12 +5,10 @@ function! ddc#map#manual_complete(...) abort
   endif
 
   let arg = get(a:000, 0, [])
-  return printf("\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
-        \ string([type(arg) == v:t_list ? arg : [arg]]))
-endfunction
-
-function! ddc#map#inline_visible() abort
-  return get(g:, 'ddc#_inline_popup_id', -1) > 0
+  let sources = type(arg) == v:t_list ? arg : [arg]
+  return printf(
+        \ "\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
+        \ string([sources, get(a:000, 1, '')]))
 endfunction
 
 function! ddc#map#can_complete() abort
@@ -57,13 +55,13 @@ function! ddc#map#complete_common_string(cancel_key) abort
   return chars
 endfunction
 
-function! ddc#map#insert_item(number) abort
+function! ddc#map#insert_item(number, cancel_key) abort
   let word = get(g:ddc#_items, a:number, {'word': ''}).word
   if word ==# ''
     return ''
   endif
 
-  call ddc#complete#_hide_inline()
+  call ddc#_clear('CompleteDone')
 
   " Get cursor word.
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
@@ -73,7 +71,7 @@ function! ddc#map#insert_item(number) abort
   if mode() ==# 'i'
     let chars .= "\<Cmd>set backspace=start\<CR>"
   endif
-  let chars .= ddc#map#cancel()
+  let chars .= a:cancel_key
   let chars .= repeat("\<BS>", strchars(complete_str))
   let chars .= word
   if mode() ==# 'i'

@@ -41,7 +41,6 @@ import {
   DeadlineError,
   Denops,
   fn,
-  op,
   parse,
   TimeoutError,
   toFileUrl,
@@ -152,15 +151,11 @@ export class Ddc {
 
   async autoload(
     denops: Denops,
+    runtimepath: string,
     type: DdcExtType,
     names: string[],
   ): Promise<string[]> {
     if (names.length == 0) {
-      return [];
-    }
-
-    const runtimepath = await op.runtimepath.getGlobal(denops);
-    if (runtimepath.length == 0) {
       return [];
     }
 
@@ -191,7 +186,6 @@ export class Ddc {
       names.map((file) => this.aliases[type][file] ?? file),
     );
 
-    //console.log(paths);
     await Promise.all(paths.map(async (path) => {
       await this.register(type, path, parse(path).name);
     }));
@@ -201,17 +195,20 @@ export class Ddc {
 
   async checkInvalid(
     denops: Denops,
+    context: Context,
     uiNames: string[],
     sourceNames: string[],
     filterNames: string[],
   ) {
     const loadedSources = await this.autoload(
       denops,
+      context.runtimepath,
       "source",
       this.foundInvalidSources(sourceNames),
     );
     const loadedFilters = await this.autoload(
       denops,
+      context.runtimepath,
       "filter",
       this.foundInvalidFilters([...new Set(filterNames)]),
     );
@@ -271,7 +268,13 @@ export class Ddc {
     // Uniq.
     filterNames = [...new Set(filterNames.concat(options.postFilters))];
 
-    await this.checkInvalid(denops, [options.ui], options.sources, filterNames);
+    await this.checkInvalid(
+      denops,
+      context,
+      [options.ui],
+      options.sources,
+      filterNames,
+    );
 
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
@@ -557,7 +560,11 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<boolean> {
-    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    const [ui, uiOptions, uiParams] = await this.getUi(
+      denops,
+      context,
+      options,
+    );
     if (!ui) {
       return true;
     }
@@ -587,7 +594,11 @@ export class Ddc {
       return;
     }
 
-    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    const [ui, uiOptions, uiParams] = await this.getUi(
+      denops,
+      context,
+      options,
+    );
     if (!ui) {
       return;
     }
@@ -608,9 +619,11 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ) {
-    await denops.call("ddc#complete#_hide_inline");
-
-    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    const [ui, uiOptions, uiParams] = await this.getUi(
+      denops,
+      context,
+      options,
+    );
     if (!ui) {
       return;
     }
@@ -722,6 +735,7 @@ export class Ddc {
 
   private async getUi(
     denops: Denops,
+    context: Context,
     options: DdcOptions,
   ): Promise<
     [
@@ -731,7 +745,7 @@ export class Ddc {
     ]
   > {
     if (!this.uis[options.ui]) {
-      await this.autoload(denops, "ui", [options.ui]);
+      await this.autoload(denops, context.runtimepath, "ui", [options.ui]);
     }
     const ui = this.uis[options.ui];
     if (!ui) {

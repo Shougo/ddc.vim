@@ -123,15 +123,14 @@ export async function main(denops: Denops) {
         options.ui = ui;
       }
 
-      // Call onEvent() is needed to load sources
-      await ddc.onEvent(
+      // Load sources
+      await ddc.autoload(
         denops,
-        context,
-        cbContext.createOnCallback(),
-        options,
+        context.runtimepath,
+        "source",
+        options.sources,
       );
 
-      cbContext.revoke();
       await doCompletion(denops, context, options);
     },
     async updateItems(arg1: unknown, arg2: unknown): Promise<void> {
@@ -336,11 +335,6 @@ export async function main(denops: Denops) {
           context.event == "Manual"
         ) {
           await ddc.show(denops, context, options, completePos, items);
-        } else if (options.completionMode == "inline") {
-          await denops.call(
-            "ddc#complete#_show_inline",
-            options.inlineHighlight,
-          );
         } else if (options.completionMode == "manual") {
           // through
         }
@@ -354,8 +348,6 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_items", []);
     await vars.g.set(denops, "ddc#_changedtick", 0);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
-    await vars.g.set(denops, "ddc#_inline_popup_id", -1);
-    await vars.g.set(denops, "ddc#_popup_id", -1);
     await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_sources", []);
 

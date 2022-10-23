@@ -182,20 +182,6 @@ function! ddc#_clear(event) abort
   call denops#notify('ddc', 'clear', [a:event])
 endfunction
 
-function! ddc#manual_complete(...) abort
-  return call('ddc#map#manual_complete',
-        \ get(a:000, 0, []), get(a:000, 1, ''))
-endfunction
-function! ddc#insert_item(number) abort
-  return ddc#map#insert_item(a:number)
-endfunction
-function! ddc#complete_common_string() abort
-  return ddc#map#complete_common_string()
-endfunction
-function! ddc#can_complete() abort
-  return ddc#map#can_complete()
-endfunction
-
 function! ddc#complete_info() abort
   return exists('*pum#complete_info') ? pum#complete_info() : complete_info()
 endfunction
