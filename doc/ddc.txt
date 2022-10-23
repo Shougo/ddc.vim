@@ -399,8 +399,8 @@ ddc#map#can_complete()
 		Return |v:true| if current word completion is available.
 
 							*ddc#map#complete()*
-ddc#map#complete({ui})
-		Open current completion popup menu by {ui}.
+ddc#map#complete({ui-name})
+		Open current completion popup menu by {ui-name}.
 		Note: It must be in |:map-<expr>|.
 
 					*ddc#map#complete_common_string()*
@@ -1190,6 +1190,7 @@ COMPATIBILITY						*ddc-compatibility*
 * "ddc#map#insert_item()" requires {cancel-key}.
 * Remove old mapping functions.
 * Remove "ddc-option-completionMode".
+* "ddc#map#complete()" requires {ui}.
 
 2022.10.22
 * Remove "ddc#map#pum_visible()".

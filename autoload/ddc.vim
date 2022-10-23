@@ -20,7 +20,7 @@ function! ddc#enable() abort
     autocmd!
     autocmd CompleteDone * call ddc#complete#_on_complete_done()
     autocmd User PumCompleteDone call ddc#complete#_on_complete_done()
-    autocmd InsertLeave * call ddc#_clear('InsertLeave')
+    autocmd InsertLeave * call ddc#_hide('InsertLeave')
   augroup END
 
   " Force context_filetype call
@@ -40,7 +40,7 @@ function! ddc#enable_cmdline_completion() abort
 
   augroup ddc-cmdline
     autocmd!
-    autocmd CmdlineLeave <buffer> call ddc#_clear('CmdlineLeave')
+    autocmd CmdlineLeave <buffer> call ddc#_hide('CmdlineLeave')
     autocmd CmdlineEnter <buffer> call ddc#_on_event('CmdlineEnter')
     autocmd CmdlineChanged <buffer>
           \ if getcmdtype() !=# '=' && getcmdtype() !=# '@' |
@@ -165,12 +165,12 @@ function! ddc#update_items(name, items) abort
   call denops#notify('ddc', 'updateItems', [a:name, a:items])
 endfunction
 
-function! ddc#_clear(event) abort
+function! ddc#_hide(event) abort
   if !ddc#_denops_running()
     return
   endif
 
-  call denops#notify('ddc', 'clear', [a:event])
+  call denops#notify('ddc', 'hide', [a:event])
 endfunction
 
 function! ddc#complete_info() abort

@@ -1,3 +1,12 @@
+function! ddc#map#complete(ui) abort
+  if !ddc#_denops_running()
+    return
+  endif
+
+  call denops#notify('ddc', 'show', [a:ui])
+  return ''
+endfunction
+
 function! ddc#map#manual_complete(...) abort
   if !ddc#_denops_running()
     call ddc#enable()
@@ -61,7 +70,7 @@ function! ddc#map#insert_item(number, cancel_key) abort
     return ''
   endif
 
-  call ddc#_clear('CompleteDone')
+  call ddc#_hide('CompleteDone')
 
   " Get cursor word.
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]

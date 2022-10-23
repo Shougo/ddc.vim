@@ -4,6 +4,7 @@ import {
   Context,
   DdcEvent,
   DdcExtType,
+  DdcItem,
   DdcOptions,
   DdcUserData,
   Item,
@@ -123,22 +124,14 @@ export async function main(denops: Denops) {
         options.sources = sources;
 
         // Load sources
-        await ddc.autoload(
-          denops,
-          "source",
-          options.sources,
-        );
+        await ddc.autoload(denops, "source", options.sources);
       }
 
       if (ui.length != 0) {
         options.ui = ui;
 
         // Load UI
-        await ddc.autoload(
-          denops,
-          "ui",
-          [options.ui],
-        );
+        await ddc.autoload(denops, "ui", [options.ui]);
       }
 
       cbContext.revoke();
@@ -201,7 +194,27 @@ export async function main(denops: Denops) {
         userData,
       );
     },
-    async clear(arg1: unknown): Promise<void> {
+    async show(arg1: unknown): Promise<void> {
+      const ui = ensureString(arg1);
+
+      const [_, context, options] = await contextBuilder.createContext(
+        denops,
+        "Manual",
+      );
+      options.ui = ui;
+
+      // Load UI
+      await ddc.autoload(denops, "ui", [options.ui]);
+
+      const completePos = await vars.g.get(
+        denops,
+        "ddc#_complete_pos",
+      ) as number;
+      const items = await vars.g.get(denops, "ddc#_items") as DdcItem[];
+
+      await ddc.show(denops, context, options, completePos, items);
+    },
+    async hide(arg1: unknown): Promise<void> {
       const event = ensureString(arg1) as DdcEvent;
 
       const [_, context, options] = await contextBuilder.createContext(
