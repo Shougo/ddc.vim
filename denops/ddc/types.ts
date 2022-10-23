@@ -24,7 +24,6 @@ export type Context = {
   input: string;
   lineNr: number;
   nextInput: string;
-  runtimepath: string;
 };
 
 type CompletionMode = "popupmenu" | "manual";

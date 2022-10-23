@@ -242,7 +242,6 @@ type World = {
   lineNr: number;
   mode: string;
   nextInput: string;
-  runtimepath: string;
 };
 
 function initialWorld(): World {
@@ -257,7 +256,6 @@ function initialWorld(): World {
     lineNr: 0,
     mode: "",
     nextInput: "",
-    runtimepath: "",
   };
 }
 
@@ -311,7 +309,6 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     iminsert,
     lineNr,
     nextInput,
-    runtimepath,
   ] = await Promise.all([
     bufnrPromise,
     changedByCompletionPromise,
@@ -323,7 +320,6 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     op.iminsert.getLocal(denops),
     lineNrPromise,
     nextInputPromise,
-    op.runtimepath.getGlobal(denops),
   ]);
   return {
     bufnr,
@@ -336,7 +332,6 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     lineNr,
     mode,
     nextInput,
-    runtimepath,
   };
 }
 
@@ -380,7 +375,6 @@ export class ContextBuilder {
       input: world.input,
       lineNr: world.lineNr,
       nextInput: world.nextInput,
-      runtimepath: world.runtimepath,
     };
     return [
       skip,
