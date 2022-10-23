@@ -111,6 +111,9 @@ export async function main(denops: Denops) {
         .createContext(denops, "Manual");
       if (skip) return;
 
+      // Hide the current completion
+      await ddc.hide(denops, context, options);
+
       const mode = await fn.mode(denops);
       if (mode == "c") {
         // Use cmdlineSources instead
@@ -118,19 +121,29 @@ export async function main(denops: Denops) {
       }
       if (sources.length != 0) {
         options.sources = sources;
+
+        // Load sources
+        await ddc.autoload(
+          denops,
+          context.runtimepath,
+          "source",
+          options.sources,
+        );
       }
+
       if (ui.length != 0) {
         options.ui = ui;
+
+        // Load UI
+        await ddc.autoload(
+          denops,
+          context.runtimepath,
+          "ui",
+          [options.ui],
+        );
       }
 
-      // Load sources
-      await ddc.autoload(
-        denops,
-        context.runtimepath,
-        "source",
-        options.sources,
-      );
-
+      cbContext.revoke();
       await doCompletion(denops, context, options);
     },
     async updateItems(arg1: unknown, arg2: unknown): Promise<void> {
@@ -327,18 +340,18 @@ export async function main(denops: Denops) {
         await vars.g.set(denops, "ddc#_items", items);
         await vars.g.set(denops, "ddc#_sources", options.sources);
         await vars.g.set(denops, "ddc#_changedtick", context.changedTick);
-
-        if (items.length == 0) {
-          await ddc.hide(denops, context, options);
-        } else if (
-          options.completionMode == "popupmenu" ||
-          context.event == "Manual"
-        ) {
-          await ddc.show(denops, context, options, completePos, items);
-        } else if (options.completionMode == "manual") {
-          // through
-        }
       });
+
+      if (items.length == 0) {
+        await ddc.hide(denops, context, options);
+      } else if (
+        options.completionMode == "popupmenu" ||
+        context.event == "Manual"
+      ) {
+        await ddc.show(denops, context, options, completePos, items);
+      } else if (options.completionMode == "manual") {
+        // through
+      }
     })();
   }
 
