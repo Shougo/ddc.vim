@@ -24,9 +24,10 @@ export type Context = {
   input: string;
   lineNr: number;
   nextInput: string;
+  runtimepath: string;
 };
 
-type CompletionMode = "inline" | "popupmenu" | "manual";
+type CompletionMode = "popupmenu" | "manual";
 
 export type DdcOptions = {
   autoCompleteDelay: number;
@@ -36,7 +37,6 @@ export type DdcOptions = {
   completionMode: CompletionMode;
   filterOptions: Record<string, Partial<FilterOptions>>;
   filterParams: Record<string, Partial<Record<string, unknown>>>;
-  inlineHighlight: string;
   keywordPattern: string;
   postFilters: string[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
