@@ -780,7 +780,7 @@ export class Ddc {
     if (!ui) {
       const message = `Invalid ui: "${options.ui}"`;
       await denops.call(
-        "ddu#util#print_error",
+        "ddc#util#print_error",
         message,
       );
       return [

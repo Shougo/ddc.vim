@@ -1075,7 +1075,7 @@ Q: I want to enable command line completion by ddc.vim.
 A: Note: pum.vim is needed.
 
 https://github.com/Shougo/pum.vim
-https://github.com/Shougo/ddu-ui-pum
+https://github.com/Shougo/ddc-ui-pum
 >
   call ddc#custom#patch_global('ui', 'pum')
   call ddc#custom#patch_global('autoCompleteEvents',
