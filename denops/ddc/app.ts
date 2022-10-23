@@ -125,7 +125,6 @@ export async function main(denops: Denops) {
         // Load sources
         await ddc.autoload(
           denops,
-          context.runtimepath,
           "source",
           options.sources,
         );
@@ -137,7 +136,6 @@ export async function main(denops: Denops) {
         // Load UI
         await ddc.autoload(
           denops,
-          context.runtimepath,
           "ui",
           [options.ui],
         );

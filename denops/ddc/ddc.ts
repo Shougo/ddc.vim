@@ -41,6 +41,7 @@ import {
   DeadlineError,
   Denops,
   fn,
+  op,
   parse,
   TimeoutError,
   toFileUrl,
@@ -151,13 +152,14 @@ export class Ddc {
 
   async autoload(
     denops: Denops,
-    runtimepath: string,
     type: DdcExtType,
     names: string[],
   ): Promise<string[]> {
     if (names.length == 0) {
       return [];
     }
+
+    const runtimepath = await op.runtimepath.getGlobal(denops);
 
     async function globpath(
       searches: string[],
@@ -195,20 +197,17 @@ export class Ddc {
 
   async checkInvalid(
     denops: Denops,
-    context: Context,
     uiNames: string[],
     sourceNames: string[],
     filterNames: string[],
   ) {
     const loadedSources = await this.autoload(
       denops,
-      context.runtimepath,
       "source",
       this.foundInvalidSources(sourceNames),
     );
     const loadedFilters = await this.autoload(
       denops,
-      context.runtimepath,
       "filter",
       this.foundInvalidFilters([...new Set(filterNames)]),
     );
@@ -270,7 +269,6 @@ export class Ddc {
 
     await this.checkInvalid(
       denops,
-      context,
       [options.ui],
       options.sources,
       filterNames,
@@ -560,11 +558,7 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<boolean> {
-    const [ui, uiOptions, uiParams] = await this.getUi(
-      denops,
-      context,
-      options,
-    );
+    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
     if (!ui) {
       return true;
     }
@@ -594,11 +588,7 @@ export class Ddc {
       return;
     }
 
-    const [ui, uiOptions, uiParams] = await this.getUi(
-      denops,
-      context,
-      options,
-    );
+    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
     if (!ui) {
       return;
     }
@@ -619,11 +609,7 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ) {
-    const [ui, uiOptions, uiParams] = await this.getUi(
-      denops,
-      context,
-      options,
-    );
+    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
     if (!ui) {
       return;
     }
@@ -735,7 +721,6 @@ export class Ddc {
 
   private async getUi(
     denops: Denops,
-    context: Context,
     options: DdcOptions,
   ): Promise<
     [
@@ -745,7 +730,7 @@ export class Ddc {
     ]
   > {
     if (!this.uis[options.ui]) {
-      await this.autoload(denops, context.runtimepath, "ui", [options.ui]);
+      await this.autoload(denops, "ui", [options.ui]);
     }
     const ui = this.uis[options.ui];
     if (!ui) {
