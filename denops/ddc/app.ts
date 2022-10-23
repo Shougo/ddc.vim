@@ -344,11 +344,11 @@ export async function main(denops: Denops) {
 
     await (async function write() {
       await batch(denops, async (denops: Denops) => {
-        await vars.g.set(denops, "ddc#_prev_input", context.input);
+        await vars.g.set(denops, "ddc#_changedtick", context.changedTick);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
         await vars.g.set(denops, "ddc#_items", items);
+        await vars.g.set(denops, "ddc#_prev_input", context.input);
         await vars.g.set(denops, "ddc#_sources", options.sources);
-        await vars.g.set(denops, "ddc#_changedtick", context.changedTick);
       });
 
       if (items.length == 0) {
@@ -362,9 +362,9 @@ export async function main(denops: Denops) {
   const checkTextChangedT = await fn.exists(denops, "##TextChangedT");
 
   await batch(denops, async (denops: Denops) => {
-    await vars.g.set(denops, "ddc#_items", []);
     await vars.g.set(denops, "ddc#_changedtick", 0);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
+    await vars.g.set(denops, "ddc#_items", []);
     await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_sources", []);
 
