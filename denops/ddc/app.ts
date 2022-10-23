@@ -103,8 +103,9 @@ export async function main(denops: Denops) {
     getCurrent(): Promise<DdcOptions> {
       return Promise.resolve(contextBuilder.getCurrent(denops));
     },
-    async manualComplete(arg1: unknown): Promise<void> {
+    async manualComplete(arg1: unknown, arg2: unknown): Promise<void> {
       const sources = arg1 as string[];
+      const ui = arg2 as string;
 
       const [skip, context, options] = await contextBuilder
         .createContext(denops, "Manual");
@@ -117,6 +118,9 @@ export async function main(denops: Denops) {
       }
       if (sources.length != 0) {
         options.sources = sources;
+      }
+      if (ui.length != 0) {
+        options.ui = ui;
       }
 
       // Call onEvent() is needed to load sources
