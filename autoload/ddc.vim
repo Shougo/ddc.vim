@@ -183,7 +183,8 @@ function! ddc#_clear(event) abort
 endfunction
 
 function! ddc#manual_complete(...) abort
-  return call('ddc#map#manual_complete', a:000)
+  return call('ddc#map#manual_complete',
+        \ get(a:000, 0, []), get(a:000, 1, ''))
 endfunction
 function! ddc#insert_item(number) abort
   return ddc#map#insert_item(a:number)

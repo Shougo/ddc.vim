@@ -446,10 +446,11 @@ ddc#map#insert_item({index})
 		Note: It must be in |:map-<expr>|.
 
 					    	*ddc#map#manual_complete()*
-ddc#map#manual_complete([{sources}])
+ddc#map#manual_complete([{sources}[, {ui-name}]])
 		Manual trigger ddc completion.
 		You can provide a list of {sources}: It can be the name of a
 		source or a list of sources name.
+		{ui-name} is ui name.
 		Note: Manual completion ignores
 		|ddc-source-option-minAutoCompleteLength|.
 		Note: It must be in |:map-<expr>|.
