@@ -38,11 +38,7 @@ export async function main(denops: Denops) {
   denops.dispatcher = {
     async register(arg1: unknown): Promise<void> {
       const arg = ensureObject(arg1) as RegisterArg;
-      if (arg.type == "source") {
-        await ddc.registerSource(denops, arg.path, arg.name);
-      } else if (arg.type == "filter") {
-        await ddc.registerFilter(denops, arg.path, arg.name);
-      }
+      await ddc.register(arg.type, arg.path, arg.name);
     },
     alias(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
       ddc.registerAlias(

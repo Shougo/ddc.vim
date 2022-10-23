@@ -60,9 +60,11 @@ export class Ddc {
   private sources: Record<string, BaseSource<Record<string, unknown>>> = {};
   private filters: Record<string, BaseFilter<Record<string, unknown>>> = {};
 
-  private aliasUis: Record<string, string> = {};
-  private aliasSources: Record<string, string> = {};
-  private aliasFilters: Record<string, string> = {};
+  private aliases: Record<DdcExtType, Record<string, string>> = {
+    ui: {},
+    source: {},
+    filter: {},
+  };
 
   private checkPaths: Record<string, boolean> = {};
   private prevResults: Record<string, DdcResult> = {};
@@ -101,82 +103,47 @@ export class Ddc {
   }
 
   registerAlias(type: DdcExtType, alias: string, base: string) {
-    if (type == "ui") {
-      this.aliasUis[alias] = base;
-    } else if (type == "source") {
-      this.aliasSources[alias] = base;
-    } else if (type == "filter") {
-      this.aliasFilters[alias] = base;
+    this.aliases[type][alias] = base;
+  }
+
+  async register(type: DdcExtType, path: string, name: string) {
+    if (path in this.checkPaths) {
+      return;
     }
-  }
-
-  async registerUi(denops: Denops, path: string, name: string) {
     this.checkPaths[path] = true;
 
     const mod = await import(toFileUrl(path).href);
 
-    const add = (name: string) => {
-      const ui = new mod.Ui();
-      ui.name = name;
-      this.uis[ui.name] = ui;
-      if (ui.events && ui.events.length != 0) {
-        this.registerAutocmd(denops, ui.events);
-      }
-    };
+    let add;
+    switch (type) {
+      case "ui":
+        add = (name: string) => {
+          const ui = new mod.Ui();
+          ui.name = name;
+          this.uis[ui.name] = ui;
+        };
+        break;
+      case "source":
+        add = (name: string) => {
+          const source = new mod.Source();
+          source.name = name;
+          this.sources[source.name] = source;
+        };
+        break;
+      case "filter":
+        add = (name: string) => {
+          const filter = new mod.Filter();
+          filter.name = name;
+          this.filters[filter.name] = filter;
+        };
+        break;
+    }
 
     add(name);
 
     // Check alias
-    this.addAliases(this.aliasUis, add, name);
-  }
-
-  async registerSource(denops: Denops, path: string, name: string) {
-    this.checkPaths[path] = true;
-
-    const mod = await import(toFileUrl(path).href);
-
-    const add = (name: string) => {
-      const source = new mod.Source();
-      source.name = name;
-      this.sources[source.name] = source;
-      if (source.events && source.events.length != 0) {
-        this.registerAutocmd(denops, source.events);
-      }
-    };
-
-    add(name);
-
-    // Check alias
-    this.addAliases(this.aliasSources, add, name);
-  }
-
-  async registerFilter(denops: Denops, path: string, name: string) {
-    this.checkPaths[path] = true;
-
-    const mod = await import(toFileUrl(path).href);
-
-    const add = (name: string) => {
-      const filter = new mod.Filter();
-      filter.name = name;
-      this.filters[filter.name] = filter;
-      if (filter.events && filter.events.length != 0) {
-        this.registerAutocmd(denops, filter.events);
-      }
-    };
-
-    add(name);
-
-    // Check alias
-    this.addAliases(this.aliasFilters, add, name);
-  }
-
-  addAliases(
-    allAliases: Record<string, string>,
-    add: (name: string) => void,
-    name: string,
-  ) {
-    const aliases = Object.keys(allAliases).filter(
-      (k) => allAliases[k] == name,
+    const aliases = Object.keys(this.aliases[type]).filter(
+      (k) => this.aliases[type][k] == name,
     );
     for (const alias of aliases) {
       add(alias);
@@ -185,15 +152,17 @@ export class Ddc {
 
   async autoload(
     denops: Denops,
-    uiNames: string[],
-    sourceNames: string[],
-    filterNames: string[],
+    type: DdcExtType,
+    names: string[],
   ): Promise<string[]> {
-    if (sourceNames.length == 0 && filterNames.length == 0) {
+    if (names.length == 0) {
       return [];
     }
 
     const runtimepath = await op.runtimepath.getGlobal(denops);
+    if (runtimepath == "") {
+      return [];
+    }
 
     async function globpath(
       searches: string[],
@@ -217,32 +186,17 @@ export class Ddc {
       return paths;
     }
 
-    const uis = (await globpath(
-      ["denops/@ddc-uis/"],
-      uiNames.map((file) => this.aliasUis[file] ?? file),
-    )).filter((path) => !(path in this.checkPaths));
+    const paths = await globpath(
+      [`denops/@ddc-${type}s/`],
+      names.map((file) => this.aliases[type][file] ?? file),
+    );
 
-    const sources = (await globpath(
-      ["denops/@ddc-sources/"],
-      sourceNames.map((file) => this.aliasSources[file] ?? file),
-    )).filter((path) => !(path in this.checkPaths));
-
-    const filters = (await globpath(
-      ["denops/@ddc-filters/"],
-      filterNames.map((file) => this.aliasFilters[file] ?? file),
-    )).filter((path) => !(path in this.checkPaths));
-
-    await Promise.all(uis.map(async (path) => {
-      await this.registerUi(denops, path, parse(path).name);
-    }));
-    await Promise.all(sources.map(async (path) => {
-      await this.registerSource(denops, path, parse(path).name);
-    }));
-    await Promise.all(filters.map(async (path) => {
-      await this.registerFilter(denops, path, parse(path).name);
+    //console.log(paths);
+    await Promise.all(paths.map(async (path) => {
+      await this.register(type, path, parse(path).name);
     }));
 
-    return sources.concat(filters);
+    return paths;
   }
 
   async checkInvalid(
@@ -251,18 +205,18 @@ export class Ddc {
     sourceNames: string[],
     filterNames: string[],
   ) {
-    // Auto load invalid sources
-    const beforeUis = this.foundInvalidUis(uiNames);
-    const beforeSources = this.foundInvalidSources(sourceNames);
-    const beforeFilters = this.foundInvalidFilters([...new Set(filterNames)]);
-    const loaded = await this.autoload(
+    const loadedSources = await this.autoload(
       denops,
-      beforeUis,
-      beforeSources,
-      beforeFilters,
+      "source",
+      this.foundInvalidSources(sourceNames),
+    );
+    const loadedFilters = await this.autoload(
+      denops,
+      "filter",
+      this.foundInvalidFilters([...new Set(filterNames)]),
     );
 
-    if (loaded.length != 0) {
+    if (loadedSources.length != 0 && loadedFilters.length != 0) {
       return;
     }
 
@@ -776,6 +730,9 @@ export class Ddc {
       Record<string, unknown>,
     ]
   > {
+    if (!this.uis[options.ui]) {
+      await this.autoload(denops, "ui", [options.ui]);
+    }
     const ui = this.uis[options.ui];
     if (!ui) {
       const message = `Invalid ui: "${options.ui}"`;
