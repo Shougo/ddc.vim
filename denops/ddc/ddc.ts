@@ -216,15 +216,6 @@ export class Ddc {
       return;
     }
 
-    // Check invalid uis
-    const invalidUis = this.foundInvalidUis(uiNames);
-    if (invalidUis.length > 0) {
-      await denops.call(
-        "ddc#util#print_error",
-        "UIs not found: " + invalidUis.toString(),
-      );
-    }
-
     // Check invalid sources
     const invalidSources = this.foundInvalidSources(sourceNames);
     if (invalidSources.length > 0) {
@@ -729,6 +720,19 @@ export class Ddc {
       Record<string, unknown>,
     ]
   > {
+    if (options.ui.length == 0) {
+      await denops.call(
+        "ddc#util#print_error",
+        "You must install ddc UI plugins and specify \"ui\" option.",
+      );
+
+      return [
+        undefined,
+        defaultUiOptions(),
+        defaultDummy(),
+      ];
+    }
+
     if (!this.uis[options.ui]) {
       await this.autoload(denops, "ui", [options.ui]);
     }
