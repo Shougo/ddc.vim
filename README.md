@@ -92,9 +92,9 @@ call dein#add('vim-denops/denops.vim')
 call dein#end()
 ```
 
-**Note:** Ddc.vim does not include any sources and filters. You must install
-them you want manually. You can search ddc plugins(sources and filters) from
-[here](https://github.com/topics/ddc-vim).
+**Note:** Ddc.vim does not include any UIs, sources and filters. You must
+install them which you want manually. You can search ddc plugins(sources and
+filters) from [here](https://github.com/topics/ddc-vim).
 
 ### Requirements
 
@@ -111,9 +111,7 @@ Ddc.vim requires both Deno and denops.vim.
 " You must set the default ui.
 " Note: native ui
 " https://github.com/Shougo/ddc-ui-native
-call ddc#custom#patch_global({
-    \ 'ui': 'native',
-    \ })
+call ddc#custom#patch_global('ui', 'native')
 
 " Use around source.
 " https://github.com/Shougo/ddc-around

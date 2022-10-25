@@ -54,9 +54,9 @@ Please install both Deno and "denops.vim".
 https://deno.land/
 https://github.com/vim-denops/denops.vim
 
-Note: Ddc.vim does not include any sources and filters.
-You must install them you want manually.
-You can search ddc.vim plugins(sources and filters) from
+Note: Ddc.vim does not include any UIs, sources and filters.
+You must install them which you want manually.
+You can search ddc.vim plugins(UIs, sources and filters) from
 https://github.com/topics/ddc-vim.
 
 
@@ -439,9 +439,7 @@ EXAMPLES						*ddc-examples*
 	" You must set the default ui.
 	" Note: native ui
 	" https://github.com/Shougo/ddc-ui-native
-	call ddc#custom#patch_global({
-	    \ 'ui': 'native',
-	    \ })
+	call ddc#custom#patch_global('ui', 'native')
 
 	" Use around source.
 	" https://github.com/Shougo/ddc-around
@@ -708,7 +706,6 @@ CREATE UI						*ddc-create-ui*
 
 To create UI, you should read other UIs implementation.
 
-The files must be registered by |ddc#register()|.
 Source class must extend "BaseUI" class.
 
 Note: The sources must be written in TypeScript language.
@@ -745,7 +742,6 @@ CREATE SOURCE						*ddc-create-source*
 
 To create source, you should read other sources implementation.
 
-The files must be registered by |ddc#register()|.
 Source class must extend "BaseSource" class.
 
 Note: The sources must be written in TypeScript language.
@@ -854,7 +850,6 @@ CREATE FILTER						*ddc-create-filter*
 
 To create filter, you should read other filters implementation.
 
-The files must be registered by |ddc#register()|.
 Filter class must extend "BaseFilter" class.
 
 Note: The filters must be written in TypeScript language.
@@ -900,10 +895,10 @@ plugins.  You can donate money to help me!
    https://github.com/sponsors/Shougo
 
 
-Q: Why does ddc.vim not include any sources/matchers/sorters/converters?
+Q: Why does ddc.vim not include any UIs/sources/matchers/sorters/converters?
 
 A: Because I cannot determine the best default
-sources/matchers/sorters/converters.
+UIs/sources/matchers/sorters/converters.
 Users use different environments/policy, etc...
 So ddc.vim should not define the defaults.
 You must define your defaults by configuration.
