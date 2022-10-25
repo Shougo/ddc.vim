@@ -11,7 +11,7 @@ endfunction
 function! ddc#syntax#get() abort
   let curpos = getcurpos()[1:2]
   return &l:syntax !=# '' ? s:get_syn_names([curpos[0], curpos[1] - 1]) :
-        \ has('nvim') ? s:get_treesitter_nodes([curpos[0] - 1,
+        \ has('nvim-0.8') ? s:get_treesitter_nodes([curpos[0] - 1,
         \   col('$') == col('.') ? curpos[1] - 2 : curpos[1] - 1]) :
         \ []
 endfunction
@@ -38,11 +38,6 @@ function! s:get_syn_names(curpos) abort
 endfunction
 
 function! s:get_treesitter_nodes(curpos) abort
-  try
-    return luaeval(
-          \ 'require("ddc.syntax").get_treesitter_syntax_groups(_A)', a:curpos)
-  catch
-    " Ignore error
-    return []
-  endtry
+  return map(v:lua.vim.treesitter.get_captures_at_pos(
+        \ 0, a:curpos[0], a:curpos[1]), { _, val -> val.capture })
 endfunction
