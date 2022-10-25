@@ -197,7 +197,6 @@ export class Ddc {
 
   async checkInvalid(
     denops: Denops,
-    uiNames: string[],
     sourceNames: string[],
     filterNames: string[],
   ) {
@@ -260,7 +259,6 @@ export class Ddc {
 
     await this.checkInvalid(
       denops,
-      [options.ui],
       options.sources,
       filterNames,
     );
@@ -723,7 +721,7 @@ export class Ddc {
     if (options.ui.length == 0) {
       await denops.call(
         "ddc#util#print_error",
-        "You must install ddc UI plugins and specify \"ui\" option.",
+        'You must install ddc UI plugins and specify "ui" option.',
       );
 
       return [

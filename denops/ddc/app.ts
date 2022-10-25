@@ -209,8 +209,9 @@ export async function main(denops: Denops) {
       const completePos = await vars.g.get(
         denops,
         "ddc#_complete_pos",
+        -1,
       ) as number;
-      const items = await vars.g.get(denops, "ddc#_items") as DdcItem[];
+      const items = await vars.g.get(denops, "ddc#_items", []) as DdcItem[];
 
       await ddc.show(denops, context, options, completePos, items);
     },
