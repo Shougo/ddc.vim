@@ -77,9 +77,6 @@ export class Ddc {
     return names.map((n) => this.filters[n]).filter((v) => v);
   }
 
-  private foundInvalidUis(names: string[]): string[] {
-    return names.filter((n) => !this.uis[n]);
-  }
   private foundInvalidSources(names: string[]): string[] {
     return names.filter((n) => !this.sources[n]);
   }
