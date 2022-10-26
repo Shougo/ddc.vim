@@ -58,6 +58,9 @@ call plug#begin()
 Plug 'Shougo/ddc.vim'
 Plug 'vim-denops/denops.vim'
 
+" Install your UIs
+"Plug 'Shougo/ddc-ui-native'
+
 " Install your sources
 "Plug 'Shougo/ddc-around'
 
@@ -76,6 +79,9 @@ call dein#begin()
 call dein#add('Shougo/ddc.vim')
 call dein#add('vim-denops/denops.vim')
 
+" Install your UIs
+"call dein#add('Shougo/ddc-ui-native')
+
 " Install your sources
 "call dein#add('Shougo/ddc-around')
 
@@ -86,9 +92,9 @@ call dein#add('vim-denops/denops.vim')
 call dein#end()
 ```
 
-**Note:** Ddc.vim does not include any sources and filters. You must install
-them you want manually. You can search ddc plugins(sources and filters) from
-[here](https://github.com/topics/ddc-vim).
+**Note:** Ddc.vim does not include any UIs, sources and filters. You must
+install them which you want manually. You can search ddc plugins(sources and
+filters) from [here](https://github.com/topics/ddc-vim).
 
 ### Requirements
 
@@ -101,6 +107,12 @@ Ddc.vim requires both Deno and denops.vim.
 
 ```vim
 " Customize global settings
+
+" You must set the default ui.
+" Note: native ui
+" https://github.com/Shougo/ddc-ui-native
+call ddc#custom#patch_global('ui', 'native')
+
 " Use around source.
 " https://github.com/Shougo/ddc-around
 call ddc#custom#patch_global('sources', ['around'])
@@ -135,12 +147,12 @@ call ddc#custom#patch_filetype('markdown', 'sourceParams', {
 
 " <TAB>: completion.
 inoremap <silent><expr> <TAB>
-\ ddc#map#pum_visible() ? '<C-n>' :
+\ pumvisible() ? '<C-n>' :
 \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
 \ '<TAB>' : ddc#map#manual_complete()
 
 " <S-TAB>: completion back.
-inoremap <expr><S-TAB>  ddc#map#pum_visible() ? '<C-p>' : '<C-h>'
+inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
 
 " Use ddc.
 call ddc#enable()

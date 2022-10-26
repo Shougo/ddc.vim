@@ -9,25 +9,28 @@ import {
   Item,
   OnCallback,
   SourceOptions,
+  UiOptions,
 } from "./types.ts";
 import {
   defaultDdcOptions,
+  defaultDummy,
   foldMerge,
   mergeFilterOptions,
   mergeFilterParams,
   mergeSourceOptions,
   mergeSourceParams,
+  mergeUiOptions,
+  mergeUiParams,
 } from "./context.ts";
+import { BaseUi, defaultUiOptions } from "./base/ui.ts";
 import {
   BaseSource,
   defaultSourceOptions,
-  defaultSourceParams,
   GatherArguments,
 } from "./base/source.ts";
 import {
   BaseFilter,
   defaultFilterOptions,
-  defaultFilterParams,
   FilterArguments,
 } from "./base/filter.ts";
 import { isDdcCallbackCancelError } from "./callback.ts";
@@ -53,10 +56,16 @@ type DdcResult = {
 };
 
 export class Ddc {
+  private uis: Record<string, BaseUi<Record<string, unknown>>> = {};
   private sources: Record<string, BaseSource<Record<string, unknown>>> = {};
   private filters: Record<string, BaseFilter<Record<string, unknown>>> = {};
-  private aliasSources: Record<string, string> = {};
-  private aliasFilters: Record<string, string> = {};
+
+  private aliases: Record<DdcExtType, Record<string, string>> = {
+    ui: {},
+    source: {},
+    filter: {},
+  };
+
   private checkPaths: Record<string, boolean> = {};
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
@@ -68,6 +77,9 @@ export class Ddc {
     return names.map((n) => this.filters[n]).filter((v) => v);
   }
 
+  private foundInvalidUis(names: string[]): string[] {
+    return names.filter((n) => !this.uis[n]);
+  }
   private foundInvalidSources(names: string[]): string[] {
     return names.filter((n) => !this.sources[n]);
   }
@@ -91,69 +103,59 @@ export class Ddc {
   }
 
   registerAlias(type: DdcExtType, alias: string, base: string) {
-    if (type == "source") {
-      this.aliasSources[alias] = base;
-    } else if (type == "filter") {
-      this.aliasFilters[alias] = base;
-    }
+    this.aliases[type][alias] = base;
   }
 
-  async registerSource(denops: Denops, path: string, name: string) {
+  async register(type: DdcExtType, path: string, name: string) {
+    if (path in this.checkPaths) {
+      return;
+    }
     this.checkPaths[path] = true;
 
     const mod = await import(toFileUrl(path).href);
 
-    const addSource = (name: string) => {
-      const source = new mod.Source();
-      source.name = name;
-      this.sources[source.name] = source;
-      if (source.events && source.events.length != 0) {
-        this.registerAutocmd(denops, source.events);
-      }
-    };
-
-    addSource(name);
-
-    // Check alias
-    const aliases = Object.keys(this.aliasSources).filter(
-      (k) => this.aliasSources[k] == name,
-    );
-    for (const alias of aliases) {
-      addSource(alias);
+    let add;
+    switch (type) {
+      case "ui":
+        add = (name: string) => {
+          const ui = new mod.Ui();
+          ui.name = name;
+          this.uis[ui.name] = ui;
+        };
+        break;
+      case "source":
+        add = (name: string) => {
+          const source = new mod.Source();
+          source.name = name;
+          this.sources[source.name] = source;
+        };
+        break;
+      case "filter":
+        add = (name: string) => {
+          const filter = new mod.Filter();
+          filter.name = name;
+          this.filters[filter.name] = filter;
+        };
+        break;
     }
-  }
 
-  async registerFilter(denops: Denops, path: string, name: string) {
-    this.checkPaths[path] = true;
-
-    const mod = await import(toFileUrl(path).href);
-
-    const addFilter = (name: string) => {
-      const filter = new mod.Filter();
-      filter.name = name;
-      this.filters[filter.name] = filter;
-      if (filter.events && filter.events.length != 0) {
-        this.registerAutocmd(denops, filter.events);
-      }
-    };
-
-    addFilter(name);
+    add(name);
 
     // Check alias
-    const aliases = Object.keys(this.aliasFilters).filter(
-      (k) => this.aliasFilters[k] == name,
+    const aliases = Object.keys(this.aliases[type]).filter(
+      (k) => this.aliases[type][k] == name,
     );
     for (const alias of aliases) {
-      addFilter(alias);
+      add(alias);
     }
   }
 
   async autoload(
     denops: Denops,
-    sourceNames: string[],
-    filterNames: string[],
+    type: DdcExtType,
+    names: string[],
   ): Promise<string[]> {
-    if (sourceNames.length == 0 && filterNames.length == 0) {
+    if (names.length == 0) {
       return [];
     }
 
@@ -181,24 +183,16 @@ export class Ddc {
       return paths;
     }
 
-    const sources = (await globpath(
-      ["denops/@ddc-sources/"],
-      sourceNames.map((file) => this.aliasSources[file] ?? file),
-    )).filter((path) => !(path in this.checkPaths));
+    const paths = await globpath(
+      [`denops/@ddc-${type}s/`],
+      names.map((file) => this.aliases[type][file] ?? file),
+    );
 
-    const filters = (await globpath(
-      ["denops/@ddc-filters/"],
-      filterNames.map((file) => this.aliasFilters[file] ?? file),
-    )).filter((path) => !(path in this.checkPaths));
-
-    await Promise.all(sources.map(async (path) => {
-      await this.registerSource(denops, path, parse(path).name);
-    }));
-    await Promise.all(filters.map(async (path) => {
-      await this.registerFilter(denops, path, parse(path).name);
+    await Promise.all(paths.map(async (path) => {
+      await this.register(type, path, parse(path).name);
     }));
 
-    return sources.concat(filters);
+    return paths;
   }
 
   async checkInvalid(
@@ -206,12 +200,18 @@ export class Ddc {
     sourceNames: string[],
     filterNames: string[],
   ) {
-    // Auto load invalid sources
-    const beforeSources = this.foundInvalidSources(sourceNames);
-    const beforeFilters = this.foundInvalidFilters([...new Set(filterNames)]);
-    const loaded = await this.autoload(denops, beforeSources, beforeFilters);
+    const loadedSources = await this.autoload(
+      denops,
+      "source",
+      this.foundInvalidSources(sourceNames),
+    );
+    const loadedFilters = await this.autoload(
+      denops,
+      "filter",
+      this.foundInvalidFilters([...new Set(filterNames)]),
+    );
 
-    if (loaded.length != 0) {
+    if (loadedSources.length != 0 && loadedFilters.length != 0) {
       return;
     }
 
@@ -220,9 +220,8 @@ export class Ddc {
     if (invalidSources.length > 0) {
       await denops.call(
         "ddc#util#print_error",
-        "Invalid sources are detected!",
+        "Sources not found: " + invalidSources.toString(),
       );
-      await denops.call("ddc#util#print_error", invalidSources);
     }
 
     // Check invalid filters
@@ -230,9 +229,8 @@ export class Ddc {
     if (invalidFilters.length > 0) {
       await denops.call(
         "ddc#util#print_error",
-        "Invalid filters are detected!",
+        "Filters not found: " + invalidFilters.toString(),
       );
-      await denops.call("ddc#util#print_error", invalidFilters);
     }
   }
 
@@ -259,7 +257,11 @@ export class Ddc {
     // Uniq.
     filterNames = [...new Set(filterNames.concat(options.postFilters))];
 
-    await this.checkInvalid(denops, options.sources, filterNames);
+    await this.checkInvalid(
+      denops,
+      options.sources,
+      filterNames,
+    );
 
     for (const source of this.foundSources(options.sources)) {
       const [sourceOptions, sourceParams] = sourceArgs(options, source);
@@ -540,6 +542,76 @@ export class Ddc {
     result.isIncomplete = false;
   }
 
+  async skipCompletion(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+  ): Promise<boolean> {
+    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    if (!ui) {
+      return true;
+    }
+
+    return await ui.skipCompletion({
+      denops,
+      context,
+      options,
+      uiOptions,
+      uiParams,
+    });
+  }
+
+  async show(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+    completePos: number,
+    items: DdcItem[],
+  ) {
+    const skip = await denops.call(
+      "ddc#complete#_skip",
+      completePos,
+      items,
+    );
+    if (skip) {
+      return;
+    }
+
+    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    if (!ui) {
+      return;
+    }
+
+    await ui.show({
+      denops,
+      context,
+      options,
+      completePos,
+      items,
+      uiOptions,
+      uiParams,
+    });
+  }
+
+  async hide(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+  ) {
+    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    if (!ui) {
+      return;
+    }
+
+    await ui.hide({
+      denops,
+      context,
+      options,
+      uiOptions,
+      uiParams,
+    });
+  }
+
   private async filterItems(
     denops: Denops,
     context: Context,
@@ -635,6 +707,52 @@ export class Ddc {
 
     return cdd;
   }
+
+  private async getUi(
+    denops: Denops,
+    options: DdcOptions,
+  ): Promise<
+    [
+      BaseUi<Record<string, unknown>> | undefined,
+      UiOptions,
+      Record<string, unknown>,
+    ]
+  > {
+    if (options.ui.length == 0) {
+      await denops.call(
+        "ddc#util#print_error",
+        'You must install ddc UI plugins and specify "ui" option.',
+      );
+
+      return [
+        undefined,
+        defaultUiOptions(),
+        defaultDummy(),
+      ];
+    }
+
+    if (!this.uis[options.ui]) {
+      await this.autoload(denops, "ui", [options.ui]);
+    }
+    const ui = this.uis[options.ui];
+    if (!ui) {
+      const message = `Invalid ui: "${options.ui}"`;
+      await denops.call(
+        "ddc#util#print_error",
+        message,
+      );
+      return [
+        undefined,
+        defaultUiOptions(),
+        defaultDummy(),
+      ];
+    }
+
+    const [uiOptions, uiParams] = uiArgs(options, ui);
+    await checkUiOnInit(ui, denops, uiOptions, uiParams);
+
+    return [ui, uiOptions, uiParams];
+  }
 }
 
 function formatAbbr(word: string, abbr: string | undefined): string {
@@ -661,6 +779,24 @@ function isTimeoutError(e: unknown): e is TimeoutError {
   return (e as TimeoutError).name == "TimeoutError";
 }
 
+function uiArgs<
+  Params extends Record<string, unknown>,
+>(
+  options: DdcOptions,
+  ui: BaseUi<Params>,
+): [UiOptions, Record<string, unknown>] {
+  const o = foldMerge(
+    mergeUiOptions,
+    defaultUiOptions,
+    [options.uiOptions["_"], options.uiOptions[ui.name]],
+  );
+  const p = foldMerge(mergeUiParams, defaultDummy, [
+    ui.params ? ui.params() : null,
+    options.sourceParams[ui.name],
+  ]);
+  return [o, p];
+}
+
 function sourceArgs<
   Params extends Record<string, unknown>,
   UserData extends unknown,
@@ -673,7 +809,7 @@ function sourceArgs<
     defaultSourceOptions,
     [options.sourceOptions["_"], options.sourceOptions[source.name]],
   );
-  const p = foldMerge(mergeSourceParams, defaultSourceParams, [
+  const p = foldMerge(mergeSourceParams, defaultDummy, [
     source.params ? source.params() : null,
     options.sourceParams[source.name],
   ]);
@@ -693,11 +829,42 @@ function filterArgs<
       filterOptions[filter.name],
     ]);
   const paramsOf = (filter: BaseFilter<Record<string, unknown>>) =>
-    foldMerge(mergeFilterParams, defaultFilterParams, [
+    foldMerge(mergeFilterParams, defaultDummy, [
       filter.params(),
       filterParams[filter.name],
     ]);
   return [optionsOf(filter), paramsOf(filter)];
+}
+
+async function checkUiOnInit(
+  ui: BaseUi<Record<string, unknown>>,
+  denops: Denops,
+  uiOptions: UiOptions,
+  uiParams: Record<string, unknown>,
+) {
+  if (ui.isInitialized) {
+    return;
+  }
+
+  try {
+    await ui.onInit({
+      denops,
+      uiOptions,
+      uiParams,
+    });
+
+    ui.isInitialized = true;
+  } catch (e: unknown) {
+    if (isTimeoutError(e)) {
+      // Ignore timeout error
+    } else {
+      await errorException(
+        denops,
+        e,
+        `ui: ${ui.name} "onInit()" failed`,
+      );
+    }
+  }
 }
 
 async function checkSourceOnInit(
@@ -1069,7 +1236,7 @@ Deno.test("sourceArgs", () => {
   });
   assertEquals(p.by_, undefined);
   assertEquals(p, {
-    ...defaultSourceParams(),
+    ...defaultDummy(),
     min: 100,
     max: 999,
   });
@@ -1111,7 +1278,7 @@ Deno.test("filterArgs", () => {
   assertEquals(filterArgs(userOptions, userParams, filter), [{
     ...defaultFilterOptions(),
   }, {
-    ...defaultFilterParams(),
+    ...defaultDummy(),
     min: 100,
     max: 999,
   }]);

@@ -20,7 +20,7 @@ function! ddc#enable() abort
     autocmd!
     autocmd CompleteDone * call ddc#complete#_on_complete_done()
     autocmd User PumCompleteDone call ddc#complete#_on_complete_done()
-    autocmd InsertLeave * call ddc#complete#_clear()
+    autocmd InsertLeave * call ddc#_hide('InsertLeave')
   augroup END
 
   " Force context_filetype call
@@ -40,7 +40,7 @@ function! ddc#enable_cmdline_completion() abort
 
   augroup ddc-cmdline
     autocmd!
-    autocmd CmdlineLeave <buffer> call ddc#complete#_clear()
+    autocmd CmdlineLeave <buffer> call ddc#_hide('CmdlineLeave')
     autocmd CmdlineEnter <buffer> call ddc#_on_event('CmdlineEnter')
     autocmd CmdlineChanged <buffer>
           \ if getcmdtype() !=# '=' && getcmdtype() !=# '@' |
@@ -118,36 +118,16 @@ function! ddc#_on_event(event) abort
   endif
 
   " Check the completion state
-  let info = ddc#complete_info()
-  let noinsert = &completeopt =~# 'noinsert'
-  let info_check = ddc#map#pum_visible() &&
-        \ ((info.mode !=# '' && info.mode !=# 'eval')
-        \ || (noinsert && info.selected > 0)
-        \ || (!noinsert && info.selected >= 0))
-  if info_check
+  if ddc#complete#_check_complete_info()
     return
   endif
 
   call denops#notify('ddc', 'onEvent', [a:event])
 endfunction
 
-function! ddc#complete() abort
-  try
-    return ddc#map#complete()
-  catch
-    call ddc#util#print_error(v:throwpoint)
-    call ddc#util#print_error(v:exception)
-  endtry
-endfunction
-
 function! ddc#syntax_in(groups) abort
   return ddc#syntax#in(a:groups)
 endfunction
-
-function! ddc#_completion_menu() abort
-  return get(g:, 'ddc#_completion_menu', 'native')
-endfunction
-
 
 function! ddc#register(dict) abort
   if ddc#_denops_running()
@@ -185,20 +165,14 @@ function! ddc#update_items(name, items) abort
   call denops#notify('ddc', 'updateItems', [a:name, a:items])
 endfunction
 
-function! ddc#manual_complete(...) abort
-  return call('ddc#map#manual_complete', a:000)
-endfunction
-function! ddc#insert_item(number) abort
-  return ddc#map#insert_item(a:number)
-endfunction
-function! ddc#complete_common_string() abort
-  return ddc#map#complete_common_string()
-endfunction
-function! ddc#can_complete() abort
-  return ddc#map#can_complete()
+function! ddc#_hide(event) abort
+  if !ddc#_denops_running()
+    return
+  endif
+
+  call denops#notify('ddc', 'hide', [a:event])
 endfunction
 
 function! ddc#complete_info() abort
-  return ddc#_completion_menu() ==# 'pum.vim' ?
-        \ pum#complete_info() : complete_info()
+  return exists('*pum#complete_info') ? pum#complete_info() : complete_info()
 endfunction

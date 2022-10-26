@@ -124,7 +124,3 @@ export function defaultSourceOptions(): SourceOptions {
     timeout: 2000,
   };
 }
-
-export function defaultSourceParams(): Record<string, unknown> {
-  return {};
-}

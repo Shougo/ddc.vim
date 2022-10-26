@@ -33,10 +33,6 @@ function! ddc#util#get_next_input(event) abort
   return text[len(ddc#util#get_input(a:event)) :]
 endfunction
 
-function! ddc#util#indent_current_line() abort
-  call feedkeys("\<C-f>", 'n')
-endfunction
-
 function! ddc#util#benchmark(...) abort
   let msg = get(a:000, 0, '')
   if msg !=# ''

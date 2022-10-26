@@ -13,12 +13,17 @@ Interface		|ddc-interface|
   Custom Functions	  |ddc-custom-functions|
   Key mappings		  |ddc-key-mappings|
 Examples		|ddc-examples|
+UIs			|ddc-uis|
+  UI option	          |ddc-ui-options|
+  UI params	          |ddc-ui-params|
 Sources			|ddc-sources|
   Source option	          |ddc-source-options|
   Source params	          |ddc-source-params|
 Filters			|ddc-filters|
   Filter options	  |ddc-filter-options|
   Filter params		  |ddc-filter-params|
+Create UI		|ddc-create-ui|
+  UI attributes		  |ddc-ui-attributes|
 Create source		|ddc-create-source|
   Source attributes	  |ddc-source-attributes|
   Item attributes	  |ddc-item-attributes|
@@ -49,9 +54,9 @@ Please install both Deno and "denops.vim".
 https://deno.land/
 https://github.com/vim-denops/denops.vim
 
-Note: Ddc.vim does not include any sources and filters.
-You must install them you want manually.
-You can search ddc.vim plugins(sources and filters) from
+Note: Ddc.vim does not include any UIs, sources and filters.
+You must install them which you want manually.
+You can search ddc.vim plugins(UIs, sources and filters) from
 https://github.com/topics/ddc-vim.
 
 
@@ -66,7 +71,7 @@ Options can be toggled through the use of |ddc#custom#patch_global()|.
 For example:
 >
     " Set a single option
-    call ddc#custom#patch_global('completionMode', 'manual')
+    call ddc#custom#patch_global('ui', 'native')
 
     " Pass a dictionary to set multiple options
     call ddc#custom#patch_global({
@@ -100,13 +105,13 @@ backspaceCompletion
 		typed.
 		Note: It is disabled by default since backspace completion
 		will cause completion flicker.
-		Note: The flicker can reduce by |ddc-option-completionMenu|.
 
 		Default: v:false
 
 						*ddc-option-cmdlineSources*
 cmdlineSources
-		It is a list of registered source names for |command-line-mode|.
+		It is a list of registered source names for
+		|Command-line-mode|.
 		Please see |ddc-option-sources|.
 
 		Note: If you set it, |input()| auto completion is enabled.
@@ -115,33 +120,6 @@ cmdlineSources
 		https://github.com/Shougo/pum.vim
 
 		Default: []
-
-						*ddc-option-completionMenu*
-completionMenu
-		The completion popup menu type. It must be following string.
-
-		"native": Use |ins-completion-menu|.
-		"pum.vim": Use "pum.vim" popup menu instead.
-			https://github.com/Shougo/pum.vim
-			It use floating windows for neovim or popup for Vim8
-			feature.
-			It can reduce completion flicker.
-		"none": Disable popup menu.
-
-		Default: "native"
-
-						*ddc-option-completionMode*
-completionMode
-		The completion mode. It must be following string.
-
-		"popupmenu": Use popup menu.
-		"inline": Use virtual text by |nvim_buf_set_extmark()| in
-			neovim or use |popup_create()| in Vim.
-			Note: It does not work in command line mode.
-		"manual": You can display popup menu manually by
-			|ddc#map#complete()|.
-
-		Default: "popupmenu"
 
 						*ddc-option-filterOptions*
 filterOptions
@@ -166,12 +144,6 @@ filterParams
 		    \ 'matcher_head': {},
 		    \ })
 <
-						*ddc-option-inlineHighlight*
-inlineHighlight
-		The highlight of |ddc-option-completionMode|'s inline text.
-
-		Default: "Comment"
-
 					*ddc-option-keywordPattern*
 keywordPattern
 		It defines the keyword pattern for completion.
@@ -179,15 +151,6 @@ keywordPattern
 		Note: "\k" is converted to 'iskeyword' pattern.
 
 		Default: '\k*'
-
-					*ddc-option-overwriteCompleteopt*
-overwriteCompleteopt
-		If it is enabled, ddc.vim overwrites 'completeopt'
-		automatically.
-		Note: If you disable the feature, you need to change
-		'completeopt' manually.
-
-		Default: v:true
 
 						*ddc-option-postFilters*
 postFilters
@@ -243,6 +206,29 @@ specialBufferCompletion
 		disabled automatically.
 
 		Default: v:false
+
+						*ddc-option-ui*
+ui
+		Specify UI name.
+		Note: You must set the option in the first.
+
+		Default: ""
+
+						*ddc-option-uiOptions*
+uiOptions
+		It is a dictionary that maps UI names to its options.  The
+		options with the name "_" is used as the options for all
+		UIs.
+		See also |ddc-ui-options|.
+
+		Default: {}
+
+						*ddc-option-uiParams*
+uiParams
+		It is a dictionary that maps UI names to its parameters.
+		See also |ddc-ui-params|.
+
+		Default: {}
 
 ------------------------------------------------------------------------------
 FUNCTIONS 						*ddc-functions*
@@ -413,50 +399,47 @@ ddc#map#can_complete()
 		Return |v:true| if current word completion is available.
 
 							*ddc#map#complete()*
-ddc#map#complete()
-		Open current completion popup menu.
+ddc#map#complete({ui-name})
+		Open current completion popup menu by {ui-name}.
 		Note: It must be in |:map-<expr>|.
 
 					*ddc#map#complete_common_string()*
-ddc#map#complete_common_string()
+ddc#map#complete_common_string({cancel-key})
 		Complete common string in items.
+		{cancel-key} is popup cancel key.
 		This can be useful when items have a long common prefix.
 		Note: It must be in |:map-<expr>|.
 
 							*ddc#map#extend()*
-ddc#map#extend()
+ddc#map#extend({confirm-key})
 		Confirm the items and extend current completion.
+		{confirm-key} is popup cancel key.
 		Note: It must be in |:map-<expr>|.
 
-					    	*ddc#map#inline_visible()*
-ddc#map#inline_visible()
-		Returns non-zero when the inline completion is visible, zero
-		otherwise.
-
 						*ddc#map#insert_item()*
-ddc#map#insert_item({index})
+ddc#map#insert_item({index}, {cancel-key})
 		Insert the item at index {index}. Indices start at 0.
 		Note: It must be in |:map-<expr>|.
 
 					    	*ddc#map#manual_complete()*
-ddc#map#manual_complete([{sources}])
+ddc#map#manual_complete([{sources}[, {ui-name}]])
 		Manual trigger ddc completion.
 		You can provide a list of {sources}: It can be the name of a
 		source or a list of sources name.
+		{ui-name} is ui name.
 		Note: Manual completion ignores
 		|ddc-source-option-minAutoCompleteLength|.
 		Note: It must be in |:map-<expr>|.
-
-					    	*ddc#map#pum_visible()*
-ddc#map#pum_visible()
-		Returns non-zero when the popup menu is visible, zero
-		otherwise.
-		Note: It works for both |pum.vim| and native popup menu.
 
 ==============================================================================
 EXAMPLES						*ddc-examples*
 >
 	" Customize global settings
+
+	" You must set the default ui.
+	" Note: native ui
+	" https://github.com/Shougo/ddc-ui-native
+	call ddc#custom#patch_global('ui', 'native')
 
 	" Use around source.
 	" https://github.com/Shougo/ddc-around
@@ -495,17 +478,44 @@ EXAMPLES						*ddc-examples*
 	" <TAB>: completion.
 	" Note: It does not work for pum.vim
 	"inoremap <silent><expr> <TAB>
-	"\ ddc#map#pum_visible() ? '<C-n>' :
+	"\ pumvisible() ? '<C-n>' :
 	"\ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
 	"\ '<TAB>' : ddc#map#manual_complete()
 
 	" <S-TAB>: completion back.
 	" Note: It does not work for pum.vim
-	"inoremap <expr><S-TAB>  ddc#map#pum_visible() ? '<C-p>' : '<C-h>'
+	"inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
 
 	" Use ddc.
 	call ddc#enable()
 <
+
+==============================================================================
+UIS							*ddc-uis*
+
+Note: The UIs are not bundled in ddc.vim.  You need to install them
+to use ddc.vim.  Please search them by https://github.com/topics/ddc-ui
+
+Note: The default UI is empty.  You need to configure it to use ddc.
+
+The UIs must be registered by |ddc#register()| or put under
+"denops/@ddc-uis/*.ts".
+
+Note: The name is named by file name.
+
+------------------------------------------------------------------------------
+UI OPTIONS						*ddc-ui-options*
+
+Undefined now
+
+------------------------------------------------------------------------------
+UI PARAMS						*ddc-ui-params*
+
+These are the parameters that each UIs can have.  You can select the
+behavior and tune the performance.
+
+Please read the UI documentation.
+
 
 ==============================================================================
 SOURCES							*ddc-sources*
@@ -692,11 +702,46 @@ Please read the filter documentation.
 
 
 ==============================================================================
+CREATE UI						*ddc-create-ui*
+
+To create UI, you should read other UIs implementation.
+
+Source class must extend "BaseUI" class.
+
+Note: The sources must be written in TypeScript language.
+
+Note: If you call Vim functions, it is not asynchronous.
+
+------------------------------------------------------------------------------
+UI ATTRIBUTES				*ddc-ui-attributes*
+
+						*ddc-ui-attribute-hide*
+hide			(function)			(Required)
+		It is called to hide UI.
+
+						*ddc-ui-attribute-show*
+show			(function)			(Required)
+		It is called to show UI.
+
+					*ddc-source-ui-skipCompletion*
+skipCompletion		(function)			(Optional)
+		Called to skip current completion.
+		It returns True, to skip completion.
+
+						*ddc-ui-attribute-onInit*
+onInit			(function)			(Optional)
+		Called before call UI functions.
+
+						*ddc-ui-attribute-params*
+params			(function)			(Required)
+		Called to get UI params.
+
+
+==============================================================================
 CREATE SOURCE						*ddc-create-source*
 
 To create source, you should read other sources implementation.
 
-The files must be registered by |ddc#register()|.
 Source class must extend "BaseSource" class.
 
 Note: The sources must be written in TypeScript language.
@@ -805,7 +850,6 @@ CREATE FILTER						*ddc-create-filter*
 
 To create filter, you should read other filters implementation.
 
-The files must be registered by |ddc#register()|.
 Filter class must extend "BaseFilter" class.
 
 Note: The filters must be written in TypeScript language.
@@ -851,10 +895,10 @@ plugins.  You can donate money to help me!
    https://github.com/sponsors/Shougo
 
 
-Q: Why does ddc.vim not include any sources/matchers/sorters/converters?
+Q: Why does ddc.vim not include any UIs/sources/matchers/sorters/converters?
 
 A: Because I cannot determine the best default
-sources/matchers/sorters/converters.
+UIs/sources/matchers/sorters/converters.
 Users use different environments/policy, etc...
 So ddc.vim should not define the defaults.
 You must define your defaults by configuration.
@@ -870,9 +914,12 @@ The config should work as users config.
 
 Q: I want to use inline suggestion like fish shell.
 
-A: >
-	inoremap <expr><C-t>       ddc#insert_item(0)
-	call ddc#custom#patch_global('completionMode', 'inline')
+A: Note: "ddc-ui-inline" is required.
+
+https://github.com/Shougo/ddc-ui-inline
+>
+	inoremap <expr><C-t>       ddc#map#insert_item(0, "\<C-e>")
+	call ddc#custom#patch_global('ui', 'inline')
 
 
 Q: The Linked/chained completion exists like vim-mucomplete?
@@ -986,65 +1033,67 @@ https://github.com/LumaKernel/ddc-file
 Q: I want to enable "skkeleton" source when "skkeleton" is enabled only.
 
 A: >
-  autocmd User skkeleton-enable-pre call s:skkeleton_pre()
-  function! s:skkeleton_pre() abort
-    " Overwrite sources
-    let s:prev_buffer_config = ddc#custom#get_buffer()
-    call ddc#custom#patch_buffer('sources', ['skkeleton'])
-  endfunction
-  autocmd User skkeleton-disable-pre call s:skkeleton_post()
-  function! s:skkeleton_post() abort
-    " Restore sources
-    call ddc#custom#set_buffer(s:prev_buffer_config)
-  endfunction
+	autocmd User skkeleton-enable-pre call s:skkeleton_pre()
+	function! s:skkeleton_pre() abort
+	  " Overwrite sources
+	  let s:prev_buffer_config = ddc#custom#get_buffer()
+	  call ddc#custom#patch_buffer('sources', ['skkeleton'])
+	endfunction
+	autocmd User skkeleton-disable-pre call s:skkeleton_post()
+	function! s:skkeleton_post() abort
+	  " Restore sources
+	  call ddc#custom#set_buffer(s:prev_buffer_config)
+	endfunction
 
 Q: I want to enable command line completion by ddc.vim.
 
-A: Note: pum.vim is needed.
+A: Note: "pum.vim" is required.
 
 https://github.com/Shougo/pum.vim
+https://github.com/Shougo/ddc-ui-pum
 >
-  call ddc#custom#patch_global('completionMenu', 'pum.vim')
-  call ddc#custom#patch_global('autoCompleteEvents',
-      \ ['InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
-  nnoremap :       <Cmd>call CommandlinePre()<CR>:
-
-  function! CommandlinePre() abort
-    cnoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
-    cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
-    cnoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
-    cnoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
-    cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
-    cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
-
-    " Overwrite sources
-    if !exists('b:prev_buffer_config')
-      let b:prev_buffer_config = ddc#custom#get_buffer()
-    endif
-    call ddc#custom#patch_buffer('cmdlineSources', ['necovim', 'around'])
-
-    autocmd User DDCCmdlineLeave ++once call CommandlinePost()
-    autocmd InsertEnter <buffer> ++once call CommandlinePost()
-
-    " Enable command line completion
-    call ddc#enable_cmdline_completion()
-  endfunction
-  function! CommandlinePost() abort
-    silent! cunmap <Tab>
-    silent! cunmap <S-Tab>
-    silent! cunmap <C-n>
-    silent! cunmap <C-p>
-    silent! cunmap <C-y>
-    silent! cunmap <C-e>
-
-    " Restore sources
-    if exists('b:prev_buffer_config')
-      call ddc#custom#set_buffer(b:prev_buffer_config)
-      unlet b:prev_buffer_config
-    else
-      call ddc#custom#set_buffer({})
-    endif
-  endfunction
+	call ddc#custom#patch_global('ui', 'pum')
+	call ddc#custom#patch_global('autoCompleteEvents', [
+	\ 'InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
+	nnoremap :       <Cmd>call CommandlinePre()<CR>:
+	
+	function! CommandlinePre() abort
+	  cnoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
+	  cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+	  cnoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+	  cnoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+	  cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+	  cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+	
+	  " Overwrite sources
+	  if !exists('b:prev_buffer_config')
+	    let b:prev_buffer_config = ddc#custom#get_buffer()
+	  endif
+	  call ddc#custom#patch_buffer('cmdlineSources',
+	  \ ['necovim', 'around'])
+	
+	  autocmd User DDCCmdlineLeave ++once call CommandlinePost()
+	  autocmd InsertEnter <buffer> ++once call CommandlinePost()
+	
+	  " Enable command line completion
+	  call ddc#enable_cmdline_completion()
+	endfunction
+	function! CommandlinePost() abort
+	  silent! cunmap <Tab>
+	  silent! cunmap <S-Tab>
+	  silent! cunmap <C-n>
+	  silent! cunmap <C-p>
+	  silent! cunmap <C-y>
+	  silent! cunmap <C-e>
+	
+	  " Restore sources
+	  if exists('b:prev_buffer_config')
+	    call ddc#custom#set_buffer(b:prev_buffer_config)
+	    unlet b:prev_buffer_config
+	  else
+	    call ddc#custom#set_buffer({})
+	  endif
+	endfunction
 
 Q: Terminal title flickers when completion menu opens in neovim.
 
@@ -1057,33 +1106,33 @@ https://github.com/VonHeikemen/fine-cmdline.nvim
 
 A: Note: Experimental >
 
-  lua <<EOF
-  require('fine-cmdline').setup({
-    cmdline = {
-      enable_keymaps = false
-    },
-    popup = {
-      buf_options = {
-        filetype = 'FineCmdlinePrompt'
-      }
-    },
-   hooks = {
-     set_keymaps = function(imap, feedkeys)
-       imap('<Esc>', fn.close)
-       imap('<C-c>', fn.close)
-
-       imap('<Up>', fn.up_history)
-       imap('<Down>', fn.down_history)
-     end
-   },
-  })
-  EOF
-
-  call ddc#custom#patch_filetype(['FineCmdlinePrompt'], {
-      \ 'keywordPattern': '[0-9a-zA-Z_:#]*',
-      \ 'sources': ['cmdline', 'cmdline-history', 'around'],
-      \ 'specialBufferCompletion': v:true,
-      \ })
+	lua <<EOF
+	require('fine-cmdline').setup({
+	  cmdline = {
+	    enable_keymaps = false
+	  },
+	  popup = {
+	    buf_options = {
+	      filetype = 'FineCmdlinePrompt'
+	    }
+	  },
+	 hooks = {
+	   set_keymaps = function(imap, feedkeys)
+	     imap('<Esc>', fn.close)
+	     imap('<C-c>', fn.close)
+	
+	     imap('<Up>', fn.up_history)
+	     imap('<Down>', fn.down_history)
+	   end
+	 },
+	})
+	EOF
+	
+	call ddc#custom#patch_filetype(['FineCmdlinePrompt'], {
+	    \ 'keywordPattern': '[0-9a-zA-Z_:#]*',
+	    \ 'sources': ['cmdline', 'cmdline-history', 'around'],
+	    \ 'specialBufferCompletion': v:true,
+	    \ })
 
 Q: The auto completion does not work if 'textwidth' is set.
 
@@ -1093,8 +1142,12 @@ completion is disabled.
 
 Q: I want to disable ddc auto completion.
 
-A: >
-    call ddc#custom#patch_global('completionMode', 'manual')
+A: You need to set ui manually.
+https://github.com/Shougo/ddc-ui-none
+https://github.com/Shougo/ddc-ui-native
+>
+	call ddc#custom#patch_global('ui', 'none')
+	inoremap <silent><expr> <TAB>  ddc#map#complete('native')
 
 Q: ddc.vim starting is slow.
 
@@ -1125,6 +1178,26 @@ You need to enable |ddc-option-specialBufferCompletion| for it.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.10.23
+* Remove "ddc#map#inline_visible".
+* Remove "ddc-option-inlineHighlight".
+* "ddc#map#insert_item()" requires {cancel-key}.
+* Remove old mapping functions.
+* Remove "ddc-option-completionMode".
+* "ddc#map#complete()" requires {ui}.
+
+2022.10.22
+* Remove "ddc#map#pum_visible()".
+* Remove "ddc-option-overwriteCompleteopt".
+
+2022.10.21
+* Split completion UI
+* "ddc-option-completionMenu" is removed.  Please use "ddc-option-ui" instead.
+* Remove "ddc#map#confirm()" and "ddc#map#cancel()".  Please map keys
+  manually.
+* "ddc#map#extend()" requires {confirm-key}.
+* "ddc#map#complete_common_string()" requires {cancel-key}.
 
 2022.09.06
 * "ddc-source-option-dup" must be string.

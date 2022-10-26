@@ -5,6 +5,7 @@ import {
   DdcOptions,
   FilterOptions,
   SourceOptions,
+  UiOptions,
 } from "./types.ts";
 import { vimoption2ts } from "./util.ts";
 
@@ -23,8 +24,10 @@ function partialOverwrite<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
 function overwrite<T>(a: T, b: Partial<T>): T {
   return { ...a, ...b };
 }
+export const mergeUiOptions: Merge<UiOptions> = overwrite;
 export const mergeSourceOptions: Merge<SourceOptions> = overwrite;
 export const mergeFilterOptions: Merge<FilterOptions> = overwrite;
+export const mergeUiParams: Merge<Record<string, unknown>> = overwrite;
 export const mergeSourceParams: Merge<Record<string, unknown>> = overwrite;
 export const mergeFilterParams: Merge<Record<string, unknown>> = overwrite;
 
@@ -46,19 +49,22 @@ export function defaultDdcOptions(): DdcOptions {
     ],
     backspaceCompletion: false,
     cmdlineSources: [],
-    completionMenu: "native",
-    completionMode: "popupmenu",
     filterOptions: {},
     filterParams: {},
-    inlineHighlight: "Comment",
     keywordPattern: "\\k*",
-    overwriteCompleteopt: true,
     postFilters: [],
     sourceOptions: {},
     sourceParams: {},
     sources: [],
     specialBufferCompletion: false,
+    ui: "",
+    uiOptions: {},
+    uiParams: {},
   };
+}
+
+export function defaultDummy(): Record<string, unknown> {
+  return {};
 }
 
 function migrateEachKeys<T>(
@@ -90,11 +96,18 @@ export function mergeDdcOptions(
   b: Partial<DdcOptions>,
 ): DdcOptions {
   const overwritten: DdcOptions = overwrite(a, b);
+  const partialMergeUiOptions = partialOverwrite;
+  const partialMergeUiParams = partialOverwrite;
   const partialMergeSourceOptions = partialOverwrite;
   const partialMergeSourceParams = partialOverwrite;
   const partialMergeFilterOptions = partialOverwrite;
   const partialMergeFilterParams = partialOverwrite;
   return Object.assign(overwritten, {
+    uiOptions: migrateEachKeys(
+      partialMergeUiOptions,
+      a.uiOptions,
+      b.uiOptions,
+    ) || {},
     sourceOptions: migrateEachKeys(
       partialMergeSourceOptions,
       a.sourceOptions,
@@ -104,6 +117,11 @@ export function mergeDdcOptions(
       partialMergeFilterOptions,
       a.filterOptions,
       b.filterOptions,
+    ) || {},
+    uiParams: migrateEachKeys(
+      partialMergeUiParams,
+      a.uiParams,
+      b.uiParams,
     ) || {},
     sourceParams: migrateEachKeys(
       partialMergeSourceParams,
@@ -123,6 +141,13 @@ function patchDdcOptions(
   b: Partial<DdcOptions>,
 ): Partial<DdcOptions> {
   const overwritten: Partial<DdcOptions> = { ...a, ...b };
+
+  const uo = migrateEachKeys(
+    partialOverwrite,
+    a.uiOptions,
+    b.uiOptions,
+  );
+  if (uo) overwritten.uiOptions = uo;
   const so = migrateEachKeys(
     partialOverwrite,
     a.sourceOptions,
@@ -135,10 +160,14 @@ function patchDdcOptions(
     b.filterOptions,
   );
   if (fo) overwritten.filterOptions = fo;
+
+  const up = migrateEachKeys(partialOverwrite, a.uiParams, b.uiParams);
+  if (up) overwritten.uiParams = up;
   const sp = migrateEachKeys(partialOverwrite, a.sourceParams, b.sourceParams);
   if (sp) overwritten.sourceParams = sp;
   const fp = migrateEachKeys(partialOverwrite, a.filterParams, b.filterParams);
   if (fp) overwritten.filterParams = fp;
+
   return overwritten;
 }
 
@@ -256,7 +285,6 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   const lineNrPromise: Promise<number> = fn.line(denops, ".");
   const enabledEskkPromise = _call(denops, "eskk#is_enabled", false);
   const enabledSkkeletonPromise = _call(denops, "skkeleton#is_enabled", false);
-  const iminsertPromise = op.iminsert.getLocal(denops);
   const mode: string = event == "InsertEnter"
     ? "i"
     : ensureString(await fn.mode(denops));
@@ -288,7 +316,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     inputPromise,
     enabledEskkPromise,
     enabledSkkeletonPromise,
-    iminsertPromise,
+    op.iminsert.getLocal(denops),
     lineNrPromise,
     nextInputPromise,
   ]);
