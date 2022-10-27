@@ -62,7 +62,7 @@ Plug 'vim-denops/denops.vim'
 "Plug 'Shougo/ddc-ui-native'
 
 " Install your sources
-"Plug 'Shougo/ddc-around'
+"Plug 'Shougo/ddc-source-around'
 
 " Install your filters
 "Plug 'Shougo/ddc-matcher_head'
@@ -83,7 +83,7 @@ call dein#add('vim-denops/denops.vim')
 "call dein#add('Shougo/ddc-ui-native')
 
 " Install your sources
-"call dein#add('Shougo/ddc-around')
+"call dein#add('Shougo/ddc-source-around')
 
 " Install your filters
 "call dein#add('Shougo/ddc-matcher_head')
@@ -114,7 +114,7 @@ Ddc.vim requires both Deno and denops.vim.
 call ddc#custom#patch_global('ui', 'native')
 
 " Use around source.
-" https://github.com/Shougo/ddc-around
+" https://github.com/Shougo/ddc-source-around
 call ddc#custom#patch_global('sources', ['around'])
 
 " Use matcher_head and sorter_rank.
