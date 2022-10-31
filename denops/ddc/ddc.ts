@@ -78,10 +78,16 @@ export class Ddc {
   }
 
   private foundInvalidSources(names: string[]): string[] {
-    return names.filter((n) => !this.sources[n]);
+    return names.filter((n) =>
+      !this.sources[n] ||
+      this.sources[n].apiVersion < 4
+    );
   }
   private foundInvalidFilters(names: string[]): string[] {
-    return names.filter((n) => !this.filters[n]);
+    return names.filter((n) =>
+      !this.filters[n] ||
+      this.filters[n].apiVersion < 4
+    );
   }
 
   async registerAutocmd(denops: Denops, events: string[]) {
@@ -212,22 +218,28 @@ export class Ddc {
       return;
     }
 
-    // Check invalid sources
     const invalidSources = this.foundInvalidSources(sourceNames);
     if (invalidSources.length > 0) {
       await denops.call(
         "ddc#util#print_error",
-        "Sources not found: " + invalidSources.toString(),
+        "Sources not found or don't support the ddc version: " +
+          invalidSources.toString(),
       );
+      for (const name in invalidSources) {
+        delete this.sources[name];
+      }
     }
 
-    // Check invalid filters
     const invalidFilters = this.foundInvalidFilters([...new Set(filterNames)]);
     if (invalidFilters.length > 0) {
       await denops.call(
         "ddc#util#print_error",
-        "Filters not found: " + invalidFilters.toString(),
+        "Filters not found or don't support the ddc version: " +
+          invalidFilters.toString(),
       );
+      for (const name in invalidFilters) {
+        delete this.filters[name];
+      }
     }
   }
 
@@ -1064,10 +1076,7 @@ async function callSourceGather<
       isIncomplete,
     };
 
-    const promise = source.apiVersion >= 4
-      ? source.gather(args)
-      : source.gatherCandidates(args);
-    return await deadline(promise, sourceOptions.timeout);
+    return await deadline(source.gather(args), sourceOptions.timeout);
   } catch (e: unknown) {
     if (
       isTimeoutError(e) || isDdcCallbackCancelError(e) ||
@@ -1143,7 +1152,6 @@ async function callFilterFilter(
       filterOptions,
       filterParams,
       completeStr,
-      candidates: items,
       items,
     });
   } catch (e: unknown) {

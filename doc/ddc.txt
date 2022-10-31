@@ -770,11 +770,6 @@ isBytePos		(boolean)			(Optional)
 gather			(function)			(Required)
 		It is called to gather items.
 
-	    			*ddc-source-attribute-gatherCandidates*
-gatherCandidates	(function)
-		Note: It is deprecated.  Please use
-		|ddc-source-attribute-gather| instead.
-
 	    			*ddc-source-attribute-getCompletePosition*
 getCompletePosition	(function)			(Optional)
 		It is called to get the position of the current completion.
@@ -1178,6 +1173,9 @@ You need to enable |ddc-option-specialBufferCompletion| for it.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.10.31
+* Remove old sources/filters support.  Please update to the latest spec.
 
 2022.10.23
 * Remove "ddc#map#inline_visible".

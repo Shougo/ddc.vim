@@ -33,7 +33,6 @@ export type FilterArguments<Params extends Record<string, unknown>> = {
   filterOptions: FilterOptions;
   filterParams: Params;
   completeStr: string;
-  candidates: Item[]; // Deprecated
   items: Item[];
 };
 

@@ -12,7 +12,10 @@ export * as fn from "https://deno.land/x/denops_std@v3.9.1/function/mod.ts";
 export * as vars from "https://deno.land/x/denops_std@v3.9.1/variable/mod.ts";
 export * as autocmd from "https://deno.land/x/denops_std@v3.9.1/autocmd/mod.ts";
 export * as base64 from "https://deno.land/std@0.161.0/encoding/base64.ts";
-export { assertEquals, equal } from "https://deno.land/std@0.161.0/testing/asserts.ts";
+export {
+  assertEquals,
+  equal,
+} from "https://deno.land/std@0.161.0/testing/asserts.ts";
 export { parse, toFileUrl } from "https://deno.land/std@0.161.0/path/mod.ts";
 export {
   deadline,

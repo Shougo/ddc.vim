@@ -3,7 +3,6 @@ import {
   DdcEvent,
   DdcGatherItems,
   DdcOptions,
-  Item,
   OnCallback,
   SourceOptions,
 } from "../types.ts";
@@ -88,13 +87,6 @@ export abstract class BaseSource<
     );
     const completePos = matchPos != null ? matchPos : -1;
     return Promise.resolve(completePos);
-  }
-
-  // Note: Deprecated!
-  gatherCandidates(
-    {}: GatherArguments<Params>,
-  ): Promise<Item<UserData>[]> {
-    return Promise.resolve([]);
   }
 
   abstract gather(
