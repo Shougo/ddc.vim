@@ -153,17 +153,6 @@ export async function main(denops: Denops) {
     async onEvent(arg1: unknown): Promise<void> {
       queuedEvent = ensureString(arg1) as DdcEvent;
 
-      if (lock.locked()) {
-        const mode = await fn.mode(denops);
-        if (mode != "c") {
-          // Close current popupmenu.
-          const [_, context, options] = await contextBuilder
-            .createContext(denops, queuedEvent);
-          await ddc.hide(denops, context, options);
-        }
-        return;
-      }
-
       // Note: must be locked
       await lock.with(async () => {
         while (queuedEvent != null) {
