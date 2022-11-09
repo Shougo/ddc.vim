@@ -1022,7 +1022,7 @@ want to implement it anymore.
 
 But other people has implemented it instead.
 
-https://github.com/LumaKernel/ddc-file
+https://github.com/LumaKernel/ddc-source-file
 
 
 Q: I want to enable "skkeleton" source when "skkeleton" is enabled only.
