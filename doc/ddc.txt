@@ -384,25 +384,39 @@ ddc#custom#set_global({dict})
 		Overwrites all global options.
 		The {dict} is the same as for |ddc#custom#set_global()|.
 
-						*ddc#custom#set_context()*
-ddc#custom#set_context({filetype}, {func})
-		Overwrites all options used for context.
+					*ddc#custom#set_context_buffer()*
+ddc#custom#set_context_buffer({func})
+		Overwrites buffer specific options used for context.
+		{func} is function.  {func} returns overwrites options
+		dictionary.
+		Note: {func} is evaluated after user input and it affects
+		completion performance.
+
+					*ddc#custom#set_context_filetype()*
+ddc#custom#set_context_filetype({filetype}, {func})
+		Overwrites filetype specific options used for context.
 		{filetype} accepts a string or a list of strings.
 		{func} is function.  {func} returns overwrites options
 		dictionary.
-		Note: It overwrites filetype specific options, but not buffer
-		specific options.
 		Note: {func} is evaluated after user input and it affects
 		completion performance.
 >
-		call ddc#custom#set_context('go', { ->
+		call ddc#custom#set_context_filetype('go', { ->
 		    \ ddc#syntax#in('TSComment') ? {
 		    \   'sources': ['nextword', 'around'],
 		    \ } : {} })
-		call ddc#custom#set_context('c', { ->
+		call ddc#custom#set_context_filetype('c', { ->
 		    \ ddc#syntax#in('Comment') ? {
 		    \   'sources': ['nextword', 'around'],
 		    \ } : {} })
+<
+					*ddc#custom#set_context_global()*
+ddc#custom#set_context_global({func})
+		Overwrites global options used for context.
+		{func} is function.  {func} returns overwrites options
+		dictionary.
+		Note: {func} is evaluated after user input and it affects
+		completion performance.
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*ddc-key-mappings*
@@ -1186,6 +1200,9 @@ You need to enable |ddc-option-specialBufferCompletion| for it.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.11.12
+* Rename "ddc#custom#set_context()" to "ddc#custom#set_context_filetype()".
 
 2022.10.31
 * Remove old sources/filters support.  Please update to the latest spec.

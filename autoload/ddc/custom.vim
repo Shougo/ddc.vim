@@ -24,16 +24,25 @@ function! ddc#custom#set_filetype(ft, dict) abort
     call s:notify('setFiletype', [a:dict, filetype])
   endfor
 endfunction
-function! ddc#custom#set_context(ft, func) abort
-  let filetypes = s:normalize_string_or_list(a:ft)
-  let id = denops#callback#register(a:func)
-  for filetype in filetypes
-    call s:notify('setContext', [filetype, id])
-  endfor
-endfunction
 function! ddc#custom#set_buffer(dict) abort
   let n = bufnr('%')
   call s:notify('setBuffer', [a:dict, n])
+endfunction
+function! ddc#custom#set_context_global(func) abort
+  let id = denops#callback#register(a:func)
+  call s:notify('setContextGlobal', [id])
+endfunction
+function! ddc#custom#set_context_filetype(ft, func) abort
+  let filetypes = s:normalize_string_or_list(a:ft)
+  let id = denops#callback#register(a:func)
+  for filetype in filetypes
+    call s:notify('setContextFiletype', [id, filetype])
+  endfor
+endfunction
+function! ddc#custom#set_context_buffer(func) abort
+  let n = bufnr('%')
+  let id = denops#callback#register(a:func)
+  call s:notify('setContextBuffer', [id, n])
 endfunction
 
 function! ddc#custom#alias(type, alias, base) abort
@@ -53,12 +62,12 @@ endfunction
 function! ddc#custom#get_filetype() abort
   return ddc#_denops_running() ? denops#request('ddc', 'getFiletype', []) : {}
 endfunction
-function! ddc#custom#get_context() abort
-  return ddc#_denops_running() ? denops#request('ddc', 'getContext', []) : {}
-endfunction
 function! ddc#custom#get_buffer() abort
   return ddc#_denops_running() ?
         \ get(denops#request('ddc', 'getBuffer', []), bufnr('%'), {}) : {}
+endfunction
+function! ddc#custom#get_context() abort
+  return ddc#_denops_running() ? denops#request('ddc', 'getContext', []) : {}
 endfunction
 function! ddc#custom#get_current() abort
   return ddc#_denops_running() ? denops#request('ddc', 'getCurrent', []) : {}

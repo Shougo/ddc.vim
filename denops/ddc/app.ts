@@ -1,5 +1,5 @@
 import { Ddc } from "./ddc.ts";
-import { ContextBuilder } from "./context.ts";
+import { ContextBuilder, ContextCallbacks } from "./context.ts";
 import {
   Context,
   DdcEvent,
@@ -60,16 +60,27 @@ export async function main(denops: Denops) {
       contextBuilder.setFiletype(filetype, options);
       return Promise.resolve();
     },
-    setContext(arg1: unknown, arg2: unknown): Promise<void> {
-      const filetype = ensureString(arg1);
-      const id = ensureString(arg2);
-      contextBuilder.setContext(filetype, id);
-      return Promise.resolve();
-    },
     setBuffer(arg1: unknown, arg2: unknown): Promise<void> {
       const options = ensureObject(arg1);
       const bufnr = ensureNumber(arg2);
       contextBuilder.setBuffer(bufnr, options);
+      return Promise.resolve();
+    },
+    setContextGlobal(arg1: unknown): Promise<void> {
+      const id = ensureString(arg1);
+      contextBuilder.setContextGlobal(id);
+      return Promise.resolve();
+    },
+    setContextFiletype(arg1: unknown, arg2: unknown): Promise<void> {
+      const id = ensureString(arg1);
+      const filetype = ensureString(arg2);
+      contextBuilder.setContextFiletype(id, filetype);
+      return Promise.resolve();
+    },
+    setContextBuffer(arg1: unknown, arg2: unknown): Promise<void> {
+      const id = ensureString(arg1);
+      const bufnr = ensureNumber(arg2);
+      contextBuilder.setContextBuffer(id, bufnr);
       return Promise.resolve();
     },
     patchGlobal(arg1: unknown): Promise<void> {
@@ -95,11 +106,11 @@ export async function main(denops: Denops) {
     getFiletype(): Promise<Record<string, Partial<DdcOptions>>> {
       return Promise.resolve(contextBuilder.getFiletype());
     },
-    getContext(): Promise<Record<string, string>> {
-      return Promise.resolve(contextBuilder.getContext());
-    },
     getBuffer(): Promise<Record<number, Partial<DdcOptions>>> {
       return Promise.resolve(contextBuilder.getBuffer());
+    },
+    getContext(): Promise<ContextCallbacks> {
+      return Promise.resolve(contextBuilder.getContext());
     },
     getCurrent(): Promise<DdcOptions> {
       return Promise.resolve(contextBuilder.getCurrent(denops));

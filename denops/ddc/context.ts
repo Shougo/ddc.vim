@@ -31,6 +31,12 @@ export const mergeUiParams: Merge<Record<string, unknown>> = overwrite;
 export const mergeSourceParams: Merge<Record<string, unknown>> = overwrite;
 export const mergeFilterParams: Merge<Record<string, unknown>> = overwrite;
 
+export type ContextCallbacks = {
+  global: string;
+  filetype: Record<string, string>;
+  buffer: Record<number, string>;
+};
+
 export function foldMerge<T>(
   merge: Merge<T>,
   def: Default<T>,
@@ -175,7 +181,11 @@ function patchDdcOptions(
 class Custom {
   global: Partial<DdcOptions> = {};
   filetype: Record<string, Partial<DdcOptions>> = {};
-  context: Record<string, string> = {};
+  context: ContextCallbacks = {
+    global: "",
+    filetype: {},
+    buffer: {},
+  };
   buffer: Record<number, Partial<DdcOptions>> = {};
 
   async get(
@@ -183,19 +193,33 @@ class Custom {
     ft: string,
     bufnr: number,
   ): Promise<DdcOptions> {
-    const filetype = this.filetype[ft] || {};
-    const context = (this.context[ft] && denops)
+    const contextGlobal = (this.context.global != "" && denops)
       ? await denops.call(
         "denops#callback#call",
-        this.context[ft],
+        this.context.global,
+      ) as Partial<DdcOptions>
+      : {};
+    const filetype = this.filetype[ft] || {};
+    const contextFiletype = (this.context.filetype[ft] && denops)
+      ? await denops.call(
+        "denops#callback#call",
+        this.context.filetype[ft],
       ) as Partial<DdcOptions>
       : {};
     const buffer = this.buffer[bufnr] || {};
+    const contextBuffer = (this.context.buffer[bufnr] && denops)
+      ? await denops.call(
+        "denops#callback#call",
+        this.context.buffer[bufnr],
+      ) as Partial<DdcOptions>
+      : {};
     return foldMerge(mergeDdcOptions, defaultDdcOptions, [
       this.global,
+      contextGlobal,
       filetype,
-      context,
+      contextFiletype,
       buffer,
+      contextBuffer,
     ]);
   }
 
@@ -207,12 +231,20 @@ class Custom {
     this.filetype[ft] = options;
     return this;
   }
-  setContext(ft: string, id: string): Custom {
-    this.context[ft] = id;
-    return this;
-  }
   setBuffer(bufnr: number, options: Partial<DdcOptions>): Custom {
     this.buffer[bufnr] = options;
+    return this;
+  }
+  setContextGlobal(id: string): Custom {
+    this.context.global = id;
+    return this;
+  }
+  setContextFiletype(id: string, ft: string): Custom {
+    this.context.filetype[ft] = id;
+    return this;
+  }
+  setContextBuffer(id: string, bufnr: number): Custom {
+    this.context.buffer[bufnr] = id;
     return this;
   }
   patchGlobal(options: Partial<DdcOptions>): Custom {
@@ -405,7 +437,7 @@ export class ContextBuilder {
   getFiletype(): Record<string, Partial<DdcOptions>> {
     return this.custom.filetype;
   }
-  getContext(): Record<string, string> {
+  getContext(): ContextCallbacks {
     return this.custom.context;
   }
   getBuffer(): Record<number, Partial<DdcOptions>> {
@@ -422,11 +454,17 @@ export class ContextBuilder {
   setFiletype(ft: string, options: Partial<DdcOptions>) {
     this.custom.setFiletype(ft, options);
   }
-  setContext(ft: string, id: string) {
-    this.custom.setContext(ft, id);
-  }
   setBuffer(bufnr: number, options: Partial<DdcOptions>) {
     this.custom.setBuffer(bufnr, options);
+  }
+  setContextGlobal(id: string) {
+    this.custom.setContextGlobal(id);
+  }
+  setContextFiletype(id: string, ft: string) {
+    this.custom.setContextFiletype(id, ft);
+  }
+  setContextBuffer(id: string, bufnr: number) {
+    this.custom.setContextBuffer(id, bufnr);
   }
 
   patchGlobal(options: Partial<DdcOptions>) {
