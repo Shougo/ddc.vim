@@ -118,7 +118,14 @@ export async function main(denops: Denops) {
       const mode = await fn.mode(denops);
       if (mode == "c") {
         // Use cmdlineSources instead
-        options.sources = options.cmdlineSources;
+        if (Array.isArray(options.cmdlineSources)) {
+          options.sources = options.cmdlineSources;
+        } else {
+          const cmdType = await fn.getcmdtype(denops) as string;
+          if (options.cmdlineSources[cmdType]) {
+            options.sources = options.cmdlineSources[cmdType];
+          }
+        }
       }
       if (sources.length != 0) {
         options.sources = sources;
@@ -222,7 +229,14 @@ export async function main(denops: Denops) {
     const mode = await fn.mode(denops);
     if (mode == "c") {
       // Use cmdlineSources instead
-      options.sources = options.cmdlineSources;
+      if (Array.isArray(options.cmdlineSources)) {
+        options.sources = options.cmdlineSources;
+      } else {
+        const cmdType = await fn.getcmdtype(denops) as string;
+        if (options.cmdlineSources[cmdType]) {
+          options.sources = options.cmdlineSources[cmdType];
+        }
+      }
     }
 
     await ddc.onEvent(

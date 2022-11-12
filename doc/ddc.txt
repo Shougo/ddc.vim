@@ -110,8 +110,10 @@ backspaceCompletion
 
 						*ddc-option-cmdlineSources*
 cmdlineSources
-		It is a list of registered source names for
-		|Command-line-mode|.
+		It is a list of registered source names or the dictionary.
+		The dictionary key is command line type from |getcmdtype()|.
+		The dictionary value is registered source names list.
+		It is used for |Command-line-mode|.
 		Please see |ddc-option-sources|.
 
 		Note: If you set it, |input()| auto completion is enabled.
@@ -120,7 +122,18 @@ cmdlineSources
 		https://github.com/Shougo/pum.vim
 
 		Default: []
-
+>
+		" e.g.
+		call ddc#custom#patch_global('cmdlineSources', {
+		    \ ':': ['cmdline-history', 'cmdline', 'around'],
+		    \ '@': ['cmdline-history', 'input', 'file', 'around'],
+		    \ '>': ['cmdline-history', 'input', 'file', 'around'],
+		    \ '/': ['around', 'line'],
+		    \ '?': ['around', 'line'],
+		    \ '-': ['around', 'line'],
+		    \ '=': ['input'],
+		    \ })
+<
 						*ddc-option-filterOptions*
 filterOptions
 		It is a dictionary that maps filter names to its options.
