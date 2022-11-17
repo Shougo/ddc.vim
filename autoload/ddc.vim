@@ -30,10 +30,9 @@ function! ddc#enable() abort
   let g:ddc#_started = reltime()
 
   " Note: ddc.vim must be registered manually.
+  autocmd ddc User DenopsReady silent! call ddc#_register()
   if exists('g:loaded_denops') && denops#server#status() ==# 'running'
     silent! call ddc#_register()
-  else
-    autocmd ddc User DenopsReady silent! call ddc#_register()
   endif
 endfunction
 function! ddc#enable_cmdline_completion() abort
