@@ -18,6 +18,7 @@ function! ddc#enable() abort
 
   augroup ddc
     autocmd!
+    autocmd User DDCReady :
     autocmd CompleteDone * call ddc#complete#_on_complete_done()
     autocmd User PumCompleteDone call ddc#complete#_on_complete_done()
     autocmd InsertLeave * call ddc#_hide('InsertLeave')
