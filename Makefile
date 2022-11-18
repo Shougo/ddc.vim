@@ -2,11 +2,7 @@ TS=$(shell find denops -name "*.ts")
 TSTEST=$(shell grep -rl "Deno.test" denops)
 
 
-lint: lint/vim lint/deno
-
-lint/vim:
-	vint --version
-	vint autoload
+lint: lint/deno
 
 lint/deno:
 	deno fmt --check denops
@@ -19,4 +15,4 @@ test:
 format:
 	deno fmt denops README.md .github
 
-.PHONY: lint lint/vim lint/deno test format
+.PHONY: lint lint/deno test format

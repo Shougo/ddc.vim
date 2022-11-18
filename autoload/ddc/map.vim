@@ -65,7 +65,7 @@ function! ddc#map#complete_common_string(cancel_key) abort
 endfunction
 
 function! ddc#map#insert_item(number, cancel_key) abort
-  let word = get(g:ddc#_items, a:number, {'word': ''}).word
+  let word = get(g:ddc#_items, a:number, #{ word: '' }).word
   if word ==# ''
     return ''
   endif

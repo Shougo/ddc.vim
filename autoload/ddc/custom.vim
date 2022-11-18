@@ -79,7 +79,7 @@ function! s:notify(method, args) abort
     let g:ddc#_customs = []
   endif
 
-  call add(g:ddc#_customs, { 'method': a:method, 'args': a:args })
+  call add(g:ddc#_customs, #{ method: a:method, args: a:args })
 
   return ddc#_notify(a:method, a:args)
 endfunction

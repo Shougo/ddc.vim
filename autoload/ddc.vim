@@ -10,9 +10,9 @@ function! ddc#enable() abort
     return
   endif
 
-  if !has('patch-8.2.0662') && !has('nvim-0.6')
+  if !has('patch-8.2.0662') && !has('nvim-0.8')
     call ddc#util#print_error(
-          \ 'ddc requires Vim 8.2.0662+ or neovim 0.6.0+.')
+          \ 'ddc requires Vim 8.2.0662+ or neovim 0.8.0+.')
     return
   endif
 
@@ -87,7 +87,7 @@ let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 function! ddc#_register() abort
   call denops#plugin#register('ddc',
         \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'),
-        \ { 'mode': 'skip' })
+        \ #{ mode: 'skip' })
 
   autocmd ddc User DenopsStopped call s:stopped()
 endfunction

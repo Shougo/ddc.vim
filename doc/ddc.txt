@@ -46,7 +46,7 @@ It does not work with zero configuration.  You can use other plugins.
 ==============================================================================
 INSTALL							*ddc-install*
 
-Note: Ddc.vim requires Neovim (0.6.0+) or Vim8.2.0662+ (latest is
+Note: Ddc.vim requires Neovim (0.8.0+) or Vim8.2.0662+ (latest is
 recommended).
 
 Please install both Deno and "denops.vim".
@@ -74,9 +74,9 @@ For example:
     call ddc#custom#patch_global('ui', 'native')
 
     " Pass a dictionary to set multiple options
-    call ddc#custom#patch_global({
-    \ 'keywordPattern': '[a-zA-Z_]\w*',
-    \ 'smartCase': v:true,
+    call ddc#custom#patch_global(#{
+    \   keywordPattern: '[a-zA-Z_]\w*',
+    \   smartCase: v:true,
     \ })
 
     call ddc#custom#patch_filetype(['c', 'cpp'], 'sources', ['around'])
@@ -142,8 +142,8 @@ filterOptions
 		Default: {}
 >
 		" e.g.
-		call ddc#custom#patch_global('filterOptions', {
-		    \ 'matcher_head': {},
+		call ddc#custom#patch_global('filterOptions', #{
+		    \   matcher_head: {},
 		    \ })
 <
 						*ddc-option-filterParams*
@@ -153,8 +153,8 @@ filterParams
 		Default: {}
 >
 		" e.g.
-		call ddc#custom#patch_global('filterParams', {
-		    \ 'matcher_head': {},
+		call ddc#custom#patch_global('filterParams', #{
+		    \   matcher_head: {},
 		    \ })
 <
 					*ddc-option-keywordPattern*
@@ -196,9 +196,9 @@ sourceOptions
 		Default: {}
 >
 		" e.g.
-		call ddc#custom#patch_global('sourceOptions', {
-		    \ '_': {'matchers': ['matcher_head']},
-		    \ 'around': {'mark': 'A'},
+		call ddc#custom#patch_global('sourceOptions', #{
+		    \   _: #{ matchers: ['matcher_head'] },
+		    \   around: #{ mark: 'A' },
 		    \ })
 <
 						*ddc-option-sourceParams*
@@ -209,8 +209,8 @@ sourceParams
 		Default: {}
 >
 		" e.g.
-		call ddc#custom#patch_global('sourceParams', {
-		    \ 'around': {'max': 8},
+		call ddc#custom#patch_global('sourceParams', #{
+		    \   around: #{ max: 8 },
 		    \ })
 <
 				*ddc-option-specialBufferCompletion*
@@ -318,14 +318,14 @@ ddc#custom#alias({type}, {alias-name}, {base-name})
 >
 		call ddc#custom#alias('source', 'foo', 'around')
 		call ddc#custom#patch_global('sources', ['foo'])
-		call ddc#custom#patch_global('sourceOptions', {
-		      \ '_': {
-		      \   'matchers': ['matcher_head'],
-		      \   'sorters': ['sorter_rank'],
-		      \   'converters': ['converter_remove_overlap'],
-		      \ },
-		      \ 'around': {'mark': 'A'},
-		      \ 'foo': {'mark': 'foo'},
+		call ddc#custom#patch_global('sourceOptions', #{
+		      \   _: #{
+		      \     matchers: ['matcher_head'],
+		      \     sorters: ['sorter_rank'],
+		      \     converters: ['converter_remove_overlap'],
+		      \   },
+		      \   around: #{ mark: 'A' },
+		      \   foo: #{ mark: 'foo' },
 		      \ })
 <
 						*ddc#custom#get_buffer()*
@@ -475,29 +475,30 @@ EXAMPLES						*ddc-examples*
 	" Use matcher_head and sorter_rank.
 	" https://github.com/Shougo/ddc-matcher_head
 	" https://github.com/Shougo/ddc-sorter_rank
-	call ddc#custom#patch_global('sourceOptions', {
-	      \ '_': {
-	      \   'matchers': ['matcher_head'],
-	      \   'sorters': ['sorter_rank']},
-	      \ })
+	call ddc#custom#patch_global('sourceOptions', #{
+	      \   _: #{
+	      \     matchers: ['matcher_head'],
+	      \     sorters: ['sorter_rank']},
+	      \   },
+	      \ )
 
 	" Change source options
-	call ddc#custom#patch_global('sourceOptions', {
-	      \ 'around': {'mark': 'A'},
+	call ddc#custom#patch_global('sourceOptions', #{
+	      \   around: #{ mark: 'A' },
 	      \ })
-	call ddc#custom#patch_global('sourceParams', {
-	      \ 'around': {'maxSize': 500},
+	call ddc#custom#patch_global('sourceParams', #{
+	      \   around: #{ maxSize: 500 },
 	      \ })
 
 	" Customize settings on a filetype
 	call ddc#custom#patch_filetype(
-	    \ ['c', 'cpp'], 'sources', ['around', 'clangd']
+	    \   ['c', 'cpp'], 'sources', ['around', 'clangd']
 	    \ )
-	call ddc#custom#patch_filetype(['c', 'cpp'], 'sourceOptions', {
-	    \ 'clangd': {'mark': 'C'},
+	call ddc#custom#patch_filetype(['c', 'cpp'], 'sourceOptions', #{
+	    \   clangd: #{ mark: 'C' },
 	    \ })
-	call ddc#custom#patch_filetype('markdown', 'sourceParams', {
-	    \ 'around': {'maxSize': 100},
+	call ddc#custom#patch_filetype('markdown', 'sourceParams', #{
+	    \   around: #{ maxSize: 100 },
 	    \ })
 
 	" Mappings
@@ -1075,8 +1076,8 @@ https://github.com/Shougo/pum.vim
 https://github.com/Shougo/ddc-ui-pum
 >
 	call ddc#custom#patch_global('ui', 'pum')
-	call ddc#custom#patch_global('autoCompleteEvents', [
-	\ 'InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
+	call ddc#custom#patch_global('autoCompleteEvents',
+	\ ['InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
 	nnoremap :       <Cmd>call CommandlinePre()<CR>:
 	
 	function! CommandlinePre() abort
@@ -1150,10 +1151,10 @@ A: Note: Experimental >
 	})
 	EOF
 	
-	call ddc#custom#patch_filetype(['FineCmdlinePrompt'], {
-	    \ 'keywordPattern': '[0-9a-zA-Z_:#]*',
-	    \ 'sources': ['cmdline', 'cmdline-history', 'around'],
-	    \ 'specialBufferCompletion': v:true,
+	call ddc#custom#patch_filetype(['FineCmdlinePrompt'], #{
+	    \   keywordPattern: '[0-9a-zA-Z_:#]*',
+	    \   sources: ['cmdline', 'cmdline-history', 'around'],
+	    \   specialBufferCompletion: v:true,
 	    \ })
 
 Q: The auto completion does not work if 'textwidth' is set.
@@ -1198,8 +1199,12 @@ Q: ddc.vim does not work when "dps-ghosttext.vim" is enabled.
 A: "dps-ghosttext.vim" creates the special buffer which 'buftype' is "nofile".
 You need to enable |ddc-option-specialBufferCompletion| for it.
 
+
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.11.18
+* neovim 0.8 is required.
 
 2022.11.12
 * Rename "ddc#custom#set_context()" to "ddc#custom#set_context_filetype()".

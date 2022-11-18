@@ -11,7 +11,7 @@ endfunction
 function! ddc#syntax#get() abort
   let curpos = getcurpos()[1:2]
   return &l:syntax !=# '' ? s:get_syn_names([curpos[0], curpos[1] - 1]) :
-        \ has('nvim-0.8') ? s:get_treesitter_nodes([curpos[0] - 1,
+        \ has('nvim') ? s:get_treesitter_nodes([curpos[0] - 1,
         \   col('$') == col('.') ? curpos[1] - 2 : curpos[1] - 1]) :
         \ []
 endfunction
