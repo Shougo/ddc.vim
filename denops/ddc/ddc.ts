@@ -168,18 +168,27 @@ export class Ddc {
       searches: string[],
       files: string[],
     ): Promise<string[]> {
-      let paths: string[] = [];
+      const check: Record<string, boolean> = {};
+      const paths: string[] = [];
       for (const search of searches) {
         for (const file of files) {
-          paths = paths.concat(
-            await fn.globpath(
-              denops,
-              runtimepath,
-              search + file + ".ts",
-              1,
-              1,
-            ) as string[],
-          );
+          const glob = await fn.globpath(
+            denops,
+            runtimepath,
+            search + file + ".ts",
+            1,
+            1,
+          ) as string[];
+
+          for (const path of glob) {
+            // Skip already added name.
+            if (parse(path).name in check) {
+              continue;
+            }
+
+            paths.push(path);
+            check[parse(path).name] = true;
+          }
         }
       }
 
