@@ -84,9 +84,10 @@ function! ddc#disable() abort
 endfunction
 
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
+let s:sep = has('win32') ? '\' : '/'
 function! ddc#_register() abort
   call denops#plugin#register('ddc',
-        \ denops#util#join_path(s:root_dir, 'denops', 'ddc', 'app.ts'),
+        \ join([s:root_dir, 'denops', 'ddc', 'app.ts'], s:sep),
         \ #{ mode: 'skip' })
 
   autocmd ddc User DenopsStopped call s:stopped()
