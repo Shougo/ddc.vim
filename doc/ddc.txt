@@ -862,7 +862,7 @@ menu			(string)			(Optional)
 user_data		(UserData | string)	(Optional)
 		The source specific data.
 
-						*ddc-item-attribute-name*
+						*ddc-item-attribute-word*
 word			(string)			(Required)
 		The completion word of a item. It is used for matching
 		inputs.
