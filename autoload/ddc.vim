@@ -19,8 +19,6 @@ function! ddc#enable() abort
   augroup ddc
     autocmd!
     autocmd User DDCReady :
-    autocmd CompleteDone * call ddc#complete#_on_complete_done()
-    autocmd User PumCompleteDone call ddc#complete#_on_complete_done()
     autocmd InsertLeave * call ddc#_hide('InsertLeave')
   augroup END
 
@@ -83,6 +81,10 @@ function! ddc#disable() abort
   call ddc#disable_cmdline_completion()
 endfunction
 
+function! ddc#on_complete_done(completed_item) abort
+  call ddc#complete#_on_complete_done(a:completed_item)
+endfunction
+
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 let s:sep = has('win32') ? '\' : '/'
 function! ddc#_register() abort
@@ -126,15 +128,6 @@ endfunction
 
 function! ddc#syntax_in(groups) abort
   return ddc#syntax#in(a:groups)
-endfunction
-
-function! ddc#register(dict) abort
-  if ddc#_denops_running()
-    call denops#notify('ddc', 'register', [a:dict])
-  else
-    execute printf('autocmd User DDCReady call ' .
-          \ 'denops#notify("ddc", "register", [%s])', a:dict)
-  endif
 endfunction
 
 function! ddc#_notify(method, args) abort

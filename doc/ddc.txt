@@ -280,14 +280,10 @@ ddc#enable_cmdline_completion()
 		Note: "pum.vim" is needed for the feature.
 		Note: It disables |command-line-window| feature.
 
-							*ddc#register()*
-ddc#register({dict})
-		Register source or filter.
-		The {dict} must have following keys.
-
-		name: The filter name
-		path: The filter path
-		type: "source" or "filter"
+					    	*ddc#on_complete_done()*
+ddc#on_complete_done({completed_item})
+		It must be called when completion item is completed.
+		The UI calls the API.
 
 							*ddc#syntax#get()*
 ddc#syntax#get()
@@ -1202,6 +1198,10 @@ You need to enable |ddc-option-specialBufferCompletion| for it.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.11.26
+* Remove "ddc#register()".
+* UI must call "ddc#on_complete_done()".
 
 2022.11.18
 * neovim 0.8 is required.

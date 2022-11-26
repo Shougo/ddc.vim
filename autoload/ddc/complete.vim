@@ -1,27 +1,27 @@
-function! ddc#complete#_on_complete_done() abort
-  if !ddc#_denops_running() || empty(v:completed_item)
-        \ || !has_key(v:completed_item, 'user_data')
-        \ || type(v:completed_item.user_data) != v:t_dict
+function! ddc#complete#_on_complete_done(completed_item) abort
+  if !ddc#_denops_running() || empty(a:completed_item)
+        \ || !has_key(a:completed_item, 'user_data')
+        \ || type(a:completed_item.user_data) != v:t_dict
     return
   endif
 
   " Search selected item from previous items
   let items = filter(copy(g:ddc#_items), { _, val
-        \ -> val.word ==# v:completed_item.word
-        \ && val.abbr ==# v:completed_item.abbr
-        \ && val.info ==# v:completed_item.info
-        \ && val.kind ==# v:completed_item.kind
-        \ && val.menu ==# v:completed_item.menu
+        \ -> val.word ==# a:completed_item.word
+        \ && val.abbr ==# a:completed_item.abbr
+        \ && val.info ==# a:completed_item.info
+        \ && val.kind ==# a:completed_item.kind
+        \ && val.menu ==# a:completed_item.menu
         \ && has_key(val, 'user_data')
-        \ && val.user_data ==# v:completed_item.user_data
+        \ && val.user_data ==# a:completed_item.user_data
         \ })
   if empty(items)
     return
   endif
 
   " Reset v:completed_item to prevent CompleteDone is twice
-  let completed_item = v:completed_item
-  silent! let v:completed_item = {}
+  let completed_item = a:completed_item
+  silent! let a:completed_item = {}
 
   call denops#request('ddc', 'onCompleteDone',
         \ [items[0].__sourceName, completed_item.user_data])

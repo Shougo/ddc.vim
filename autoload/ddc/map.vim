@@ -71,6 +71,7 @@ function! ddc#map#insert_item(number, cancel_key) abort
   endif
 
   call ddc#_hide('CompleteDone')
+  call ddc#complete#_on_complete_done(g:ddc#_items[a:number])
 
   " Get cursor word.
   let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]

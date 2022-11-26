@@ -37,10 +37,6 @@ export async function main(denops: Denops) {
   let queuedEvent: DdcEvent | null = null;
 
   denops.dispatcher = {
-    async register(arg1: unknown): Promise<void> {
-      const arg = ensureObject(arg1) as RegisterArg;
-      await ddc.register(arg.type, arg.path, arg.name);
-    },
     alias(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
       ddc.registerAlias(
         ensureString(arg1) as DdcExtType,
