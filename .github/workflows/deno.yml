@@ -46,23 +46,3 @@ jobs:
         run: |
           grep -rl Deno.test denops| xargs deno test --unstable -A
         timeout-minutes: 5
-
-  vim-lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install vim-vint
-
-      - name: Check with vint
-        run: |
-          vint --version && vint autoload
