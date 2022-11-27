@@ -427,9 +427,8 @@ ddc#map#complete({ui-name})
 		Note: It must be in |:map-<expr>|.
 
 					*ddc#map#complete_common_string()*
-ddc#map#complete_common_string({cancel-key})
+ddc#map#complete_common_string()
 		Complete common string in items.
-		{cancel-key} is popup cancel key.
 		This can be useful when items have a long common prefix.
 		Note: It must be in |:map-<expr>|.
 
@@ -1198,6 +1197,9 @@ You need to enable |ddc-option-specialBufferCompletion| for it.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2022.11.27
+* Remove cancel-key from "ddc#map#complete_common_string()".
 
 2022.11.26
 * Remove "ddc#register()".

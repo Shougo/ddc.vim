@@ -32,12 +32,15 @@ function! ddc#map#extend(confirm_key) abort
   return a:confirm_key . ddc#map#manual_complete(g:ddc#_sources)
 endfunction
 
-function! ddc#map#complete_common_string(cancel_key) abort
+function! ddc#map#complete_common_string() abort
   if empty(g:ddc#_items) || g:ddc#_complete_pos < 0
     return ''
   endif
 
-  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
+  " Get cursor word.
+  let input = ddc#util#get_input('')
+  let complete_str = input[g:ddc#_complete_pos : s:col() - 1]
+
   let common_str = g:ddc#_items[0].word
   for item in g:ddc#_items[1:]
     while stridx(tolower(item.word), tolower(common_str)) != 0
@@ -59,7 +62,6 @@ function! ddc#map#complete_common_string(cancel_key) abort
   if mode() ==# 'i'
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
   endif
-  let chars .= a:cancel_key
   return chars
 endfunction
 
