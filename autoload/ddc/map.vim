@@ -54,12 +54,12 @@ function! ddc#map#complete_common_string(cancel_key) abort
   if mode() ==# 'i'
     let chars .= "\<Cmd>set backspace=start\<CR>"
   endif
-  let chars .= a:cancel_key
   let chars .= repeat("\<BS>", strchars(complete_str))
   let chars .= common_str
   if mode() ==# 'i'
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
   endif
+  let chars .= a:cancel_key
   return chars
 endfunction
 
@@ -77,7 +77,6 @@ function! ddc#map#insert_item(number, cancel_key) abort
   let complete_str = input[g:ddc#_complete_pos : s:col() - 1]
 
   let chars = ''
-  let chars .= a:cancel_key
   " Note: Change backspace option to work <BS> correctly
   if mode() ==# 'i'
     let chars .= "\<Cmd>set backspace=start\<CR>"
@@ -87,6 +86,7 @@ function! ddc#map#insert_item(number, cancel_key) abort
   if mode() ==# 'i'
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
   endif
+  let chars .= a:cancel_key
   return chars
 endfunction
 
