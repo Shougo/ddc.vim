@@ -27,19 +27,8 @@ function! ddc#complete#_on_complete_done(completed_item) abort
         \ [items[0].__sourceName, completed_item.user_data])
 endfunction
 
-function! ddc#complete#_check_complete_info() abort
-  let pum_visible = exists('*pum#visible') ? pum#visible() : v:false
-  let info = ddc#complete_info()
-  let noinsert = &completeopt =~# 'noinsert'
-  return pum_visible &&
-        \ ((info.mode !=# '' && info.mode !=# 'eval')
-        \ || (noinsert && info.selected > 0)
-        \ || (!noinsert && info.selected >= 0))
-endfunction
-
 function! ddc#complete#_skip(pos, items) abort
   if a:pos < 0 || g:ddc#_changedtick != b:changedtick
-        \ || ddc#complete#_check_complete_info()
     return v:true
   endif
 

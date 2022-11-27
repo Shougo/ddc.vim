@@ -118,11 +118,6 @@ function! ddc#_on_event(event) abort
     return
   endif
 
-  " Check the completion state
-  if ddc#complete#_check_complete_info()
-    return
-  endif
-
   call denops#notify('ddc', 'onEvent', [a:event])
 endfunction
 

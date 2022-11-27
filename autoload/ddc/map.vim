@@ -23,7 +23,6 @@ endfunction
 function! ddc#map#can_complete() abort
   return !empty(get(g:, 'ddc#_items', []))
         \ && get(g:, 'ddc#_complete_pos', -1) >= 0
-        \ && !ddc#complete#_check_complete_info()
 endfunction
 
 function! ddc#map#extend(confirm_key) abort
@@ -74,18 +73,27 @@ function! ddc#map#insert_item(number, cancel_key) abort
   call ddc#complete#_on_complete_done(g:ddc#_items[a:number])
 
   " Get cursor word.
-  let complete_str = ddc#util#get_input('')[g:ddc#_complete_pos :]
+  let input = ddc#util#get_input('')
+  let complete_str = input[g:ddc#_complete_pos : s:col() - 1]
 
   let chars = ''
+  let chars .= a:cancel_key
   " Note: Change backspace option to work <BS> correctly
   if mode() ==# 'i'
     let chars .= "\<Cmd>set backspace=start\<CR>"
   endif
-  let chars .= a:cancel_key
   let chars .= repeat("\<BS>", strchars(complete_str))
   let chars .= word
   if mode() ==# 'i'
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
   endif
   return chars
+endfunction
+
+function! s:col() abort
+  let col = mode() ==# 't' && !has('nvim') ?
+        \ term_getcursor(bufnr('%'))[1] :
+        \ mode() ==# 'c' ? getcmdpos() :
+        \ mode() ==# 't' ? col('.') : col('.')
+  return col
 endfunction
