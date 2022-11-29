@@ -122,8 +122,8 @@ call ddc#custom#patch_global('sources', ['around'])
 " https://github.com/Shougo/ddc-sorter_rank
 call ddc#custom#patch_global('sourceOptions', #{
       \ _: #{
-      \   'matchers': ['matcher_head'],
-      \   'sorters': ['sorter_rank']},
+      \   matchers: ['matcher_head'],
+      \   sorters: ['sorter_rank']},
       \ })
 
 " Change source options
