@@ -92,7 +92,7 @@ function! ddc#_register() abort
         \ join([s:root_dir, 'denops', 'ddc', 'app.ts'], s:sep),
         \ #{ mode: 'skip' })
 
-  autocmd ddc User DenopsProcessStopped call s:stopped()
+  autocmd ddc User DenopsProcessStopped:* call s:stopped()
 endfunction
 
 function! s:stopped() abort
