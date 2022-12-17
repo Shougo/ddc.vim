@@ -283,7 +283,10 @@ ddc#enable_cmdline_completion()
 							*ddc#hide({event})*
 ddc#hide({event})
 		Hide current completion UI.
-		It is used to cancel the completion.
+		{event} is completion event.
+		It must be list of |autocmd-events| string or "Manual" or
+		"Initialize" or "Update".
+		Note: It is used to cancel the completion.
 >
 		inoremap <C-e>   <Cmd>call ddc#hide('Manual')<CR>
 <
