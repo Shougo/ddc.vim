@@ -71,7 +71,7 @@ function! ddc#map#insert_item(number, cancel_key) abort
     return ''
   endif
 
-  call ddc#_hide('CompleteDone')
+  call ddc#hide('CompleteDone')
   call ddc#complete#_on_complete_done(g:ddc#_items[a:number])
 
   " Get cursor word.

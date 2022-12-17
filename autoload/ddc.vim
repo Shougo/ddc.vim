@@ -19,7 +19,7 @@ function! ddc#enable() abort
   augroup ddc
     autocmd!
     autocmd User DDCReady :
-    autocmd InsertLeave * call ddc#_hide('InsertLeave')
+    autocmd InsertLeave * call ddc#hide('InsertLeave')
   augroup END
 
   " Force context_filetype call
@@ -38,7 +38,7 @@ function! ddc#enable_cmdline_completion() abort
 
   augroup ddc-cmdline
     autocmd!
-    autocmd CmdlineLeave <buffer> call ddc#_hide('CmdlineLeave')
+    autocmd CmdlineLeave <buffer> call ddc#hide('CmdlineLeave')
     autocmd CmdlineEnter <buffer> call ddc#_on_event('CmdlineEnter')
     autocmd CmdlineChanged <buffer>
           \ if getcmdtype() !=# '=' && getcmdtype() !=# '@' |
@@ -85,6 +85,40 @@ function! ddc#on_complete_done(completed_item) abort
   call ddc#complete#_on_complete_done(a:completed_item)
 endfunction
 
+function! ddc#syntax_in(groups) abort
+  return ddc#syntax#in(a:groups)
+endfunction
+
+function! ddc#callback(id, ...) abort
+  if !ddc#_denops_running()
+    return
+  endif
+
+  let payload = get(a:000, 0, v:null)
+  call denops#notify('ddc', 'onCallback', [a:id, payload])
+endfunction
+
+function! ddc#update_items(name, items) abort
+  if !ddc#_denops_running()
+    return
+  endif
+
+  call denops#notify('ddc', 'updateItems', [a:name, a:items])
+endfunction
+
+function! ddc#hide(event) abort
+  if !ddc#_denops_running()
+    return ''
+  endif
+
+  call denops#notify('ddc', 'hide', [a:event])
+
+  return ''
+endfunction
+
+function! ddc#complete_info() abort
+  return exists('*pum#complete_info') ? pum#complete_info() : complete_info()
+endfunction
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 let s:sep = has('win32') ? '\' : '/'
 function! ddc#_register() abort
@@ -121,10 +155,6 @@ function! ddc#_on_event(event) abort
   call denops#notify('ddc', 'onEvent', [a:event])
 endfunction
 
-function! ddc#syntax_in(groups) abort
-  return ddc#syntax#in(a:groups)
-endfunction
-
 function! ddc#_notify(method, args) abort
   if ddc#_denops_running()
     call denops#notify('ddc', a:method, a:args)
@@ -133,33 +163,4 @@ function! ddc#_notify(method, args) abort
           \ 'denops#notify("ddc", "%s", %s)',
           \ a:method, string(a:args))
   endif
-endfunction
-
-function! ddc#callback(id, ...) abort
-  if !ddc#_denops_running()
-    return
-  endif
-
-  let payload = get(a:000, 0, v:null)
-  call denops#notify('ddc', 'onCallback', [a:id, payload])
-endfunction
-
-function! ddc#update_items(name, items) abort
-  if !ddc#_denops_running()
-    return
-  endif
-
-  call denops#notify('ddc', 'updateItems', [a:name, a:items])
-endfunction
-
-function! ddc#_hide(event) abort
-  if !ddc#_denops_running()
-    return
-  endif
-
-  call denops#notify('ddc', 'hide', [a:event])
-endfunction
-
-function! ddc#complete_info() abort
-  return exists('*pum#complete_info') ? pum#complete_info() : complete_info()
 endfunction

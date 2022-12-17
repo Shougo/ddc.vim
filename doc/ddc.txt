@@ -280,6 +280,13 @@ ddc#enable_cmdline_completion()
 		Note: "pum.vim" is needed for the feature.
 		Note: It disables |command-line-window| feature.
 
+							*ddc#hide({event})*
+ddc#hide({event})
+		Hide current completion UI.
+		It is used to cancel the completion.
+>
+		inoremap <C-e>   <Cmd>call ddc#hide('Manual')<CR>
+<
 					    	*ddc#on_complete_done()*
 ddc#on_complete_done({completed_item})
 		It must be called when completion item is completed.
