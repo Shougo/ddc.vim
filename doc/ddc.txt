@@ -302,7 +302,7 @@ ddc#syntax#get()
 
 							*ddc#syntax#in()*
 ddc#syntax#in({checks})
-		Check {checks} groups in cursor.
+		Check {checks} syntax groups in cursor.
 
 							*ddc#update_items()*
 ddc#update_items({name}, {items})
