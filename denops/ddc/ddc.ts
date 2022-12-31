@@ -624,13 +624,15 @@ export class Ddc {
 
     // Check UI is visible
     // NOTE: UI may be closed by users
-    return ui.visible ? ui.visible({
-      denops,
-      context,
-      options,
-      uiOptions,
-      uiParams,
-    }) : true;
+    return ui.visible
+      ? ui.visible({
+        denops,
+        context,
+        options,
+        uiOptions,
+        uiParams,
+      })
+      : true;
   }
 
   private async filterItems(
