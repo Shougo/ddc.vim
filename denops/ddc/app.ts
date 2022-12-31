@@ -226,7 +226,7 @@ export async function main(denops: Denops) {
     const [skip, context, options] = await contextBuilder
       .createContext(denops, event);
 
-    if (ddc.visibleUi) {
+    if (await ddc.visible(denops, context, options) && ddc.prevUi != "") {
       // NOTE: If UI is visible, use prevSources/prevUi instead to update
       // current items
       options.sources = ddc.prevSources;

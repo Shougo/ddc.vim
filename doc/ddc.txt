@@ -751,11 +751,11 @@ UI ATTRIBUTES				*ddc-ui-attributes*
 
 						*ddc-ui-attribute-hide*
 hide			(function)			(Required)
-		It is called to hide UI.
+		Called to hide UI.
 
 						*ddc-ui-attribute-show*
 show			(function)			(Required)
-		It is called to show UI.
+		Called to show UI.
 
 					*ddc-source-ui-skipCompletion*
 skipCompletion		(function)			(Optional)
@@ -769,6 +769,10 @@ onInit			(function)			(Optional)
 						*ddc-ui-attribute-params*
 params			(function)			(Required)
 		Called to get UI params.
+
+						*ddc-ui-attribute-visible*
+visible			(function)			(Optional)
+		Called to check current UI is visible.
 
 
 ==============================================================================
@@ -802,11 +806,11 @@ isBytePos		(boolean)			(Optional)
 
 						*ddc-source-attribute-gather*
 gather			(function)			(Required)
-		It is called to gather items.
+		Called to gather items.
 
 	    			*ddc-source-attribute-getCompletePosition*
 getCompletePosition	(function)			(Optional)
-		It is called to get the position of the current completion.
+		Called to get the position of the current completion.
 
 		Default : |ddc-option-keywordPattern| is used.
 
@@ -897,7 +901,7 @@ events			(string[])			(Optional)
 
 						*ddc-filter-attribute-filter*
 filter			(function)			(Required)
-		It is called to filter items.
+		Called to filter items.
 
 						*ddc-filter-attribute-onEvent*
 onEvent			(function)			(Optional)

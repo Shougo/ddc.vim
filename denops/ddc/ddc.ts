@@ -70,9 +70,9 @@ export class Ddc {
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
 
+  private visibleUi = false;
   prevSources: string[] = [];
   prevUi = "";
-  visibleUi = false;
 
   private foundSources(names: string[]): BaseSource<Record<string, unknown>>[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
@@ -606,6 +606,31 @@ export class Ddc {
       uiParams,
     });
     this.visibleUi = false;
+  }
+
+  async visible(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+  ): Promise<boolean> {
+    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    if (!ui) {
+      return false;
+    }
+
+    if (this.visibleUi) {
+      return true;
+    }
+
+    // Check UI is visible
+    // NOTE: UI may be closed by users
+    return ui.visible ? ui.visible({
+      denops,
+      context,
+      options,
+      uiOptions,
+      uiParams,
+    }) : true;
   }
 
   private async filterItems(

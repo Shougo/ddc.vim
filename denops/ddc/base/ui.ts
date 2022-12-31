@@ -39,12 +39,22 @@ export type HideArguments<
   uiParams: Params;
 };
 
+export type VisibleArguments<
+  Params extends Record<string, unknown>,
+> = {
+  denops: Denops;
+  context: Context;
+  options: DdcOptions;
+  uiOptions: UiOptions;
+  uiParams: Params;
+};
+
 export abstract class BaseUi<
   Params extends Record<string, unknown>,
 > {
   name = "";
   isInitialized = false;
-  apiVersion = 1;
+  apiVersion = 2;
 
   async onInit(_args: OnInitArguments<Params>): Promise<void> {}
 
@@ -58,6 +68,11 @@ export abstract class BaseUi<
   async show(_args: ShowArguments<Params>): Promise<void> {}
 
   async hide(_args: HideArguments<Params>): Promise<void> {}
+
+  // deno-lint-ignore require-await
+  async visible(_args: VisibleArguments<Params>): Promise<boolean> {
+    return true;
+  }
 
   abstract params(): Params;
 }
