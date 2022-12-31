@@ -240,6 +240,13 @@ export async function main(denops: Denops) {
       }
     }
 
+    if (ddc.visibleUi) {
+      // NOTE: If UI is visible, use prevSources/prevUi instead to update
+      // current items
+      options.sources = ddc.prevSources;
+      options.ui = ddc.prevUi;
+    }
+
     await ddc.onEvent(
       denops,
       context,

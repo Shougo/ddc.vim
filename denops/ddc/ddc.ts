@@ -70,6 +70,10 @@ export class Ddc {
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
 
+  prevSources: string[] = [];
+  prevUi = "";
+  visibleUi = false;
+
   private foundSources(names: string[]): BaseSource<Record<string, unknown>>[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
   }
@@ -318,6 +322,8 @@ export class Ddc {
   ): Promise<[number, DdcItem[]]> {
     const sources = this.foundSources(options.sources)
       .map((s) => [s, ...sourceArgs(options, s)] as const);
+    this.prevSources = options.sources;
+
     const rs = await Promise.all(sources.map(async ([s, o, p]) => {
       // Check enabled
       if (o.enabledIf != "" && !(await denops.call("eval", o.enabledIf))) {
@@ -577,6 +583,9 @@ export class Ddc {
       uiOptions,
       uiParams,
     });
+
+    this.prevUi = options.ui;
+    this.visibleUi = true;
   }
 
   async hide(
@@ -596,6 +605,7 @@ export class Ddc {
       uiOptions,
       uiParams,
     });
+    this.visibleUi = false;
   }
 
   private async filterItems(
