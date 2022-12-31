@@ -116,8 +116,7 @@ export async function main(denops: Denops) {
       // Hide the current completion
       await ddc.hide(denops, context, options);
 
-      const mode = await fn.mode(denops);
-      if (mode == "c") {
+      if (context.mode == "c") {
         // Use cmdlineSources instead
         if (Array.isArray(options.cmdlineSources)) {
           options.sources = options.cmdlineSources;
@@ -227,8 +226,12 @@ export async function main(denops: Denops) {
     const [skip, context, options] = await contextBuilder
       .createContext(denops, event);
 
-    const mode = await fn.mode(denops);
-    if (mode == "c") {
+    if (ddc.visibleUi) {
+      // NOTE: If UI is visible, use prevSources/prevUi instead to update
+      // current items
+      options.sources = ddc.prevSources;
+      options.ui = ddc.prevUi;
+    } else if (context.mode == "c") {
       // Use cmdlineSources instead
       if (Array.isArray(options.cmdlineSources)) {
         options.sources = options.cmdlineSources;
@@ -238,13 +241,6 @@ export async function main(denops: Denops) {
           options.sources = options.cmdlineSources[cmdType];
         }
       }
-    }
-
-    if (ddc.visibleUi) {
-      // NOTE: If UI is visible, use prevSources/prevUi instead to update
-      // current items
-      options.sources = ddc.prevSources;
-      options.ui = ddc.prevUi;
     }
 
     await ddc.onEvent(
@@ -258,7 +254,7 @@ export async function main(denops: Denops) {
 
     cbContext.revoke();
 
-    if (event != "InsertEnter" && await fn.mode(denops) == "n") {
+    if (event != "InsertEnter" && context.mode == "n") {
       return;
     }
 
@@ -316,9 +312,8 @@ export async function main(denops: Denops) {
 
     // Skip special buffers.
     const buftype = await op.buftype.getLocal(denops);
-    const mode = await fn.mode(denops);
     if (
-      buftype != "" && !options.specialBufferCompletion && mode != "c"
+      buftype != "" && !options.specialBufferCompletion && context.mode != "c"
     ) {
       return true;
     }

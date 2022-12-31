@@ -405,6 +405,7 @@ export class ContextBuilder {
       filetype: world.filetype,
       input: world.input,
       lineNr: world.lineNr,
+      mode: world.mode,
       nextInput: world.nextInput,
     };
     return [

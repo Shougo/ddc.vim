@@ -23,6 +23,7 @@ export type Context = {
   filetype: string;
   input: string;
   lineNr: number;
+  mode: string;
   nextInput: string;
 };
 
