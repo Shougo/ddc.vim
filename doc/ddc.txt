@@ -1208,6 +1208,27 @@ Q: ddc.vim does not work when "dps-ghosttext.vim" is enabled.
 A: "dps-ghosttext.vim" creates the special buffer which 'buftype' is "nofile".
 You need to enable |ddc-option-specialBufferCompletion| for it.
 
+Q: I want to narrow current items without auto completion.
+
+A: You can narrow current items by "ddu.vim" like this.
+>
+  inoremap <C-l> <Cmd>call ddu#start(#{
+  \   name: 'ddc',
+  \   ui: 'ff',
+  \   input: matchstr(getline('.')[: col('.') - 1], '\k*$'),
+  \   sources: [
+  \     #{ name: 'ddc', options: #{ defaultAction: 'feedkeys' } },
+  \   ],
+  \   uiParams: #{
+  \     ff: #{
+  \       startFilter: v:true,
+  \       replaceCol: match(getline('.')[: col('.') - 1], '\k*$') + 1,
+  \     },
+  \   },
+  \ })<CR>
+<
+NOTE: "ddu.vim" configuration is required.
+
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
