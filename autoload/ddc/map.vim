@@ -15,9 +15,8 @@ function! ddc#map#manual_complete(...) abort
 
   let arg = get(a:000, 0, [])
   let sources = type(arg) == v:t_list ? arg : [arg]
-  return printf(
-        \ "\<Cmd>call denops#notify('ddc', 'manualComplete', %s)\<CR>",
-        \ string([sources, get(a:000, 1, '')]))
+  call denops#notify('ddc', 'manualComplete', [sources, get(a:000, 1, '')])
+  return ''
 endfunction
 
 function! ddc#map#can_complete() abort

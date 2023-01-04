@@ -462,7 +462,6 @@ ddc#map#manual_complete([{sources}[, {ui-name}]])
 		{ui-name} is ui name.
 		Note: Manual completion ignores
 		|ddc-source-option-minAutoCompleteLength|.
-		Note: It must be in |:map-<expr>|.
 
 ==============================================================================
 EXAMPLES						*ddc-examples*
