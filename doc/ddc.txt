@@ -1217,7 +1217,7 @@ A: You can narrow current items by "ddu.vim" like this.
   \   ui: 'ff',
   \   input: matchstr(getline('.')[: col('.') - 1], '\k*$'),
   \   sources: [
-  \     #{ name: 'ddc', options: #{ defaultAction: 'feedkeys' } },
+  \     #{ name: 'ddc', options: #{ defaultAction: 'complete' } },
   \   ],
   \   uiParams: #{
   \     ff: #{

@@ -7,6 +7,7 @@ type Params = Record<never, never>;
 
 export type ActionData = {
   text: string;
+  item: DdcItem;
 };
 
 export class Source extends BaseSource<Params> {
@@ -26,11 +27,12 @@ export class Source extends BaseSource<Params> {
         ) as DdcItem[];
 
         const items: Item<ActionData>[] = ddcItems
-          .map(({ word, abbr }) => ({
-            word,
-            display: abbr,
+          .map((item) => ({
+            word: item.word,
+            display: item.abbr,
             action: {
-              text: word,
+              text: item.word,
+              item,
             },
           }));
 
