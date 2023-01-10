@@ -89,13 +89,12 @@ function! ddc#syntax_in(groups) abort
   return ddc#syntax#in(a:groups)
 endfunction
 
-function! ddc#callback(id, ...) abort
+function! ddc#callback(id, payload = v:null) abort
   if !ddc#_denops_running()
     return
   endif
 
-  let payload = get(a:000, 0, v:null)
-  call denops#notify('ddc', 'onCallback', [a:id, payload])
+  call denops#notify('ddc', 'onCallback', [a:id, a:payload])
 endfunction
 
 function! ddc#update_items(name, items) abort

@@ -7,15 +7,14 @@ function! ddc#map#complete(ui) abort
   return ''
 endfunction
 
-function! ddc#map#manual_complete(...) abort
+function! ddc#map#manual_complete(arg = [], ui_name = '') abort
   if !ddc#_denops_running()
     call ddc#enable()
     call denops#plugin#wait('ddc')
   endif
 
-  let arg = get(a:000, 0, [])
-  let sources = type(arg) == v:t_list ? arg : [arg]
-  call denops#notify('ddc', 'manualComplete', [sources, get(a:000, 1, '')])
+  let sources = type(a:arg) == v:t_list ? a:arg : [a:arg]
+  call denops#notify('ddc', 'manualComplete', [sources, a:ui_name])
   return ''
 endfunction
 

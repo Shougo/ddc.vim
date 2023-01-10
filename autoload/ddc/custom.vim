@@ -1,16 +1,16 @@
-function! ddc#custom#patch_global(key_or_dict, ...) abort
-  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+function! ddc#custom#patch_global(key_or_dict, value = '') abort
+  let dict = s:normalize_key_or_dict(a:key_or_dict, a:value)
   call s:notify('patchGlobal', [dict])
 endfunction
-function! ddc#custom#patch_filetype(ft, key_or_dict, ...) abort
+function! ddc#custom#patch_filetype(ft, key_or_dict, value = '') abort
   let filetypes = s:normalize_string_or_list(a:ft)
-  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+  let dict = s:normalize_key_or_dict(a:key_or_dict, a:value)
   for filetype in filetypes
     call s:notify('patchFiletype', [dict, filetype])
   endfor
 endfunction
-function! ddc#custom#patch_buffer(key_or_dict, ...) abort
-  let dict = s:normalize_key_or_dict(a:key_or_dict, get(a:000, 0, ''))
+function! ddc#custom#patch_buffer(key_or_dict, value = '') abort
+  let dict = s:normalize_key_or_dict(a:key_or_dict, a:value)
   let n = bufnr('%')
   call s:notify('patchBuffer', [dict, n])
 endfunction

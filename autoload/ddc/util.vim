@@ -1,7 +1,6 @@
-function! ddc#util#print_error(string, ...) abort
-  let name = a:0 ? a:1 : 'ddc'
+function! ddc#util#print_error(string, name = 'ddc') abort
   echohl Error
-  echomsg printf('[%s] %s', name,
+  echomsg printf('[%s] %s', a:name,
         \ type(a:string) ==# v:t_string ? a:string : string(a:string))
   echohl None
 endfunction
@@ -33,8 +32,8 @@ function! ddc#util#get_next_input(event) abort
   return text[len(ddc#util#get_input(a:event)) :]
 endfunction
 
-function! ddc#util#benchmark(...) abort
-  let msg = get(a:000, 0, '')
+function! ddc#util#benchmark(msg = '') abort
+  let msg = a:msg
   if msg !=# ''
     let msg .= ' '
   endif
