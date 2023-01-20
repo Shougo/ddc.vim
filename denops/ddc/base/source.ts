@@ -8,13 +8,15 @@ import {
 } from "../types.ts";
 import { Denops } from "../deps.ts";
 
-export type OnInitArguments<Params extends Record<string, unknown>> = {
+export type BaseSourceParams = Record<string, unknown>;
+
+export type OnInitArguments<Params extends BaseSourceParams> = {
   denops: Denops;
   sourceOptions: SourceOptions;
   sourceParams: Params;
 };
 
-export type OnEventArguments<Params extends Record<string, unknown>> = {
+export type OnEventArguments<Params extends BaseSourceParams> = {
   denops: Denops;
   context: Context;
   onCallback: OnCallback;
@@ -24,7 +26,7 @@ export type OnEventArguments<Params extends Record<string, unknown>> = {
 };
 
 export type OnCompleteDoneArguments<
-  Params extends Record<string, unknown>,
+  Params extends BaseSourceParams,
   UserData extends unknown = unknown,
 > = {
   denops: Denops;
@@ -37,9 +39,7 @@ export type OnCompleteDoneArguments<
   userData: UserData;
 };
 
-export type GetCompletePositionArguments<
-  Params extends Record<string, unknown>,
-> = {
+export type GetCompletePositionArguments<Params extends BaseSourceParams> = {
   denops: Denops;
   context: Context;
   onCallback: OnCallback;
@@ -48,7 +48,7 @@ export type GetCompletePositionArguments<
   sourceParams: Params;
 };
 
-export type GatherArguments<Params extends Record<string, unknown>> = {
+export type GatherArguments<Params extends BaseSourceParams> = {
   denops: Denops;
   context: Context;
   onCallback: OnCallback;
@@ -61,7 +61,7 @@ export type GatherArguments<Params extends Record<string, unknown>> = {
 };
 
 export abstract class BaseSource<
-  Params extends Record<string, unknown>,
+  Params extends BaseSourceParams,
   UserData extends unknown = unknown,
 > {
   name = "";

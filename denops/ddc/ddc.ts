@@ -1,4 +1,6 @@
 import {
+  BaseFilterParams,
+  BaseSourceParams,
   BaseUiParams,
   Context,
   DdcExtType,
@@ -58,8 +60,8 @@ type DdcResult = {
 
 export class Ddc {
   private uis: Record<string, BaseUi<BaseUiParams>> = {};
-  private sources: Record<string, BaseSource<Record<string, unknown>>> = {};
-  private filters: Record<string, BaseFilter<Record<string, unknown>>> = {};
+  private sources: Record<string, BaseSource<BaseSourceParams>> = {};
+  private filters: Record<string, BaseFilter<BaseFilterParams>> = {};
 
   private aliases: Record<DdcExtType, Record<string, string>> = {
     ui: {},
@@ -75,10 +77,10 @@ export class Ddc {
   prevSources: string[] = [];
   prevUi = "";
 
-  private foundSources(names: string[]): BaseSource<Record<string, unknown>>[] {
+  private foundSources(names: string[]): BaseSource<BaseSourceParams>[] {
     return names.map((n) => this.sources[n]).filter((v) => v);
   }
-  private foundFilters(names: string[]): BaseFilter<Record<string, unknown>>[] {
+  private foundFilters(names: string[]): BaseFilter<BaseFilterParams>[] {
     return names.map((n) => this.filters[n]).filter((v) => v);
   }
 
@@ -643,7 +645,7 @@ export class Ddc {
     options: DdcOptions,
     sourceOptions: SourceOptions,
     filterOptions: Record<string, Partial<FilterOptions>>,
-    filterParams: Record<string, Partial<Record<string, unknown>>>,
+    filterParams: Record<string, Partial<BaseFilterParams>>,
     completeStr: string,
     cdd: Item[],
   ): Promise<Item[]> {
@@ -666,7 +668,7 @@ export class Ddc {
     const converters = this.foundFilters(sourceOptions.converters);
 
     async function callFilters(
-      filters: BaseFilter<Record<string, unknown>>[],
+      filters: BaseFilter<BaseFilterParams>[],
     ): Promise<Item[]> {
       for (const filter of filters) {
         const [o, p] = filterArgs(filterOptions, filterParams, filter);
@@ -803,9 +805,7 @@ function isTimeoutError(e: unknown): e is TimeoutError {
   return (e as TimeoutError).name == "TimeoutError";
 }
 
-function uiArgs<
-  Params extends Record<string, unknown>,
->(
+function uiArgs<Params extends BaseUiParams>(
   options: DdcOptions,
   ui: BaseUi<Params>,
 ): [UiOptions, BaseUiParams] {
@@ -822,12 +822,12 @@ function uiArgs<
 }
 
 function sourceArgs<
-  Params extends Record<string, unknown>,
+  Params extends BaseSourceParams,
   UserData extends unknown,
 >(
   options: DdcOptions,
   source: BaseSource<Params, UserData>,
-): [SourceOptions, Record<string, unknown>] {
+): [SourceOptions, BaseSourceParams] {
   const o = foldMerge(
     mergeSourceOptions,
     defaultSourceOptions,
@@ -841,18 +841,18 @@ function sourceArgs<
 }
 
 function filterArgs<
-  Params extends Record<string, unknown>,
+  Params extends BaseFilterParams,
 >(
   filterOptions: Record<string, Partial<FilterOptions>>,
-  filterParams: Record<string, Partial<Record<string, unknown>>>,
+  filterParams: Record<string, Partial<BaseFilterParams>>,
   filter: BaseFilter<Params>,
-): [FilterOptions, Record<string, unknown>] {
+): [FilterOptions, BaseFilterParams] {
   // TODO: '_'?
-  const optionsOf = (filter: BaseFilter<Record<string, unknown>>) =>
+  const optionsOf = (filter: BaseFilter<BaseFilterParams>) =>
     foldMerge(mergeFilterOptions, defaultFilterOptions, [
       filterOptions[filter.name],
     ]);
-  const paramsOf = (filter: BaseFilter<Record<string, unknown>>) =>
+  const paramsOf = (filter: BaseFilter<BaseFilterParams>) =>
     foldMerge(mergeFilterParams, defaultDummy, [
       filter.params(),
       filterParams[filter.name],
@@ -861,10 +861,10 @@ function filterArgs<
 }
 
 async function checkUiOnInit(
-  ui: BaseUi<Record<string, unknown>>,
+  ui: BaseUi<BaseUiParams>,
   denops: Denops,
   uiOptions: UiOptions,
-  uiParams: Record<string, unknown>,
+  uiParams: BaseUiParams,
 ) {
   if (ui.isInitialized) {
     return;
@@ -892,10 +892,10 @@ async function checkUiOnInit(
 }
 
 async function checkSourceOnInit(
-  source: BaseSource<Record<string, unknown>>,
+  source: BaseSource<BaseSourceParams>,
   denops: Denops,
   sourceOptions: SourceOptions,
-  sourceParams: Record<string, unknown>,
+  sourceParams: BaseSourceParams,
 ) {
   if (source.isInitialized) {
     return;
@@ -923,10 +923,10 @@ async function checkSourceOnInit(
 }
 
 async function checkFilterOnInit(
-  filter: BaseFilter<Record<string, unknown>>,
+  filter: BaseFilter<BaseFilterParams>,
   denops: Denops,
   filterOptions: FilterOptions,
-  filterParams: Record<string, unknown>,
+  filterParams: BaseFilterParams,
 ) {
   if (filter.isInitialized) {
     return;
@@ -954,13 +954,13 @@ async function checkFilterOnInit(
 }
 
 async function callSourceOnEvent(
-  source: BaseSource<Record<string, unknown>>,
+  source: BaseSource<BaseSourceParams>,
   denops: Denops,
   context: Context,
   onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
-  sourceParams: Record<string, unknown>,
+  sourceParams: BaseSourceParams,
 ) {
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
@@ -987,7 +987,7 @@ async function callSourceOnEvent(
 }
 
 async function callSourceOnCompleteDone<
-  Params extends Record<string, unknown>,
+  Params extends BaseSourceParams,
   UserData extends unknown,
 >(
   source: BaseSource<Params, UserData>,
@@ -1027,13 +1027,13 @@ async function callSourceOnCompleteDone<
 }
 
 async function callSourceGetCompletePosition(
-  source: BaseSource<Record<string, unknown>>,
+  source: BaseSource<BaseSourceParams>,
   denops: Denops,
   context: Context,
   onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
-  sourceParams: Record<string, unknown>,
+  sourceParams: BaseSourceParams,
 ): Promise<number> {
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
@@ -1062,7 +1062,7 @@ async function callSourceGetCompletePosition(
 }
 
 async function callSourceGather<
-  Params extends Record<string, unknown>,
+  Params extends BaseSourceParams,
   UserData extends unknown,
 >(
   source: BaseSource<Params, UserData>,
@@ -1111,13 +1111,13 @@ async function callSourceGather<
 }
 
 async function callFilterOnEvent(
-  filter: BaseFilter<Record<string, unknown>>,
+  filter: BaseFilter<BaseFilterParams>,
   denops: Denops,
   context: Context,
   onCallback: OnCallback,
   options: DdcOptions,
   filterOptions: FilterOptions,
-  filterParams: Record<string, unknown>,
+  filterParams: BaseFilterParams,
 ) {
   await checkFilterOnInit(filter, denops, filterOptions, filterParams);
 
@@ -1144,14 +1144,14 @@ async function callFilterOnEvent(
 }
 
 async function callFilterFilter(
-  filter: BaseFilter<Record<string, unknown>>,
+  filter: BaseFilter<BaseFilterParams>,
   denops: Denops,
   context: Context,
   onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   filterOptions: FilterOptions,
-  filterParams: Record<string, unknown>,
+  filterParams: BaseFilterParams,
   completeStr: string,
   items: Item[],
 ): Promise<Item[]> {
@@ -1271,7 +1271,7 @@ Deno.test("sourceArgs", () => {
       _context?: Context,
       _options?: DdcOptions,
       _sourceOptions?: SourceOptions,
-      _sourceParams?: Record<string, unknown>,
+      _sourceParams?: BaseFilterParams,
       _completeStr?: string,
     ): Promise<Item[]> {
       return Promise.resolve([]);
@@ -1302,7 +1302,7 @@ Deno.test("filterArgs", () => {
       placeholder: undefined,
     },
   };
-  const userParams: Record<string, Record<string, unknown>> = {
+  const userParams: Record<string, BaseFilterParams> = {
     "/dev/null": {
       min: 100,
     },
@@ -1320,7 +1320,7 @@ Deno.test("filterArgs", () => {
       _options?: DdcOptions,
       _sourceOptions?: SourceOptions,
       _filterOptions?: FilterOptions,
-      _filterParams?: Record<string, unknown>,
+      _filterParams?: BaseFilterParams,
       _completeStr?: string,
       _items?: Item[],
     ): Promise<Item[]> {

@@ -1,5 +1,7 @@
 import { assertEquals, Denops, ensureString, fn, op, vars } from "./deps.ts";
 import {
+  BaseFilterParams,
+  BaseSourceParams,
   BaseUiParams,
   Context,
   DdcEvent,
@@ -30,8 +32,8 @@ export const mergeUiOptions: Merge<UiOptions> = overwrite;
 export const mergeSourceOptions: Merge<SourceOptions> = overwrite;
 export const mergeFilterOptions: Merge<FilterOptions> = overwrite;
 export const mergeUiParams: Merge<BaseUiParams> = overwrite;
-export const mergeSourceParams: Merge<Record<string, unknown>> = overwrite;
-export const mergeFilterParams: Merge<Record<string, unknown>> = overwrite;
+export const mergeSourceParams: Merge<BaseSourceParams> = overwrite;
+export const mergeFilterParams: Merge<BaseFilterParams> = overwrite;
 
 export type ContextCallbacks = {
   global: string;

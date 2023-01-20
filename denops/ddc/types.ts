@@ -1,10 +1,14 @@
 import { autocmd } from "./deps.ts";
 import { BaseUiParams } from "./base/ui.ts";
+import { BaseSourceParams } from "./base/source.ts";
+import { BaseFilterParams } from "./base/filter.ts";
 
 export { BaseSource } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
 
 export type { BaseUiParams } from "./base/ui.ts";
+export type { BaseSourceParams } from "./base/source.ts";
+export type { BaseFilterParams } from "./base/filter.ts";
 
 export type DdcExtType = "ui" | "source" | "filter";
 
@@ -37,11 +41,11 @@ export type DdcOptions = {
   backspaceCompletion: boolean;
   cmdlineSources: SourceName[] | Record<string, SourceName[]>;
   filterOptions: Record<string, Partial<FilterOptions>>;
-  filterParams: Record<string, Partial<Record<string, unknown>>>;
+  filterParams: Record<string, Partial<BaseFilterParams>>;
   keywordPattern: string;
   postFilters: string[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
-  sourceParams: Record<SourceName, Partial<Record<string, unknown>>>;
+  sourceParams: Record<SourceName, Partial<BaseSourceParams>>;
   sources: SourceName[];
   specialBufferCompletion: boolean;
   ui: string;
