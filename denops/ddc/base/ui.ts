@@ -1,15 +1,15 @@
 import { Context, DdcItem, DdcOptions, UiOptions } from "../types.ts";
 import { Denops } from "../deps.ts";
 
-export type OnInitArguments<Params extends Record<string, unknown>> = {
+export type BaseUiParams = Record<string, unknown>;
+
+export type OnInitArguments<Params extends BaseUiParams> = {
   denops: Denops;
   uiOptions: UiOptions;
   uiParams: Params;
 };
 
-export type SkipCompletionArguments<
-  Params extends Record<string, unknown>,
-> = {
+export type SkipCompletionArguments<Params extends BaseUiParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -17,9 +17,7 @@ export type SkipCompletionArguments<
   uiParams: Params;
 };
 
-export type ShowArguments<
-  Params extends Record<string, unknown>,
-> = {
+export type ShowArguments<Params extends BaseUiParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -29,9 +27,7 @@ export type ShowArguments<
   uiParams: Params;
 };
 
-export type HideArguments<
-  Params extends Record<string, unknown>,
-> = {
+export type HideArguments<Params extends BaseUiParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -39,9 +35,7 @@ export type HideArguments<
   uiParams: Params;
 };
 
-export type VisibleArguments<
-  Params extends Record<string, unknown>,
-> = {
+export type VisibleArguments<Params extends BaseUiParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -49,9 +43,7 @@ export type VisibleArguments<
   uiParams: Params;
 };
 
-export abstract class BaseUi<
-  Params extends Record<string, unknown>,
-> {
+export abstract class BaseUi<Params extends BaseUiParams> {
   name = "";
   isInitialized = false;
   apiVersion = 2;

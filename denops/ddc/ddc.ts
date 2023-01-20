@@ -1,4 +1,5 @@
 import {
+  BaseUiParams,
   Context,
   DdcExtType,
   DdcGatherItems,
@@ -56,7 +57,7 @@ type DdcResult = {
 };
 
 export class Ddc {
-  private uis: Record<string, BaseUi<Record<string, unknown>>> = {};
+  private uis: Record<string, BaseUi<BaseUiParams>> = {};
   private sources: Record<string, BaseSource<Record<string, unknown>>> = {};
   private filters: Record<string, BaseFilter<Record<string, unknown>>> = {};
 
@@ -736,9 +737,9 @@ export class Ddc {
     options: DdcOptions,
   ): Promise<
     [
-      BaseUi<Record<string, unknown>> | undefined,
+      BaseUi<BaseUiParams> | undefined,
       UiOptions,
-      Record<string, unknown>,
+      BaseUiParams,
     ]
   > {
     if (options.ui.length == 0) {
@@ -807,7 +808,7 @@ function uiArgs<
 >(
   options: DdcOptions,
   ui: BaseUi<Params>,
-): [UiOptions, Record<string, unknown>] {
+): [UiOptions, BaseUiParams] {
   const o = foldMerge(
     mergeUiOptions,
     defaultUiOptions,

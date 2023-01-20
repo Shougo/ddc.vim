@@ -1,6 +1,10 @@
 import { autocmd } from "./deps.ts";
+import { BaseUiParams } from "./base/ui.ts";
+
 export { BaseSource } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
+
+export type { BaseUiParams } from "./base/ui.ts";
 
 export type DdcExtType = "ui" | "source" | "filter";
 
@@ -42,7 +46,7 @@ export type DdcOptions = {
   specialBufferCompletion: boolean;
   ui: string;
   uiOptions: Record<SourceName, Partial<UiOptions>>;
-  uiParams: Record<SourceName, Partial<Record<string, unknown>>>;
+  uiParams: Record<SourceName, Partial<BaseUiParams>>;
 };
 
 export type UserOptions = Record<string, unknown>;

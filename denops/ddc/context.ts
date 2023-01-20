@@ -1,5 +1,6 @@
 import { assertEquals, Denops, ensureString, fn, op, vars } from "./deps.ts";
 import {
+  BaseUiParams,
   Context,
   DdcEvent,
   DdcOptions,
@@ -28,7 +29,7 @@ function overwrite<T>(a: T, b: Partial<T>): T {
 export const mergeUiOptions: Merge<UiOptions> = overwrite;
 export const mergeSourceOptions: Merge<SourceOptions> = overwrite;
 export const mergeFilterOptions: Merge<FilterOptions> = overwrite;
-export const mergeUiParams: Merge<Record<string, unknown>> = overwrite;
+export const mergeUiParams: Merge<BaseUiParams> = overwrite;
 export const mergeSourceParams: Merge<Record<string, unknown>> = overwrite;
 export const mergeFilterParams: Merge<Record<string, unknown>> = overwrite;
 
