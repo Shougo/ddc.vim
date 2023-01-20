@@ -455,11 +455,9 @@ ddc#map#insert_item({index}, {cancel-key})
 		Note: It must be in |:map-<expr>|.
 
 					    	*ddc#map#manual_complete()*
-ddc#map#manual_complete([{sources}[, {ui-name}]])
+ddc#map#manual_complete([{options}])
 		Manual trigger ddc completion.
-		You can provide a list of {sources}: It can be the name of a
-		source or a list of sources name.
-		{ui-name} is ui name.
+		{options} is |ddc-options|.
 		Note: Manual completion ignores
 		|ddc-source-option-minAutoCompleteLength|.
 
@@ -963,7 +961,7 @@ A: It is not implemented, but you can emulate the behavior by
 	function! MyChainCompletion() abort
 	  let head = g:chains[0]
 	  let g:chains = g:chains[1:] + [head]
-	  return ddc#map#manual_complete([head])
+	  return ddc#map#manual_complete(#{ sources: [head] })
 	endfunction
 	inoremap <silent><expr> <C-t>  MyChainCompletion()
 
@@ -1232,6 +1230,9 @@ NOTE: "ddu.vim" configuration is required.
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2023.01.20
+* Change "ddc#map#manual_complete()" interface.
 
 2022.11.27
 * Remove cancel-key from "ddc#map#complete_common_string()".

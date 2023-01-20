@@ -192,6 +192,7 @@ class Custom {
     denops: Denops | null,
     ft: string,
     bufnr: number,
+    options: Record<string, unknown>,
   ): Promise<DdcOptions> {
     const contextGlobal = (this.context.global != "" && denops)
       ? await denops.call(
@@ -220,6 +221,7 @@ class Custom {
       contextFiletype,
       buffer,
       contextBuffer,
+      options,
     ]);
   }
 
@@ -386,15 +388,15 @@ export class ContextBuilder {
   async createContext(
     denops: Denops,
     event: DdcEvent,
+    options: Record<string, unknown> = {},
   ): Promise<[boolean, Context, DdcOptions]> {
     const world = await this._cacheWorld(denops, event);
     const old = this.lastWorld;
     this.lastWorld = world;
     let skip = false;
-    const skipNegligible = (
-      event != "Initialize" && event != "Manual" && event != "Update" &&
-      event != "CompleteDone" && isNegligible(old, world)
-    );
+    const skipNegligible = event != "Initialize" && event != "Manual" &&
+      event != "Update" &&
+      event != "CompleteDone" && isNegligible(old, world);
     if (skipNegligible || world.isLmap || world.changedByCompletion) {
       skip = true;
     }
@@ -411,15 +413,20 @@ export class ContextBuilder {
     return [
       skip,
       context,
-      await this._getUserOptions(denops, world),
+      await this._getUserOptions(denops, world, options),
     ];
   }
 
-  async _getUserOptions(denops: Denops, world: World): Promise<DdcOptions> {
+  async _getUserOptions(
+    denops: Denops,
+    world: World,
+    options: Record<string, unknown> = {},
+  ): Promise<DdcOptions> {
     const userOptions = await this.custom.get(
       denops,
       world.filetype,
       world.bufnr,
+      options,
     );
 
     // Convert keywordPattern
@@ -590,7 +597,7 @@ Deno.test("mergeDdcOptions", async () => {
       },
     })
     .patchBuffer(2, {});
-  assertEquals(await custom.get(null, "typescript", 1), {
+  assertEquals(await custom.get(null, "typescript", 1, {}), {
     ...defaultDdcOptions(),
     sources: ["around", "foo"],
     sourceOptions: {},
@@ -609,7 +616,7 @@ Deno.test("mergeDdcOptions", async () => {
       },
     },
   });
-  assertEquals(await custom.get(null, "typescript", 2), {
+  assertEquals(await custom.get(null, "typescript", 2, {}), {
     ...defaultDdcOptions(),
     sources: [],
     sourceOptions: {},
@@ -625,7 +632,7 @@ Deno.test("mergeDdcOptions", async () => {
       },
     },
   });
-  assertEquals(await custom.get(null, "cpp", 1), {
+  assertEquals(await custom.get(null, "cpp", 1, {}), {
     ...defaultDdcOptions(),
     sources: ["around", "foo"],
     sourceOptions: {},

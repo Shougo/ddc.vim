@@ -105,12 +105,11 @@ export async function main(denops: Denops) {
     getCurrent(): Promise<DdcOptions> {
       return Promise.resolve(contextBuilder.getCurrent(denops));
     },
-    async manualComplete(arg1: unknown, arg2: unknown): Promise<void> {
-      const sources = arg1 as string[];
-      const ui = arg2 as string;
+    async manualComplete(arg1: unknown): Promise<void> {
+      const userOptions = ensureObject(arg1);
 
       const [skip, context, options] = await contextBuilder
-        .createContext(denops, "Manual");
+        .createContext(denops, "Manual", userOptions);
       if (skip) return;
 
       // Hide the current completion
@@ -127,19 +126,9 @@ export async function main(denops: Denops) {
           }
         }
       }
-      if (sources.length != 0) {
-        options.sources = sources;
 
-        // Load sources
-        await ddc.autoload(denops, "source", options.sources);
-      }
-
-      if (ui.length != 0) {
-        options.ui = ui;
-
-        // Load UI
-        await ddc.autoload(denops, "ui", [options.ui]);
-      }
+      // Load sources
+      await ddc.autoload(denops, "source", options.sources);
 
       cbContext.revoke();
       await doCompletion(denops, context, options);
@@ -301,10 +290,10 @@ export async function main(denops: Denops) {
     // Note: Don't complete when backspace by default, because of completion
     // flicker.
     const prevInput = await vars.g.get(denops, "ddc#_prev_input") as string;
-    const checkBackSpace = (!options.backspaceCompletion &&
+    const checkBackSpace = !options.backspaceCompletion &&
       context.input != prevInput &&
       context.input.length + 1 == prevInput.length &&
-      prevInput.startsWith(context.input));
+      prevInput.startsWith(context.input);
     if (checkBackSpace) {
       await vars.g.set(denops, "ddc#_prev_input", context.input);
       return true;
