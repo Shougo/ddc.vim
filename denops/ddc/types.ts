@@ -45,6 +45,8 @@ export type DdcOptions = {
   uiParams: Record<SourceName, Partial<Record<string, unknown>>>;
 };
 
+export type UserOptions = Record<string, unknown>;
+
 export type UiOptions = {
   // TODO: add options and remove placeholder
   placeholder: void;

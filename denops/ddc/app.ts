@@ -8,6 +8,7 @@ import {
   DdcOptions,
   DdcUserData,
   Item,
+  UserOptions,
 } from "./types.ts";
 import {
   batch,
@@ -106,7 +107,7 @@ export async function main(denops: Denops) {
       return Promise.resolve(contextBuilder.getCurrent(denops));
     },
     async manualComplete(arg1: unknown): Promise<void> {
-      const userOptions = ensureObject(arg1);
+      const userOptions = ensureObject(arg1) as UserOptions;
 
       const [skip, context, options] = await contextBuilder
         .createContext(denops, "Manual", userOptions);

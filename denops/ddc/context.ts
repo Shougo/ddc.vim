@@ -6,6 +6,7 @@ import {
   FilterOptions,
   SourceOptions,
   UiOptions,
+  UserOptions,
 } from "./types.ts";
 import { vimoption2ts } from "./util.ts";
 
@@ -192,7 +193,7 @@ class Custom {
     denops: Denops | null,
     ft: string,
     bufnr: number,
-    options: Record<string, unknown>,
+    options: UserOptions,
   ): Promise<DdcOptions> {
     const contextGlobal = (this.context.global != "" && denops)
       ? await denops.call(
@@ -388,7 +389,7 @@ export class ContextBuilder {
   async createContext(
     denops: Denops,
     event: DdcEvent,
-    options: Record<string, unknown> = {},
+    options: UserOptions = {},
   ): Promise<[boolean, Context, DdcOptions]> {
     const world = await this._cacheWorld(denops, event);
     const old = this.lastWorld;
@@ -420,7 +421,7 @@ export class ContextBuilder {
   async _getUserOptions(
     denops: Denops,
     world: World,
-    options: Record<string, unknown> = {},
+    options: UserOptions = {},
   ): Promise<DdcOptions> {
     const userOptions = await this.custom.get(
       denops,
