@@ -107,15 +107,14 @@ export async function main(denops: Denops) {
       return Promise.resolve(contextBuilder.getCurrent(denops));
     },
     async manualComplete(arg1: unknown): Promise<void> {
-      const userOptions = ensureObject(arg1) as UserOptions;
-
       // Get current options
       let [skip, context, options] = await contextBuilder
         .createContext(denops, "Manual");
-      if (skip) return;
 
       // Hide the current completion
       await ddc.hide(denops, context, options);
+
+      const userOptions = ensureObject(arg1) as UserOptions;
 
       // Update options
       [skip, context, options] = await contextBuilder
@@ -222,7 +221,8 @@ export async function main(denops: Denops) {
     const [skip, context, options] = await contextBuilder
       .createContext(denops, event);
 
-    if (await ddc.visible(denops, context, options) && ddc.prevUi != "") {
+    const visible = await ddc.visible(denops, context, options);
+    if (visible && ddc.prevUi != "") {
       // NOTE: If UI is visible, use prevSources/prevUi instead to update
       // current items
       options.sources = ddc.prevSources;
@@ -261,7 +261,6 @@ export async function main(denops: Denops) {
 
     if (await checkSkipCompletion(event, context, options)) {
       await cancelCompletion(denops, context, options);
-
       return;
     }
 
