@@ -109,12 +109,18 @@ export async function main(denops: Denops) {
     async manualComplete(arg1: unknown): Promise<void> {
       const userOptions = ensureObject(arg1) as UserOptions;
 
-      const [skip, context, options] = await contextBuilder
-        .createContext(denops, "Manual", userOptions);
+      // Get current options
+      let [skip, context, options] = await contextBuilder
+        .createContext(denops, "Manual");
       if (skip) return;
 
       // Hide the current completion
       await ddc.hide(denops, context, options);
+
+      // Update options
+      [skip, context, options] = await contextBuilder
+        .createContext(denops, "Manual", userOptions);
+      if (skip) return;
 
       if (context.mode == "c") {
         // Use cmdlineSources instead
