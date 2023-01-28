@@ -11,6 +11,7 @@ import {
   UiOptions,
   UserOptions,
 } from "./types.ts";
+import { defaultSourceOptions } from "./base/source.ts";
 import { vimoption2ts } from "./util.ts";
 
 // where
@@ -218,6 +219,7 @@ class Custom {
         this.context.buffer[bufnr],
       ) as Partial<DdcOptions>
       : {};
+
     return foldMerge(mergeDdcOptions, defaultDdcOptions, [
       this.global,
       contextGlobal,
@@ -414,10 +416,23 @@ export class ContextBuilder {
       mode: world.mode,
       nextInput: world.nextInput,
     };
+
+    const userOptions = await this._getUserOptions(denops, world, options);
+
+    await this.validate(denops, "options", userOptions, defaultDdcOptions());
+    for (const key in userOptions.sourceOptions) {
+      await this.validate(
+        denops,
+        "sourceOptions",
+        userOptions.sourceOptions[key],
+        defaultSourceOptions(),
+      );
+    }
+
     return [
       skip,
       context,
-      await this._getUserOptions(denops, world, options),
+      userOptions,
     ];
   }
 
@@ -458,6 +473,22 @@ export class ContextBuilder {
   async getCurrent(denops: Denops): Promise<DdcOptions> {
     const world = await this._cacheWorld(denops, "Manual");
     return this._getUserOptions(denops, world);
+  }
+
+  async validate(
+    denops: Denops,
+    name: string,
+    options: Record<string, unknown>,
+    defaults: Record<string, unknown>,
+  ) {
+    for (const key in options) {
+      if (!(key in defaults)) {
+        await denops.call(
+          "ddc#util#print_error",
+          `Invalid ${name}: "${key}"`,
+        );
+      }
+    }
   }
 
   setGlobal(options: Partial<DdcOptions>) {
