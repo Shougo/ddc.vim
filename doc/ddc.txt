@@ -529,8 +529,7 @@ to use ddc.vim.  Please search them by https://github.com/topics/ddc-ui
 
 Note: The default UI is empty.  You need to configure it to use ddc.
 
-The UIs must be registered by |ddc#register()| or put under
-"denops/@ddc-uis/*.ts".
+The UIs must put under "denops/@ddc-uis/*.ts".
 
 Note: The name is named by file name.
 
@@ -557,8 +556,7 @@ to use ddc.vim.  Please search them by https://github.com/topics/ddc-source
 Note: The default sources are empty.  You need to
 configure them to use ddc.
 
-The sources must be registered by |ddc#register()| or put under
-"denops/@ddc-sources/*.ts".
+The sources must put under "denops/@ddc-sources/*.ts".
 
 Note: The name is named by file name.
 
@@ -713,8 +711,7 @@ to use ddc.vim.  Please search them by https://github.com/topics/ddc-filter
 Note: The default matchers/sorters/converters are empty.  You need to
 configure them to use ddc.
 
-The filters must be registered by |ddc#register()| or put under
-"denops/@ddc-filters/*.ts".
+The filters must put under "denops/@ddc-filters/*.ts".
 
 Note: The name is named by file name.
 
