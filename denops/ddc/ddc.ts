@@ -816,7 +816,7 @@ function uiArgs<Params extends BaseUiParams>(
   );
   const p = foldMerge(mergeUiParams, defaultDummy, [
     ui.params ? ui.params() : null,
-    options.sourceParams[ui.name],
+    options.uiParams[ui.name],
   ]);
   return [o, p];
 }
