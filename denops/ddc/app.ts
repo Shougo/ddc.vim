@@ -361,8 +361,6 @@ export async function main(denops: Denops) {
     })();
   }
 
-  const checkTextChangedT = await fn.exists(denops, "##TextChangedT");
-
   await batch(denops, async (denops: Denops) => {
     await vars.g.set(denops, "ddc#_changedtick", 0);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
@@ -380,11 +378,6 @@ export async function main(denops: Denops) {
       "TextChangedI",
       "TextChangedP",
     ]);
-    if (checkTextChangedT) {
-      ddc.registerAutocmd(denops, [
-        "TextChangedT",
-      ]);
-    }
     await denops.cmd(
       "autocmd ddc CmdlineChanged * " +
         "if getcmdtype() ==# '=' || getcmdtype() ==# '@' |" +

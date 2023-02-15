@@ -1224,9 +1224,19 @@ A: You can narrow current items by "ddu.vim" like this.
 <
 NOTE: "ddu.vim" configuration is required.
 
+Q: I want to enable completion in |:terminal|.
+
+A: Please add "TextChangedT" to |ddc-option-autoCompleteEvents|.
+And you need to use "ddc-ui-pum".
+
+https://github.com/Shougo/ddc-ui-pum
+
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2023.02.15
+* Remove "TextChangedT" from ddc-option-autoCompleteEvents.
 
 2023.01.20
 * Change "ddc#map#manual_complete()" interface.
