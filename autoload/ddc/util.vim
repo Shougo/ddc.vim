@@ -22,7 +22,7 @@ function! ddc#util#get_input(event) abort
   let input = pos >= len(text) ?
         \     text :
         \     matchstr(text,
-        \         '^.*\%' . (is_insert ? col : col - 1)
+        \         '^.*\%' . (is_insert || col <= 0 ? col : col - 1)
         \         . 'c' . (is_insert ? '' : '.'))
 
   return input
