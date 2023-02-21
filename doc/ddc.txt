@@ -280,6 +280,11 @@ ddc#enable_cmdline_completion()
 		Note: "pum.vim" is needed for the feature.
 		Note: It disables |command-line-window| feature.
 
+					*ddc#enable_terminal_completion()*
+ddc#enable_terminal_completion()
+		Enable ddc.vim terminal completion feature.
+		Note: "pum.vim" is needed for the feature.
+
 							*ddc#hide({event})*
 ddc#hide({event})
 		Hide current completion UI.
@@ -1230,7 +1235,21 @@ A: Please add "TextChangedT" to |ddc-option-autoCompleteEvents|.
 And you need to use "ddc-ui-pum".
 
 https://github.com/Shougo/ddc-ui-pum
+>
+	call ddc#custom#patch_global('autoCompleteEvents', [
+	      \ 'InsertEnter', 'TextChangedI', 'TextChangedP',
+	      \ 'CmdlineEnter', 'CmdlineChanged', 'TextChangedT',
+	      \ ])
+	call ddc#custom#patch_global('ui', 'pum')
+	call ddc#enable_terminal_completion()
 
+	" For deol buffer.
+	call ddc#custom#patch_filetype(['deol'], #{
+	\   specialBufferCompletion: v:true,
+	\   keywordPattern: '[0-9a-zA-Z_./#:-]*',
+	\   sources: ['zsh', 'shell-history', 'around'],
+	\ })
+<
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*

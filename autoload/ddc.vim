@@ -74,6 +74,20 @@ function! ddc#disable_cmdline_completion() abort
     doautocmd <nomodeline> User DDCCmdlineLeave
   endif
 endfunction
+
+function! ddc#enable_terminal_completion() abort
+  if !exists('##TextChangedT')
+    return
+  endif
+
+  call ddc#enable()
+
+  augroup ddc-terminal
+    autocmd!
+    autocmd TextChangedT * call ddc#_on_event('TextChangedT')
+  augroup END
+endfunction
+
 function! ddc#disable() abort
   augroup ddc
     autocmd!
