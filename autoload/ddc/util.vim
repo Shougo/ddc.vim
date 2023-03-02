@@ -21,7 +21,7 @@ function! ddc#util#get_input(event) abort
         \ is_insert ? col - 1 : col
   let input = pos >= len(text) ?
         \     text :
-        \     matchstr(text,
+        \     text->matchstr(
         \         '^.*\%' . (is_insert || col <= 0 ? col : col - 1)
         \         . 'c' . (is_insert ? '' : '.'))
 
@@ -37,7 +37,7 @@ function! ddc#util#benchmark(msg = '') abort
   if msg !=# ''
     let msg .= ' '
   endif
-  let diff = reltimefloat(reltime(g:ddc#_started))
+  let diff = g:ddc#_started->reltime()->reltimefloat()
   call ddc#util#print_error(printf('%s%s: Took %f seconds.',
-        \ msg, expand('<sfile>'), diff))
+        \ msg, '<sfile>'->expand(), diff))
 endfunction

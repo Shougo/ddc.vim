@@ -1,7 +1,7 @@
 function! ddc#enable() abort
   " Dummy call
   silent! call denops#plugin#is_loaded('ddc')
-  if !exists('*denops#plugin#is_loaded')
+  if !('*denops#plugin#is_loaded'->exists())
     call ddc#util#print_error('denops.vim is not released or too old.')
     return
   endif
@@ -29,7 +29,7 @@ function! ddc#enable() abort
 
   " Note: ddc.vim must be registered manually.
   autocmd ddc User DenopsReady silent! call ddc#_register()
-  if exists('g:loaded_denops') && denops#server#status() ==# 'running'
+  if 'g:loaded_denops'->exists() && denops#server#status() ==# 'running'
     silent! call ddc#_register()
   endif
 endfunction
@@ -44,7 +44,7 @@ function! ddc#enable_cmdline_completion() abort
           \ if getcmdtype() !=# '=' && getcmdtype() !=# '@' |
           \ call ddc#_on_event('CmdlineChanged') | endif
   augroup END
-  if exists('##ModeChanged')
+  if '##ModeChanged'->exists()
     autocmd ddc-cmdline ModeChanged *:n
           \ call ddc#disable_cmdline_completion()
   else
@@ -64,19 +64,19 @@ function! ddc#disable_cmdline_completion() abort
     autocmd!
   augroup END
 
-  if exists('s:save_cedit')
+  if 's:save_cedit'->exists()
     let &cedit = s:save_cedit
   endif
 
   unlet! b:ddc_cmdline_completion
 
-  if exists('#User#DDCCmdlineLeave')
+  if '#User#DDCCmdlineLeave'->exists()
     doautocmd <nomodeline> User DDCCmdlineLeave
   endif
 endfunction
 
 function! ddc#enable_terminal_completion() abort
-  if !exists('##TextChangedT')
+  if !('##TextChangedT'->exists())
     return
   endif
 
@@ -130,13 +130,14 @@ function! ddc#hide(event) abort
 endfunction
 
 function! ddc#complete_info() abort
-  return exists('*pum#complete_info') ? pum#complete_info() : complete_info()
+  return '*pum#complete_info'->exists() ?
+        \ pum#complete_info() : complete_info()
 endfunction
 let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 let s:sep = has('win32') ? '\' : '/'
 function! ddc#_register() abort
   call denops#plugin#register('ddc',
-        \ join([s:root_dir, 'denops', 'ddc', 'app.ts'], s:sep),
+        \ [s:root_dir, 'denops', 'ddc', 'app.ts']->join(s:sep),
         \ #{ mode: 'skip' })
 
   autocmd ddc User DenopsClosed call s:stopped()
@@ -146,7 +147,7 @@ function! s:stopped() abort
   unlet! g:ddc#_initialized
 
   " Restore custom config
-  if exists('g:ddc#_customs')
+  if 'g:ddc#_customs'->exists()
     for custom in g:ddc#_customs
       call ddc#_notify(custom.method, custom.args)
     endfor
@@ -154,7 +155,7 @@ function! s:stopped() abort
 endfunction
 
 function! ddc#_denops_running() abort
-  return exists('g:loaded_denops')
+  return 'g:loaded_denops'->exists()
         \ && denops#server#status() ==# 'running'
         \ && denops#plugin#is_loaded('ddc')
 endfunction
@@ -174,6 +175,6 @@ function! ddc#_notify(method, args) abort
   else
     execute printf('autocmd User DDCReady call ' .
           \ 'denops#notify("ddc", "%s", %s)',
-          \ a:method, string(a:args))
+          \ a:method, a:args->string())
   endif
 endfunction

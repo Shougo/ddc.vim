@@ -1,7 +1,7 @@
 function! ddc#syntax#in(checks) abort
   let groups_names = ddc#syntax#get()
-  for check in type(a:checks) == v:t_list ? a:checks : [a:checks]
-    if index(groups_names, check) >= 0
+  for check in a:checks->type() == v:t_list ? a:checks : [a:checks]
+    if groups_names->index(check) >= 0
       return v:true
     endif
   endfor
@@ -23,10 +23,10 @@ function! s:get_syn_names(curpos) abort
   try
     " Note: synstack() seems broken in concealed text.
     for id in synstack(a:curpos[0], a:curpos[1])
-      let name = synIDattr(id, 'name')
+      let name = id->synIDattr('name')
       call add(names, name)
       if synIDattr(synIDtrans(id), 'name') !=# name
-        call add(names, synIDattr(synIDtrans(id), 'name'))
+        call add(names, id->synIDtrans()->synIDattr('name'))
       endif
     endfor
   catch

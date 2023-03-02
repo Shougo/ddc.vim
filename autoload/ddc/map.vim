@@ -18,19 +18,19 @@ function! ddc#map#manual_complete(options = {}) abort
 endfunction
 
 function! ddc#map#can_complete() abort
-  return !empty(get(g:, 'ddc#_items', []))
-        \ && get(g:, 'ddc#_complete_pos', -1) >= 0
+  return !(g:->get('ddc#_items', [])->empty())
+        \ && g:->get('ddc#_complete_pos', -1) >= 0
 endfunction
 
 function! ddc#map#extend(confirm_key) abort
-  if !exists('g:ddc#_sources')
+  if !('g:ddc#_sources'->exists())
     return ''
   endif
   return a:confirm_key . ddc#map#manual_complete(g:ddc#_sources)
 endfunction
 
 function! ddc#map#complete_common_string() abort
-  if empty(g:ddc#_items) || g:ddc#_complete_pos < 0
+  if g:ddc#_items->empty() || g:ddc#_complete_pos < 0
     return ''
   endif
 
@@ -40,7 +40,7 @@ function! ddc#map#complete_common_string() abort
 
   let common_str = g:ddc#_items[0].word
   for item in g:ddc#_items[1:]
-    while stridx(tolower(item.word), tolower(common_str)) != 0
+    while item.word->tolower()->stridx(common_str->tolower()) != 0
       let common_str = common_str[: -2]
     endwhile
   endfor
@@ -54,7 +54,7 @@ function! ddc#map#complete_common_string() abort
   if mode() ==# 'i'
     let chars .= "\<Cmd>set backspace=start\<CR>"
   endif
-  let chars .= repeat("\<BS>", strchars(complete_str))
+  let chars .= "\<BS>"->repeat(complete_str->strchars())
   let chars .= common_str
   if mode() ==# 'i'
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
@@ -63,7 +63,7 @@ function! ddc#map#complete_common_string() abort
 endfunction
 
 function! ddc#map#insert_item(number, cancel_key) abort
-  let word = get(g:ddc#_items, a:number, #{ word: '' }).word
+  let word = g:ddc#_items->get(a:number, #{ word: '' }).word
   if word ==# ''
     return ''
   endif
@@ -80,7 +80,7 @@ function! ddc#map#insert_item(number, cancel_key) abort
   if mode() ==# 'i'
     let chars .= "\<Cmd>set backspace=start\<CR>"
   endif
-  let chars .= repeat("\<BS>", strchars(complete_str))
+  let chars .= "\<BS>"->repeat(complete_str->strchars())
   let chars .= word
   if mode() ==# 'i'
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
@@ -93,6 +93,6 @@ function! s:col() abort
   let col = mode() ==# 't' && !has('nvim') ?
         \ term_getcursor(bufnr('%'))[1] :
         \ mode() ==# 'c' ? getcmdpos() :
-        \ mode() ==# 't' ? col('.') : col('.')
+        \ mode() ==# 't' ? '.'->col() : '.'->col()
   return col
 endfunction
