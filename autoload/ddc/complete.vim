@@ -6,14 +6,14 @@ function! ddc#complete#_on_complete_done(completed_item) abort
   endif
 
   " Search selected item from previous items
-  let items = g:ddc#_items->copy()->filter({ _, val
-        \ -> val.word ==# a:completed_item.word
-        \ && val.abbr ==# a:completed_item.abbr
-        \ && val.info ==# a:completed_item.info
-        \ && val.kind ==# a:completed_item.kind
-        \ && val.menu ==# a:completed_item.menu
-        \ && has_key(val, 'user_data')
-        \ && val.user_data ==# a:completed_item.user_data
+  let items = g:ddc#_items->copy()->filter({ _, val ->
+        \   val.word ==# a:completed_item.word
+        \   && val.abbr ==# a:completed_item.abbr
+        \   && val.info ==# a:completed_item.info
+        \   && val.kind ==# a:completed_item.kind
+        \   && val.menu ==# a:completed_item.menu
+        \   && has_key(val, 'user_data')
+        \   && val.user_data ==# a:completed_item.user_data
         \ })
   if items->empty()
     return
@@ -36,8 +36,8 @@ function! ddc#complete#_skip(pos, items) abort
   " will be the next line.  It breaks auto completion behavior.
   if &l:formatoptions =~# '[tca]' && &l:textwidth > 0
     let input = getline('.')[: a:pos]
-    let displaywidth = max(a:items->copy()->map(
-          \ { _, val -> strdisplaywidth(input . val.word) })) + 1
+    let displaywidth = max(a:items->copy()
+          \ ->map({ _, val -> strdisplaywidth(input . val.word) })) + 1
     let col = mode() ==# 'c' ? getcmdpos() : virtcol('.')
     if displaywidth >= &l:textwidth || col >= displaywidth
       return v:true
