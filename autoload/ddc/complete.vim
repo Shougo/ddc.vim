@@ -37,7 +37,7 @@ function! ddc#complete#_skip(pos, items) abort
   if &l:formatoptions =~# '[tca]' && &l:textwidth > 0
     let input = getline('.')[: a:pos]
     let displaywidth = max(a:items->copy()
-          \ ->map({ _, val -> strdisplaywidth(input . val.word) })) + 1
+          \ ->map({ _, val -> strdisplaywidth(input .. val.word) })) + 1
     let col = mode() ==# 'c' ? getcmdpos() : virtcol('.')
     if displaywidth >= &l:textwidth || col >= displaywidth
       return v:true

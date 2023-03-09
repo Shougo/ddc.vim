@@ -26,7 +26,7 @@ function! ddc#map#extend(confirm_key) abort
   if !('g:ddc#_sources'->exists())
     return ''
   endif
-  return a:confirm_key . ddc#map#manual_complete(g:ddc#_sources)
+  return a:confirm_key .. ddc#map#manual_complete(g:ddc#_sources)
 endfunction
 
 function! ddc#map#complete_common_string() abort

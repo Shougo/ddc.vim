@@ -22,8 +22,8 @@ function! ddc#util#get_input(event) abort
   let input = pos >= len(text) ?
         \     text :
         \     text->matchstr(
-        \         '^.*\%' . (is_insert || col <= 0 ? col : col - 1)
-        \         . 'c' . (is_insert ? '' : '.'))
+        \         '^.*\%' .. (is_insert || col <= 0 ? col : col - 1)
+        \         .. 'c' .. (is_insert ? '' : '.'))
 
   return input
 endfunction
