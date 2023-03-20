@@ -1,5 +1,5 @@
 function! ddc#syntax#in(checks) abort
-  let groups_names = ddc#syntax#get()
+  const groups_names = ddc#syntax#get()
   for check in a:checks->type() == v:t_list ? a:checks : [a:checks]
     if groups_names->index(check) >= 0
       return v:true
@@ -9,7 +9,7 @@ function! ddc#syntax#in(checks) abort
 endfunction
 
 function! ddc#syntax#get() abort
-  let curpos = getcurpos()[1:2]
+  const curpos = getcurpos()[1:2]
   return &l:syntax !=# '' ? s:get_syn_names([curpos[0], curpos[1] - 1]) :
         \ has('nvim') ? v:lua.vim.treesitter.get_captures_at_cursor(0) :  []
 endfunction
@@ -23,7 +23,7 @@ function! s:get_syn_names(curpos) abort
   try
     " Note: synstack() seems broken in concealed text.
     for id in synstack(a:curpos[0], a:curpos[1])
-      let name = id->synIDattr('name')
+      const name = id->synIDattr('name')
       call add(names, name)
       if synIDattr(synIDtrans(id), 'name') !=# name
         call add(names, id->synIDtrans()->synIDattr('name'))

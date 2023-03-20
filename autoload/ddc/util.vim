@@ -11,15 +11,15 @@ function! ddc#util#get_text(mode) abort
         \ : getline('.')
 endfunction
 function! ddc#util#get_input(event) abort
-  let mode = a:event ==# 'InsertEnter' ? 'i' : mode()
-  let is_insert = (mode ==# 'i') || (mode ==# 't')
-  let text = ddc#util#get_text(mode)
-  let col = mode() ==# 't' && !has('nvim') ?
+  const mode = a:event ==# 'InsertEnter' ? 'i' : mode()
+  const is_insert = (mode ==# 'i') || (mode ==# 't')
+  const text = ddc#util#get_text(mode)
+  const col = mode() ==# 't' && !has('nvim') ?
         \ term_getcursor(bufnr('%'))[1] :
         \ mode() ==# 'c' ? getcmdpos() : col('.')
-  let pos = mode ==# 'c' ? col - 1 :
+  const pos = mode ==# 'c' ? col - 1 :
         \ is_insert ? col - 1 : col
-  let input = pos >= len(text) ?
+  const input = pos >= len(text) ?
         \     text :
         \     text->matchstr(
         \         '^.*\%' .. (is_insert || col <= 0 ? col : col - 1)
@@ -28,7 +28,7 @@ function! ddc#util#get_input(event) abort
   return input
 endfunction
 function! ddc#util#get_next_input(event) abort
-  let text = ddc#util#get_text(mode())
+  const text = ddc#util#get_text(mode())
   return text[len(ddc#util#get_input(a:event)) :]
 endfunction
 
@@ -37,7 +37,7 @@ function! ddc#util#benchmark(msg = '') abort
   if msg !=# ''
     let msg .= ' '
   endif
-  let diff = g:ddc#_started->reltime()->reltimefloat()
+  const diff = g:ddc#_started->reltime()->reltimefloat()
   call ddc#util#print_error(printf('%s%s: Took %f seconds.',
         \ msg, '<sfile>'->expand(), diff))
 endfunction

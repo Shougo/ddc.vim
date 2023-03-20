@@ -35,10 +35,10 @@ function! ddc#complete#_skip(pos, items) abort
   " Note: If the input text is longer than 'textwidth', the completed text
   " will be the next line.  It breaks auto completion behavior.
   if &l:formatoptions =~# '[tca]' && &l:textwidth > 0
-    let input = getline('.')[: a:pos]
-    let displaywidth = max(a:items->copy()
+    const input = getline('.')[: a:pos]
+    const displaywidth = max(a:items->copy()
           \ ->map({ _, val -> strdisplaywidth(input .. val.word) })) + 1
-    let col = mode() ==# 'c' ? getcmdpos() : virtcol('.')
+    const col = mode() ==# 'c' ? getcmdpos() : virtcol('.')
     if displaywidth >= &l:textwidth || col >= displaywidth
       return v:true
     endif

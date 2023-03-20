@@ -1,17 +1,16 @@
 function! ddc#custom#patch_global(key_or_dict, value = '') abort
-  let dict = s:normalize_key_or_dict(a:key_or_dict, a:value)
+  const dict = s:normalize_key_or_dict(a:key_or_dict, a:value)
   call s:notify('patchGlobal', [dict])
 endfunction
 function! ddc#custom#patch_filetype(ft, key_or_dict, value = '') abort
-  let filetypes = s:normalize_string_or_list(a:ft)
-  let dict = s:normalize_key_or_dict(a:key_or_dict, a:value)
-  for filetype in filetypes
+  const dict = s:normalize_key_or_dict(a:key_or_dict, a:value)
+  for filetype in s:normalize_string_or_list(a:ft)
     call s:notify('patchFiletype', [dict, filetype])
   endfor
 endfunction
 function! ddc#custom#patch_buffer(key_or_dict, value = '') abort
-  let dict = s:normalize_key_or_dict(a:key_or_dict, a:value)
-  let n = bufnr('%')
+  const dict = s:normalize_key_or_dict(a:key_or_dict, a:value)
+  const n = bufnr('%')
   call s:notify('patchBuffer', [dict, n])
 endfunction
 
@@ -19,29 +18,27 @@ function! ddc#custom#set_global(dict) abort
   call s:notify('setGlobal', [a:dict])
 endfunction
 function! ddc#custom#set_filetype(ft, dict) abort
-  let filetypes = s:normalize_string_or_list(a:ft)
-  for filetype in filetypes
+  for filetype in s:normalize_string_or_list(a:ft)
     call s:notify('setFiletype', [a:dict, filetype])
   endfor
 endfunction
 function! ddc#custom#set_buffer(dict) abort
-  let n = bufnr('%')
+  const n = bufnr('%')
   call s:notify('setBuffer', [a:dict, n])
 endfunction
 function! ddc#custom#set_context_global(func) abort
-  let id = denops#callback#register(a:func)
+  const id = denops#callback#register(a:func)
   call s:notify('setContextGlobal', [id])
 endfunction
 function! ddc#custom#set_context_filetype(ft, func) abort
-  let filetypes = s:normalize_string_or_list(a:ft)
-  let id = denops#callback#register(a:func)
-  for filetype in filetypes
+  const id = denops#callback#register(a:func)
+  for filetype in s:normalize_string_or_list(a:ft)
     call s:notify('setContextFiletype', [id, filetype])
   endfor
 endfunction
 function! ddc#custom#set_context_buffer(func) abort
-  let n = bufnr('%')
-  let id = denops#callback#register(a:func)
+  const n = bufnr('%')
+  const id = denops#callback#register(a:func)
   call s:notify('setContextBuffer', [id, n])
 endfunction
 

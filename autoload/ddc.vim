@@ -133,8 +133,9 @@ function! ddc#complete_info() abort
   return '*pum#complete_info'->exists() ?
         \ pum#complete_info() : complete_info()
 endfunction
-let s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
-let s:sep = has('win32') ? '\' : '/'
+
+const s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
+const s:sep = has('win32') ? '\' : '/'
 function! ddc#_register() abort
   call denops#plugin#register('ddc',
         \ [s:root_dir, 'denops', 'ddc', 'app.ts']->join(s:sep),

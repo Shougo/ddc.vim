@@ -35,8 +35,8 @@ function! ddc#map#complete_common_string() abort
   endif
 
   " Get cursor word.
-  let input = ddc#util#get_input('')
-  let complete_str = input[g:ddc#_complete_pos : s:col() - 1]
+  const input = ddc#util#get_input('')
+  const complete_str = input[g:ddc#_complete_pos : s:col() - 1]
 
   let common_str = g:ddc#_items[0].word
   for item in g:ddc#_items[1:]
@@ -63,7 +63,7 @@ function! ddc#map#complete_common_string() abort
 endfunction
 
 function! ddc#map#insert_item(number, cancel_key) abort
-  let word = g:ddc#_items->get(a:number, #{ word: '' }).word
+  const word = g:ddc#_items->get(a:number, #{ word: '' }).word
   if word ==# ''
     return ''
   endif
@@ -72,8 +72,8 @@ function! ddc#map#insert_item(number, cancel_key) abort
   call ddc#complete#_on_complete_done(g:ddc#_items[a:number])
 
   " Get cursor word.
-  let input = ddc#util#get_input('')
-  let complete_str = input[g:ddc#_complete_pos : s:col() - 1]
+  const input = ddc#util#get_input('')
+  const complete_str = input[g:ddc#_complete_pos : s:col() - 1]
 
   let chars = ''
   " Note: Change backspace option to work <BS> correctly
@@ -90,7 +90,7 @@ function! ddc#map#insert_item(number, cancel_key) abort
 endfunction
 
 function! s:col() abort
-  let col = mode() ==# 't' && !has('nvim') ?
+  const col = mode() ==# 't' && !has('nvim') ?
         \ term_getcursor(bufnr('%'))[1] :
         \ mode() ==# 'c' ? getcmdpos() :
         \ mode() ==# 't' ? '.'->col() : '.'->col()
