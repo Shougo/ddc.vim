@@ -174,8 +174,7 @@ function! ddc#_notify(method, args) abort
   if ddc#_denops_running()
     call denops#notify('ddc', a:method, a:args)
   else
-    execute printf('autocmd User DDCReady call ' .
-          \ 'denops#notify("ddc", "%s", %s)',
-          \ a:method, a:args->string())
+    execute printf('autocmd User DDCReady call '
+          \ .. 'denops#notify("ddc", "%s", %s)', a:method, a:args->string())
   endif
 endfunction

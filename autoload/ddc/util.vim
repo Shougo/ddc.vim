@@ -35,7 +35,7 @@ endfunction
 function! ddc#util#benchmark(msg = '') abort
   let msg = a:msg
   if msg !=# ''
-    let msg .= ' '
+    let msg ..= ' '
   endif
   const diff = g:ddc#_started->reltime()->reltimefloat()
   call ddc#util#print_error(printf('%s%s: Took %f seconds.',

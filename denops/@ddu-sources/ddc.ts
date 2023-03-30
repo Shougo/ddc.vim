@@ -1,6 +1,6 @@
-import { Context, Item } from "https://deno.land/x/ddu_vim@v2.2.0/types.ts";
-import { BaseSource } from "https://deno.land/x/ddu_vim@v2.2.0/base/source.ts";
-import { Denops, vars } from "https://deno.land/x/ddu_vim@v2.2.0/deps.ts";
+import { Context, Item } from "https://deno.land/x/ddu_vim@v2.7.0/types.ts";
+import { BaseSource } from "https://deno.land/x/ddu_vim@v2.7.0/base/source.ts";
+import { Denops, vars } from "https://deno.land/x/ddu_vim@v2.7.0/deps.ts";
 import { DdcItem } from "../ddc/types.ts";
 
 type Params = Record<never, never>;
