@@ -281,6 +281,7 @@ type World = {
   lineNr: number;
   mode: string;
   nextInput: string;
+  wildMenuMode: number;
 };
 
 function initialWorld(): World {
@@ -295,6 +296,7 @@ function initialWorld(): World {
     lineNr: 0,
     mode: "",
     nextInput: "",
+    wildMenuMode: 0,
   };
 }
 
@@ -321,8 +323,6 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     if (context != "") return context;
     return ensureString(await op.filetype.getLocal(denops));
   })();
-  const bufnrPromise: Promise<number> = fn.bufnr(denops);
-  const lineNrPromise: Promise<number> = fn.line(denops, ".");
   const enabledEskkPromise = _call(denops, "eskk#is_enabled", false);
   const enabledSkkeletonPromise = _call(denops, "skkeleton#is_enabled", false);
   const mode: string = event == "InsertEnter"
@@ -337,6 +337,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   ) as Promise<
     string
   >;
+
   const [
     bufnr,
     changedByCompletion,
@@ -348,8 +349,9 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     iminsert,
     lineNr,
     nextInput,
+    wildMenuMode,
   ] = await Promise.all([
-    bufnrPromise,
+    fn.bufnr(denops),
     changedByCompletionPromise,
     changedTickPromise,
     filetypePromise,
@@ -357,8 +359,9 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     enabledEskkPromise,
     enabledSkkeletonPromise,
     op.iminsert.getLocal(denops),
-    lineNrPromise,
+    fn.line(denops, "."),
     nextInputPromise,
+    fn.wildmenumode(denops) as Promise<number>,
   ]);
   return {
     bufnr,
@@ -371,6 +374,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     lineNr,
     mode,
     nextInput,
+    wildMenuMode,
   };
 }
 
@@ -403,7 +407,10 @@ export class ContextBuilder {
     const skipNegligible = event != "Initialize" && event != "Manual" &&
       event != "Update" &&
       event != "CompleteDone" && isNegligible(old, world);
-    if (skipNegligible || world.isLmap || world.changedByCompletion) {
+    if (
+      skipNegligible || world.isLmap || world.changedByCompletion ||
+      (world.mode == "c" && world.wildMenuMode)
+    ) {
       skip = true;
     }
 
