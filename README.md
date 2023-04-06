@@ -140,7 +140,7 @@ call ddc#custom#patch_filetype(['c', 'cpp'], 'sources',
 call ddc#custom#patch_filetype(['c', 'cpp'], 'sourceOptions', #{
       \   clangd: #{ mark: 'C' },
       \ })
-call ddc#custom#patch_filetype('markdown', 'sourceParams', {
+call ddc#custom#patch_filetype('markdown', 'sourceParams', #{
       \   around: #{ maxSize: 100 },
       \ })
 
