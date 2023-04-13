@@ -275,7 +275,8 @@ ddc#enable()
 
 					*ddc#enable_cmdline_completion()*
 ddc#enable_cmdline_completion()
-		Enable ddc.vim command line completion feature.
+		Enable ddc.vim command line completion feature for current
+		buffer.
 		Note: It must be called in command line mode.
 		Note: "pum.vim" is needed for the feature.
 		Note: It disables |command-line-window| feature.
@@ -1079,14 +1080,22 @@ A: >
 
 Q: I want to enable command line completion by ddc.vim.
 
-A: Note: "pum.vim" is required.
+A: Note: Both "pum.vim" and "ddc-ui-pum" are required.
 
 https://github.com/Shougo/pum.vim
 https://github.com/Shougo/ddc-ui-pum
+https://github.com/Shougo/ddc-source-cmdline
+https://github.com/Shougo/ddc-source-cmdline-history
 >
-	call ddc#custom#patch_global('ui', 'pum')
-	call ddc#custom#patch_global('autoCompleteEvents',
-	\ ['InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged'])
+	call ddc#custom#patch_global(#{
+	\   ui: 'pum',
+	\   autoCompleteEvents: [
+	\     'InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged',
+	\   ],
+	\   cmdlineSources: {
+	\     ':': ['cmdline', 'cmdline-history', 'around']
+	\   },
+	\ })
 	nnoremap :       <Cmd>call CommandlinePre()<CR>:
 	
 	function! CommandlinePre() abort
@@ -1097,17 +1106,10 @@ https://github.com/Shougo/ddc-ui-pum
 	  cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
 	  cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
 	
-	  " Overwrite sources
-	  if !exists('b:prev_buffer_config')
-	    let b:prev_buffer_config = ddc#custom#get_buffer()
-	  endif
-	  call ddc#custom#patch_buffer('cmdlineSources',
-	  \ ['necovim', 'around'])
-	
 	  autocmd User DDCCmdlineLeave ++once call CommandlinePost()
 	  autocmd InsertEnter <buffer> ++once call CommandlinePost()
 	
-	  " Enable command line completion
+	  " Enable command line completion for the buffer
 	  call ddc#enable_cmdline_completion()
 	endfunction
 	function! CommandlinePost() abort
@@ -1117,14 +1119,6 @@ https://github.com/Shougo/ddc-ui-pum
 	  silent! cunmap <C-p>
 	  silent! cunmap <C-y>
 	  silent! cunmap <C-e>
-	
-	  " Restore sources
-	  if exists('b:prev_buffer_config')
-	    call ddc#custom#set_buffer(b:prev_buffer_config)
-	    unlet b:prev_buffer_config
-	  else
-	    call ddc#custom#set_buffer({})
-	  endif
 	endfunction
 
 Q: Terminal title flickers when completion menu opens in neovim.
