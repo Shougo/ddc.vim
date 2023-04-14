@@ -278,6 +278,7 @@ type World = {
   filetype: string;
   input: string;
   isLmap: boolean;
+  isPaste: boolean;
   lineNr: number;
   mode: string;
   nextInput: string;
@@ -293,6 +294,7 @@ function initialWorld(): World {
     filetype: "",
     input: "",
     isLmap: false,
+    isPaste: false,
     lineNr: 0,
     mode: "",
     nextInput: "",
@@ -347,6 +349,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     enabledEskk,
     enabledSkkeleton,
     iminsert,
+    isPaste,
     lineNr,
     nextInput,
     wildMenuMode,
@@ -359,6 +362,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     enabledEskkPromise,
     enabledSkkeletonPromise,
     op.iminsert.getLocal(denops),
+    op.paste.get(denops),
     fn.line(denops, "."),
     nextInputPromise,
     fn.wildmenumode(denops) as Promise<number>,
@@ -371,6 +375,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     filetype,
     input,
     isLmap: !enabledEskk && !enabledSkkeleton && iminsert == 1,
+    isPaste,
     lineNr,
     mode,
     nextInput,
@@ -408,7 +413,8 @@ export class ContextBuilder {
       event != "Update" &&
       event != "CompleteDone" && isNegligible(old, world);
     if (
-      skipNegligible || world.isLmap || world.changedByCompletion ||
+      skipNegligible || world.isLmap || world.isPaste ||
+      world.changedByCompletion ||
       (world.mode == "c" && world.wildMenuMode)
     ) {
       skip = true;
