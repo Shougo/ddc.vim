@@ -1174,6 +1174,20 @@ https://github.com/Shougo/ddc-ui-native
 	call ddc#custom#patch_global('ui', 'none')
 	inoremap <silent><expr> <TAB>  ddc#map#complete('native')
 
+If you want to use "pum.vim".
+https://github.com/Shougo/ddc-ui-none
+https://github.com/Shougo/ddc-ui-pum
+https://github.com/Shougo/pum.vim
+>
+	call ddc#custom#patch_global('ui', 'none')
+	inoremap <silent><expr> <TAB>  ddc#map#complete('pum')
+	call ddc#custom#patch_global('uiParams', #{
+	      \   pum: #{
+	      \     insert: v:true,
+	      \   }
+	      \ })
+	
+<
 Q: ddc.vim starting is slow.
 
 A: It may be slow in Windows environment.  You should use denops shared server
