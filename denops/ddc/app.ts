@@ -380,8 +380,9 @@ export async function main(denops: Denops) {
     ]);
     await denops.cmd(
       "autocmd ddc CmdlineChanged * " +
-        "if getcmdtype() ==# '=' || getcmdtype() ==# '@' |" +
-        " call ddc#_on_event('CmdlineChanged') | endif",
+        ": if getcmdtype() ==# '=' || getcmdtype() ==# '@'" +
+        "|   call ddc#_on_event('CmdlineChanged')" +
+        "| endif",
     );
   });
 }

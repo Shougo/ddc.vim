@@ -34,17 +34,18 @@ function! ddc#enable_cmdline_completion() abort
     autocmd CmdlineLeave <buffer> call ddc#hide('CmdlineLeave')
     autocmd CmdlineEnter <buffer> call ddc#_on_event('CmdlineEnter')
     autocmd CmdlineChanged <buffer>
-          \ if getcmdtype() !=# '=' && getcmdtype() !=# '@' |
-          \ call ddc#_on_event('CmdlineChanged') | endif
+          \ : if getcmdtype() !=# '=' && getcmdtype() !=# '@'
+          \ |   call ddc#_on_event('CmdlineChanged')
+          \ | endif
   augroup END
   if '##ModeChanged'->exists()
     autocmd ddc-cmdline ModeChanged c:n
           \ call ddc#disable_cmdline_completion()
   else
     autocmd ddc-cmdline CmdlineLeave <buffer>
-          \ if get(v:event, 'cmdlevel', 1) == 1 |
-          \   call ddc#disable_cmdline_completion() |
-          \ endif
+          \ : if get(v:event, 'cmdlevel', 1) == 1
+          \ |   call ddc#disable_cmdline_completion()
+          \ | endif
   endif
 
   " Note: command line window must be disabled
