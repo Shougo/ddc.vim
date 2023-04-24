@@ -277,6 +277,8 @@ ddc#enable()
 ddc#enable_cmdline_completion()
 		Enable ddc.vim command line completion feature for current
 		buffer.
+		"DDCCmdlineLeave" |User| autocmd is called after command line.
+
 		Note: It must be called in command line mode.
 		Note: "pum.vim" is needed for the feature.
 		Note: It disables |command-line-window| feature.
