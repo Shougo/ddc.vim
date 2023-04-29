@@ -87,7 +87,7 @@ export type FilterOptions = {
 export type PumHighlight = {
   name: string;
   type: "abbr" | "kind" | "menu";
-  "hl_group": string;
+  hl_group: string;
   col: number;
   width: number;
 };
