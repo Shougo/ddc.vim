@@ -64,7 +64,7 @@ https://github.com/topics/ddc-vim.
 INTERFACE						*ddc-interface*
 
 ------------------------------------------------------------------------------
-OPTIONS	 						*ddc-options*
+OPTIONS							*ddc-options*
 
 Options can be toggled through the use of |ddc#custom#patch_global()|.
 
@@ -244,7 +244,7 @@ uiParams
 		Default: {}
 
 ------------------------------------------------------------------------------
-FUNCTIONS 						*ddc-functions*
+FUNCTIONS						*ddc-functions*
 
 							*ddc#callback()*
 ddc#callback({id} [, {payload}])
@@ -298,7 +298,7 @@ ddc#hide({event})
 >
 		inoremap <C-e>   <Cmd>call ddc#hide('Manual')<CR>
 <
-					    	*ddc#on_complete_done()*
+						*ddc#on_complete_done()*
 ddc#on_complete_done({completed_item})
 		It must be called when completion item is completed.
 		The UI calls the API.
@@ -322,7 +322,7 @@ ddc#update_items({name}, {items})
 		Note: It does not work for volatile source.
 
 
-CUSTOM FUNCTIONS 					*ddc-custom-functions*
+CUSTOM FUNCTIONS					*ddc-custom-functions*
 
 							*ddc#custom#alias()*
 ddc#custom#alias({type}, {alias-name}, {base-name})
@@ -434,7 +434,7 @@ ddc#custom#set_context_global({func})
 		completion performance.
 
 ------------------------------------------------------------------------------
-KEY MAPPINGS 						*ddc-key-mappings*
+KEY MAPPINGS						*ddc-key-mappings*
 
 						*ddc#map#can_complete()*
 ddc#map#can_complete()
@@ -462,7 +462,7 @@ ddc#map#insert_item({index}, {cancel-key})
 		Insert the item at index {index}. Indices start at 0.
 		Note: It must be in |:map-<expr>|.
 
-					    	*ddc#map#manual_complete()*
+						*ddc#map#manual_complete()*
 ddc#map#manual_complete([{options}])
 		Manual trigger ddc completion.
 		{options} is |ddc-options|.
@@ -575,7 +575,7 @@ Note: The sources cannot set default options for source.  If the source need
 to specify the recommended configuration, you should write it in the
 documentation instead.
 
-				    		*ddc-source-option-converters*
+						*ddc-source-option-converters*
 converters		(string[])
 		It is a list of registered filter names to change items
 		attributes.
@@ -609,19 +609,19 @@ forceCompletionPattern	(string)
 
 		Default: ''
 
-				    	*ddc-source-option-ignoreCase*
+					*ddc-source-option-ignoreCase*
 ignoreCase		(boolean)
 		If it is True, ddc ignores case.
 
 		Default: v:false
 
-				    	*ddc-source-option-isVolatile*
+					*ddc-source-option-isVolatile*
 isVolatile		(boolean)
 		If it is True, ddc refresh items always.
 
 		Default: v:false
 
-				    	    	*ddc-source-option-mark*
+						*ddc-source-option-mark*
 mark			(string)
 		A text icon indicating the source displayed with the item.
 		Note: If the source set item menu, the source must set it.  If
@@ -636,7 +636,7 @@ maxAutoCompleteLength	(number)
 
 		Default: 80
 
-				    	*ddc-source-option-maxItems*
+					*ddc-source-option-maxItems*
 maxItems		(number)
 		If there are more items than this value, ddc will ignore the
 		filtering.
@@ -650,7 +650,7 @@ matcherKey		(string)
 
 		Default: ""
 
-				    		*ddc-source-option-matchers*
+						*ddc-source-option-matchers*
 matchers		(string[])
 		It is a list of registered filter names to filter items by
 		user input.
@@ -658,34 +658,34 @@ matchers		(string[])
 
 		Default: []
 
-				    *ddc-source-option-maxKeywordLength*
+				*ddc-source-option-maxKeywordLength*
 maxKeywordLength	(number)
 		The maximum word of length for items.
 		If it is 0, the feature is disabled.
 
 		Default: 0
 
-				    *ddc-source-option-minAutoCompleteLength*
+				*ddc-source-option-minAutoCompleteLength*
 minAutoCompleteLength	(number)
 		Length of keyword required for auto completion.
 
 		Default: 2
 
-				    *ddc-source-option-minKeywordLength*
+					*ddc-source-option-minKeywordLength*
 minKeywordLength	(number)
 		The minimum word of length for items.
 		If it is 0, the feature is disabled.
 
 		Default: 0
 
-				    		*ddc-source-option-sorters*
+						*ddc-source-option-sorters*
 sorters			(string[])
 		It is a list of registered filter names to sort items.
 		Items will be processed in the order you specify here.
 
 		Default: []
 
-			    		    *ddc-source-option-timeout*
+					    *ddc-source-option-timeout*
 timeout			(number)
 		The |ddc-source-attribute-gather| timeout for completion.
 
@@ -798,7 +798,7 @@ events			(string[])			(Optional)
 
 		Default: []
 
-    					*ddc-source-attribute-isBytePos*
+					*ddc-source-attribute-isBytePos*
 isBytePos		(boolean)			(Optional)
 		If |ddc-source-attribute-getCompletePosition| returns byte
 		position, it must be true.
@@ -810,7 +810,7 @@ isBytePos		(boolean)			(Optional)
 gather			(function)			(Required)
 		Called to gather items.
 
-	    			*ddc-source-attribute-getCompletePosition*
+				*ddc-source-attribute-getCompletePosition*
 getCompletePosition	(function)			(Optional)
 		Called to get the position of the current completion.
 
