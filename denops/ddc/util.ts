@@ -10,19 +10,25 @@ export function vimoption2ts(option: string): string {
       });
     }
 
-    if (pattern == "") {
-      // ,
-      if (patterns.indexOf(",") < 0) {
-        patterns.push(",");
-      }
-    } else if (pattern == "@") {
-      patterns.push("a-zA-Z");
-    } else if (pattern == "\\") {
-      patterns.push("\\\\");
-    } else if (pattern == "-") {
-      hasDash = true;
-    } else {
-      patterns.push(pattern);
+    switch (pattern) {
+      case "":
+        // ,
+        if (patterns.indexOf(",") < 0) {
+          patterns.push(",");
+        }
+        break;
+      case "@":
+        patterns.push("a-zA-Z");
+        break;
+      case "\\":
+        patterns.push("\\\\");
+        break;
+      case "-":
+        hasDash = true;
+        break;
+      default:
+        patterns.push(pattern);
+        break;
     }
   }
 

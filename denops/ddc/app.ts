@@ -121,7 +121,7 @@ export async function main(denops: Denops) {
         .createContext(denops, "Manual", userOptions);
       if (skip) return;
 
-      if (context.mode == "c") {
+      if (context.mode === "c") {
         // Use cmdlineSources instead
         if (Array.isArray(options.cmdlineSources)) {
           options.sources = options.cmdlineSources;
@@ -157,7 +157,7 @@ export async function main(denops: Denops) {
 
       // Note: must be locked
       await lock.with(async () => {
-        while (queuedEvent != null) {
+        while (queuedEvent !== null) {
           const event = queuedEvent;
           queuedEvent = null;
           await _onEvent(event);
@@ -222,12 +222,12 @@ export async function main(denops: Denops) {
       .createContext(denops, event);
 
     const visible = await ddc.visible(denops, context, options);
-    if (visible && ddc.prevUi != "") {
+    if (visible && ddc.prevUi !== "") {
       // NOTE: If UI is visible, use prevSources/prevUi instead to update
       // current items
       options.sources = ddc.prevSources;
       options.ui = ddc.prevUi;
-    } else if (context.mode == "c") {
+    } else if (context.mode === "c") {
       // Use cmdlineSources instead
       if (Array.isArray(options.cmdlineSources)) {
         options.sources = options.cmdlineSources;
@@ -250,7 +250,7 @@ export async function main(denops: Denops) {
 
     cbContext.revoke();
 
-    if (event != "InsertEnter" && context.mode == "n") {
+    if (event !== "InsertEnter" && context.mode === "n") {
       return;
     }
 
@@ -279,7 +279,7 @@ export async function main(denops: Denops) {
       const changedTick = vars.b.get(denops, "changedtick") as Promise<
         number
       >;
-      if (context.changedTick != await changedTick) {
+      if (context.changedTick !== await changedTick) {
         // Input is changed.  Skip invalid completion.
         return;
       }
@@ -297,8 +297,8 @@ export async function main(denops: Denops) {
     // flicker.
     const prevInput = await vars.g.get(denops, "ddc#_prev_input") as string;
     const checkBackSpace = !options.backspaceCompletion &&
-      context.input != prevInput &&
-      context.input.length + 1 == prevInput.length &&
+      context.input !== prevInput &&
+      context.input.length + 1 === prevInput.length &&
       prevInput.startsWith(context.input);
     if (checkBackSpace) {
       await vars.g.set(denops, "ddc#_prev_input", context.input);
@@ -308,7 +308,7 @@ export async function main(denops: Denops) {
     // Skip special buffers.
     const buftype = await op.buftype.getLocal(denops);
     if (
-      buftype != "" && !options.specialBufferCompletion && context.mode != "c"
+      buftype !== "" && !options.specialBufferCompletion && context.mode !== "c"
     ) {
       return true;
     }
@@ -353,7 +353,7 @@ export async function main(denops: Denops) {
         await vars.g.set(denops, "ddc#_sources", options.sources);
       });
 
-      if (items.length == 0) {
+      if (items.length === 0) {
         await ddc.hide(denops, context, options);
       } else {
         await ddc.show(denops, context, options, completePos, items);

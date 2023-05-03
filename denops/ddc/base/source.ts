@@ -85,7 +85,7 @@ export abstract class BaseSource<
     const matchPos = args.context.input.search(
       new RegExp("(?:" + args.options.keywordPattern + ")$"),
     );
-    const completePos = matchPos != null ? matchPos : -1;
+    const completePos = matchPos !== null ? matchPos : -1;
     return Promise.resolve(completePos);
   }
 

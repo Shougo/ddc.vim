@@ -17,7 +17,7 @@ import { vimoption2ts } from "./util.ts";
 // where
 // T: Object
 // partialMerge: PartialMerge
-// partialMerge(partialMerge(a, b), c) == partialMerge(a, partialMerge(b, c))
+// partialMerge(partialMerge(a, b), c) === partialMerge(a, partialMerge(b, c))
 type PartialMerge<T> = (a: Partial<T>, b: Partial<T>) => Partial<T>;
 type Merge<T> = (a: T, b: Partial<T>) => T;
 type Default<T> = () => T;
@@ -199,7 +199,7 @@ class Custom {
     bufnr: number,
     options: UserOptions,
   ): Promise<DdcOptions> {
-    const contextGlobal = (this.context.global != "" && denops)
+    const contextGlobal = (this.context.global !== "" && denops)
       ? await denops.call(
         "denops#callback#call",
         this.context.global,
@@ -315,19 +315,19 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   const changedByCompletionPromise: Promise<boolean> = (async () => {
     const completedItem =
       (await vars.v.get(denops, "completed_item")) as Record<string, unknown>;
-    return event == "TextChangedP" && Object.keys(completedItem).length != 0;
+    return event === "TextChangedP" && Object.keys(completedItem).length !== 0;
   })();
   const changedTickPromise = vars.b.get(denops, "changedtick") as Promise<
     number
   >;
   const filetypePromise: Promise<string> = (async () => {
     const context = await _call(denops, "context_filetype#get_filetype", "");
-    if (context != "") return context;
+    if (context !== "") return context;
     return ensureString(await op.filetype.getLocal(denops));
   })();
   const enabledEskkPromise = _call(denops, "eskk#is_enabled", false);
   const enabledSkkeletonPromise = _call(denops, "skkeleton#is_enabled", false);
-  const mode: string = event == "InsertEnter"
+  const mode: string = event === "InsertEnter"
     ? "i"
     : ensureString(await fn.mode(denops));
   const inputPromise = denops.call("ddc#util#get_input", event) as Promise<
@@ -374,7 +374,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     event,
     filetype,
     input,
-    isLmap: !enabledEskk && !enabledSkkeleton && iminsert == 1,
+    isLmap: !enabledEskk && !enabledSkkeleton && iminsert === 1,
     isPaste,
     lineNr,
     mode,
@@ -385,10 +385,10 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
 
 // is neglect-able
 function isNegligible(older: World, newer: World): boolean {
-  return older.bufnr == newer.bufnr &&
-    older.filetype == newer.filetype &&
-    older.input == newer.input &&
-    older.event == newer.event;
+  return older.bufnr === newer.bufnr &&
+    older.filetype === newer.filetype &&
+    older.input === newer.input &&
+    older.event === newer.event;
 }
 
 export class ContextBuilder {
@@ -409,13 +409,13 @@ export class ContextBuilder {
     const old = this.lastWorld;
     this.lastWorld = world;
     let skip = false;
-    const skipNegligible = event != "Initialize" && event != "Manual" &&
-      event != "Update" &&
-      event != "CompleteDone" && isNegligible(old, world);
+    const skipNegligible = event !== "Initialize" && event !== "Manual" &&
+      event !== "Update" && event !== "CompleteDone" &&
+      isNegligible(old, world);
     if (
       skipNegligible || world.isLmap || world.isPaste ||
       world.changedByCompletion ||
-      (world.mode == "c" && world.wildMenuMode)
+      (world.mode === "c" && world.wildMenuMode)
     ) {
       skip = true;
     }

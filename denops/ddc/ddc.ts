@@ -153,7 +153,7 @@ export class Ddc {
 
     // Check alias
     const aliases = Object.keys(this.aliases[type]).filter(
-      (k) => this.aliases[type][k] == name,
+      (k) => this.aliases[type][k] === name,
     );
     for (const alias of aliases) {
       add(alias);
@@ -165,7 +165,7 @@ export class Ddc {
     type: DdcExtType,
     names: string[],
   ): Promise<string[]> {
-    if (names.length == 0) {
+    if (names.length === 0) {
       return [];
     }
 
@@ -198,7 +198,7 @@ export class Ddc {
       this.foundInvalidFilters([...new Set(filterNames)]),
     );
 
-    if (loadedSources.length != 0 && loadedFilters.length != 0) {
+    if (loadedSources.length !== 0 && loadedFilters.length !== 0) {
       return;
     }
 
@@ -329,7 +329,7 @@ export class Ddc {
 
     const rs = await Promise.all(sources.map(async ([s, o, p]) => {
       // Check enabled
-      if (o.enabledIf != "" && !(await denops.call("eval", o.enabledIf))) {
+      if (o.enabledIf !== "" && !(await denops.call("eval", o.enabledIf))) {
         return;
       }
 
@@ -342,10 +342,10 @@ export class Ddc {
         o,
         p,
       );
-      const forceCompletion = o.forceCompletionPattern.length != 0 &&
+      const forceCompletion = o.forceCompletionPattern.length !== 0 &&
         context.input.search(
             new RegExp("(?:" + o.forceCompletionPattern + ")$"),
-          ) != -1;
+          ) !== -1;
       // Note: If forceCompletion and not matched getCompletePosition(),
       // Use cursor position instead.
       const completePos = (pos < 0 && forceCompletion)
@@ -356,11 +356,11 @@ export class Ddc {
       const completeStr = context.input.slice(completePos);
       const incomplete = this.prevResults[s.name]?.isIncomplete ?? false;
       const triggerForIncomplete = !forceCompletion && incomplete &&
-        context.lineNr == this.prevResults[s.name].lineNr;
+        context.lineNr === this.prevResults[s.name].lineNr;
       if (
         completePos < 0 ||
         (!forceCompletion &&
-          context.event != "Manual" &&
+          context.event !== "Manual" &&
           (completeStr.length < o.minAutoCompleteLength ||
             completeStr.length > o.maxAutoCompleteLength))
       ) {
@@ -377,10 +377,10 @@ export class Ddc {
 
       if (
         !result || triggerForIncomplete ||
-        prevInput != result.prevInput ||
+        prevInput !== result.prevInput ||
         !completeStr.startsWith(result.completeStr) ||
-        context.lineNr != result.lineNr ||
-        context.event == "Manual" ||
+        context.lineNr !== result.lineNr ||
+        context.event === "Manual" ||
         o.isVolatile
       ) {
         // Not matched.
@@ -467,7 +467,7 @@ export class Ddc {
         return {
           ...c,
           word: word,
-          abbr: c.word == c.abbr ? word : c.abbr,
+          abbr: c.word === c.abbr ? word : c.abbr,
         };
       })
     );
@@ -476,15 +476,15 @@ export class Ddc {
     let retItems: DdcItem[] = [];
     for (const item of items) {
       // Remove emtpy items
-      if (item.word == "") {
+      if (item.word === "") {
         continue;
       }
 
       if (seen.has(item.word)) {
-        if (item.__dup == "force") {
+        if (item.__dup === "force") {
           // Force overwrite duplicated words
-          retItems = retItems.filter((c) => c.word != item.word);
-        } else if (item.__dup == "ignore") {
+          retItems = retItems.filter((c) => c.word !== item.word);
+        } else if (item.__dup === "ignore") {
           // Ignore duplicated words
           continue;
         } else {
@@ -659,7 +659,7 @@ export class Ddc {
         sourceOptions.converters,
       ),
     );
-    if (invalidFilters.length != 0) {
+    if (invalidFilters.length !== 0) {
       return [];
     }
 
@@ -701,7 +701,7 @@ export class Ddc {
       );
     }
 
-    if (sourceOptions.matcherKey != "") {
+    if (sourceOptions.matcherKey !== "") {
       cdd = cdd.map((c) => (
         {
           ...c,
@@ -714,7 +714,7 @@ export class Ddc {
 
     cdd = await callFilters(matchers);
 
-    if (sourceOptions.matcherKey != "") {
+    if (sourceOptions.matcherKey !== "") {
       cdd = cdd.map((c) => (
         {
           ...c,
@@ -744,7 +744,7 @@ export class Ddc {
       BaseUiParams,
     ]
   > {
-    if (options.ui.length == 0) {
+    if (options.ui.length === 0) {
       await denops.call(
         "ddc#util#print_error",
         'You must install ddc UI plugins and specify "ui" option.',
@@ -787,7 +787,7 @@ function formatAbbr(word: string, abbr: string | undefined): string {
 
 function formatMenu(prefix: string, menu: string | undefined): string {
   menu = menu ?? "";
-  return prefix == "" ? menu : menu == "" ? prefix : `${prefix} ${menu}`;
+  return prefix === "" ? menu : menu === "" ? prefix : `${prefix} ${menu}`;
 }
 
 function byteposToCharpos(input: string, pos: number): number {
@@ -802,7 +802,7 @@ function charposToBytepos(input: string, pos: number): number {
 // isinstanceof may be failed
 // https://zenn.dev/luma/articles/2e891a24fe099c
 function isTimeoutError(e: unknown): e is TimeoutError {
-  return (e as TimeoutError).name == "TimeoutError";
+  return (e as TimeoutError).name === "TimeoutError";
 }
 
 function uiArgs<Params extends BaseUiParams>(
