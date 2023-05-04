@@ -1,16 +1,16 @@
-export type { Denops } from "https://deno.land/x/denops_std@v4.1.5/mod.ts";
+export type { Denops } from "https://deno.land/x/denops_std@v4.1.6/mod.ts";
 export {
   echo,
   execute,
-} from "https://deno.land/x/denops_std@v4.1.5/helper/mod.ts";
+} from "https://deno.land/x/denops_std@v4.1.6/helper/mod.ts";
 export {
   batch,
   gather,
-} from "https://deno.land/x/denops_std@v4.1.5/batch/mod.ts";
-export * as op from "https://deno.land/x/denops_std@v4.1.5/option/mod.ts";
-export * as fn from "https://deno.land/x/denops_std@v4.1.5/function/mod.ts";
-export * as vars from "https://deno.land/x/denops_std@v4.1.5/variable/mod.ts";
-export * as autocmd from "https://deno.land/x/denops_std@v4.1.5/autocmd/mod.ts";
+} from "https://deno.land/x/denops_std@v4.1.6/batch/mod.ts";
+export * as op from "https://deno.land/x/denops_std@v4.1.6/option/mod.ts";
+export * as fn from "https://deno.land/x/denops_std@v4.1.6/function/mod.ts";
+export * as vars from "https://deno.land/x/denops_std@v4.1.6/variable/mod.ts";
+export * as autocmd from "https://deno.land/x/denops_std@v4.1.6/autocmd/mod.ts";
 export * as base64 from "https://deno.land/std@0.185.0/encoding/base64.ts";
 export {
   assertEquals,
