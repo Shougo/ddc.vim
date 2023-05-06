@@ -28,7 +28,7 @@ export async function main(denops: Denops) {
   const ddc: Ddc = new Ddc();
   const contextBuilder = new ContextBuilder();
   const cbContext = createCallbackContext();
-  const lock = new Lock();
+  const lock = new Lock(0);
   let queuedEvent: DdcEvent | null = null;
 
   denops.dispatcher = {
@@ -156,7 +156,7 @@ export async function main(denops: Denops) {
       queuedEvent = ensureString(arg1) as DdcEvent;
 
       // Note: must be locked
-      await lock.with(async () => {
+      await lock.lock(async () => {
         while (queuedEvent !== null) {
           const event = queuedEvent;
           queuedEvent = null;
