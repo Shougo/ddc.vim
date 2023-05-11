@@ -48,19 +48,12 @@ function! ddc#enable_cmdline_completion() abort
           \ | endif
   endif
 
-  " Note: command line window must be disabled
-  let s:save_cedit = &cedit
   let b:ddc_cmdline_completion = v:true
-  set cedit=
 endfunction
 function! ddc#disable_cmdline_completion() abort
   augroup ddc-cmdline
     autocmd!
   augroup END
-
-  if 's:save_cedit'->exists()
-    let &cedit = s:save_cedit
-  endif
 
   unlet! b:ddc_cmdline_completion
 
