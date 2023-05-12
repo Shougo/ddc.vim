@@ -381,7 +381,7 @@ export class Ddc {
         !completeStr.startsWith(result.completeStr) ||
         context.lineNr !== result.lineNr ||
         context.event === "Manual" ||
-        o.isVolatile
+        (o.isVolatile && context.event !== "Update")
       ) {
         // Not matched.
         const result = await callSourceGather(
