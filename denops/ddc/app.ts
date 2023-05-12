@@ -275,14 +275,6 @@ export async function main(denops: Denops) {
           options.autoCompleteDelay,
         )
       );
-
-      const changedTick = vars.b.get(denops, "changedtick") as Promise<
-        number
-      >;
-      if (context.changedTick !== await changedTick) {
-        // Input is changed.  Skip invalid completion.
-        return;
-      }
     }
 
     await doCompletion(denops, context, options);
@@ -343,6 +335,13 @@ export async function main(denops: Denops) {
       cbContext.createOnCallback(),
       options,
     );
+
+    const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
+    if (context.changedTick !== await changedTick) {
+      // Input is changed.  Skip invalid completion.
+      await cancelCompletion(denops, context, options);
+      return;
+    }
 
     await (async function write() {
       await batch(denops, async (denops: Denops) => {
