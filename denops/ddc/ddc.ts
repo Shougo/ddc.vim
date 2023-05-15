@@ -410,11 +410,11 @@ export class Ddc {
         }
 
         this.prevResults[s.name] = {
-          items: items,
-          completeStr: completeStr,
-          prevInput: prevInput,
+          items,
+          completeStr,
+          prevInput,
           lineNr: context.lineNr,
-          isIncomplete: isIncomplete,
+          isIncomplete,
         };
       }
 
@@ -429,6 +429,9 @@ export class Ddc {
         completeStr,
         this.prevResults[s.name].items,
       );
+
+      // Cache filtered result
+      this.prevResults[s.name].items = fis;
 
       const items = fis.map((c) => (
         {
