@@ -369,17 +369,17 @@ export class Ddc {
       }
 
       // Check previous result.
-      const result = s.name in this.prevResults
+      const checkPrevResult = s.name in this.prevResults
         ? this.prevResults[s.name]
         : null;
 
       const prevInput = context.input.slice(0, completePos);
 
       if (
-        !result || triggerForIncomplete ||
-        prevInput !== result.prevInput ||
-        !completeStr.startsWith(result.completeStr) ||
-        context.lineNr !== result.lineNr ||
+        !checkPrevResult || triggerForIncomplete ||
+        prevInput !== checkPrevResult.prevInput ||
+        !completeStr.startsWith(checkPrevResult.completeStr) ||
+        context.lineNr !== checkPrevResult.lineNr ||
         context.event === "Manual" ||
         (o.isVolatile && context.event !== "Update")
       ) {
@@ -418,6 +418,8 @@ export class Ddc {
         };
       }
 
+      const prevResult = this.prevResults[s.name];
+
       const fis = await this.filterItems(
         denops,
         context,
@@ -427,11 +429,12 @@ export class Ddc {
         options.filterOptions,
         options.filterParams,
         completeStr,
-        this.prevResults[s.name].items,
+        prevResult.items,
       );
 
       // Cache filtered result
-      this.prevResults[s.name].items = fis;
+      prevResult.completeStr = completeStr;
+      prevResult.items = fis;
 
       const items = fis.map((c) => (
         {
@@ -450,6 +453,7 @@ export class Ddc {
       if (!items.length) {
         return;
       }
+
       return [completePos, items] as const;
     }));
 
