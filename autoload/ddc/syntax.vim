@@ -14,8 +14,15 @@ function! ddc#syntax#get() abort
         \ has('nvim') ? v:lua.vim.treesitter.get_captures_at_cursor(0) :  []
 endfunction
 
+function! ddc#syntax#lang() abort
+  const curpos = getcurpos()[1:2]
+  return &l:filetype ==# '' || !has('nvim') ? '' :
+        \ luaeval('vim.treesitter.get_parser():language_for_range('
+        \ .. '{_A[1] - 1, _A[2] - 1, _A[1] - 1, _A[2] - 1}):lang()', curpos)
+endfunction
+
 function! s:get_syn_names(curpos) abort
-  if col('$') >= 200
+  if '$'->col() >= 200
     return []
   endif
 
@@ -23,14 +30,16 @@ function! s:get_syn_names(curpos) abort
   try
     " Note: synstack() seems broken in concealed text.
     for id in synstack(a:curpos[0], a:curpos[1])
-      const name = id->synIDattr('name')
+      let name = id->synIDattr('name')
       call add(names, name)
-      if synIDattr(synIDtrans(id), 'name') !=# name
-        call add(names, id->synIDtrans()->synIDattr('name'))
+      let trans_name = id->synIDtrans()->synIDattr('name')
+      if trans_name !=# name
+        call add(names, trans_name)
       endif
     endfor
   catch
     " Ignore error
   endtry
+
   return names
 endfunction

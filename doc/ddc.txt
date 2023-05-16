@@ -269,8 +269,19 @@ ddc#disable()
 		Note: It changes the global state.
 
 							*ddc#enable()*
-ddc#enable()
+ddc#enable([{opts}])
 		Enable ddc.vim features and you can use it.
+
+		{opts} is dictionary and it has the following keys.
+
+		"context_filetype": Use context based filetype.
+
+			"context_filetype": Use |context_filetype.vim| plugin.
+			"treesitter": Use |treesitter| feature in neovim.
+			"none": Use current buffer 'filetype'.
+
+			Default: "none"
+
 		Note: It changes the global state.
 
 					*ddc#enable_cmdline_completion()*
@@ -1262,6 +1273,10 @@ https://github.com/Shougo/ddc-ui-pum
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2023.05.16
+* Do not use "context_filetype.vim" automatically.  Use |ddc#enable()|
+  arguments instead.
 
 2023.02.15
 * Remove "TextChangedT" from ddc-option-autoCompleteEvents.

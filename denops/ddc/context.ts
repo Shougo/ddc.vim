@@ -317,22 +317,42 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
       (await vars.v.get(denops, "completed_item")) as Record<string, unknown>;
     return event === "TextChangedP" && Object.keys(completedItem).length !== 0;
   })();
+
   const changedTickPromise = vars.b.get(denops, "changedtick") as Promise<
     number
   >;
+
+  type ContextFiletype = "context_filetype" | "treesitter" | "none";
+
   const filetypePromise: Promise<string> = (async () => {
-    const context = await _call(denops, "context_filetype#get_filetype", "");
-    if (context !== "") return context;
+    const contextFiletype =
+      await (vars.g.get(denops, "ddc#_context_filetype", "none") as Promise<
+        ContextFiletype
+      >);
+
+    if (contextFiletype === "context_filetype") {
+      const context = await _call(denops, "context_filetype#get_filetype", "");
+      if (context !== "") return context;
+    } else if (contextFiletype === "treesitter") {
+      const context = await denops.call("ddc#syntax#lang") as string;
+      if (context !== "") return context;
+    }
+
     return ensureString(await op.filetype.getLocal(denops));
   })();
+
   const enabledEskkPromise = _call(denops, "eskk#is_enabled", false);
+
   const enabledSkkeletonPromise = _call(denops, "skkeleton#is_enabled", false);
+
   const mode: string = event === "InsertEnter"
     ? "i"
     : ensureString(await fn.mode(denops));
+
   const inputPromise = denops.call("ddc#util#get_input", event) as Promise<
     string
   >;
+
   const nextInputPromise = denops.call(
     "ddc#util#get_next_input",
     event,

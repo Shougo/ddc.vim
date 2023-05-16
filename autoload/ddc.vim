@@ -1,4 +1,4 @@
-function! ddc#enable() abort
+function! ddc#enable(opts = {}) abort
   if denops#plugin#is_loaded('ddc')
     return
   endif
@@ -15,10 +15,15 @@ function! ddc#enable() abort
     autocmd InsertLeave * call ddc#hide('InsertLeave')
   augroup END
 
-  " Force context_filetype call
-  silent! call context_filetype#get_filetype()
+  let context_filetype = a:opts->get('context_filetype', 'none')
+
+  if context_filetype ==# 'context_filetype'
+    " Force context_filetype call
+    silent! call context_filetype#get_filetype()
+  endif
 
   let g:ddc#_started = reltime()
+  let g:ddc#_context_filetype = context_filetype
 
   " Note: ddc.vim must be registered manually.
   autocmd ddc User DenopsReady silent! call ddc#_register()
