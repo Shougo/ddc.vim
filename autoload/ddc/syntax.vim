@@ -16,9 +16,17 @@ endfunction
 
 function! ddc#syntax#lang() abort
   const curpos = getcurpos()[1:2]
-  return &l:filetype ==# '' || !has('nvim') ? '' :
-        \ luaeval('vim.treesitter.get_parser():language_for_range('
-        \ .. '{_A[1] - 1, _A[2] - 1, _A[1] - 1, _A[2] - 1}):lang()', curpos)
+
+  try
+    " NOTE: vim.treesitter.get_parser() may fail
+    return &l:filetype ==# '' || !has('nvim') ? '' :
+          \ luaeval('vim.treesitter.get_parser():language_for_range('
+          \ .. '{_A[1] - 1, _A[2] - 1, _A[1] - 1, _A[2] - 1}):lang()', curpos)
+  catch
+    " Ignore error
+  endtry
+
+  return ''
 endfunction
 
 function! s:get_syn_names(curpos) abort
@@ -28,7 +36,7 @@ function! s:get_syn_names(curpos) abort
 
   let names = []
   try
-    " Note: synstack() seems broken in concealed text.
+    " NOTE: synstack() seems broken in concealed text.
     for id in synstack(a:curpos[0], a:curpos[1])
       let name = id->synIDattr('name')
       call add(names, name)
