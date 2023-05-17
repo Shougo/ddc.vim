@@ -1227,7 +1227,7 @@ async function globpath(
         search + file + ".ts",
         1,
         1,
-      ) as string[];
+      );
 
       for (const path of glob) {
         // Skip already added name.
