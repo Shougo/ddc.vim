@@ -19,7 +19,7 @@ function! ddc#syntax#lang() abort
 
   try
     " NOTE: vim.treesitter.get_parser() may fail
-    return &l:filetype ==# '' || !has('nvim') ? '' :
+    return &l:filetype ==# '' || !has('nvim') ? &l:filetype :
           \ luaeval('vim.treesitter.get_parser():language_for_range('
           \ .. '{_A[1] - 1, _A[2] - 1, _A[1] - 1, _A[2] - 1}):lang()', curpos)
   catch
