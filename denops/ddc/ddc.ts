@@ -360,7 +360,7 @@ export class Ddc {
       if (
         completePos < 0 ||
         (!forceCompletion &&
-          context.event !== "Manual" &&
+          (context.event !== "Manual" && context.event !== "Update") &&
           (completeStr.length < o.minAutoCompleteLength ||
             completeStr.length > o.maxAutoCompleteLength))
       ) {
