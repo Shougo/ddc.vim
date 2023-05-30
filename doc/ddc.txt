@@ -1235,6 +1235,7 @@ A: You can narrow current items by "ddu.vim" like this.
   inoremap <C-l> <Cmd>call ddu#start(#{
   \   name: 'ddc',
   \   ui: 'ff',
+  \   sync: v:true,
   \   input: matchstr(getline('.')[: col('.') - 1], '\k*$'),
   \   sources: [
   \     #{ name: 'ddc', options: #{ defaultAction: 'complete' } },
