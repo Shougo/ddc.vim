@@ -769,10 +769,9 @@ export class Ddc {
     }
     const ui = this.uis[options.ui];
     if (!ui) {
-      const message = `Invalid ui: "${options.ui}"`;
       await denops.call(
         "ddc#util#print_error",
-        message,
+        `Not found ui: "${options.ui}"`,
       );
       return [
         undefined,
