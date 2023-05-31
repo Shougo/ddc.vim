@@ -175,9 +175,9 @@ export class Ddc {
       names.map((file) => this.aliases[type][file] ?? file),
     );
 
-    await Promise.all(paths.map(async (path) => {
-      await this.register(type, path, parse(path).name);
-    }));
+    await Promise.all(
+      paths.map((path) => this.register(type, path, parse(path).name)),
+    );
 
     return paths;
   }
