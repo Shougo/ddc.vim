@@ -1091,9 +1091,11 @@ A: >
 	  call ddc#custom#set_buffer(s:prev_buffer_config)
 	endfunction
 
-Q: I want to enable command line completion by ddc.vim.
+Q: I want to enable command line completion.
 
-A: Note: Both "pum.vim" and "ddc-ui-pum" are required.
+A: You need to configure like this.
+
+Note: Both "pum.vim" and "ddc-ui-pum" are required.
 
 https://github.com/Shougo/pum.vim
 https://github.com/Shougo/ddc-ui-pum
@@ -1106,7 +1108,7 @@ https://github.com/Shougo/ddc-source-cmdline-history
 	\     'InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged',
 	\   ],
 	\   cmdlineSources: {
-	\     ':': ['cmdline', 'cmdline-history', 'around']
+	\     ':': ['cmdline', 'cmdline-history', 'around'],
 	\   },
 	\ })
 	nnoremap :       <Cmd>call CommandlinePre()<CR>:
@@ -1133,6 +1135,26 @@ https://github.com/Shougo/ddc-source-cmdline-history
 	  silent! cunmap <C-e>
 	endfunction
 
+Q: I want to enable |i_CTRL-R_=|(the expression register) completion.
+
+A: You need to configure like this.
+
+Note: Both "pum.vim" and "ddc-ui-pum" are required.
+
+https://github.com/Shougo/pum.vim
+https://github.com/Shougo/ddc-ui-pum
+https://github.com/Shougo/ddc-source-input
+>
+	call ddc#custom#patch_global(#{
+	\   ui: 'pum',
+	\   autoCompleteEvents: [
+	\     'InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged',
+	\   ],
+	\   cmdlineSources: {
+	\     '=': ['input'],
+	\   },
+	\ })
+<
 Q: Terminal title flickers when completion menu opens in neovim.
 
 A: It is the problem of |nvim_win_set_option()|.  To avoid the problem, you
