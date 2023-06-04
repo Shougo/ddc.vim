@@ -20,6 +20,7 @@ import {
   fn,
   Lock,
   op,
+  toFileUrl,
   vars,
 } from "./deps.ts";
 import { createCallbackContext } from "./callback.ts";
@@ -105,6 +106,13 @@ export async function main(denops: Denops) {
     },
     getCurrent(): Promise<DdcOptions> {
       return Promise.resolve(contextBuilder.getCurrent(denops));
+    },
+    async loadConfig(arg1: unknown): Promise<void> {
+      const path = ensureString(arg1);
+      const mod = await import(toFileUrl(path).href);
+      const obj = new mod.Config();
+      await obj.config({ denops, contextBuilder });
+      return Promise.resolve();
     },
     async manualComplete(arg1: unknown): Promise<void> {
       // Get current options

@@ -373,6 +373,11 @@ ddc#custom#get_context()
 ddc#custom#get_global()
 		Get global options.
 
+						*ddc#custom#load_config()*
+ddc#custom#load_config({path})
+		Load TypeScript configuration from {path} file.
+		Note: {path} must be full path.
+
 						*ddc#custom#patch_buffer()*
 ddc#custom#patch_buffer({option-name}, {value})
 ddc#custom#patch_buffer({dict})

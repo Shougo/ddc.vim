@@ -5,10 +5,13 @@ import { BaseFilterParams } from "./base/filter.ts";
 
 export { BaseSource } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
+export { BaseConfig } from "./base/config.ts";
 
 export type { BaseUiParams } from "./base/ui.ts";
 export type { BaseSourceParams } from "./base/source.ts";
 export type { BaseFilterParams } from "./base/filter.ts";
+
+export { ContextBuilder } from "./context.ts";
 
 export type DdcExtType = "ui" | "source" | "filter";
 

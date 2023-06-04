@@ -42,6 +42,10 @@ function! ddc#custom#set_context_buffer(func) abort
   call s:notify('setContextBuffer', [id, n])
 endfunction
 
+function! ddc#custom#load_config(path) abort
+  return s:notify('loadConfig', [a:path])
+endfunction
+
 function! ddc#custom#alias(type, alias, base) abort
   if ddc#_denops_running()
     call denops#notify('ddc', 'alias', [a:type, a:alias, a:base])
