@@ -31,6 +31,7 @@ export async function main(denops: Denops) {
   const cbContext = createCallbackContext();
   const lock = new Lock(0);
   let queuedEvent: DdcEvent | null = null;
+  let prevInput = "";
 
   denops.dispatcher = {
     alias(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
@@ -295,13 +296,12 @@ export async function main(denops: Denops) {
   ): Promise<boolean> {
     // Note: Don't complete when backspace by default, because of completion
     // flicker.
-    const prevInput = await vars.g.get(denops, "ddc#_prev_input") as string;
     const checkBackSpace = !options.backspaceCompletion &&
       context.input !== prevInput &&
       context.input.length + 1 === prevInput.length &&
       prevInput.startsWith(context.input);
     if (checkBackSpace) {
-      await vars.g.set(denops, "ddc#_prev_input", context.input);
+      prevInput = context.input;
       return true;
     }
 
@@ -352,11 +352,11 @@ export async function main(denops: Denops) {
     }
 
     await (async function write() {
+      prevInput = context.input;
       await batch(denops, async (denops: Denops) => {
         await vars.g.set(denops, "ddc#_changedtick", context.changedTick);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
         await vars.g.set(denops, "ddc#_items", items);
-        await vars.g.set(denops, "ddc#_prev_input", context.input);
         await vars.g.set(denops, "ddc#_sources", options.sources);
       });
 
@@ -372,7 +372,6 @@ export async function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_changedtick", 0);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
     await vars.g.set(denops, "ddc#_items", []);
-    await vars.g.set(denops, "ddc#_prev_input", "");
     await vars.g.set(denops, "ddc#_sources", []);
 
     await denops.cmd("doautocmd <nomodeline> User DDCReady");
