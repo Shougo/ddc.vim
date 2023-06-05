@@ -32,7 +32,7 @@ function! ddc#complete#_skip(pos, items) abort
     return v:true
   endif
 
-  " Note: If the input text is longer than 'textwidth', the completed text
+  " NOTE: If the input text is longer than 'textwidth', the completed text
   " will be the next line.  It breaks auto completion behavior.
   if &l:formatoptions =~# '[tca]' && &l:textwidth > 0
     const input = getline('.')[: a:pos]

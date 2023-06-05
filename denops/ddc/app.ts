@@ -164,7 +164,7 @@ export async function main(denops: Denops) {
     async onEvent(arg1: unknown): Promise<void> {
       queuedEvent = ensureString(arg1) as DdcEvent;
 
-      // Note: must be locked
+      // NOTE: must be locked
       await lock.lock(async () => {
         while (queuedEvent !== null) {
           const event = queuedEvent;
@@ -294,7 +294,7 @@ export async function main(denops: Denops) {
     context: Context,
     options: DdcOptions,
   ): Promise<boolean> {
-    // Note: Don't complete when backspace by default, because of completion
+    // NOTE: Don't complete when backspace by default, because of completion
     // flicker.
     const checkBackSpace = !options.backspaceCompletion &&
       context.input !== prevInput &&

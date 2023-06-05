@@ -346,7 +346,7 @@ export class Ddc {
         context.input.search(
             new RegExp("(?:" + o.forceCompletionPattern + ")$"),
           ) !== -1;
-      // Note: If forceCompletion and not matched getCompletePosition(),
+      // NOTE: If forceCompletion and not matched getCompletePosition(),
       // Use cursor position instead.
       const completePos = (pos < 0 && forceCompletion)
         ? context.input.length
@@ -468,7 +468,7 @@ export class Ddc {
     // Flatten items
     const items = fs.flatMap(([pos, items]) =>
       items.map((c) => {
-        // Note: Merge word by completePos
+        // NOTE: Merge word by completePos
         const word = context.input.substring(completePos, pos) + c.word;
 
         return {

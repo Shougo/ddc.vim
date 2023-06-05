@@ -25,7 +25,7 @@ function! ddc#enable(opts = {}) abort
   let g:ddc#_started = reltime()
   let g:ddc#_context_filetype = context_filetype
 
-  " Note: ddc.vim must be registered manually.
+  " NOTE: ddc.vim must be registered manually.
   autocmd ddc User DenopsReady silent! call ddc#_register()
   if 'g:loaded_denops'->exists() && denops#server#status() ==# 'running'
     silent! call ddc#_register()
@@ -154,7 +154,7 @@ function! ddc#_denops_running() abort
 endfunction
 
 function! ddc#_on_event(event) abort
-  " Note: If denops isn't running, stop
+  " NOTE: If denops isn't running, stop
   if !ddc#_denops_running()
     return
   endif

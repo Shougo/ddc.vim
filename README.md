@@ -12,7 +12,7 @@ Please read [help](doc/ddc.txt) for details.
 Ddc is the abbreviation of "dark deno-powered completion". It provides an
 extensible and asynchronous completion framework for neovim/Vim8.
 
-Note: I have created
+NOTE: I have created
 [Japanese article](https://zenn.dev/shougo/articles/ddc-vim-beta) for ddc.vim.
 After that I have created the next article
 [Japanese article](https://zenn.dev/shougo/articles/ddc-vim-pum-vim) for both
@@ -46,7 +46,7 @@ better than neovim Python interface.
 
 ## Install
 
-**Note:** Ddc.vim requires Neovim (0.8.0+ and of course, **latest** is
+**NOTE:** Ddc.vim requires Neovim (0.8.0+ and of course, **latest** is
 recommended) or Vim 8.2.0662. See [requirements](#requirements) if you aren't
 sure whether you have this.
 
@@ -92,7 +92,7 @@ call dein#add('vim-denops/denops.vim')
 call dein#end()
 ```
 
-**Note:** Ddc.vim does not include any UIs, sources and filters. You must
+**NOTE:** Ddc.vim does not include any UIs, sources and filters. You must
 install them which you want manually. You can search ddc plugins(sources and
 filters) from [here](https://github.com/topics/ddc-vim).
 
@@ -109,7 +109,7 @@ Ddc.vim requires both Deno and denops.vim.
 " Customize global settings
 
 " You must set the default ui.
-" Note: native ui
+" NOTE: native ui
 " https://github.com/Shougo/ddc-ui-native
 call ddc#custom#patch_global('ui', 'native')
 

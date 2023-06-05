@@ -50,7 +50,7 @@ function! ddc#map#complete_common_string() abort
   endif
 
   let chars = ''
-  " Note: Change backspace option to work <BS> correctly
+  " NOTE: Change backspace option to work <BS> correctly
   if mode() ==# 'i'
     let chars .= "\<Cmd>set backspace=start\<CR>"
   endif
@@ -76,7 +76,7 @@ function! ddc#map#insert_item(number, cancel_key) abort
   const complete_str = input[g:ddc#_complete_pos : s:col() - 1]
 
   let chars = ''
-  " Note: Change backspace option to work <BS> correctly
+  " NOTE: Change backspace option to work <BS> correctly
   if mode() ==# 'i'
     let chars .= "\<Cmd>set backspace=start\<CR>"
   endif
