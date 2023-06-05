@@ -25,7 +25,7 @@ import {
 } from "./deps.ts";
 import { createCallbackContext } from "./callback.ts";
 
-export async function main(denops: Denops) {
+export function main(denops: Denops) {
   const ddc: Ddc = new Ddc();
   const contextBuilder = new ContextBuilder();
   const cbContext = createCallbackContext();

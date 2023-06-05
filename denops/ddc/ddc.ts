@@ -120,7 +120,6 @@ export class Ddc {
     if (path in this.checkPaths) {
       return;
     }
-    this.checkPaths[path] = true;
 
     const mod = await import(toFileUrl(path).href);
 
@@ -158,6 +157,8 @@ export class Ddc {
     for (const alias of aliases) {
       add(alias);
     }
+
+    this.checkPaths[path] = true;
   }
 
   async autoload(
