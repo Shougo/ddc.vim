@@ -368,7 +368,7 @@ export async function main(denops: Denops) {
     })();
   }
 
-  await batch(denops, async (denops: Denops) => {
+  batch(denops, async (denops: Denops) => {
     await vars.g.set(denops, "ddc#_changedtick", 0);
     await vars.g.set(denops, "ddc#_complete_pos", -1);
     await vars.g.set(denops, "ddc#_items", []);
