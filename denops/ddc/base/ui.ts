@@ -50,20 +50,18 @@ export abstract class BaseUi<Params extends BaseUiParams> {
 
   async onInit(_args: OnInitArguments<Params>): Promise<void> {}
 
-  // deno-lint-ignore require-await
-  async skipCompletion(
+  skipCompletion(
     _args: SkipCompletionArguments<Params>,
   ): Promise<boolean> {
-    return false;
+    return Promise.resolve(false);
   }
 
   async show(_args: ShowArguments<Params>): Promise<void> {}
 
   async hide(_args: HideArguments<Params>): Promise<void> {}
 
-  // deno-lint-ignore require-await
-  async visible(_args: VisibleArguments<Params>): Promise<boolean> {
-    return true;
+  visible(_args: VisibleArguments<Params>): Promise<boolean> {
+    return Promise.resolve(true);
   }
 
   abstract params(): Params;

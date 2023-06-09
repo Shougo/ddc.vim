@@ -177,9 +177,9 @@ export function main(denops: Denops) {
         }
       });
     },
-    // deno-lint-ignore require-await
-    async onCallback(id: unknown, payload: unknown): Promise<void> {
+    onCallback(id: unknown, payload: unknown): Promise<void> {
       cbContext.emit(ensureString(id), payload);
+      return Promise.resolve();
     },
     async onCompleteDone(arg1: unknown, arg2: unknown): Promise<void> {
       const sourceName = ensureString(arg1);
