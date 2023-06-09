@@ -33,9 +33,13 @@ export function main(denops: Denops) {
   let queuedEvent: DdcEvent | null = null;
   let prevInput = "";
 
+  const setAlias = (extType: DdcExtType, alias: string, base: string) => {
+    ddc.registerAlias(extType, alias, base);
+  };
+
   denops.dispatcher = {
     alias(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
-      ddc.registerAlias(
+      setAlias(
         ensureString(arg1) as DdcExtType,
         ensureString(arg2),
         ensureString(arg3),
@@ -112,7 +116,7 @@ export function main(denops: Denops) {
       const path = ensureString(arg1);
       const mod = await import(toFileUrl(path).href);
       const obj = new mod.Config();
-      await obj.config({ denops, contextBuilder });
+      await obj.config({ denops, contextBuilder, setAlias });
       return Promise.resolve();
     },
     async manualComplete(arg1: unknown): Promise<void> {

@@ -1,9 +1,11 @@
 import { ContextBuilder } from "../context.ts";
+import { DdcExtType } from "../types.ts";
 import { Denops } from "../deps.ts";
 
 export type ConfigArguments = {
   denops: Denops;
   contextBuilder: ContextBuilder;
+  setAlias: (extType: DdcExtType, alias: string, base: string) => void;
 };
 
 export abstract class BaseConfig {
