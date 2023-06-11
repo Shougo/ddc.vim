@@ -44,6 +44,7 @@ import {
   DeadlineError,
   Denops,
   fn,
+  Lock,
   op,
   parse,
   TimeoutError,
@@ -62,7 +63,6 @@ export class Ddc {
   private uis: Record<string, BaseUi<BaseUiParams>> = {};
   private sources: Record<string, BaseSource<BaseSourceParams>> = {};
   private filters: Record<string, BaseFilter<BaseFilterParams>> = {};
-
   private aliases: Record<DdcExtType, Record<string, string>> = {
     ui: {},
     source: {},
@@ -72,8 +72,9 @@ export class Ddc {
   private checkPaths: Record<string, boolean> = {};
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
-
+  private lock = new Lock(0);
   private visibleUi = false;
+
   prevSources: string[] = [];
   prevUi = "";
 
@@ -176,9 +177,11 @@ export class Ddc {
       names.map((file) => this.aliases[type][file] ?? file),
     );
 
-    await Promise.all(
-      paths.map((path) => this.register(type, path, parse(path).name)),
-    );
+    await this.lock.lock(async () => {
+      await Promise.all(
+        paths.map((path) => this.register(type, path, parse(path).name)),
+      );
+    });
 
     return paths;
   }
