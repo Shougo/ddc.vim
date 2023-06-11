@@ -72,7 +72,7 @@ export class Ddc {
   private checkPaths: Record<string, boolean> = {};
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
-  private lock = new Lock(0);
+  private registerLock = new Lock(0);
   private visibleUi = false;
 
   prevSources: string[] = [];
@@ -177,7 +177,7 @@ export class Ddc {
       names.map((file) => this.aliases[type][file] ?? file),
     );
 
-    await this.lock.lock(async () => {
+    await this.registerLock.lock(async () => {
       await Promise.all(
         paths.map((path) => this.register(type, path, parse(path).name)),
       );
