@@ -756,11 +756,6 @@ export class Ddc {
     ]
   > {
     if (options.ui.length === 0) {
-      await denops.call(
-        "ddc#util#print_error",
-        'You must install ddc UI plugins and specify "ui" option.',
-      );
-
       return [
         undefined,
         defaultUiOptions(),
