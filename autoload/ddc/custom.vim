@@ -43,6 +43,11 @@ function! ddc#custom#set_context_buffer(func) abort
 endfunction
 
 function! ddc#custom#load_config(path) abort
+  if !(a:path->filereadable())
+    call ddc#util#print_error(printf('"%s" is not found.', a:path))
+    return
+  endif
+
   return s:notify('loadConfig', [a:path])
 endfunction
 
