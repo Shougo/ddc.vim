@@ -299,7 +299,7 @@ ddc#enable_terminal_completion()
 		Enable ddc.vim terminal completion feature.
 		NOTE: "pum.vim" is needed for the feature.
 
-							*ddc#hide({event})*
+							*ddc#hide()*
 ddc#hide({event})
 		Hide current completion UI.
 		{event} is completion event.
@@ -313,6 +313,13 @@ ddc#hide({event})
 ddc#on_complete_done({completed_item})
 		It must be called when completion item is completed.
 		The UI calls the API.
+
+							*ddc#register()*
+ddc#register({type}, {path})
+		Register ddc extension.
+		{type} is "ui" or "source" or "filter".
+		{path} is ddc extension path.
+		NOTE: {path} must be full path.
 
 							*ddc#syntax#get()*
 ddc#syntax#get()

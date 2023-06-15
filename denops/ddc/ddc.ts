@@ -1,6 +1,9 @@
 import {
+  BaseFilter,
   BaseFilterParams,
+  BaseSource,
   BaseSourceParams,
+  BaseUi,
   BaseUiParams,
   Context,
   DdcExtType,
@@ -25,17 +28,10 @@ import {
   mergeUiOptions,
   mergeUiParams,
 } from "./context.ts";
-import { BaseUi, defaultUiOptions } from "./base/ui.ts";
-import {
-  BaseSource,
-  defaultSourceOptions,
-  GatherArguments,
-} from "./base/source.ts";
-import {
-  BaseFilter,
-  defaultFilterOptions,
-  FilterArguments,
-} from "./base/filter.ts";
+import { Loader } from "./loader.ts";
+import { defaultUiOptions } from "./base/ui.ts";
+import { defaultSourceOptions, GatherArguments } from "./base/source.ts";
+import { defaultFilterOptions, FilterArguments } from "./base/filter.ts";
 import { isDdcCallbackCancelError } from "./callback.ts";
 import {
   assertEquals,
@@ -44,11 +40,9 @@ import {
   DeadlineError,
   Denops,
   fn,
-  Lock,
   op,
   parse,
   TimeoutError,
-  toFileUrl,
 } from "./deps.ts";
 
 type DdcResult = {
@@ -60,41 +54,35 @@ type DdcResult = {
 };
 
 export class Ddc {
-  private uis: Record<string, BaseUi<BaseUiParams>> = {};
-  private sources: Record<string, BaseSource<BaseSourceParams>> = {};
-  private filters: Record<string, BaseFilter<BaseFilterParams>> = {};
-  private aliases: Record<DdcExtType, Record<string, string>> = {
-    ui: {},
-    source: {},
-    filter: {},
-  };
-
-  private checkPaths: Record<string, boolean> = {};
+  private loader: Loader;
   private prevResults: Record<string, DdcResult> = {};
   private events: string[] = [];
-  private registerLock = new Lock(0);
   private visibleUi = false;
 
   prevSources: string[] = [];
   prevUi = "";
 
+  constructor(loader: Loader) {
+    this.loader = loader;
+  }
+
   private foundSources(names: string[]): BaseSource<BaseSourceParams>[] {
-    return names.map((n) => this.sources[n]).filter((v) => v);
+    return names.map((n) => this.loader.getSource(n)).filter((v) => v);
   }
   private foundFilters(names: string[]): BaseFilter<BaseFilterParams>[] {
-    return names.map((n) => this.filters[n]).filter((v) => v);
+    return names.map((n) => this.loader.getFilter(n)).filter((v) => v);
   }
 
   private foundInvalidSources(names: string[]): string[] {
     return names.filter((n) =>
-      !this.sources[n] ||
-      this.sources[n].apiVersion < 4
+      !this.loader.getSource(n) ||
+      this.loader.getSource(n).apiVersion < 4
     );
   }
   private foundInvalidFilters(names: string[]): string[] {
     return names.filter((n) =>
-      !this.filters[n] ||
-      this.filters[n].apiVersion < 4
+      !this.loader.getFilter(n) ||
+      this.loader.getFilter(n).apiVersion < 4
     );
   }
 
@@ -113,55 +101,6 @@ export class Ddc {
     });
   }
 
-  registerAlias(type: DdcExtType, alias: string, base: string) {
-    this.aliases[type][alias] = base;
-  }
-
-  async register(type: DdcExtType, path: string, name: string) {
-    if (path in this.checkPaths) {
-      return;
-    }
-
-    const mod = await import(toFileUrl(path).href);
-
-    let add;
-    switch (type) {
-      case "ui":
-        add = (name: string) => {
-          const ui = new mod.Ui();
-          ui.name = name;
-          this.uis[ui.name] = ui;
-        };
-        break;
-      case "source":
-        add = (name: string) => {
-          const source = new mod.Source();
-          source.name = name;
-          this.sources[source.name] = source;
-        };
-        break;
-      case "filter":
-        add = (name: string) => {
-          const filter = new mod.Filter();
-          filter.name = name;
-          this.filters[filter.name] = filter;
-        };
-        break;
-    }
-
-    add(name);
-
-    // Check alias
-    const aliases = Object.keys(this.aliases[type]).filter(
-      (k) => this.aliases[type][k] === name,
-    );
-    for (const alias of aliases) {
-      add(alias);
-    }
-
-    this.checkPaths[path] = true;
-  }
-
   async autoload(
     denops: Denops,
     type: DdcExtType,
@@ -174,14 +113,12 @@ export class Ddc {
     const paths = await globpath(
       denops,
       [`denops/@ddc-${type}s/`],
-      names.map((file) => this.aliases[type][file] ?? file),
+      names.map((name) => this.loader.getAlias(type, name) ?? name),
     );
 
-    await this.registerLock.lock(async () => {
-      await Promise.all(
-        paths.map((path) => this.register(type, path, parse(path).name)),
-      );
-    });
+    await Promise.all(
+      paths.map((path) => this.loader.registerPath(type, path)),
+    );
 
     return paths;
   }
@@ -214,7 +151,7 @@ export class Ddc {
           invalidSources.toString(),
       );
       for (const name in invalidSources) {
-        delete this.sources[name];
+        this.loader.removeSource(name);
       }
     }
 
@@ -226,7 +163,7 @@ export class Ddc {
           invalidFilters.toString(),
       );
       for (const name in invalidFilters) {
-        delete this.filters[name];
+        this.loader.removeFilter(name);
       }
     }
   }
@@ -303,7 +240,7 @@ export class Ddc {
     sourceName: string,
     userData: DdcUserData,
   ): Promise<void> {
-    const source = this.sources[sourceName];
+    const source = this.getSource(sourceName);
     if (!source || !source.onCompleteDone) {
       return;
     }
@@ -763,10 +700,10 @@ export class Ddc {
       ];
     }
 
-    if (!this.uis[options.ui]) {
+    if (!this.loader.getUi(options.ui)) {
       await this.autoload(denops, "ui", [options.ui]);
     }
-    const ui = this.uis[options.ui];
+    const ui = this.loader.getUi(options.ui);
     if (!ui) {
       await denops.call(
         "ddc#util#print_error",

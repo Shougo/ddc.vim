@@ -96,29 +96,20 @@ function! ddc#syntax_in(groups) abort
 endfunction
 
 function! ddc#callback(id, payload = v:null) abort
-  if !ddc#_denops_running()
-    return
-  endif
-
-  call denops#notify('ddc', 'onCallback', [a:id, a:payload])
+  call ddc#_notify('onCallback', [a:id, a:payload])
 endfunction
 
 function! ddc#update_items(name, items) abort
-  if !ddc#_denops_running()
-    return
-  endif
-
-  call denops#notify('ddc', 'updateItems', [a:name, a:items])
+  call ddc#_notify('updateItems', [a:name, a:items])
 endfunction
 
 function! ddc#hide(event) abort
-  if !ddc#_denops_running()
-    return ''
-  endif
-
-  call denops#notify('ddc', 'hide', [a:event])
-
+  call ddc#_notify('hide', [a:event])
   return ''
+endfunction
+
+function! ddc#register(type, path) abort
+  call ddc#_notify('register', [a:type, a:path])
 endfunction
 
 function! ddc#complete_info() abort
@@ -159,7 +150,7 @@ function! ddc#_on_event(event) abort
     return
   endif
 
-  call denops#notify('ddc', 'onEvent', [a:event])
+  call ddc#_notify('onEvent', [a:event])
 endfunction
 
 function! ddc#_notify(method, args) abort

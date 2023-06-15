@@ -23,10 +23,12 @@ import {
   toFileUrl,
   vars,
 } from "./deps.ts";
+import { Loader } from "./loader.ts";
 import { createCallbackContext } from "./callback.ts";
 
 export function main(denops: Denops) {
-  const ddc: Ddc = new Ddc();
+  const loader = new Loader();
+  const ddc = new Ddc(loader);
   const contextBuilder = new ContextBuilder();
   const cbContext = createCallbackContext();
   const lock = new Lock(0);
@@ -34,7 +36,7 @@ export function main(denops: Denops) {
   let prevInput = "";
 
   const setAlias = (extType: DdcExtType, alias: string, base: string) => {
-    ddc.registerAlias(extType, alias, base);
+    loader.registerAlias(extType, alias, base);
   };
 
   denops.dispatcher = {
@@ -43,6 +45,13 @@ export function main(denops: Denops) {
         ensureString(arg1) as DdcExtType,
         ensureString(arg2),
         ensureString(arg3),
+      );
+      return Promise.resolve();
+    },
+    async register(arg1: unknown, arg2: unknown): Promise<void> {
+      await loader.registerPath(
+        ensureString(arg1) as DdcExtType,
+        ensureString(arg2),
       );
       return Promise.resolve();
     },
