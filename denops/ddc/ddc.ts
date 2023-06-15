@@ -240,7 +240,7 @@ export class Ddc {
     sourceName: string,
     userData: DdcUserData,
   ): Promise<void> {
-    const source = this.getSource(sourceName);
+    const source = this.loader.getSource(sourceName);
     if (!source || !source.onCompleteDone) {
       return;
     }
