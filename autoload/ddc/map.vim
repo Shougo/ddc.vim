@@ -1,4 +1,4 @@
-function! ddc#map#complete(ui) abort
+function ddc#map#complete(ui) abort
   if !ddc#_denops_running()
     return
   endif
@@ -7,7 +7,7 @@ function! ddc#map#complete(ui) abort
   return ''
 endfunction
 
-function! ddc#map#manual_complete(options = {}) abort
+function ddc#map#manual_complete(options = {}) abort
   if !ddc#_denops_running()
     call ddc#enable()
     call denops#plugin#wait('ddc')
@@ -17,19 +17,19 @@ function! ddc#map#manual_complete(options = {}) abort
   return ''
 endfunction
 
-function! ddc#map#can_complete() abort
+function ddc#map#can_complete() abort
   return !(g:->get('ddc#_items', [])->empty())
         \ && g:->get('ddc#_complete_pos', -1) >= 0
 endfunction
 
-function! ddc#map#extend(confirm_key) abort
+function ddc#map#extend(confirm_key) abort
   if !('g:ddc#_sources'->exists())
     return ''
   endif
   return a:confirm_key .. ddc#map#manual_complete(g:ddc#_sources)
 endfunction
 
-function! ddc#map#complete_common_string() abort
+function ddc#map#complete_common_string() abort
   if g:ddc#_items->empty() || g:ddc#_complete_pos < 0
     return ''
   endif
@@ -62,7 +62,7 @@ function! ddc#map#complete_common_string() abort
   return chars
 endfunction
 
-function! ddc#map#insert_item(number, cancel_key) abort
+function ddc#map#insert_item(number, cancel_key) abort
   const word = g:ddc#_items->get(a:number, #{ word: '' }).word
   if word ==# ''
     return ''
@@ -89,7 +89,7 @@ function! ddc#map#insert_item(number, cancel_key) abort
   return chars
 endfunction
 
-function! s:col() abort
+function s:col() abort
   const col = mode() ==# 't' && !has('nvim') ?
         \ term_getcursor(bufnr('%'))[1] :
         \ mode() ==# 'c' ? getcmdpos() :

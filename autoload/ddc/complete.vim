@@ -1,4 +1,4 @@
-function! ddc#complete#_on_complete_done(completed_item) abort
+function ddc#complete#_on_complete_done(completed_item) abort
   if !ddc#_denops_running() || a:completed_item->empty()
         \ || !(a:completed_item->has_key('user_data'))
         \ || a:completed_item.user_data->type() != v:t_dict
@@ -27,7 +27,7 @@ function! ddc#complete#_on_complete_done(completed_item) abort
         \ [items[0].__sourceName, completed_item.user_data])
 endfunction
 
-function! ddc#complete#_skip(pos, items) abort
+function ddc#complete#_skip(pos, items) abort
   if a:pos < 0 || g:ddc#_changedtick != b:changedtick
     return v:true
   endif

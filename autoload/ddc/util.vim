@@ -1,16 +1,16 @@
-function! ddc#util#print_error(string, name = 'ddc') abort
+function ddc#util#print_error(string, name = 'ddc') abort
   echohl Error
   echomsg printf('[%s] %s', a:name,
         \ type(a:string) ==# v:t_string ? a:string : string(a:string))
   echohl None
 endfunction
 
-function! ddc#util#get_text(mode) abort
+function ddc#util#get_text(mode) abort
   return a:mode ==# 'c' ? getcmdline() :
         \ a:mode ==# 't' && !has('nvim') ? term_getline('', '.')
         \ : getline('.')
 endfunction
-function! ddc#util#get_input(event) abort
+function ddc#util#get_input(event) abort
   const mode = a:event ==# 'InsertEnter' ? 'i' : mode()
   const is_insert = (mode ==# 'i') || (mode ==# 't')
   const text = ddc#util#get_text(mode)
@@ -27,12 +27,12 @@ function! ddc#util#get_input(event) abort
 
   return input
 endfunction
-function! ddc#util#get_next_input(event) abort
+function ddc#util#get_next_input(event) abort
   const text = ddc#util#get_text(mode())
   return text[len(ddc#util#get_input(a:event)) :]
 endfunction
 
-function! ddc#util#benchmark(msg = '') abort
+function ddc#util#benchmark(msg = '') abort
   let msg = a:msg
   if msg !=# ''
     let msg ..= ' '

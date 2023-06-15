@@ -1,4 +1,4 @@
-function! ddc#enable(opts = {}) abort
+function ddc#enable(opts = {}) abort
   if denops#plugin#is_loaded('ddc')
     return
   endif
@@ -31,7 +31,7 @@ function! ddc#enable(opts = {}) abort
     silent! call ddc#_register()
   endif
 endfunction
-function! ddc#enable_cmdline_completion() abort
+function ddc#enable_cmdline_completion() abort
   call ddc#enable()
 
   augroup ddc-cmdline
@@ -55,7 +55,7 @@ function! ddc#enable_cmdline_completion() abort
 
   let b:ddc_cmdline_completion = v:true
 endfunction
-function! ddc#disable_cmdline_completion() abort
+function ddc#disable_cmdline_completion() abort
   augroup ddc-cmdline
     autocmd!
   augroup END
@@ -67,7 +67,7 @@ function! ddc#disable_cmdline_completion() abort
   endif
 endfunction
 
-function! ddc#enable_terminal_completion() abort
+function ddc#enable_terminal_completion() abort
   if !('##TextChangedT'->exists())
     return
   endif
@@ -80,46 +80,46 @@ function! ddc#enable_terminal_completion() abort
   augroup END
 endfunction
 
-function! ddc#disable() abort
+function ddc#disable() abort
   augroup ddc
     autocmd!
   augroup END
   call ddc#disable_cmdline_completion()
 endfunction
 
-function! ddc#on_complete_done(completed_item) abort
+function ddc#on_complete_done(completed_item) abort
   call ddc#complete#_on_complete_done(a:completed_item)
 endfunction
 
-function! ddc#syntax_in(groups) abort
+function ddc#syntax_in(groups) abort
   return ddc#syntax#in(a:groups)
 endfunction
 
-function! ddc#callback(id, payload = v:null) abort
+function ddc#callback(id, payload = v:null) abort
   call ddc#_notify('onCallback', [a:id, a:payload])
 endfunction
 
-function! ddc#update_items(name, items) abort
+function ddc#update_items(name, items) abort
   call ddc#_notify('updateItems', [a:name, a:items])
 endfunction
 
-function! ddc#hide(event) abort
+function ddc#hide(event) abort
   call ddc#_notify('hide', [a:event])
   return ''
 endfunction
 
-function! ddc#register(type, path) abort
+function ddc#register(type, path) abort
   call ddc#_notify('register', [a:type, a:path])
 endfunction
 
-function! ddc#complete_info() abort
+function ddc#complete_info() abort
   return '*pum#complete_info'->exists() ?
         \ pum#complete_info() : complete_info()
 endfunction
 
 const s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 const s:sep = has('win32') ? '\' : '/'
-function! ddc#_register() abort
+function ddc#_register() abort
   call denops#plugin#register('ddc',
         \ [s:root_dir, 'denops', 'ddc', 'app.ts']->join(s:sep),
         \ #{ mode: 'skip' })
@@ -127,7 +127,7 @@ function! ddc#_register() abort
   autocmd ddc User DenopsClosed call s:stopped()
 endfunction
 
-function! s:stopped() abort
+function s:stopped() abort
   unlet! g:ddc#_initialized
 
   " Restore custom config
@@ -138,13 +138,13 @@ function! s:stopped() abort
   endif
 endfunction
 
-function! ddc#_denops_running() abort
+function ddc#_denops_running() abort
   return 'g:loaded_denops'->exists()
         \ && denops#server#status() ==# 'running'
         \ && denops#plugin#is_loaded('ddc')
 endfunction
 
-function! ddc#_on_event(event) abort
+function ddc#_on_event(event) abort
   " NOTE: If denops isn't running, stop
   if !ddc#_denops_running()
     return
@@ -153,7 +153,7 @@ function! ddc#_on_event(event) abort
   call ddc#_notify('onEvent', [a:event])
 endfunction
 
-function! ddc#_notify(method, args) abort
+function ddc#_notify(method, args) abort
   if ddc#_denops_running()
     call denops#notify('ddc', a:method, a:args)
   else

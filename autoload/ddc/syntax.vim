@@ -1,4 +1,4 @@
-function! ddc#syntax#in(checks) abort
+function ddc#syntax#in(checks) abort
   const groups_names = ddc#syntax#get()
   for check in a:checks->type() == v:t_list ? a:checks : [a:checks]
     if groups_names->index(check) >= 0
@@ -8,13 +8,13 @@ function! ddc#syntax#in(checks) abort
   return v:false
 endfunction
 
-function! ddc#syntax#get() abort
+function ddc#syntax#get() abort
   const curpos = getcurpos()[1:2]
   return &l:syntax !=# '' ? s:get_syn_names([curpos[0], curpos[1] - 1]) :
         \ has('nvim') ? v:lua.vim.treesitter.get_captures_at_cursor(0) :  []
 endfunction
 
-function! ddc#syntax#lang() abort
+function ddc#syntax#lang() abort
   const curpos = getcurpos()[1:2]
 
   try
@@ -29,7 +29,7 @@ function! ddc#syntax#lang() abort
   return ''
 endfunction
 
-function! s:get_syn_names(curpos) abort
+function s:get_syn_names(curpos) abort
   if '$'->col() >= 200
     return []
   endif

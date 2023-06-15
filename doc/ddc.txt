@@ -986,7 +986,7 @@ A: It is not implemented, but you can emulate the behavior by
    |ddc#map#manual_complete()| like this. >
 
 	let g:chains = ['around', 'zsh', 'deoppet']
-	function! MyChainCompletion() abort
+	function MyChainCompletion() abort
 	  let head = g:chains[0]
 	  let g:chains = g:chains[1:] + [head]
 	  return ddc#map#manual_complete(#{ sources: [head] })
@@ -1092,13 +1092,13 @@ Q: I want to enable "skkeleton" source when "skkeleton" is enabled only.
 
 A: >
 	autocmd User skkeleton-enable-pre call s:skkeleton_pre()
-	function! s:skkeleton_pre() abort
+	function s:skkeleton_pre() abort
 	  " Overwrite sources
 	  let s:prev_buffer_config = ddc#custom#get_buffer()
 	  call ddc#custom#patch_buffer('sources', ['skkeleton'])
 	endfunction
 	autocmd User skkeleton-disable-pre call s:skkeleton_post()
-	function! s:skkeleton_post() abort
+	function s:skkeleton_post() abort
 	  " Restore sources
 	  call ddc#custom#set_buffer(s:prev_buffer_config)
 	endfunction
@@ -1125,7 +1125,7 @@ https://github.com/Shougo/ddc-source-cmdline-history
 	\ })
 	nnoremap :       <Cmd>call CommandlinePre()<CR>:
 	
-	function! CommandlinePre() abort
+	function CommandlinePre() abort
 	  cnoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
 	  cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
 	  cnoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
@@ -1138,7 +1138,7 @@ https://github.com/Shougo/ddc-source-cmdline-history
 	  " Enable command line completion for the buffer
 	  call ddc#enable_cmdline_completion()
 	endfunction
-	function! CommandlinePost() abort
+	function CommandlinePost() abort
 	  silent! cunmap <Tab>
 	  silent! cunmap <S-Tab>
 	  silent! cunmap <C-n>
