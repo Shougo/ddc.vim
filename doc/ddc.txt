@@ -384,6 +384,7 @@ ddc#custom#get_global()
 ddc#custom#load_config({path})
 		Load TypeScript configuration from {path} file.
 		NOTE: {path} must be full path.
+		NOTE: The loading is asynchronous.
 
 						*ddc#custom#patch_buffer()*
 ddc#custom#patch_buffer({option-name}, {value})
