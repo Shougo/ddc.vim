@@ -1142,6 +1142,8 @@ async function errorException(denops: Denops, e: unknown, message: string) {
         e.stack,
       );
     }
+  } else {
+    console.log(e);
   }
 }
 
