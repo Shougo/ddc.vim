@@ -1,4 +1,4 @@
-import { assertEquals, Denops, ensureString, fn, op, vars } from "./deps.ts";
+import { assertEquals, Denops, ensure, fn, is, op, vars } from "./deps.ts";
 import {
   BaseFilterParams,
   BaseSourceParams,
@@ -338,7 +338,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
       if (context !== "") return context;
     }
 
-    return ensureString(await op.filetype.getLocal(denops));
+    return ensure(await op.filetype.getLocal(denops), is.String);
   })();
 
   const enabledEskkPromise = _call(denops, "eskk#is_enabled", false);
@@ -347,7 +347,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
 
   const mode: string = event === "InsertEnter"
     ? "i"
-    : ensureString(await fn.mode(denops));
+    : ensure(await fn.mode(denops), is.String);
 
   const inputPromise = denops.call("ddc#util#get_input", event) as Promise<
     string

@@ -13,11 +13,9 @@ import {
 import {
   batch,
   Denops,
-  ensureArray,
-  ensureNumber,
-  ensureObject,
-  ensureString,
+  ensure,
   fn,
+  is,
   Lock,
   op,
   toFileUrl,
@@ -42,67 +40,67 @@ export function main(denops: Denops) {
   denops.dispatcher = {
     alias(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
       setAlias(
-        ensureString(arg1) as DdcExtType,
-        ensureString(arg2),
-        ensureString(arg3),
+        ensure(arg1, is.String) as DdcExtType,
+        ensure(arg2, is.String),
+        ensure(arg3, is.String),
       );
       return Promise.resolve();
     },
     async register(arg1: unknown, arg2: unknown): Promise<void> {
       await loader.registerPath(
-        ensureString(arg1) as DdcExtType,
-        ensureString(arg2),
+        ensure(arg1, is.String) as DdcExtType,
+        ensure(arg2, is.String),
       );
       return Promise.resolve();
     },
     setGlobal(arg1: unknown): Promise<void> {
-      const options = ensureObject(arg1);
+      const options = ensure(arg1, is.Record);
       contextBuilder.setGlobal(options);
       return Promise.resolve();
     },
     setFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      const options = ensureObject(arg1);
-      const filetype = ensureString(arg2);
+      const options = ensure(arg1, is.Record);
+      const filetype = ensure(arg2, is.String);
       contextBuilder.setFiletype(filetype, options);
       return Promise.resolve();
     },
     setBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      const options = ensureObject(arg1);
-      const bufnr = ensureNumber(arg2);
+      const options = ensure(arg1, is.Record);
+      const bufnr = ensure(arg2, is.Number);
       contextBuilder.setBuffer(bufnr, options);
       return Promise.resolve();
     },
     setContextGlobal(arg1: unknown): Promise<void> {
-      const id = ensureString(arg1);
+      const id = ensure(arg1, is.String);
       contextBuilder.setContextGlobal(id);
       return Promise.resolve();
     },
     setContextFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      const id = ensureString(arg1);
-      const filetype = ensureString(arg2);
+      const id = ensure(arg1, is.String);
+      const filetype = ensure(arg2, is.String);
       contextBuilder.setContextFiletype(id, filetype);
       return Promise.resolve();
     },
     setContextBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      const id = ensureString(arg1);
-      const bufnr = ensureNumber(arg2);
+      const id = ensure(arg1, is.String);
+      const bufnr = ensure(arg2, is.Number);
       contextBuilder.setContextBuffer(id, bufnr);
       return Promise.resolve();
     },
     patchGlobal(arg1: unknown): Promise<void> {
-      const options = ensureObject(arg1);
+      const options = ensure(arg1, is.Record);
       contextBuilder.patchGlobal(options);
       return Promise.resolve();
     },
     patchFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      const options = ensureObject(arg1);
-      const filetype = ensureString(arg2);
+      const options = ensure(arg1, is.Record);
+      const filetype = ensure(arg2, is.String);
       contextBuilder.patchFiletype(filetype, options);
       return Promise.resolve();
     },
     patchBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      const options = ensureObject(arg1);
-      const bufnr = ensureNumber(arg2);
+      const options = ensure(arg1, is.Record);
+      const bufnr = ensure(arg2, is.Number);
       contextBuilder.patchBuffer(bufnr, options);
       return Promise.resolve();
     },
@@ -122,7 +120,7 @@ export function main(denops: Denops) {
       return Promise.resolve(contextBuilder.getCurrent(denops));
     },
     async loadConfig(arg1: unknown): Promise<void> {
-      const path = ensureString(arg1);
+      const path = ensure(arg1, is.String);
       const mod = await import(toFileUrl(path).href);
       const obj = new mod.Config();
       await obj.config({ denops, contextBuilder, setAlias });
@@ -136,7 +134,7 @@ export function main(denops: Denops) {
       // Hide the current completion
       await ddc.hide(denops, context, options);
 
-      const userOptions = ensureObject(arg1) as UserOptions;
+      const userOptions = ensure(arg1, is.Record) as UserOptions;
 
       // Update options
       [skip, context, options] = await contextBuilder
@@ -162,8 +160,8 @@ export function main(denops: Denops) {
       await doCompletion(denops, context, options);
     },
     async updateItems(arg1: unknown, arg2: unknown): Promise<void> {
-      const name = ensureString(arg1);
-      const items = ensureArray(arg2) as Item[];
+      const name = ensure(arg1, is.String);
+      const items = ensure(arg2, is.Array) as Item[];
 
       ddc.updateItems(name, items);
 
@@ -175,7 +173,7 @@ export function main(denops: Denops) {
       await doCompletion(denops, context, options);
     },
     async onEvent(arg1: unknown): Promise<void> {
-      queuedEvent = ensureString(arg1) as DdcEvent;
+      queuedEvent = ensure(arg1, is.String) as DdcEvent;
 
       // NOTE: must be locked
       await lock.lock(async () => {
@@ -187,12 +185,12 @@ export function main(denops: Denops) {
       });
     },
     onCallback(id: unknown, payload: unknown): Promise<void> {
-      cbContext.emit(ensureString(id), payload);
+      cbContext.emit(ensure(id, is.String), payload);
       return Promise.resolve();
     },
     async onCompleteDone(arg1: unknown, arg2: unknown): Promise<void> {
-      const sourceName = ensureString(arg1);
-      const userData = ensureObject(arg2) as DdcUserData;
+      const sourceName = ensure(arg1, is.String);
+      const userData = ensure(arg2, is.Record) as DdcUserData;
       const [skip, context, options] = await contextBuilder
         .createContext(denops, "CompleteDone");
       if (skip) return;
@@ -208,7 +206,7 @@ export function main(denops: Denops) {
       );
     },
     async show(arg1: unknown): Promise<void> {
-      const ui = ensureString(arg1);
+      const ui = ensure(arg1, is.String);
 
       const [_, context, options] = await contextBuilder.createContext(
         denops,
@@ -229,7 +227,7 @@ export function main(denops: Denops) {
       await ddc.show(denops, context, options, completePos, items);
     },
     async hide(arg1: unknown): Promise<void> {
-      const event = ensureString(arg1) as DdcEvent;
+      const event = ensure(arg1, is.String) as DdcEvent;
 
       const [_, context, options] = await contextBuilder.createContext(
         denops,
