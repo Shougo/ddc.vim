@@ -478,12 +478,13 @@ ddc#map#complete_common_string()
 							*ddc#map#extend()*
 ddc#map#extend({confirm-key})
 		Confirm the items and extend current completion.
-		{confirm-key} is popup cancel key.
+		{confirm-key} is popup confirm key.
 		NOTE: It must be in |:map-<expr>|.
 
 						*ddc#map#insert_item()*
 ddc#map#insert_item({index}, {cancel-key})
 		Insert the item at index {index}. Indices start at 0.
+		{confirm-key} is popup cancel key.
 		NOTE: It must be in |:map-<expr>|.
 
 						*ddc#map#manual_complete()*
