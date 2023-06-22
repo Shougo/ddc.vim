@@ -21,7 +21,7 @@ function ddc#complete#_on_complete_done(completed_item) abort
 
   " Reset v:completed_item to prevent CompleteDone is twice
   let completed_item = a:completed_item
-  silent! let a:completed_item = {}
+  silent! let v:completed_item = {}
 
   call denops#request('ddc', 'onCompleteDone',
         \ [items[0].__sourceName, completed_item.user_data])
