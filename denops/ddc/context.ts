@@ -12,7 +12,6 @@ import {
   UserOptions,
 } from "./types.ts";
 import { defaultSourceOptions } from "./base/source.ts";
-import { vimoption2ts } from "./util.ts";
 
 // where
 // T: Object
@@ -474,21 +473,12 @@ export class ContextBuilder {
     world: World,
     options: UserOptions = {},
   ): Promise<DdcOptions> {
-    const userOptions = await this.custom.get(
+    return await this.custom.get(
       denops,
       world.filetype,
       world.bufnr,
       options,
     );
-
-    // Convert keywordPattern
-    const iskeyword = await op.iskeyword.getLocal(denops);
-    userOptions.keywordPattern = userOptions.keywordPattern.replaceAll(
-      /\\k/g,
-      () => "[" + vimoption2ts(iskeyword) + "]",
-    );
-
-    return userOptions;
   }
 
   getGlobal(): Partial<DdcOptions> {

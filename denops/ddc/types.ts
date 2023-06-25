@@ -71,6 +71,7 @@ export type SourceOptions = {
   forceCompletionPattern: string;
   ignoreCase: boolean;
   isVolatile: boolean;
+  keywordPattern: string;
   mark: string;
   matcherKey: string;
   matchers: string[];

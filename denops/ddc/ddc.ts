@@ -44,6 +44,7 @@ import {
   parse,
   TimeoutError,
 } from "./deps.ts";
+import { vimoption2ts } from "./util.ts";
 
 type DdcResult = {
   items: Item[];
@@ -212,23 +213,25 @@ export class Ddc {
       }
     }
 
-    for (const filter of this.foundFilters(filterNames)) {
-      if (filter.events?.includes(context.event)) {
-        const [o, p] = filterArgs(
-          options.filterOptions,
-          options.filterParams,
-          filter,
-        );
-        await callFilterOnEvent(
-          filter,
-          denops,
-          context,
-          onCallback,
-          options,
-          o,
-          p,
-        );
-      }
+    for (
+      const filter of this.foundFilters(filterNames).filter(
+        (filter) => filter.events?.includes(context.event),
+      )
+    ) {
+      const [o, p] = filterArgs(
+        options.filterOptions,
+        options.filterParams,
+        filter,
+      );
+      await callFilterOnEvent(
+        filter,
+        denops,
+        context,
+        onCallback,
+        options,
+        o,
+        p,
+      );
     }
   }
 
@@ -980,6 +983,16 @@ async function callSourceGetCompletePosition(
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
   try {
+    if (source.apiVersion < 5) {
+      // NOTE: It is for backward compatibility.
+      // Convert keywordPattern
+      const iskeyword = await op.iskeyword.getLocal(denops);
+      options.keywordPattern = sourceOptions.keywordPattern.replaceAll(
+        /\\k/g,
+        () => "[" + vimoption2ts(iskeyword) + "]",
+      );
+    }
+
     return await source.getCompletePosition({
       denops,
       context,

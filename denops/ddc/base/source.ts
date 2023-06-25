@@ -6,7 +6,8 @@ import {
   OnCallback,
   SourceOptions,
 } from "../types.ts";
-import { Denops } from "../deps.ts";
+import { Denops, op } from "../deps.ts";
+import { vimoption2ts } from "../util.ts";
 
 export type BaseSourceParams = Record<string, unknown>;
 
@@ -66,7 +67,7 @@ export abstract class BaseSource<
 > {
   name = "";
   isInitialized = false;
-  apiVersion = 4;
+  apiVersion = 5;
 
   events: DdcEvent[] = [];
   isBytePos = false;
@@ -79,11 +80,18 @@ export abstract class BaseSource<
     _args: OnCompleteDoneArguments<Params, UserData>,
   ): Promise<void> {}
 
-  getCompletePosition(
+  async getCompletePosition(
     args: GetCompletePositionArguments<Params>,
   ): Promise<number> {
+    // Convert keywordPattern
+    const iskeyword = await op.iskeyword.getLocal(args.denops);
+    const keywordPattern = args.sourceOptions.keywordPattern.replaceAll(
+      /\\k/g,
+      () => "[" + vimoption2ts(iskeyword) + "]",
+    );
+
     const matchPos = args.context.input.search(
-      new RegExp("(?:" + args.options.keywordPattern + ")$"),
+      new RegExp("(?:" + keywordPattern + ")$"),
     );
     const completePos = matchPos !== null ? matchPos : -1;
     return Promise.resolve(completePos);
@@ -102,6 +110,7 @@ export function defaultSourceOptions(): SourceOptions {
     dup: "ignore",
     enabledIf: "",
     forceCompletionPattern: "",
+    keywordPattern: "\\k*",
     ignoreCase: false,
     isVolatile: false,
     mark: "",

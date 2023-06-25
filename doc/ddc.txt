@@ -75,7 +75,11 @@ For example:
 
     " Pass a dictionary to set multiple options
     call ddc#custom#patch_global(#{
-    \   keywordPattern: '[a-zA-Z_]\w*',
+    \   sourceOptions: #{
+    \     _: #{
+    \       keywordPattern: '[a-zA-Z_]\w*',
+    \     },
+    \   },
     \   smartCase: v:true,
     \ })
 
@@ -159,11 +163,8 @@ filterParams
 <
 					*ddc-option-keywordPattern*
 keywordPattern
-		It defines the keyword pattern for completion.
-		NOTE: It is JavaScript regexp.
-		NOTE: "\k" is converted to 'iskeyword' pattern.
-
-		Default: '\k*'
+		NOTE: The option is deprecated.
+		Please use |ddc-source-option-keywordPattern| instead.
 
 						*ddc-option-postFilters*
 postFilters
@@ -276,7 +277,7 @@ ddc#enable([{opts}])
 
 		"context_filetype": Use context based filetype.
 
-			"context_filetype": Use |context_filetype.vim| plugin.
+			"context_filetype": Use "context_filetype.vim" plugin.
 			"treesitter": Use |treesitter| feature in neovim.
 			"none": Use current buffer 'filetype'.
 
@@ -634,6 +635,14 @@ forceCompletionPattern	(string)
 
 		Default: ''
 
+					*ddc-source-option-keywordPattern*
+keywordPattern
+		It defines the keyword pattern for completion.
+		NOTE: It is JavaScript regexp.
+		NOTE: "\k" is converted to 'iskeyword' pattern.
+
+		Default: '\k*'
+
 					*ddc-source-option-ignoreCase*
 ignoreCase		(boolean)
 		If it is True, ddc ignores case.
@@ -839,7 +848,7 @@ gather			(function)			(Required)
 getCompletePosition	(function)			(Optional)
 		Called to get the position of the current completion.
 
-		Default : |ddc-option-keywordPattern| is used.
+		Default : |ddc-source-option-keywordPattern| is used.
 
 					*ddc-source-attribute-onCompleteDone*
 onCompleteDone		(function)			(Optional)
@@ -1203,8 +1212,12 @@ A: NOTE: Experimental >
 	EOF
 	
 	call ddc#custom#patch_filetype(['FineCmdlinePrompt'], #{
-	    \   keywordPattern: '[0-9a-zA-Z_:#]*',
 	    \   sources: ['cmdline', 'cmdline-history', 'around'],
+	    \   sourceOptions: #{
+	    \     _: #{
+	    \       keywordPattern: '[0-9a-zA-Z_:#]*',
+	    \     },
+	    \   },
 	    \   specialBufferCompletion: v:true,
 	    \ })
 
@@ -1303,20 +1316,28 @@ https://github.com/Shougo/ddc-ui-pum
 	" For deol buffer.
 	call ddc#custom#patch_filetype(['deol'], #{
 	\   specialBufferCompletion: v:true,
-	\   keywordPattern: '[0-9a-zA-Z_./#:-]*',
 	\   sources: ['zsh', 'shell-history', 'around'],
+	\   sourceOptions: #{
+	\     _: #{
+	\       keywordPattern: '[0-9a-zA-Z_./#:-]*',
+	\     },
+	\   },
 	\ })
 <
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
 
+2023.06.25
+* "keywordPattern" option is deprecated.  Please use
+  |ddc-source-option-keywordPattern| instead.
+
 2023.05.16
 * Do not use "context_filetype.vim" automatically.  Use |ddc#enable()|
   arguments instead.
 
 2023.02.15
-* Remove "TextChangedT" from ddc-option-autoCompleteEvents.
+* Remove "TextChangedT" from |ddc-option-autoCompleteEvents|.
 
 2023.01.20
 * Change "ddc#map#manual_complete()" interface.
