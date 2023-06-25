@@ -910,6 +910,16 @@ async function callSourceOnEvent(
   await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
 
   try {
+    if (source.apiVersion < 5) {
+      // NOTE: It is for backward compatibility.
+      // Convert keywordPattern
+      const iskeyword = await op.iskeyword.getLocal(denops);
+      options.keywordPattern = sourceOptions.keywordPattern.replaceAll(
+        /\\k/g,
+        () => "[" + vimoption2ts(iskeyword) + "]",
+      );
+    }
+
     await source.onEvent({
       denops,
       context,
