@@ -640,6 +640,7 @@ keywordPattern
 		It defines the keyword pattern for completion.
 		NOTE: It is JavaScript regexp.
 		NOTE: "\k" is converted to 'iskeyword' pattern.
+		NOTE: The source/filter must convert 'iskeyword' to use it.
 
 		Default: '\k*'
 

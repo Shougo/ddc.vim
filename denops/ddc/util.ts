@@ -1,6 +1,17 @@
-import { assertEquals } from "./deps.ts";
+import { assertEquals, Denops, op } from "./deps.ts";
 
-export function vimoption2ts(option: string): string {
+export async function convertKeywordPattern(
+  denops: Denops,
+  keywordPattern: string,
+): Promise<string> {
+  const iskeyword = await op.iskeyword.getLocal(denops);
+  return keywordPattern.replaceAll(
+    /\\k/g,
+    () => "[" + vimoption2ts(iskeyword) + "]",
+  );
+}
+
+function vimoption2ts(option: string): string {
   let hasDash = false;
   const patterns: string[] = [];
   for (let pattern of option.split(",")) {

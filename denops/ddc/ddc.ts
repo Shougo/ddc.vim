@@ -44,7 +44,7 @@ import {
   parse,
   TimeoutError,
 } from "./deps.ts";
-import { vimoption2ts } from "./util.ts";
+import { convertKeywordPattern } from "./util.ts";
 
 type DdcResult = {
   items: Item[];
@@ -913,10 +913,10 @@ async function callSourceOnEvent(
     if (source.apiVersion < 5) {
       // NOTE: It is for backward compatibility.
       // Convert keywordPattern
-      const iskeyword = await op.iskeyword.getLocal(denops);
-      options.keywordPattern = sourceOptions.keywordPattern.replaceAll(
-        /\\k/g,
-        () => "[" + vimoption2ts(iskeyword) + "]",
+      // deno-lint-ignore-file
+      options.keywordPattern = await convertKeywordPattern(
+        denops,
+        sourceOptions.keywordPattern,
       );
     }
 
@@ -996,10 +996,9 @@ async function callSourceGetCompletePosition(
     if (source.apiVersion < 5) {
       // NOTE: It is for backward compatibility.
       // Convert keywordPattern
-      const iskeyword = await op.iskeyword.getLocal(denops);
-      options.keywordPattern = sourceOptions.keywordPattern.replaceAll(
-        /\\k/g,
-        () => "[" + vimoption2ts(iskeyword) + "]",
+      options.keywordPattern = await convertKeywordPattern(
+        denops,
+        sourceOptions.keywordPattern,
       );
     }
 

@@ -7,7 +7,7 @@ import {
   SourceOptions,
 } from "../types.ts";
 import { Denops, op } from "../deps.ts";
-import { vimoption2ts } from "../util.ts";
+import { convertKeywordPattern } from "../util.ts";
 
 export type BaseSourceParams = Record<string, unknown>;
 
@@ -84,10 +84,9 @@ export abstract class BaseSource<
     args: GetCompletePositionArguments<Params>,
   ): Promise<number> {
     // Convert keywordPattern
-    const iskeyword = await op.iskeyword.getLocal(args.denops);
-    const keywordPattern = args.sourceOptions.keywordPattern.replaceAll(
-      /\\k/g,
-      () => "[" + vimoption2ts(iskeyword) + "]",
+    const keywordPattern = await convertKeywordPattern(
+      args.denops,
+      args.sourceOptions.keywordPattern,
     );
 
     const matchPos = args.context.input.search(
