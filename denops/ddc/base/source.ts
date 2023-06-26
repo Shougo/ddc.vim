@@ -6,7 +6,7 @@ import {
   OnCallback,
   SourceOptions,
 } from "../types.ts";
-import { Denops, op } from "../deps.ts";
+import { Denops } from "../deps.ts";
 import { convertKeywordPattern } from "../util.ts";
 
 export type BaseSourceParams = Record<string, unknown>;
