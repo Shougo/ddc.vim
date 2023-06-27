@@ -5,19 +5,26 @@ function ddc#complete#_on_complete_done(completed_item) abort
     return
   endif
 
-  " Search selected item from previous items
-  let items = g:ddc#_items->copy()->filter({ _, val ->
-        \   val.word ==# a:completed_item.word
-        \   && val.abbr ==# a:completed_item.abbr
-        \   && val.kind ==# a:completed_item.kind
-        \   && val.menu ==# a:completed_item.menu
-        \ })
-  if items->empty()
-    return
+  if a:completed_item->has_key('__sourceName')
+    " Get source name from completed_item
+    let sourceName = a:completed_item.__sourceName
+  else
+    " Get source name from previous items
+    let items = g:ddc#_items->copy()->filter({ _, val ->
+          \   val.word ==# a:completed_item.word
+          \   && val.abbr ==# a:completed_item.abbr
+          \   && val.kind ==# a:completed_item.kind
+          \   && val.menu ==# a:completed_item.menu
+          \ })
+    if items->empty()
+      return
+    endif
+
+    let sourceName = items[0].__sourceName
   endif
 
   call denops#request('ddc', 'onCompleteDone',
-        \ [items[0].__sourceName, a:completed_item.user_data])
+        \ [sourceName, a:completed_item.user_data])
 endfunction
 
 function ddc#complete#_skip(pos, items) abort
