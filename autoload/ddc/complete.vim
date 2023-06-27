@@ -9,11 +9,8 @@ function ddc#complete#_on_complete_done(completed_item) abort
   let items = g:ddc#_items->copy()->filter({ _, val ->
         \   val.word ==# a:completed_item.word
         \   && val.abbr ==# a:completed_item.abbr
-        \   && val.info ==# a:completed_item.info
         \   && val.kind ==# a:completed_item.kind
         \   && val.menu ==# a:completed_item.menu
-        \   && has_key(val, 'user_data')
-        \   && val.user_data ==# a:completed_item.user_data
         \ })
   if items->empty()
     return
