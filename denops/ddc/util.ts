@@ -3,8 +3,11 @@ import { assertEquals, Denops, op } from "./deps.ts";
 export async function convertKeywordPattern(
   denops: Denops,
   keywordPattern: string,
+  bufnr?: number,
 ): Promise<string> {
-  const iskeyword = await op.iskeyword.getLocal(denops);
+  const iskeyword = bufnr === undefined
+    ? await op.iskeyword.getLocal(denops)
+    : await op.iskeyword.getBuffer(denops, bufnr);
   return keywordPattern.replaceAll(
     /\\k/g,
     () => "[" + vimoption2ts(iskeyword) + "]",
