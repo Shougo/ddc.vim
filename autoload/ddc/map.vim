@@ -68,13 +68,15 @@ function ddc#map#insert_item(number, cancel_key) abort
     return ''
   endif
 
+  let completed_item = g:ddc#_items[a:number]
+
   call ddc#hide('CompleteDone')
-  call ddc#complete#_on_complete_done(g:ddc#_items[a:number])
+  call ddc#complete#_on_complete_done(completed_item)
 
   " Get cursor word.
   const input = ddc#util#get_input('')
   const complete_str = input[g:ddc#_complete_pos : s:col() - 1]
-  let s:completed_item = g:ddc#_items[a:number]
+  let s:completed_item = completed_item
 
   " Call CompleteDone later.
   autocmd ddc TextChangedI * ++once
