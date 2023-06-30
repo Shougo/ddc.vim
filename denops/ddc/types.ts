@@ -22,7 +22,9 @@ export type DdcEvent =
   | "Manual"
   | "Update";
 
+export type UiName = string;
 export type SourceName = string;
+export type FilterName = string;
 
 export type Custom = {
   source: Record<SourceName, SourceOptions>;
@@ -39,13 +41,25 @@ export type Context = {
   nextInput: string;
 };
 
+export type UserSource = SourceName | {
+  name: SourceName;
+  options?: SourceOptions;
+  params?: BaseSourceParams;
+};
+
+export type UserFilter = FilterName | {
+  name: FilterName;
+  options?: FilterOptions;
+  params?: BaseFilterParams;
+};
+
 export type DdcOptions = {
   autoCompleteDelay: number;
   autoCompleteEvents: DdcEvent[];
   backspaceCompletion: boolean;
   cmdlineSources: SourceName[] | Record<string, SourceName[]>;
-  filterOptions: Record<string, Partial<FilterOptions>>;
-  filterParams: Record<string, Partial<BaseFilterParams>>;
+  filterOptions: Record<FilterName, Partial<FilterOptions>>;
+  filterParams: Record<FilterName, Partial<BaseFilterParams>>;
   /** @deprecated **/
   keywordPattern: string;
   postFilters: string[];
@@ -53,9 +67,9 @@ export type DdcOptions = {
   sourceParams: Record<SourceName, Partial<BaseSourceParams>>;
   sources: SourceName[];
   specialBufferCompletion: boolean;
-  ui: string;
-  uiOptions: Record<SourceName, Partial<UiOptions>>;
-  uiParams: Record<SourceName, Partial<BaseUiParams>>;
+  ui: UiName;
+  uiOptions: Record<UiName, Partial<UiOptions>>;
+  uiParams: Record<UiName, Partial<BaseUiParams>>;
 };
 
 export type UserOptions = Record<string, unknown>;

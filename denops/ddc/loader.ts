@@ -6,13 +6,16 @@ import {
   BaseUi,
   BaseUiParams,
   DdcExtType,
+  FilterName,
+  SourceName,
+  UiName,
 } from "./types.ts";
 import { Lock, parse, toFileUrl } from "./deps.ts";
 
 export class Loader {
-  private uis: Record<string, BaseUi<BaseUiParams>> = {};
-  private sources: Record<string, BaseSource<BaseSourceParams>> = {};
-  private filters: Record<string, BaseFilter<BaseFilterParams>> = {};
+  private uis: Record<UiName, BaseUi<BaseUiParams>> = {};
+  private sources: Record<SourceName, BaseSource<BaseSourceParams>> = {};
+  private filters: Record<FilterName, BaseFilter<BaseFilterParams>> = {};
   private aliases: Record<DdcExtType, Record<string, string>> = {
     ui: {},
     source: {},
@@ -37,20 +40,20 @@ export class Loader {
   getAlias(type: DdcExtType, name: string) {
     return this.aliases[type][name];
   }
-  getUi(name: string) {
+  getUi(name: UiName) {
     return this.uis[name];
   }
-  getSource(name: string) {
+  getSource(name: SourceName) {
     return this.sources[name];
   }
-  getFilter(name: string) {
+  getFilter(name: FilterName) {
     return this.filters[name];
   }
 
-  removeSource(name: string) {
+  removeSource(name: SourceName) {
     delete this.sources[name];
   }
-  removeFilter(name: string) {
+  removeFilter(name: FilterName) {
     delete this.filters[name];
   }
 
