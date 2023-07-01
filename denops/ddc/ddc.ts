@@ -11,7 +11,6 @@ import {
   DdcItem,
   DdcOptions,
   DdcUserData,
-  FilterName,
   FilterOptions,
   Item,
   OnCallback,
@@ -21,7 +20,6 @@ import {
   UserSource,
 } from "./types.ts";
 import {
-  defaultDdcOptions,
   defaultDummy,
   foldMerge,
   mergeFilterOptions,
@@ -33,8 +31,8 @@ import {
 } from "./context.ts";
 import { Loader } from "./loader.ts";
 import { defaultUiOptions } from "./base/ui.ts";
-import { defaultSourceOptions, GatherArguments } from "./base/source.ts";
-import { defaultFilterOptions, FilterArguments } from "./base/filter.ts";
+import { defaultSourceOptions } from "./base/source.ts";
+import { defaultFilterOptions } from "./base/filter.ts";
 import { isDdcCallbackCancelError } from "./callback.ts";
 import {
   assertEquals,
@@ -68,17 +66,6 @@ export class Ddc {
 
   constructor(loader: Loader) {
     this.loader = loader;
-  }
-
-  private foundSources(sources: UserSource[]): BaseSource<BaseSourceParams>[] {
-    return sources.map((s) =>
-      this.loader.getSource(typeof (s) === "string" ? s : s.name)
-    ).filter((v) => v);
-  }
-  private foundFilters(filters: UserFilter[]): BaseFilter<BaseFilterParams>[] {
-    return filters.map((f) =>
-      this.loader.getFilter(typeof (f) === "string" ? f : f.name)
-    ).filter((v) => v);
   }
 
   private foundInvalidSources(sources: UserSource[]): UserSource[] {
@@ -182,7 +169,7 @@ export class Ddc {
     onCallback: OnCallback,
     options: DdcOptions,
   ): Promise<void> {
-    let filterNames: FilterName[] = [];
+    let filters: UserFilter[] = [];
     for (let userSource of options.sources) {
       if (typeof (userSource) === "string") {
         userSource = {
@@ -199,57 +186,62 @@ export class Ddc {
         ],
       );
 
-      filterNames = filterNames.concat(
-        o.matchers.map(filter2Name),
-        o.sorters.map(filter2Name),
-        o.converters.map(filter2Name),
+      filters = filters.concat(
+        o.matchers,
+        o.sorters,
+        o.converters,
       );
     }
 
     // Uniq.
-    filterNames = [
-      ...new Set(filterNames.concat(options.postFilters.map(filter2Name))),
+    filters = [
+      ...new Set(filters.concat(options.postFilters)),
     ];
 
     await this.checkInvalid(
       denops,
       options.sources,
-      filterNames,
+      filters,
     );
 
-    for (const source of this.foundSources(options.sources)) {
-      const [sourceOptions, sourceParams] = sourceArgs(options, source);
-      if (source.events?.includes(context.event)) {
-        await callSourceOnEvent(
-          source,
-          denops,
-          context,
-          onCallback,
-          options,
-          sourceOptions,
-          sourceParams,
-        );
+    for (const userSource of options.sources) {
+      const [source, sourceOptions, sourceParams] = await this.getSource(
+        denops,
+        options,
+        userSource,
+      );
+      if (!source) {
+        return;
       }
+
+      await callSourceOnEvent(
+        source,
+        denops,
+        context,
+        onCallback,
+        options,
+        sourceOptions,
+        sourceParams,
+      );
     }
 
-    for (
-      const filter of this.foundFilters(filterNames).filter(
-        (filter) => filter.events?.includes(context.event),
-      )
-    ) {
-      const [o, p] = filterArgs(
-        options.filterOptions,
-        options.filterParams,
-        filter,
+    for (const userFilter of filters) {
+      const [filter, filterOptions, filterParams] = await this.getFilter(
+        denops,
+        options,
+        userFilter,
       );
+      if (!filter) {
+        continue;
+      }
       await callFilterOnEvent(
         filter,
         denops,
         context,
         onCallback,
         options,
-        o,
-        p,
+        filterOptions,
+        filterParams,
       );
     }
   }
@@ -262,12 +254,15 @@ export class Ddc {
     sourceName: string,
     userData: DdcUserData,
   ): Promise<void> {
-    const source = this.loader.getSource(sourceName);
+    const [source, sourceOptions, sourceParams] = await this.getSource(
+      denops,
+      options,
+      sourceName,
+    );
     if (!source || !source.onCompleteDone) {
       return;
     }
 
-    const [sourceOptions, sourceParams] = sourceArgs(options, source);
     await callSourceOnCompleteDone(
       source,
       denops,
@@ -286,13 +281,18 @@ export class Ddc {
     onCallback: OnCallback,
     options: DdcOptions,
   ): Promise<[number, DdcItem[]]> {
-    const sources = this.foundSources(options.sources)
-      .map((s) => [s, ...sourceArgs(options, s)] as const);
     this.prevSources = options.sources;
 
-    const rs = await Promise.all(sources.map(async ([s, o, p]) => {
+    const rs = await Promise.all(options.sources.map(async (userSource) => {
+      const [s, o, p] = await this.getSource(
+        denops,
+        options,
+        userSource,
+      );
       // Check enabled
-      if (o.enabledIf !== "" && !(await denops.call("eval", o.enabledIf))) {
+      if (
+        !s || (o.enabledIf !== "" && !(await denops.call("eval", o.enabledIf)))
+      ) {
         return;
       }
 
@@ -389,8 +389,6 @@ export class Ddc {
         onCallback,
         options,
         o,
-        options.filterOptions,
-        options.filterParams,
         completeStr,
         prevResult.items,
       );
@@ -467,12 +465,15 @@ export class Ddc {
     }
 
     // Post filters
-    for (const filter of this.foundFilters(options.postFilters)) {
-      const [o, p] = filterArgs(
-        options.filterOptions,
-        options.filterParams,
-        filter,
+    for (const userFilter of options.postFilters) {
+      const [filter, filterOptions, filterParams] = await this.getFilter(
+        denops,
+        options,
+        userFilter,
       );
+      if (!filter) {
+        continue;
+      }
 
       // @ts-ignore: postFilters does not change items keys
       retItems = await callFilterFilter(
@@ -482,8 +483,8 @@ export class Ddc {
         onCallback,
         options,
         defaultSourceOptions(),
-        o,
-        p,
+        filterOptions,
+        filterParams,
         context.input.slice(completePos),
         retItems,
       );
@@ -614,8 +615,6 @@ export class Ddc {
     onCallback: OnCallback,
     options: DdcOptions,
     sourceOptions: SourceOptions,
-    filterOptions: Record<string, Partial<FilterOptions>>,
-    filterParams: Record<string, Partial<BaseFilterParams>>,
     completeStr: string,
     cdd: Item[],
   ): Promise<Item[]> {
@@ -633,15 +632,19 @@ export class Ddc {
       return [];
     }
 
-    const matchers = this.foundFilters(sourceOptions.matchers);
-    const sorters = this.foundFilters(sourceOptions.sorters);
-    const converters = this.foundFilters(sourceOptions.converters);
-
     async function callFilters(
-      filters: BaseFilter<BaseFilterParams>[],
+      ddc: Ddc,
+      userFilters: UserFilter[],
     ): Promise<Item[]> {
-      for (const filter of filters) {
-        const [o, p] = filterArgs(filterOptions, filterParams, filter);
+      for (const userFilter of userFilters) {
+        const [filter, filterOptions, filterParams] = await ddc.getFilter(
+          denops,
+          options,
+          userFilter,
+        );
+        if (!filter) {
+          continue;
+        }
         cdd = await callFilterFilter(
           filter,
           denops,
@@ -649,8 +652,8 @@ export class Ddc {
           onCallback,
           options,
           sourceOptions,
-          o,
-          p,
+          filterOptions,
+          filterParams,
           completeStr,
           cdd,
         );
@@ -682,7 +685,7 @@ export class Ddc {
       ));
     }
 
-    cdd = await callFilters(matchers);
+    cdd = await callFilters(this, sourceOptions.matchers);
 
     if (sourceOptions.matcherKey !== "") {
       cdd = cdd.map((c) => (
@@ -694,12 +697,12 @@ export class Ddc {
       ));
     }
 
-    cdd = await callFilters(sorters);
+    cdd = await callFilters(this, sourceOptions.sorters);
 
     // Filter by maxItems
     cdd = cdd.slice(0, sourceOptions.maxItems);
 
-    cdd = await callFilters(converters);
+    cdd = await callFilters(this, sourceOptions.converters);
 
     return cdd;
   }
@@ -742,6 +745,85 @@ export class Ddc {
     await checkUiOnInit(ui, denops, uiOptions, uiParams);
 
     return [ui, uiOptions, uiParams];
+  }
+
+  async getSource(
+    denops: Denops,
+    options: DdcOptions,
+    userSource: UserSource,
+  ): Promise<
+    [
+      BaseSource<BaseSourceParams> | undefined,
+      SourceOptions,
+      BaseSourceParams,
+    ]
+  > {
+    const name = source2Name(userSource);
+    if (!this.loader.getSource(name)) {
+      await this.autoload(denops, "source", [name]);
+    }
+
+    const source = this.loader.getSource(name);
+    if (!source) {
+      await denops.call(
+        "ddu#util#print_error",
+        `Not found source: ${name}`,
+      );
+      return [
+        undefined,
+        defaultSourceOptions(),
+        defaultDummy(),
+      ];
+    }
+
+    const [sourceOptions, sourceParams] = sourceArgs(
+      source,
+      options,
+      userSource,
+    );
+
+    await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
+
+    return [source, sourceOptions, sourceParams];
+  }
+
+  async getFilter(
+    denops: Denops,
+    options: DdcOptions,
+    userFilter: UserFilter,
+  ): Promise<
+    [
+      BaseFilter<BaseFilterParams> | undefined,
+      FilterOptions,
+      BaseFilterParams,
+    ]
+  > {
+    const name = filter2Name(userFilter);
+    if (!this.loader.getFilter(name)) {
+      await this.autoload(denops, "filter", [name]);
+    }
+
+    const filter = this.loader.getFilter(name);
+    if (!filter) {
+      await denops.call(
+        "ddu#util#print_error",
+        `Not found filter: ${name}`,
+      );
+      return [
+        undefined,
+        defaultFilterOptions(),
+        defaultDummy(),
+      ];
+    }
+
+    const [filterOptions, filterParams] = filterArgs(
+      filter,
+      options,
+      userFilter,
+    );
+    await checkFilterOnInit(filter, denops, filterOptions, filterParams);
+
+    return [filter, filterOptions, filterParams];
   }
 }
 
@@ -789,39 +871,73 @@ function sourceArgs<
   Params extends BaseSourceParams,
   UserData extends unknown,
 >(
+  source: BaseSource<Params, UserData> | null,
   options: DdcOptions,
-  source: BaseSource<Params, UserData>,
+  userSource: UserSource | null,
 ): [SourceOptions, BaseSourceParams] {
+  // Convert type
+  if (typeof userSource === "string") {
+    userSource = {
+      name: userSource,
+    };
+  }
+
   const o = foldMerge(
     mergeSourceOptions,
     defaultSourceOptions,
-    [options.sourceOptions["_"], options.sourceOptions[source.name]],
+    [
+      options.sourceOptions["_"],
+      source ? options.sourceOptions[source.name] : {},
+      userSource?.options,
+    ],
   );
-  const p = foldMerge(mergeSourceParams, defaultDummy, [
-    source.params ? source.params() : null,
-    options.sourceParams[source.name],
-  ]);
+  const p = foldMerge(
+    mergeSourceParams,
+    defaultDummy,
+    [
+      source?.params(),
+      options.sourceParams["_"],
+      source ? options.sourceParams[source.name] : {},
+      userSource?.params,
+    ],
+  );
   return [o, p];
 }
 
 function filterArgs<
   Params extends BaseFilterParams,
 >(
-  filterOptions: Record<string, Partial<FilterOptions>>,
-  filterParams: Record<string, Partial<BaseFilterParams>>,
   filter: BaseFilter<Params>,
+  options: DdcOptions,
+  userFilter: UserFilter,
 ): [FilterOptions, BaseFilterParams] {
-  // TODO: '_'?
-  const optionsOf = (filter: BaseFilter<BaseFilterParams>) =>
-    foldMerge(mergeFilterOptions, defaultFilterOptions, [
-      filterOptions[filter.name],
-    ]);
-  const paramsOf = (filter: BaseFilter<BaseFilterParams>) =>
-    foldMerge(mergeFilterParams, defaultDummy, [
-      filter.params(),
-      filterParams[filter.name],
-    ]);
-  return [optionsOf(filter), paramsOf(filter)];
+  // Convert type
+  if (typeof userFilter === "string") {
+    userFilter = {
+      name: userFilter,
+    };
+  }
+
+  const o = foldMerge(
+    mergeFilterOptions,
+    defaultFilterOptions,
+    [
+      options.filterOptions["_"],
+      options.filterOptions[filter.name],
+      userFilter?.options,
+    ],
+  );
+  const p = foldMerge(
+    mergeFilterParams,
+    defaultDummy,
+    [
+      filter?.params(),
+      options.filterParams["_"],
+      options.filterParams[filter.name],
+      userFilter?.params,
+    ],
+  );
+  return [o, p];
 }
 
 async function checkUiOnInit(
@@ -926,7 +1042,9 @@ async function callSourceOnEvent(
   sourceOptions: SourceOptions,
   sourceParams: BaseSourceParams,
 ) {
-  await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
+  if (!source.events?.includes(context.event)) {
+    return;
+  }
 
   try {
     if (source.apiVersion < 5) {
@@ -973,8 +1091,6 @@ async function callSourceOnCompleteDone<
   sourceParams: Params,
   userData: UserData,
 ) {
-  await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
-
   try {
     await source.onCompleteDone({
       denops,
@@ -1009,8 +1125,6 @@ async function callSourceGetCompletePosition(
   sourceOptions: SourceOptions,
   sourceParams: BaseSourceParams,
 ): Promise<number> {
-  await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
-
   try {
     if (source.apiVersion < 5) {
       // NOTE: It is for backward compatibility.
@@ -1059,8 +1173,6 @@ async function callSourceGather<
   completeStr: string,
   isIncomplete: boolean,
 ): Promise<DdcGatherItems<UserData>> {
-  await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
-
   try {
     const args = {
       denops,
@@ -1102,7 +1214,9 @@ async function callFilterOnEvent(
   filterOptions: FilterOptions,
   filterParams: BaseFilterParams,
 ) {
-  await checkFilterOnInit(filter, denops, filterOptions, filterParams);
+  if (!filter.events?.includes(context.event)) {
+    return;
+  }
 
   try {
     await filter.onEvent({
@@ -1138,8 +1252,6 @@ async function callFilterFilter(
   completeStr: string,
   items: Item[],
 ): Promise<Item[]> {
-  await checkFilterOnInit(filter, denops, filterOptions, filterParams);
-
   try {
     return await filter.filter({
       denops,
@@ -1229,107 +1341,6 @@ function source2Name(s: UserSource) {
 function filter2Name(f: UserFilter) {
   return typeof (f) === "string" ? f : f.name;
 }
-
-Deno.test("sourceArgs", () => {
-  const userOptions: DdcOptions = {
-    ...defaultDdcOptions(),
-    sources: ["strength"],
-    sourceOptions: {
-      "_": {
-        mark: "A",
-        matchers: ["matcher_head"],
-      },
-      "strength": {
-        mark: "S",
-      },
-    },
-    sourceParams: {
-      "_": {
-        "by_": "bar",
-      },
-      "strength": {
-        min: 100,
-      },
-    },
-  };
-  class S extends BaseSource<{ min: number; max: number }> {
-    params() {
-      return {
-        "min": 0,
-        "max": 999,
-      };
-    }
-    gather(
-      _args: GatherArguments<{ min: number; max: number }> | Denops,
-      _context?: Context,
-      _options?: DdcOptions,
-      _sourceOptions?: SourceOptions,
-      _sourceParams?: BaseFilterParams,
-      _completeStr?: string,
-    ): Promise<Item[]> {
-      return Promise.resolve([]);
-    }
-  }
-  const source = new S();
-  source.name = "strength";
-  const [o, p] = sourceArgs(userOptions, source);
-  assertEquals(o, {
-    ...defaultSourceOptions(),
-    mark: "S",
-    matchers: ["matcher_head"],
-    maxItems: 500,
-    converters: [],
-    sorters: [],
-  });
-  assertEquals(p.by_, undefined);
-  assertEquals(p, {
-    ...defaultDummy(),
-    min: 100,
-    max: 999,
-  });
-});
-
-Deno.test("filterArgs", () => {
-  const userOptions: Record<string, FilterOptions> = {
-    "/dev/null": {
-      placeholder: undefined,
-    },
-  };
-  const userParams: Record<string, BaseFilterParams> = {
-    "/dev/null": {
-      min: 100,
-    },
-  };
-  class F extends BaseFilter<{ min: number; max: number }> {
-    params() {
-      return {
-        "min": 0,
-        "max": 999,
-      };
-    }
-    filter(
-      _args: FilterArguments<{ min: number; max: number }> | Denops,
-      _context?: Context,
-      _options?: DdcOptions,
-      _sourceOptions?: SourceOptions,
-      _filterOptions?: FilterOptions,
-      _filterParams?: BaseFilterParams,
-      _completeStr?: string,
-      _items?: Item[],
-    ): Promise<Item[]> {
-      return Promise.resolve([]);
-    }
-  }
-  const filter = new F();
-  filter.name = "/dev/null";
-  assertEquals(filterArgs(userOptions, userParams, filter), [{
-    ...defaultFilterOptions(),
-  }, {
-    ...defaultDummy(),
-    min: 100,
-    max: 999,
-  }]);
-});
 
 Deno.test("byteposToCharpos", () => {
   assertEquals(byteposToCharpos("あ hoge", 4), 2);
