@@ -68,19 +68,6 @@ export class Ddc {
     this.loader = loader;
   }
 
-  private foundInvalidSources(sources: UserSource[]): UserSource[] {
-    return sources.filter((s) =>
-      !this.loader.getSource(typeof (s) === "string" ? s : s.name) ||
-      this.loader.getSource(typeof (s) === "string" ? s : s.name).apiVersion < 4
-    );
-  }
-  private foundInvalidFilters(filters: UserFilter[]): UserFilter[] {
-    return filters.filter((f) =>
-      !this.loader.getFilter(typeof (f) === "string" ? f : f.name) ||
-      this.loader.getFilter(typeof (f) === "string" ? f : f.name).apiVersion < 4
-    );
-  }
-
   async registerAutocmd(denops: Denops, events: string[]) {
     await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
       for (const event of events) {
@@ -99,68 +86,19 @@ export class Ddc {
   async autoload(
     denops: Denops,
     type: DdcExtType,
-    names: string[],
-  ): Promise<string[]> {
-    if (names.length === 0) {
-      return [];
-    }
-
+    name: string,
+  ) {
     const paths = await globpath(
       denops,
-      [`denops/@ddc-${type}s/`],
-      names.map((name) => this.loader.getAlias(type, name) ?? name),
+      `denops/@ddc-${type}s/`,
+      this.loader.getAlias(type, name) ?? name,
     );
 
-    await Promise.all(
-      paths.map((path) => this.loader.registerPath(type, path)),
-    );
-
-    return paths;
-  }
-
-  async checkInvalid(
-    denops: Denops,
-    sources: UserSource[],
-    filters: UserFilter[],
-  ) {
-    const loadedSources = await this.autoload(
-      denops,
-      "source",
-      this.foundInvalidSources(sources).map(source2Name),
-    );
-    const loadedFilters = await this.autoload(
-      denops,
-      "filter",
-      this.foundInvalidFilters(filters).map(filter2Name),
-    );
-
-    if (loadedSources.length !== 0 && loadedFilters.length !== 0) {
+    if (paths.length === 0) {
       return;
     }
 
-    const invalidSources = this.foundInvalidSources(sources);
-    if (invalidSources.length > 0) {
-      await denops.call(
-        "ddc#util#print_error",
-        "Sources not found or don't support the ddc version: " +
-          invalidSources.toString(),
-      );
-      for (const source in invalidSources) {
-        this.loader.removeSource(source2Name(source));
-      }
-    }
-
-    const invalidFilters = this.foundInvalidFilters(filters);
-    if (invalidFilters.length > 0) {
-      await denops.call(
-        "ddc#util#print_error",
-        "Filters not found or don't support the ddc version: " +
-          invalidFilters.toString(),
-      );
-      for (const filter in invalidFilters) {
-        this.loader.removeFilter(filter2Name(filter));
-      }
-    }
+    await this.loader.registerPath(type, paths[0]);
   }
 
   async onEvent(
@@ -193,17 +131,6 @@ export class Ddc {
       );
     }
 
-    // Uniq.
-    filters = [
-      ...new Set(filters.concat(options.postFilters)),
-    ];
-
-    await this.checkInvalid(
-      denops,
-      options.sources,
-      filters,
-    );
-
     for (const userSource of options.sources) {
       const [source, sourceOptions, sourceParams] = await this.getSource(
         denops,
@@ -224,6 +151,11 @@ export class Ddc {
         sourceParams,
       );
     }
+
+    // Uniq.
+    filters = [
+      ...new Set(filters.concat(options.postFilters)),
+    ];
 
     for (const userFilter of filters) {
       const [filter, filterOptions, filterParams] = await this.getFilter(
@@ -618,20 +550,6 @@ export class Ddc {
     completeStr: string,
     cdd: Item[],
   ): Promise<Item[]> {
-    // Check invalid
-    const invalidFilters = this.foundInvalidFilters(
-      options.postFilters.concat(
-        sourceOptions.matchers,
-      ).concat(
-        sourceOptions.sorters,
-      ).concat(
-        sourceOptions.converters,
-      ),
-    );
-    if (invalidFilters.length !== 0) {
-      return [];
-    }
-
     async function callFilters(
       ddc: Ddc,
       userFilters: UserFilter[],
@@ -726,7 +644,7 @@ export class Ddc {
     }
 
     if (!this.loader.getUi(options.ui)) {
-      await this.autoload(denops, "ui", [options.ui]);
+      await this.autoload(denops, "ui", options.ui);
     }
     const ui = this.loader.getUi(options.ui);
     if (!ui) {
@@ -760,7 +678,7 @@ export class Ddc {
   > {
     const name = source2Name(userSource);
     if (!this.loader.getSource(name)) {
-      await this.autoload(denops, "source", [name]);
+      await this.autoload(denops, "source", name);
     }
 
     const source = this.loader.getSource(name);
@@ -800,7 +718,7 @@ export class Ddc {
   > {
     const name = filter2Name(userFilter);
     if (!this.loader.getFilter(name)) {
-      await this.autoload(denops, "filter", [name]);
+      await this.autoload(denops, "filter", name);
     }
 
     const filter = this.loader.getFilter(name);
@@ -1302,33 +1220,29 @@ async function errorException(denops: Denops, e: unknown, message: string) {
 
 async function globpath(
   denops: Denops,
-  searches: string[],
-  files: string[],
+  search: string,
+  file: string,
 ): Promise<string[]> {
   const runtimepath = await op.runtimepath.getGlobal(denops);
 
   const check: Record<string, boolean> = {};
   const paths: string[] = [];
-  for (const search of searches) {
-    for (const file of files) {
-      const glob = await fn.globpath(
-        denops,
-        runtimepath,
-        search + file + ".ts",
-        1,
-        1,
-      );
+  const glob = await fn.globpath(
+    denops,
+    runtimepath,
+    search + file + ".ts",
+    1,
+    1,
+  );
 
-      for (const path of glob) {
-        // Skip already added name.
-        if (parse(path).name in check) {
-          continue;
-        }
-
-        paths.push(path);
-        check[parse(path).name] = true;
-      }
+  for (const path of glob) {
+    // Skip already added name.
+    if (parse(path).name in check) {
+      continue;
     }
+
+    paths.push(path);
+    check[parse(path).name] = true;
   }
 
   return paths;

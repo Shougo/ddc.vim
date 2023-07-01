@@ -50,13 +50,6 @@ export class Loader {
     return this.filters[name];
   }
 
-  removeSource(name: SourceName) {
-    delete this.sources[name];
-  }
-  removeFilter(name: FilterName) {
-    delete this.filters[name];
-  }
-
   private async register(type: DdcExtType, path: string) {
     if (path in this.checkPaths) {
       return;

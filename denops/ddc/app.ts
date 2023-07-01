@@ -153,15 +153,6 @@ export function main(denops: Denops) {
         }
       }
 
-      // Load sources
-      await ddc.autoload(
-        denops,
-        "source",
-        options.sources.map(
-          (s) => typeof (s) === "string" ? s : s.name,
-        ),
-      );
-
       cbContext.revoke();
       await doCompletion(denops, context, options);
     },
@@ -219,9 +210,6 @@ export function main(denops: Denops) {
         "Manual",
       );
       options.ui = ui;
-
-      // Load UI
-      await ddc.autoload(denops, "ui", [options.ui]);
 
       const completePos = await vars.g.get(
         denops,
