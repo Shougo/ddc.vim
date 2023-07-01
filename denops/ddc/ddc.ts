@@ -6,6 +6,7 @@ import {
   BaseUi,
   BaseUiParams,
   Context,
+  DdcEvent,
   DdcExtType,
   DdcGatherItems,
   DdcItem,
@@ -14,6 +15,7 @@ import {
   FilterOptions,
   Item,
   OnCallback,
+  SourceName,
   SourceOptions,
   UiOptions,
   UserFilter,
@@ -57,8 +59,8 @@ type DdcResult = {
 
 export class Ddc {
   private loader: Loader;
-  private prevResults: Record<string, DdcResult> = {};
-  private events: string[] = [];
+  private prevResults: Record<SourceName, DdcResult> = {};
+  private events: DdcEvent[] = [];
   private visibleUi = false;
 
   prevSources: UserSource[] = [];
@@ -68,7 +70,7 @@ export class Ddc {
     this.loader = loader;
   }
 
-  async registerAutocmd(denops: Denops, events: string[]) {
+  async registerAutocmd(denops: Denops, events: DdcEvent[]) {
     await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
       for (const event of events) {
         if (!this.events.includes(event)) {
@@ -183,7 +185,7 @@ export class Ddc {
     context: Context,
     onCallback: OnCallback,
     options: DdcOptions,
-    sourceName: string,
+    sourceName: SourceName,
     userData: DdcUserData,
   ): Promise<void> {
     const [source, sourceOptions, sourceParams] = await this.getSource(
