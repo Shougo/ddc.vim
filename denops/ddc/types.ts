@@ -62,10 +62,10 @@ export type DdcOptions = {
   filterParams: Record<FilterName, Partial<BaseFilterParams>>;
   /** @deprecated **/
   keywordPattern: string;
-  postFilters: string[];
+  postFilters: UserFilter[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<BaseSourceParams>>;
-  sources: SourceName[];
+  sources: UserSource[];
   specialBufferCompletion: boolean;
   ui: UiName;
   uiOptions: Record<UiName, Partial<UiOptions>>;
@@ -80,7 +80,7 @@ export type UiOptions = {
 };
 
 export type SourceOptions = {
-  converters: string[];
+  converters: UserFilter[];
   dup: "keep" | "force" | "ignore";
   enabledIf: string;
   forceCompletionPattern: string;
@@ -89,13 +89,13 @@ export type SourceOptions = {
   keywordPattern: string;
   mark: string;
   matcherKey: string;
-  matchers: string[];
+  matchers: UserFilter[];
   maxAutoCompleteLength: number;
   maxItems: number;
   maxKeywordLength: number;
   minAutoCompleteLength: number;
   minKeywordLength: number;
-  sorters: string[];
+  sorters: UserFilter[];
   timeout: number;
 };
 

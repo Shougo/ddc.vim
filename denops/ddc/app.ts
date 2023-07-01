@@ -154,7 +154,13 @@ export function main(denops: Denops) {
       }
 
       // Load sources
-      await ddc.autoload(denops, "source", options.sources);
+      await ddc.autoload(
+        denops,
+        "source",
+        options.sources.map(
+          (s) => typeof (s) === "string" ? s : s.name,
+        ),
+      );
 
       cbContext.revoke();
       await doCompletion(denops, context, options);

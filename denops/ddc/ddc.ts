@@ -11,11 +11,14 @@ import {
   DdcItem,
   DdcOptions,
   DdcUserData,
+  FilterName,
   FilterOptions,
   Item,
   OnCallback,
   SourceOptions,
   UiOptions,
+  UserFilter,
+  UserSource,
 } from "./types.ts";
 import {
   defaultDdcOptions,
@@ -60,30 +63,34 @@ export class Ddc {
   private events: string[] = [];
   private visibleUi = false;
 
-  prevSources: string[] = [];
+  prevSources: UserSource[] = [];
   prevUi = "";
 
   constructor(loader: Loader) {
     this.loader = loader;
   }
 
-  private foundSources(names: string[]): BaseSource<BaseSourceParams>[] {
-    return names.map((n) => this.loader.getSource(n)).filter((v) => v);
+  private foundSources(sources: UserSource[]): BaseSource<BaseSourceParams>[] {
+    return sources.map((s) =>
+      this.loader.getSource(typeof (s) === "string" ? s : s.name)
+    ).filter((v) => v);
   }
-  private foundFilters(names: string[]): BaseFilter<BaseFilterParams>[] {
-    return names.map((n) => this.loader.getFilter(n)).filter((v) => v);
+  private foundFilters(filters: UserFilter[]): BaseFilter<BaseFilterParams>[] {
+    return filters.map((f) =>
+      this.loader.getFilter(typeof (f) === "string" ? f : f.name)
+    ).filter((v) => v);
   }
 
-  private foundInvalidSources(names: string[]): string[] {
-    return names.filter((n) =>
-      !this.loader.getSource(n) ||
-      this.loader.getSource(n).apiVersion < 4
+  private foundInvalidSources(sources: UserSource[]): UserSource[] {
+    return sources.filter((s) =>
+      !this.loader.getSource(typeof (s) === "string" ? s : s.name) ||
+      this.loader.getSource(typeof (s) === "string" ? s : s.name).apiVersion < 4
     );
   }
-  private foundInvalidFilters(names: string[]): string[] {
-    return names.filter((n) =>
-      !this.loader.getFilter(n) ||
-      this.loader.getFilter(n).apiVersion < 4
+  private foundInvalidFilters(filters: UserFilter[]): UserFilter[] {
+    return filters.filter((f) =>
+      !this.loader.getFilter(typeof (f) === "string" ? f : f.name) ||
+      this.loader.getFilter(typeof (f) === "string" ? f : f.name).apiVersion < 4
     );
   }
 
@@ -126,45 +133,45 @@ export class Ddc {
 
   async checkInvalid(
     denops: Denops,
-    sourceNames: string[],
-    filterNames: string[],
+    sources: UserSource[],
+    filters: UserFilter[],
   ) {
     const loadedSources = await this.autoload(
       denops,
       "source",
-      this.foundInvalidSources(sourceNames),
+      this.foundInvalidSources(sources).map(source2Name),
     );
     const loadedFilters = await this.autoload(
       denops,
       "filter",
-      this.foundInvalidFilters([...new Set(filterNames)]),
+      this.foundInvalidFilters(filters).map(filter2Name),
     );
 
     if (loadedSources.length !== 0 && loadedFilters.length !== 0) {
       return;
     }
 
-    const invalidSources = this.foundInvalidSources(sourceNames);
+    const invalidSources = this.foundInvalidSources(sources);
     if (invalidSources.length > 0) {
       await denops.call(
         "ddc#util#print_error",
         "Sources not found or don't support the ddc version: " +
           invalidSources.toString(),
       );
-      for (const name in invalidSources) {
-        this.loader.removeSource(name);
+      for (const source in invalidSources) {
+        this.loader.removeSource(source2Name(source));
       }
     }
 
-    const invalidFilters = this.foundInvalidFilters([...new Set(filterNames)]);
+    const invalidFilters = this.foundInvalidFilters(filters);
     if (invalidFilters.length > 0) {
       await denops.call(
         "ddc#util#print_error",
         "Filters not found or don't support the ddc version: " +
           invalidFilters.toString(),
       );
-      for (const name in invalidFilters) {
-        this.loader.removeFilter(name);
+      for (const filter in invalidFilters) {
+        this.loader.removeFilter(filter2Name(filter));
       }
     }
   }
@@ -175,22 +182,34 @@ export class Ddc {
     onCallback: OnCallback,
     options: DdcOptions,
   ): Promise<void> {
-    let filterNames: string[] = [];
-    for (const sourceName of options.sources) {
+    let filterNames: FilterName[] = [];
+    for (let userSource of options.sources) {
+      if (typeof (userSource) === "string") {
+        userSource = {
+          name: userSource,
+        };
+      }
       const o = foldMerge(
         mergeSourceOptions,
         defaultSourceOptions,
-        [options.sourceOptions["_"], options.sourceOptions[sourceName]],
+        [
+          options.sourceOptions["_"],
+          options.sourceOptions[userSource.name],
+          userSource?.options,
+        ],
       );
 
       filterNames = filterNames.concat(
-        o.matchers,
-        o.sorters,
-        o.converters,
+        o.matchers.map(filter2Name),
+        o.sorters.map(filter2Name),
+        o.converters.map(filter2Name),
       );
     }
+
     // Uniq.
-    filterNames = [...new Set(filterNames.concat(options.postFilters))];
+    filterNames = [
+      ...new Set(filterNames.concat(options.postFilters.map(filter2Name))),
+    ];
 
     await this.checkInvalid(
       denops,
@@ -1201,6 +1220,14 @@ async function globpath(
   }
 
   return paths;
+}
+
+function source2Name(s: UserSource) {
+  return typeof (s) === "string" ? s : s.name;
+}
+
+function filter2Name(f: UserFilter) {
+  return typeof (f) === "string" ? f : f.name;
 }
 
 Deno.test("sourceArgs", () => {
