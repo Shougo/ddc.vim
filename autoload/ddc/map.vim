@@ -75,12 +75,11 @@ function ddc#map#insert_item(number, cancel_key) abort
   " Get cursor word.
   const input = ddc#util#get_input('')
   const complete_str = input[g:ddc#_complete_pos : s:col() - 1]
-  let s:completed_item = completed_item
+  let v:completed_item = completed_item
 
   " Call CompleteDone later.
   autocmd ddc TextChangedI * ++once
-        \ : silent! let v:completed_item = s:completed_item
-        \ | doautocmd <nomodeline> CompleteDone
+        \ :doautocmd <nomodeline> CompleteDone
 
   let chars = ''
   " NOTE: Change backspace option to work <BS> correctly
@@ -93,8 +92,7 @@ function ddc#map#insert_item(number, cancel_key) abort
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
   endif
   let chars .= a:cancel_key
-  let chars .= printf("\<Cmd>call ddc#complete#_on_complete_done(%s)\<CR>",
-        \ completed_item)
+  let chars .= "\<Cmd>call ddc#complete#_on_complete_done(v:completed_item)\<CR>"
   return chars
 endfunction
 
