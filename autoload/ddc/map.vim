@@ -71,7 +71,6 @@ function ddc#map#insert_item(number, cancel_key) abort
   let completed_item = g:ddc#_items[a:number]
 
   call ddc#hide('CompleteDone')
-  call ddc#complete#_on_complete_done(completed_item)
 
   " Get cursor word.
   const input = ddc#util#get_input('')
@@ -94,6 +93,8 @@ function ddc#map#insert_item(number, cancel_key) abort
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
   endif
   let chars .= a:cancel_key
+  let chars .= printf("\<Cmd>call ddc#complete#_on_complete_done(%s)\<CR>",
+        \ completed_item)
   return chars
 endfunction
 
