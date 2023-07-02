@@ -494,6 +494,7 @@ ddc#map#insert_item({index}, {cancel-key})
 		Insert the item at index {index}. Indices start at 0.
 		{confirm-key} is popup cancel key.
 		NOTE: It must be in |:map-<expr>|.
+		NOTE: |v:completed_item| must be writable.
 
 						*ddc#map#manual_complete()*
 ddc#map#manual_complete([{options}])

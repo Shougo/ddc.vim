@@ -68,18 +68,15 @@ function ddc#map#insert_item(number, cancel_key) abort
     return ''
   endif
 
-  let completed_item = g:ddc#_items[a:number]
-
   call ddc#hide('CompleteDone')
 
   " Get cursor word.
   const input = ddc#util#get_input('')
   const complete_str = input[g:ddc#_complete_pos : s:col() - 1]
-  let v:completed_item = completed_item
+  silent! let v:completed_item = g:ddc#_items[a:number]
 
   " Call CompleteDone later.
-  autocmd ddc TextChangedI * ++once
-        \ :doautocmd <nomodeline> CompleteDone
+  autocmd ddc TextChangedI * ++once doautocmd <nomodeline> CompleteDone
 
   let chars = ''
   " NOTE: Change backspace option to work <BS> correctly
@@ -92,7 +89,9 @@ function ddc#map#insert_item(number, cancel_key) abort
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
   endif
   let chars .= a:cancel_key
-  let chars .= "\<Cmd>call ddc#complete#_on_complete_done(v:completed_item)\<CR>"
+  " NOTE: Fire Source.onCompleteDone after insert the item.
+  let chars .=
+        \ "\<Cmd>call ddc#complete#_on_complete_done(v:completed_item)\<CR>"
   return chars
 endfunction
 
