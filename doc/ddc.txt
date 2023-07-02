@@ -114,11 +114,12 @@ backspaceCompletion
 
 						*ddc-option-cmdlineSources*
 cmdlineSources
-		It is a list of registered source names or the dictionary.
+		It is a list of elements like |ddc-option-sources| or the
+		dictionary.
 		The dictionary key is command line type from |getcmdtype()|.
-		The dictionary value is registered source names list.
+		The dictionary value is a list of elements like
+		|ddc-option-sources|.
 		It is used for |Command-line-mode|.
-		Please see |ddc-option-sources|.
 
 		NOTE: If you set it, |input()| auto completion is enabled.
 

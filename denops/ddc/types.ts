@@ -57,7 +57,7 @@ export type DdcOptions = {
   autoCompleteDelay: number;
   autoCompleteEvents: DdcEvent[];
   backspaceCompletion: boolean;
-  cmdlineSources: SourceName[] | Record<string, SourceName[]>;
+  cmdlineSources: UserSource[] | Record<string, UserSource[]>;
   filterOptions: Record<FilterName, Partial<FilterOptions>>;
   filterParams: Record<FilterName, Partial<BaseFilterParams>>;
   /** @deprecated **/
