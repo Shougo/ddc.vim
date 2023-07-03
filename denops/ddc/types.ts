@@ -43,13 +43,13 @@ export type Context = {
 
 export type UserSource = SourceName | {
   name: SourceName;
-  options?: SourceOptions;
+  options?: Partial<SourceOptions>;
   params?: BaseSourceParams;
 };
 
 export type UserFilter = FilterName | {
   name: FilterName;
-  options?: FilterOptions;
+  options?: Partial<FilterOptions>;
   params?: BaseFilterParams;
 };
 
