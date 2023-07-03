@@ -26,11 +26,6 @@ export type UiName = string;
 export type SourceName = string;
 export type FilterName = string;
 
-export type Custom = {
-  source: Record<SourceName, SourceOptions>;
-  option: DdcOptions;
-};
-
 export type Context = {
   changedTick: number;
   event: DdcEvent;
