@@ -974,6 +974,92 @@ params			(function)			(Required)
 ==============================================================================
 FREQUENTLY ASKED QUESTIONS (FAQ)			*ddc-faq*
 
+
+FAQ 1:							|ddc-faq-1|
+	How to donate money to you?
+
+FAQ 2:							|ddc-faq-2|
+	Why does ddc.vim not include any
+	UIs/sources/matchers/sorters/converters?
+
+FAQ 3:							|ddc-faq-3|
+	Why do sources have no default options?
+
+FAQ 4:							|ddc-faq-4|
+	I want to use inline suggestion like fish shell.
+
+FAQ 5:							|ddc-faq-5|
+	The Linked/chained completion exists like vim-mucomplete?
+
+FAQ 6:							|ddc-faq-6|
+	I want to silence the |ins-completion-menu| messages in the command
+	line such as "-- XXX completion (YYY)", "match 1 of 2", "The only
+	match", "Pattern not found", "Back at original", etc.
+
+FAQ 7:							|ddc-faq-7|
+	I want to use the auto select feature.
+
+FAQ 8:							|ddc-faq-8|
+	How do I select one of the responses from the pop up?
+
+FAQ 9:							|ddc-faq-9|
+	I want to close the preview window after completion is done.
+
+FAQ 10:							|ddc-faq-10|
+	I want to disable the preview window feature.
+
+FAQ 11:							|ddc-faq-11|
+	I want to look selected function's arguments. But I don't like preview
+	window feature.
+
+FAQ 12:							|ddc-faq-12|
+	I want to use floating preview window feature.
+
+FAQ 13:							|ddc-faq-13|
+	Why don't create file/path source is for ddc.vim?
+
+FAQ 14:							|ddc-faq-14|
+	I want to enable "skkeleton" source when "skkeleton" is enabled only.
+
+FAQ 15:							|ddc-faq-15|
+	I want to enable command line completion.
+
+FAQ 16:							|ddc-faq-16|
+	I want to enable |i_CTRL-R_=|(the expression register) completion.
+
+FAQ 17:							|ddc-faq-17|
+	Terminal title flickers when completion menu opens in neovim.
+
+FAQ 18:							|ddc-faq-18|
+	I want to enable auto completion in fine-cmdline.nvim
+
+FAQ 19:							|ddc-faq-19|
+	The auto completion does not work if 'textwidth' is set.
+
+FAQ 20:							|ddc-faq-20|
+	I want to disable ddc auto completion.
+
+FAQ 21:							|ddc-faq-21|
+	ddc.vim starting is slow.
+
+FAQ 22:							|ddc-faq-22|
+	ddc.vim does not work in |command-line-window|.
+
+FAQ 23:							|ddc-faq-23|
+	"copilot.vim" does not work when ddc.vim popup is visible.
+
+FAQ 24:							|ddc-faq-24|
+	ddc.vim does not work when "dps-ghosttext.vim" is enabled.
+
+FAQ 25:							|ddc-faq-25|
+	I want to narrow current items without auto completion.
+
+FAQ 26:							|ddc-faq-26|
+	I want to enable completion in |:terminal|.
+
+
+------------------------------------------------------------------------------
+							*ddc-faq-1*
 Q: How to donate money to you?
 
 A: I have started github sponsorship to spend more time for Vim/neovim
@@ -981,7 +1067,7 @@ plugins.  You can donate money to help me!
 
    https://github.com/sponsors/Shougo
 
-
+							*ddc-faq-2*
 Q: Why does ddc.vim not include any UIs/sources/matchers/sorters/converters?
 
 A: Because I cannot determine the best default
@@ -991,14 +1077,14 @@ So ddc.vim should not define the defaults.
 You must define your defaults by configuration.
 ddc.vim does not conflict with your defaults.
 
-
+							*ddc-faq-3*
 Q: Why do sources have no default options?
 
 A: Because users can customize sources perfectly.  If a source has the
 default, users have to check them.  It increases configuration cost.
 The config should work as users config.
 
-
+							*ddc-faq-4*
 Q: I want to use inline suggestion like fish shell.
 
 A: NOTE: "ddc-ui-inline" is required.
@@ -1007,8 +1093,8 @@ https://github.com/Shougo/ddc-ui-inline
 >
 	inoremap <expr> <C-t>       ddc#map#insert_item(0, "\<C-e>")
 	call ddc#custom#patch_global('ui', 'inline')
-
-
+<
+							*ddc-faq-5*
 Q: The Linked/chained completion exists like vim-mucomplete?
 
 A: It is not implemented, but you can emulate the behavior by
@@ -1021,8 +1107,8 @@ A: It is not implemented, but you can emulate the behavior by
 	  return ddc#map#manual_complete(#{ sources: [head] })
 	endfunction
 	inoremap <expr> <C-t>  MyChainCompletion()
-
-
+<
+							*ddc-faq-6*
 Q: I want to silence the |ins-completion-menu| messages in the command line
 such as "-- XXX completion (YYY)", "match 1 of 2", "The only match", "Pattern
 not found", "Back at original", etc.
@@ -1030,20 +1116,20 @@ not found", "Back at original", etc.
 A: You can disable the messages through the 'shortmess' option. >
 
 	set shortmess+=c
-
-
+<
+							*ddc-faq-7*
 Q: I want to use the auto select feature.
 
 A: You can use it by the 'completeopt' option. >
 
 	set completeopt+=noinsert
-
-
+<
+							*ddc-faq-8*
 Q: How do I select one of the responses from the pop up?
 
 A: Please press <C-y> on the item.
 
-
+							*ddc-faq-9*
 Q: I want to close the preview window after completion is done.
 
 A: >
@@ -1056,13 +1142,13 @@ Or
    NOTE: It conflicts with delimitMate.
    https://github.com/Shougo/deoplete.nvim/issues/234
 
-
+							*ddc-faq-10*
 Q: I want to disable the preview window feature.
 
 A: >
 	set completeopt-=preview
-
-
+<
+							*ddc-faq-11*
 Q: I want to look selected function's arguments. But I don't like preview
 window feature.
 
@@ -1076,7 +1162,7 @@ A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
    https://github.com/ray-x/lsp_signature.nvim
    https://github.com/matsui54/denops-signature_help
 
-
+							*ddc-faq-12*
 Q: I want to use floating preview window feature.
 
 A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
@@ -1091,7 +1177,7 @@ A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
    NOTE: float-preview.nvim does not support "completionItem/resolve"
    behavior.  So ddc-nvim-lsp-doc is better.
 
-
+							*ddc-faq-13*
 Q: Why don't create file/path source is for ddc.vim?
 
 A: I know it is the important source.  But it is not easy to implement.
@@ -1116,7 +1202,7 @@ But other people has implemented it instead.
 
 https://github.com/LumaKernel/ddc-source-file
 
-
+							*ddc-faq-14*
 Q: I want to enable "skkeleton" source when "skkeleton" is enabled only.
 
 A: >
@@ -1131,7 +1217,8 @@ A: >
 	  " Restore sources
 	  call ddc#custom#set_buffer(s:prev_buffer_config)
 	endfunction
-
+<
+							*ddc-faq-15*
 Q: I want to enable command line completion.
 
 A: You need to configure like this.
@@ -1175,7 +1262,8 @@ https://github.com/Shougo/ddc-source-cmdline-history
 	  silent! cunmap <C-y>
 	  silent! cunmap <C-e>
 	endfunction
-
+<
+							*ddc-faq-16*
 Q: I want to enable |i_CTRL-R_=|(the expression register) completion.
 
 A: You need to configure like this.
@@ -1196,12 +1284,14 @@ https://github.com/Shougo/ddc-source-input
 	\   },
 	\ })
 <
+							*ddc-faq-17*
 Q: Terminal title flickers when completion menu opens in neovim.
 
 A: It is the problem of |nvim_win_set_option()|.  To avoid the problem, you
 need to use the function.
 https://github.com/hrsh7th/nvim-cmp/issues/309#issuecomment-940740456
 
+							*ddc-faq-18*
 Q: I want to enable auto completion in fine-cmdline.nvim
 https://github.com/VonHeikemen/fine-cmdline.nvim
 
@@ -1238,13 +1328,15 @@ A: NOTE: Experimental >
 	    \   },
 	    \   specialBufferCompletion: v:true,
 	    \ })
-
+<
+							*ddc-faq-19*
 Q: The auto completion does not work if 'textwidth' is set.
 
 A: If the input text is longer than 'textwidth', the completed text
 will be the next line.  It breaks auto completion behavior.  So the auto
 completion is disabled.
 
+							*ddc-faq-20*
 Q: I want to disable ddc auto completion.
 
 A: You need to set ui manually.
@@ -1268,6 +1360,7 @@ https://github.com/Shougo/pum.vim
 	      \ })
 	
 <
+							*ddc-faq-21*
 Q: ddc.vim starting is slow.
 
 A: It may be slow in Windows environment.  You should use denops shared server
@@ -1275,6 +1368,7 @@ feature.
 
 https://github.com/vim-denops/denops.vim#shared-server
 
+							*ddc-faq-22*
 Q: ddc.vim does not work in |command-line-window|.
 
 A: ddc.vim does not work in |command-line-window| with "pum.vim".
@@ -1284,17 +1378,20 @@ I don't recommend for you to use |command-line-window|.
 If you really want to need the completion, please enable
 |ddc-option-specialBufferCompletion| without "pum.vim"
 
+							*ddc-faq-23*
 Q: "copilot.vim" does not work when ddc.vim popup is visible.
 
 A: "copilot.vim" checks |pumvisible()|.  You should disable it. >
 
 	let g:copilot_hide_during_completion = 0
-
+<
+							*ddc-faq-24*
 Q: ddc.vim does not work when "dps-ghosttext.vim" is enabled.
 
 A: "dps-ghosttext.vim" creates the special buffer which 'buftype' is "nofile".
 You need to enable |ddc-option-specialBufferCompletion| for it.
 
+							*ddc-faq-25*
 Q: I want to narrow current items without auto completion.
 
 A: You can narrow current items by "ddu.vim" like this.
@@ -1317,6 +1414,7 @@ A: You can narrow current items by "ddu.vim" like this.
 <
 NOTE: "ddu.vim" configuration is required.
 
+							*ddc-faq-26*
 Q: I want to enable completion in |:terminal|.
 
 A: Please add "TextChangedT" to |ddc-option-autoCompleteEvents|.
