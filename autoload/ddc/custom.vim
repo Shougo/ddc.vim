@@ -55,13 +55,14 @@ function ddc#custom#alias(type, alias, base) abort
   if ddc#_denops_running()
     call denops#notify('ddc', 'alias', [a:type, a:alias, a:base])
   else
-    execute printf('autocmd User DDCReady call ' .
+    execute printf('autocmd User DenopsPluginPost:ddc call ' .
           \ 'denops#notify("ddc", "alias", ["%s", "%s", "%s"])',
           \ a:type, a:alias, a:base)
   endif
 endfunction
 
-" This should be called manually, so wait until DDCReady by the user himself.
+" This should be called manually, so wait until DenopsPluginPost:ddc by the
+" user himself.
 function ddc#custom#get_global() abort
   return ddc#_denops_running() ? denops#request('ddc', 'getGlobal', []) : {}
 endfunction

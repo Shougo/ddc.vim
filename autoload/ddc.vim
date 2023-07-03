@@ -11,7 +11,6 @@ function ddc#enable(opts = {}) abort
 
   augroup ddc
     autocmd!
-    autocmd User DDCReady :
     autocmd InsertLeave * call ddc#hide('InsertLeave')
   augroup END
 
@@ -157,7 +156,7 @@ function ddc#_notify(method, args) abort
   if ddc#_denops_running()
     call denops#notify('ddc', a:method, a:args)
   else
-    execute printf('autocmd User DDCReady call '
+    execute printf('autocmd User DenopsPluginPost:ddc call '
           \ .. 'denops#notify("ddc", "%s", %s)', a:method, a:args->string())
   endif
 endfunction

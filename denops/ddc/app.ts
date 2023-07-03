@@ -379,8 +379,6 @@ export function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_items", []);
     await vars.g.set(denops, "ddc#_sources", []);
 
-    await denops.cmd("doautocmd <nomodeline> User DDCReady");
-    await denops.cmd("autocmd! User DDCReady");
     await denops.call("ddc#_on_event", "Initialize");
 
     ddc.registerAutocmd(denops, [
