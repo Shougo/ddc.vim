@@ -44,13 +44,13 @@ export type Context = {
 export type UserSource = SourceName | {
   name: SourceName;
   options?: Partial<SourceOptions>;
-  params?: BaseSourceParams;
+  params?: Partial<BaseSourceParams>;
 };
 
 export type UserFilter = FilterName | {
   name: FilterName;
   options?: Partial<FilterOptions>;
-  params?: BaseFilterParams;
+  params?: Partial<BaseFilterParams>;
 };
 
 export type DdcOptions = {
