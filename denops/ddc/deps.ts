@@ -23,5 +23,5 @@ export {
 } from "https://deno.land/std@0.192.0/async/mod.ts";
 export { TimeoutError } from "https://deno.land/x/msgpack_rpc@v4.0.1/response_waiter.ts";
 export { spy } from "https://deno.land/x/mock@0.15.2/mock.ts";
-export { ensure, is } from "https://deno.land/x/unknownutil@v3.0.0/mod.ts";
+export { ensure, is } from "https://deno.land/x/unknownutil@v3.2.0/mod.ts";
 export { Lock } from "https://deno.land/x/async@v2.0.2/mod.ts";

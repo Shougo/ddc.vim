@@ -686,7 +686,7 @@ export class Ddc {
     const source = this.loader.getSource(name);
     if (!source) {
       await denops.call(
-        "ddu#util#print_error",
+        "ddc#util#print_error",
         `Not found source: ${name}`,
       );
       return [
@@ -726,7 +726,7 @@ export class Ddc {
     const filter = this.loader.getFilter(name);
     if (!filter) {
       await denops.call(
-        "ddu#util#print_error",
+        "ddc#util#print_error",
         `Not found filter: ${name}`,
       );
       return [
