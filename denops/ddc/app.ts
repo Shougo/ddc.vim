@@ -120,10 +120,12 @@ export function main(denops: Denops) {
       return Promise.resolve(contextBuilder.getCurrent(denops));
     },
     async loadConfig(arg1: unknown): Promise<void> {
-      const path = ensure(arg1, is.String);
-      const mod = await import(toFileUrl(path).href);
-      const obj = new mod.Config();
-      await obj.config({ denops, contextBuilder, setAlias });
+      await lock.lock(async () => {
+        const path = ensure(arg1, is.String);
+        const mod = await import(toFileUrl(path).href);
+        const obj = new mod.Config();
+        await obj.config({ denops, contextBuilder, setAlias });
+      });
       return Promise.resolve();
     },
     async manualComplete(arg1: unknown): Promise<void> {
