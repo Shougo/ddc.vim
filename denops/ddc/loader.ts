@@ -10,7 +10,7 @@ import {
   SourceName,
   UiName,
 } from "./types.ts";
-import { Lock, parse, toFileUrl } from "./deps.ts";
+import { Denops, fn, Lock, op, parse, toFileUrl } from "./deps.ts";
 
 export class Loader {
   private uis: Record<UiName, BaseUi<BaseUiParams>> = {};
@@ -23,6 +23,24 @@ export class Loader {
   };
   private checkPaths: Record<string, boolean> = {};
   private registerLock = new Lock(0);
+
+  async autoload(
+    denops: Denops,
+    type: DdcExtType,
+    name: string,
+  ) {
+    const paths = await globpath(
+      denops,
+      `denops/@ddc-${type}s/`,
+      this.getAlias(type, name) ?? name,
+    );
+
+    if (paths.length === 0) {
+      return;
+    }
+
+    await this.registerPath(type, paths[0]);
+  }
 
   registerAlias(type: DdcExtType, alias: string, base: string) {
     this.aliases[type][alias] = base;
@@ -96,4 +114,34 @@ export class Loader {
 
     this.checkPaths[path] = true;
   }
+}
+
+async function globpath(
+  denops: Denops,
+  search: string,
+  file: string,
+): Promise<string[]> {
+  const runtimepath = await op.runtimepath.getGlobal(denops);
+
+  const check: Record<string, boolean> = {};
+  const paths: string[] = [];
+  const glob = await fn.globpath(
+    denops,
+    runtimepath,
+    search + file + ".ts",
+    1,
+    1,
+  );
+
+  for (const path of glob) {
+    // Skip already added name.
+    if (parse(path).name in check) {
+      continue;
+    }
+
+    paths.push(path);
+    check[parse(path).name] = true;
+  }
+
+  return paths;
 }

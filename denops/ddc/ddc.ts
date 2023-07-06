@@ -7,7 +7,6 @@ import {
   BaseUiParams,
   Context,
   DdcEvent,
-  DdcExtType,
   DdcGatherItems,
   DdcItem,
   DdcOptions,
@@ -42,9 +41,6 @@ import {
   deadline,
   DeadlineError,
   Denops,
-  fn,
-  op,
-  parse,
   TimeoutError,
 } from "./deps.ts";
 import { convertKeywordPattern } from "./util.ts";
@@ -83,24 +79,6 @@ export class Ddc {
         }
       }
     });
-  }
-
-  async autoload(
-    denops: Denops,
-    type: DdcExtType,
-    name: string,
-  ) {
-    const paths = await globpath(
-      denops,
-      `denops/@ddc-${type}s/`,
-      this.loader.getAlias(type, name) ?? name,
-    );
-
-    if (paths.length === 0) {
-      return;
-    }
-
-    await this.loader.registerPath(type, paths[0]);
   }
 
   async onEvent(
@@ -646,7 +624,7 @@ export class Ddc {
     }
 
     if (!this.loader.getUi(options.ui)) {
-      await this.autoload(denops, "ui", options.ui);
+      await this.loader.autoload(denops, "ui", options.ui);
     }
     const ui = this.loader.getUi(options.ui);
     if (!ui) {
@@ -680,7 +658,7 @@ export class Ddc {
   > {
     const name = source2Name(userSource);
     if (!this.loader.getSource(name)) {
-      await this.autoload(denops, "source", name);
+      await this.loader.autoload(denops, "source", name);
     }
 
     const source = this.loader.getSource(name);
@@ -720,7 +698,7 @@ export class Ddc {
   > {
     const name = filter2Name(userFilter);
     if (!this.loader.getFilter(name)) {
-      await this.autoload(denops, "filter", name);
+      await this.loader.autoload(denops, "filter", name);
     }
 
     const filter = this.loader.getFilter(name);
@@ -1218,36 +1196,6 @@ async function errorException(denops: Denops, e: unknown, message: string) {
   } else {
     console.log(e);
   }
-}
-
-async function globpath(
-  denops: Denops,
-  search: string,
-  file: string,
-): Promise<string[]> {
-  const runtimepath = await op.runtimepath.getGlobal(denops);
-
-  const check: Record<string, boolean> = {};
-  const paths: string[] = [];
-  const glob = await fn.globpath(
-    denops,
-    runtimepath,
-    search + file + ".ts",
-    1,
-    1,
-  );
-
-  for (const path of glob) {
-    // Skip already added name.
-    if (parse(path).name in check) {
-      continue;
-    }
-
-    paths.push(path);
-    check[parse(path).name] = true;
-  }
-
-  return paths;
 }
 
 function source2Name(s: UserSource) {
