@@ -30,6 +30,7 @@ function ddc#enable(opts = {}) abort
     silent! call ddc#_register()
   endif
 endfunction
+
 function ddc#enable_cmdline_completion() abort
   call ddc#enable()
 
@@ -41,13 +42,12 @@ function ddc#enable_cmdline_completion() abort
           \ : if getcmdtype() !=# '=' && getcmdtype() !=# '@'
           \ |   call ddc#_on_event('CmdlineChanged')
           \ | endif
-    autocmd ModeChanged c:n
-          \ call ddc#disable_cmdline_completion()
+    autocmd ModeChanged c:n call s:disable_cmdline_completion()
   augroup END
 
   let b:ddc_cmdline_completion = v:true
 endfunction
-function ddc#disable_cmdline_completion() abort
+function s:disable_cmdline_completion() abort
   augroup ddc-cmdline
     autocmd!
   augroup END
