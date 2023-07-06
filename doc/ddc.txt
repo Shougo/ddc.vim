@@ -298,9 +298,10 @@ ddc#enable_cmdline_completion()
 		buffer.
 		"DDCCmdlineLeave" |User| autocmd is called after command line.
 
+		NOTE: The command line completion is disabled after command
+		line leave.
 		NOTE: It must be called in command line mode.
 		NOTE: "pum.vim" is needed for the feature.
-		NOTE: It disables |command-line-window| feature.
 
 					*ddc#enable_terminal_completion()*
 ddc#enable_terminal_completion()
@@ -1357,7 +1358,6 @@ https://github.com/Shougo/pum.vim
 	      \     insert: v:true,
 	      \   }
 	      \ })
-	
 <
 							*ddc-faq-21*
 Q: ddc.vim starting is slow.
