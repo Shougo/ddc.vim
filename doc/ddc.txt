@@ -1444,6 +1444,9 @@ https://github.com/Shougo/ddc-ui-pum
 COMPATIBILITY						*ddc-compatibility*
 
 2023.06.25
+* Vim 9.0+ or neovim 0.8+ is required.
+
+2023.06.25
 * "keywordPattern" option is deprecated.  Please use
   |ddc-source-option-keywordPattern| instead.
 
