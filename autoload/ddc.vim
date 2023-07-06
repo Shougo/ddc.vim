@@ -3,9 +3,9 @@ function ddc#enable(opts = {}) abort
     return
   endif
 
-  if !has('patch-8.2.0662') && !has('nvim-0.8')
+  if v:version < 900 && !has('nvim-0.8')
     call ddc#util#print_error(
-          \ 'ddc requires Vim 8.2.0662+ or neovim 0.8.0+.')
+          \ 'ddc requires Vim 9.0+ or neovim 0.8.0+.')
     return
   endif
 
@@ -41,16 +41,9 @@ function ddc#enable_cmdline_completion() abort
           \ : if getcmdtype() !=# '=' && getcmdtype() !=# '@'
           \ |   call ddc#_on_event('CmdlineChanged')
           \ | endif
-  augroup END
-  if '##ModeChanged'->exists()
-    autocmd ddc-cmdline ModeChanged c:n
+    autocmd ModeChanged c:n
           \ call ddc#disable_cmdline_completion()
-  else
-    autocmd ddc-cmdline CmdlineLeave <buffer>
-          \ : if get(v:event, 'cmdlevel', 1) == 1
-          \ |   call ddc#disable_cmdline_completion()
-          \ | endif
-  endif
+  augroup END
 
   let b:ddc_cmdline_completion = v:true
 endfunction

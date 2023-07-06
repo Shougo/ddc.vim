@@ -47,8 +47,8 @@ better than neovim Python interface.
 ## Install
 
 **NOTE:** Ddc.vim requires Neovim (0.8.0+ and of course, **latest** is
-recommended) or Vim 8.2.0662. See [requirements](#requirements) if you aren't
-sure whether you have this.
+recommended) or Vim 9.0+. See [requirements](#requirements) if you aren't sure
+whether you have this.
 
 For vim-plug
 
