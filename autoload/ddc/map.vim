@@ -62,7 +62,7 @@ function ddc#map#complete_common_string() abort
   return chars
 endfunction
 
-function ddc#map#insert_item(number, cancel_key) abort
+function ddc#map#insert_item(number) abort
   const word = g:ddc#_items->get(a:number, #{ word: '' }).word
   if word ==# ''
     return ''
@@ -104,7 +104,6 @@ function ddc#map#insert_item(number, cancel_key) abort
   if mode ==# 'i'
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
   endif
-  let chars .= a:cancel_key
   " NOTE: Fire Source.onCompleteDone after insert the item.
   let chars .=
         \ "\<Cmd>call ddc#complete#_on_complete_done(v:completed_item)\<CR>"

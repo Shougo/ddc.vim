@@ -492,9 +492,8 @@ ddc#map#extend({confirm-key})
 		NOTE: It must be in |:map-<expr>|.
 
 						*ddc#map#insert_item()*
-ddc#map#insert_item({index}, {cancel-key})
+ddc#map#insert_item({index})
 		Insert the item at index {index}. Indices start at 0.
-		{confirm-key} is popup cancel key.
 		NOTE: It must be in |:map-<expr>|.
 		NOTE: |v:completed_item| must be writable.
 
@@ -1092,7 +1091,7 @@ A: NOTE: "ddc-ui-inline" is required.
 
 https://github.com/Shougo/ddc-ui-inline
 >
-	inoremap <expr> <C-t>       ddc#map#insert_item(0, "\<C-e>")
+	inoremap <expr> <C-t>       ddc#map#insert_item(0)
 	call ddc#custom#patch_global('ui', 'inline')
 <
 							*ddc-faq-5*
@@ -1443,6 +1442,9 @@ https://github.com/Shougo/ddc-ui-pum
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2023.07.07
+* {cancel-key} is removed from |ddc#map#insert_item()|.
 
 2023.06.25
 * Vim 9.0+ or neovim 0.8+ is required.
