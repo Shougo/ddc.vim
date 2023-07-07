@@ -32,6 +32,11 @@ function ddc#complete#_skip(pos, items) abort
     return v:true
   endif
 
+  if g:ddc#_skip_next_complete
+    let g:ddc#_skip_next_complete = v:false
+    return v:true
+  endif
+
   " NOTE: If the input text is longer than 'textwidth', the completed text
   " will be the next line.  It breaks auto completion behavior.
   if &l:formatoptions =~# '[tca]' && &l:textwidth > 0
@@ -42,11 +47,6 @@ function ddc#complete#_skip(pos, items) abort
     if displaywidth >= &l:textwidth || col >= displaywidth
       return v:true
     endif
-  endif
-
-  if g:ddc#_skip_next_complete
-    let g:ddc#_skip_next_complete = v:false
-    return v:true
   endif
 
   return v:false
