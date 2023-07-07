@@ -3,9 +3,9 @@ function ddc#enable(opts = {}) abort
     return
   endif
 
-  if v:version < 900 && !has('nvim-0.8')
+  if !has('patch-9.0.1499') && !has('nvim-0.8')
     call ddc#util#print_error(
-          \ 'ddc requires Vim 9.0+ or neovim 0.8.0+.')
+          \ 'ddc requires Vim 9.0.1499+ or neovim 0.8.0+.')
     return
   endif
 
@@ -61,10 +61,6 @@ function s:disable_cmdline_completion() abort
 endfunction
 
 function ddc#enable_terminal_completion() abort
-  if !('##TextChangedT'->exists())
-    return
-  endif
-
   call ddc#enable()
 
   augroup ddc-terminal

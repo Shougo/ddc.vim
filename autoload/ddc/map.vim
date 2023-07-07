@@ -73,7 +73,7 @@ function ddc#map#insert_item(number) abort
   " Get cursor word.
   const input = ddc#util#get_input('')
   const complete_str = input[g:ddc#_complete_pos : s:col() - 1]
-  silent! let v:completed_item = g:ddc#_items[a:number]
+  let v:completed_item = g:ddc#_items[a:number]
 
   " Skip next complete after insertion
   let g:ddc#_skip_next_complete = v:true
