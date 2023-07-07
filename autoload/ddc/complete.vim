@@ -44,5 +44,10 @@ function ddc#complete#_skip(pos, items) abort
     endif
   endif
 
+  if g:ddc#_skip_next_complete
+    let g:ddc#_skip_next_complete = v:false
+    return v:true
+  endif
+
   return v:false
 endfunction

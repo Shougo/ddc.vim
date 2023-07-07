@@ -75,17 +75,33 @@ function ddc#map#insert_item(number, cancel_key) abort
   const complete_str = input[g:ddc#_complete_pos : s:col() - 1]
   silent! let v:completed_item = g:ddc#_items[a:number]
 
+  " Skip next complete after insertion
+  let g:ddc#_skip_next_complete = v:true
+
+  const mode = mode()
+
   " Call CompleteDone later.
-  autocmd ddc TextChangedI * ++once doautocmd <nomodeline> CompleteDone
+  if mode ==# 'i'
+    autocmd ddc TextChangedI * ++once
+          \ : doautocmd <nomodeline> CompleteDone
+          \ | if '#User#PumCompleteDonePre'->exists()
+          \ |   doautocmd <nomodeline> User PumCompleteDonePre
+          \ | endif
+  elseif mode ==# 'c'
+    autocmd ddc CmdlineChanged * ++once
+          \ : if '#User#PumCompleteDonePre'->exists()
+          \ |   doautocmd <nomodeline> User PumCompleteDonePre
+          \ | endif
+  endif
 
   let chars = ''
   " NOTE: Change backspace option to work <BS> correctly
-  if mode() ==# 'i'
+  if mode ==# 'i'
     let chars .= "\<Cmd>set backspace=start\<CR>"
   endif
   let chars .= "\<BS>"->repeat(complete_str->strchars())
   let chars .= word
-  if mode() ==# 'i'
+  if mode ==# 'i'
     let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
   endif
   let chars .= a:cancel_key
