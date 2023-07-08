@@ -80,6 +80,22 @@ function ddc#map#insert_item(number) abort
 
   const mode = mode()
 
+  " Avoid the menu redisplay
+  if mode() ==# 'c'
+    if '#User#PumCompleteDonePre'->exists()
+      doautocmd <nomodeline> User PumCompleteDonePre
+    endif
+    const cmdline = getcmdline()
+    const prev_input = g:ddc#_complete_pos == 0
+          \ ? ''
+          \ : cmdline[: g:ddc#_complete_pos - 1]
+    const next_input = cmdline[s:col() - 1 :]
+    call setcmdline(prev_input . word . next_input,
+          \ g:ddc#_complete_pos + 1 + word->len())
+    call ddc#complete#_on_complete_done(v:completed_item)
+    return ''
+  endif
+
   " Call CompleteDone later.
   if mode ==# 'i'
     autocmd ddc TextChangedI * ++once
