@@ -46,7 +46,7 @@ It does not work with zero configuration.  You can use other plugins.
 ==============================================================================
 INSTALL							*ddc-install*
 
-NOTE: Ddc.vim requires Neovim (0.8.0+) or Vim 9.0.1499+ (latest is
+NOTE: Ddc.vim requires Neovim (0.8.0+) or Vim 9.0.1276+ (latest is
 recommended).
 
 Please install both Deno and "denops.vim".
@@ -1443,6 +1443,9 @@ https://github.com/Shougo/ddc-ui-pum
 
 ==============================================================================
 COMPATIBILITY						*ddc-compatibility*
+
+2023.07.08
+* Vim 9.0.1276+ or neovim 0.8+ is required to support the latest MacVim.
 
 2023.07.07
 * {cancel-key} is removed from |ddc#map#insert_item()|.

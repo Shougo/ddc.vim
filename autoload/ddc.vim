@@ -3,9 +3,9 @@ function ddc#enable(opts = {}) abort
     return
   endif
 
-  if !has('patch-9.0.1499') && !has('nvim-0.8')
+  if !has('patch-9.0.1276') && !has('nvim-0.8')
     call ddc#util#print_error(
-          \ 'ddc requires Vim 9.0.1499+ or neovim 0.8.0+.')
+          \ 'ddc requires Vim 9.0.1276+ or neovim 0.8.0+.')
     return
   endif
 
