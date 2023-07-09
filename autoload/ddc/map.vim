@@ -76,7 +76,7 @@ function ddc#map#insert_item(number) abort
   let v:completed_item = g:ddc#_items[a:number]
 
   " Skip next complete after insertion
-  let g:ddc#_skip_next_complete = v:true
+  let g:ddc#_skip_next_complete += 1
 
   const mode = mode()
 

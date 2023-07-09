@@ -23,7 +23,7 @@ function ddc#enable(opts = {}) abort
 
   let g:ddc#_started = reltime()
   let g:ddc#_context_filetype = context_filetype
-  let g:ddc#_skip_next_complete = v:false
+  let g:ddc#_skip_next_complete = 0
 
   " NOTE: ddc.vim must be registered manually.
   autocmd ddc User DenopsReady silent! call ddc#_register()
