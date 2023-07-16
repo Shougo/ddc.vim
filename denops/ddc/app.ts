@@ -194,13 +194,29 @@ export function main(denops: Denops) {
         .createContext(denops, "CompleteDone");
       if (skip) return;
 
+      if (context.mode === "c") {
+        // Use cmdlineSources instead
+        if (Array.isArray(options.cmdlineSources)) {
+          options.sources = options.cmdlineSources;
+        } else {
+          const cmdType = await fn.getcmdtype(denops) as string;
+          if (options.cmdlineSources[cmdType]) {
+            options.sources = options.cmdlineSources[cmdType];
+          }
+        }
+      }
+      const userSource =
+        options.sources.find((source) =>
+          (is.Record(source) ? source.name : source) === sourceName
+        ) ?? sourceName;
+
       cbContext.revoke();
       await ddc.onCompleteDone(
         denops,
         context,
         cbContext.createOnCallback(),
         options,
-        sourceName,
+        userSource,
         userData,
       );
     },

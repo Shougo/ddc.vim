@@ -163,13 +163,13 @@ export class Ddc {
     context: Context,
     onCallback: OnCallback,
     options: DdcOptions,
-    sourceName: SourceName,
+    userSource: UserSource,
     userData: DdcUserData,
   ): Promise<void> {
     const [source, sourceOptions, sourceParams] = await this.getSource(
       denops,
       options,
-      sourceName,
+      userSource,
     );
     if (!source || !source.onCompleteDone) {
       return;
