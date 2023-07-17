@@ -461,6 +461,18 @@ export class ContextBuilder {
       );
     }
 
+    if (context.mode === "c") {
+      // Use cmdlineSources instead
+      if (Array.isArray(options.cmdlineSources)) {
+        userOptions.sources = options.cmdlineSources;
+      } else if (is.Record(userOptions.cmdlineSources)) {
+        const cmdType = await fn.getcmdtype(denops) as string;
+        if (userOptions.cmdlineSources[cmdType]) {
+          userOptions.sources = userOptions.cmdlineSources[cmdType];
+        }
+      }
+    }
+
     return [
       skip,
       context,

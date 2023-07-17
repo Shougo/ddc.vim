@@ -143,18 +143,6 @@ export function main(denops: Denops) {
         .createContext(denops, "Manual", userOptions);
       if (skip) return;
 
-      if (context.mode === "c") {
-        // Use cmdlineSources instead
-        if (Array.isArray(options.cmdlineSources)) {
-          options.sources = options.cmdlineSources;
-        } else {
-          const cmdType = await fn.getcmdtype(denops) as string;
-          if (options.cmdlineSources[cmdType]) {
-            options.sources = options.cmdlineSources[cmdType];
-          }
-        }
-      }
-
       cbContext.revoke();
       await doCompletion(denops, context, options);
     },
@@ -194,17 +182,7 @@ export function main(denops: Denops) {
         .createContext(denops, "CompleteDone");
       if (skip) return;
 
-      if (context.mode === "c") {
-        // Use cmdlineSources instead
-        if (Array.isArray(options.cmdlineSources)) {
-          options.sources = options.cmdlineSources;
-        } else {
-          const cmdType = await fn.getcmdtype(denops) as string;
-          if (options.cmdlineSources[cmdType]) {
-            options.sources = options.cmdlineSources[cmdType];
-          }
-        }
-      }
+      // Convert to UserSource
       const userSource =
         options.sources.find((source) =>
           (is.Record(source) ? source.name : source) === sourceName
@@ -259,16 +237,6 @@ export function main(denops: Denops) {
       // current items
       options.sources = ddc.prevSources;
       options.ui = ddc.prevUi;
-    } else if (context.mode === "c") {
-      // Use cmdlineSources instead
-      if (Array.isArray(options.cmdlineSources)) {
-        options.sources = options.cmdlineSources;
-      } else {
-        const cmdType = await fn.getcmdtype(denops) as string;
-        if (options.cmdlineSources[cmdType]) {
-          options.sources = options.cmdlineSources[cmdType];
-        }
-      }
     }
 
     await ddc.onEvent(
