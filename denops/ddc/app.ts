@@ -14,7 +14,6 @@ import {
   batch,
   Denops,
   ensure,
-  fn,
   is,
   Lock,
   op,
