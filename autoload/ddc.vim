@@ -92,9 +92,13 @@ function ddc#update_items(name, items) abort
   call ddc#_notify('updateItems', [a:name, a:items])
 endfunction
 
-function ddc#hide(event) abort
+function ddc#hide(event = "Manual") abort
   call ddc#_notify('hide', [a:event])
-  return ''
+endfunction
+
+function ddc#visible() abort
+  return ddc#_denops_running() ?
+        \ denops#request('ddc', 'visible', []) : v:false
 endfunction
 
 function ddc#register(type, path) abort

@@ -311,14 +311,14 @@ ddc#enable_terminal_completion()
 		NOTE: "pum.vim" is needed for the feature.
 
 							*ddc#hide()*
-ddc#hide({event})
+ddc#hide([{event}])
 		Hide current completion UI.
 		{event} is completion event.
 		It must be list of |autocmd-events| string or "Manual" or
 		"Initialize" or "Update".
 		NOTE: It is used to cancel the completion.
 >
-		inoremap <C-e>   <Cmd>call ddc#hide('Manual')<CR>
+		inoremap <C-e>   <Cmd>call ddc#hide()<CR>
 <
 						*ddc#on_complete_done()*
 ddc#on_complete_done({completed_item})
@@ -350,6 +350,9 @@ ddc#update_items({name}, {items})
 
 		NOTE: It does not work for volatile source.
 
+							*ddc#visible()*
+ddc#visible()
+		Return |v:true| when current completion UI is visible.
 
 CUSTOM FUNCTIONS					*ddc-custom-functions*
 

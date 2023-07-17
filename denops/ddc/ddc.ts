@@ -57,6 +57,9 @@ export class Ddc {
   private loader: Loader;
   private prevResults: Record<SourceName, DdcResult> = {};
   private events: DdcEvent[] = [];
+  private currentUi: BaseUi<BaseUiParams> | undefined = undefined;
+  private currentUiOptions: UiOptions = defaultUiOptions();
+  private currentUiParams: BaseUiParams = defaultDummy();
   private visibleUi = false;
 
   prevSources: UserSource[] = [];
@@ -425,7 +428,11 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<boolean> {
-    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    const [ui, uiOptions, uiParams] = await this.getUi(
+      denops,
+      context,
+      options,
+    );
     if (!ui) {
       return true;
     }
@@ -455,7 +462,11 @@ export class Ddc {
       return;
     }
 
-    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    const [ui, uiOptions, uiParams] = await this.getUi(
+      denops,
+      context,
+      options,
+    );
     if (!ui) {
       return;
     }
@@ -479,7 +490,11 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ) {
-    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    const [ui, uiOptions, uiParams] = await this.getUi(
+      denops,
+      context,
+      options,
+    );
     if (!ui) {
       return;
     }
@@ -499,7 +514,11 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<boolean> {
-    const [ui, uiOptions, uiParams] = await this.getUi(denops, options);
+    const [ui, uiOptions, uiParams] = await this.getUi(
+      denops,
+      context,
+      options,
+    );
     if (!ui) {
       return false;
     }
@@ -607,6 +626,7 @@ export class Ddc {
 
   private async getUi(
     denops: Denops,
+    context: Context,
     options: DdcOptions,
   ): Promise<
     [
@@ -640,6 +660,28 @@ export class Ddc {
     }
 
     const [uiOptions, uiParams] = uiArgs(options, ui);
+
+    if (ui !== this.currentUi) {
+      // UI is changed
+
+      if (this.currentUi) {
+        // Hide current UI
+        await this.currentUi.hide({
+          denops,
+          context,
+          options,
+          uiOptions: this.currentUiOptions,
+          uiParams: this.currentUiParams,
+        });
+
+        this.visibleUi = false;
+      }
+
+      this.currentUi = ui;
+      this.currentUiOptions = uiOptions;
+      this.currentUiParams = uiParams;
+    }
+
     await checkUiOnInit(ui, denops, uiOptions, uiParams);
 
     return [ui, uiOptions, uiParams];

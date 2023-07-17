@@ -224,6 +224,13 @@ export function main(denops: Denops) {
       );
       await ddc.hide(denops, context, options);
     },
+    async visible(): Promise<boolean> {
+      const [_, context, options] = await contextBuilder.createContext(
+        denops,
+        "Manual",
+      );
+      return await ddc.visible(denops, context, options);
+    },
   };
 
   async function _onEvent(event: DdcEvent): Promise<void> {
