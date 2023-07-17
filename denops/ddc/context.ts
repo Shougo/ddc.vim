@@ -463,8 +463,8 @@ export class ContextBuilder {
 
     if (context.mode === "c") {
       // Use cmdlineSources instead
-      if (Array.isArray(options.cmdlineSources)) {
-        userOptions.sources = options.cmdlineSources;
+      if (Array.isArray(userOptions.cmdlineSources)) {
+        userOptions.sources = userOptions.cmdlineSources;
       } else if (is.Record(userOptions.cmdlineSources)) {
         const cmdType = await fn.getcmdtype(denops) as string;
         if (userOptions.cmdlineSources[cmdType]) {
