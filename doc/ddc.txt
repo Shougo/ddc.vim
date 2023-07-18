@@ -12,6 +12,7 @@ Interface		|ddc-interface|
   Functions		  |ddc-functions|
   Custom Functions	  |ddc-custom-functions|
   Key mappings		  |ddc-key-mappings|
+  Events		  |ddc-events|
 Examples		|ddc-examples|
 UIs			|ddc-uis|
   UI option	          |ddc-ui-options|
@@ -98,6 +99,7 @@ autoCompleteDelay
 autoCompleteEvents
 		The auto completion fired events.  It must be list of
 		|autocmd-events| string.
+		NOTE: Supported events is described in |ddc-events|.
 
 		Default: [
 			"InsertEnter", "TextChangedI", "TextChangedP",
@@ -508,6 +510,19 @@ ddc#map#manual_complete([{options}])
 		NOTE: Manual completion ignores
 		|ddc-source-option-minAutoCompleteLength|.
 
+------------------------------------------------------------------------------
+EVENTS							*ddc-events*
+
+Below events are only supported.
+
+|TextChangedI|, |TextChangedP|,
+|InsertEnter|, |InsertLeave|,
+|BufEnter|, |BufLeave|,
+|FileType|,
+|CmdlineChanged| (|ddc#enable_cmdline_completion()|),
+|TextChangedT| (|ddc#enable_terminal_completion()|),
+
+
 ==============================================================================
 EXAMPLES						*ddc-examples*
 >
@@ -851,6 +866,7 @@ SOURCE ATTRIBUTES				*ddc-source-attributes*
 events			(string[])			(Optional)
 		List of events for which |ddc-source-attribute-onEvent|
 		should get called.
+		NOTE: Supported events is described in |ddc-events|.
 
 		Default: []
 
@@ -954,6 +970,7 @@ FILTER ATTRIBUTES				*ddc-filter-attributes*
 events			(string[])			(Optional)
 		List of events for which |ddc-filter-attribute-onEvent|
 		should get called.
+		NOTE: Supported events is described in |ddc-events|.
 
 		Default: []
 
