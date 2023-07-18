@@ -374,6 +374,9 @@ export function main(denops: Denops) {
     await denops.call("ddc#_on_event", "Initialize");
 
     ddc.registerAutocmd(denops, [
+      "BufEnter",
+      "BufLeave",
+      "FileType",
       "InsertEnter",
       "InsertLeave",
       "TextChangedI",
