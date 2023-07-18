@@ -515,6 +515,10 @@ EVENTS							*ddc-events*
 
 Below events are only supported.
 
+"Initialize": Called when ddc is initialized.
+"Manual": Called when |ddc#map#manual_complete()|.
+"Update": Called when |ddc#update_items()|.
+
 |TextChangedI|, |TextChangedP|,
 |InsertEnter|, |InsertLeave|,
 |BufEnter|, |BufLeave|,
