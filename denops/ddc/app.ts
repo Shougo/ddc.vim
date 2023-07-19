@@ -1,7 +1,6 @@
 import { Ddc } from "./ddc.ts";
 import { ContextBuilder, ContextCallbacks } from "./context.ts";
 import {
-  Context,
   DdcEvent,
   DdcExtType,
   DdcItem,
@@ -10,7 +9,7 @@ import {
   Item,
   UserOptions,
 } from "./types.ts";
-import { Denops, ensure, is, Lock, op, toFileUrl, vars } from "./deps.ts";
+import { Denops, ensure, is, Lock, toFileUrl, vars } from "./deps.ts";
 import { Loader } from "./loader.ts";
 import { createCallbackContext } from "./callback.ts";
 
