@@ -260,13 +260,12 @@ export function main(denops: Denops) {
       return;
     }
 
-    const skipCompletion = await ddc.skipCompletion(denops, context, options);
-    if (skipCompletion) {
+    if (await checkSkipCompletion(event, context, options)) {
       return;
     }
 
-    if (await checkSkipCompletion(event, context, options)) {
-      await cancelCompletion(denops, context, options);
+    const skipCompletion = await ddc.skipCompletion(denops, context, options);
+    if (skipCompletion) {
       return;
     }
 
