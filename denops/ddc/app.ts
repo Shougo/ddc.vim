@@ -248,16 +248,7 @@ export function main(denops: Denops) {
 
     cbContext.revoke();
 
-    if (event !== "InsertEnter" && context.mode === "n") {
-      return;
-    }
-
-    if (await checkSkipCompletion(event, context, options)) {
-      return;
-    }
-
-    const skipCompletion = await ddc.skipCompletion(denops, context, options);
-    if (skipCompletion) {
+    if (await ddc.checkSkipCompletion(denops, context, options)) {
       return;
     }
 
@@ -275,38 +266,6 @@ export function main(denops: Denops) {
     }
 
     await ddc.doCompletion(denops, context, cbContext, options);
-  }
-
-  async function checkSkipCompletion(
-    event: DdcEvent,
-    context: Context,
-    options: DdcOptions,
-  ): Promise<boolean> {
-    // NOTE: Don't complete when backspace by default, because of completion
-    // flicker.
-    const checkBackSpace = !options.backspaceCompletion &&
-      context.input !== ddc.prevInput &&
-      context.input.length + 1 === ddc.prevInput.length &&
-      ddc.prevInput.startsWith(context.input);
-    if (checkBackSpace) {
-      ddc.prevInput = context.input;
-      await ddc.cancelCompletion(denops, context, options);
-      return true;
-    }
-
-    // Skip special buffers.
-    const buftype = await op.buftype.getLocal(denops);
-    if (
-      buftype !== "" && !options.specialBufferCompletion && context.mode !== "c"
-    ) {
-      return true;
-    }
-
-    if (options.autoCompleteEvents.indexOf(event) < 0) {
-      return true;
-    }
-
-    return false;
   }
 
   ddc.initialize(denops);

@@ -43,6 +43,7 @@ import {
   deadline,
   DeadlineError,
   Denops,
+  op,
   TimeoutError,
   vars,
 } from "./deps.ts";
@@ -64,8 +65,8 @@ export class Ddc {
   private currentUiOptions: UiOptions = defaultUiOptions();
   private currentUiParams: BaseUiParams = defaultDummy();
   private visibleUi = false;
+  private prevInput = "";
 
-  prevInput = "";
   prevSources: UserSource[] = [];
   prevUi = "";
 
@@ -466,11 +467,42 @@ export class Ddc {
     });
   }
 
-  async skipCompletion(
+  async checkSkipCompletion(
     denops: Denops,
     context: Context,
     options: DdcOptions,
-  ): Promise<boolean> {
+  ) {
+    if (context.event !== "InsertEnter" && context.mode === "n") {
+      return true;
+    }
+
+    // NOTE: Don't complete when backspace by default, because of completion
+    // flicker.
+    const checkBackSpace = !options.backspaceCompletion &&
+      context.input !== this.prevInput &&
+      context.input.length + 1 === this.prevInput.length &&
+      this.prevInput.startsWith(context.input);
+    if (checkBackSpace) {
+      this.prevInput = context.input;
+
+      // NOTE: cancelCompletion is needed.
+      await this.cancelCompletion(denops, context, options);
+
+      return true;
+    }
+
+    // Skip special buffers.
+    const buftype = await op.buftype.getLocal(denops);
+    if (
+      buftype !== "" && !options.specialBufferCompletion && context.mode !== "c"
+    ) {
+      return true;
+    }
+
+    if (options.autoCompleteEvents.indexOf(context.event) < 0) {
+      return true;
+    }
+
     const [ui, uiOptions, uiParams] = await this.getUi(
       denops,
       context,
