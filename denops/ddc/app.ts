@@ -10,16 +10,7 @@ import {
   Item,
   UserOptions,
 } from "./types.ts";
-import {
-  batch,
-  Denops,
-  ensure,
-  is,
-  Lock,
-  op,
-  toFileUrl,
-  vars,
-} from "./deps.ts";
+import { Denops, ensure, is, Lock, op, toFileUrl, vars } from "./deps.ts";
 import { Loader } from "./loader.ts";
 import { createCallbackContext } from "./callback.ts";
 
@@ -30,7 +21,6 @@ export function main(denops: Denops) {
   const cbContext = createCallbackContext();
   const lock = new Lock(0);
   let queuedEvent: DdcEvent | null = null;
-  let prevInput = "";
 
   const setAlias = (extType: DdcExtType, alias: string, base: string) => {
     loader.registerAlias(extType, alias, base);
@@ -143,7 +133,8 @@ export function main(denops: Denops) {
       if (skip) return;
 
       cbContext.revoke();
-      await doCompletion(denops, context, options);
+
+      await ddc.doCompletion(denops, context, cbContext, options);
     },
     async updateItems(arg1: unknown, arg2: unknown): Promise<void> {
       const name = ensure(arg1, is.String);
@@ -156,7 +147,8 @@ export function main(denops: Denops) {
       if (skip) return;
 
       cbContext.revoke();
-      await doCompletion(denops, context, options);
+
+      await ddc.doCompletion(denops, context, cbContext, options);
     },
     async onEvent(arg1: unknown): Promise<void> {
       queuedEvent = ensure(arg1, is.String) as DdcEvent;
@@ -272,7 +264,7 @@ export function main(denops: Denops) {
     // Check auto complete delay.
     if (options.autoCompleteDelay > 0) {
       // Cancel previous completion
-      await cancelCompletion(denops, context, options);
+      await ddc.cancelCompletion(denops, context, options);
 
       await new Promise((resolve) =>
         setTimeout(
@@ -282,7 +274,7 @@ export function main(denops: Denops) {
       );
     }
 
-    await doCompletion(denops, context, options);
+    await ddc.doCompletion(denops, context, cbContext, options);
   }
 
   async function checkSkipCompletion(
@@ -293,11 +285,12 @@ export function main(denops: Denops) {
     // NOTE: Don't complete when backspace by default, because of completion
     // flicker.
     const checkBackSpace = !options.backspaceCompletion &&
-      context.input !== prevInput &&
-      context.input.length + 1 === prevInput.length &&
-      prevInput.startsWith(context.input);
+      context.input !== ddc.prevInput &&
+      context.input.length + 1 === ddc.prevInput.length &&
+      ddc.prevInput.startsWith(context.input);
     if (checkBackSpace) {
-      prevInput = context.input;
+      ddc.prevInput = context.input;
+      await ddc.cancelCompletion(denops, context, options);
       return true;
     }
 
@@ -316,75 +309,5 @@ export function main(denops: Denops) {
     return false;
   }
 
-  async function cancelCompletion(
-    denops: Denops,
-    context: Context,
-    options: DdcOptions,
-  ): Promise<void> {
-    await batch(denops, async (denops: Denops) => {
-      await vars.g.set(denops, "ddc#_complete_pos", -1);
-      await vars.g.set(denops, "ddc#_items", []);
-      await ddc.hide(denops, context, options);
-    });
-  }
-
-  async function doCompletion(
-    denops: Denops,
-    context: Context,
-    options: DdcOptions,
-  ): Promise<void> {
-    const [completePos, items] = await ddc.gatherResults(
-      denops,
-      context,
-      cbContext.createOnCallback(),
-      options,
-    );
-
-    const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
-    if (context.changedTick !== await changedTick) {
-      // Input is changed.  Skip invalid completion.
-      return;
-    }
-
-    await (async function write() {
-      prevInput = context.input;
-      await batch(denops, async (denops: Denops) => {
-        await vars.g.set(denops, "ddc#_changedtick", context.changedTick);
-        await vars.g.set(denops, "ddc#_complete_pos", completePos);
-        await vars.g.set(denops, "ddc#_items", items);
-        await vars.g.set(denops, "ddc#_sources", options.sources);
-      });
-
-      if (items.length === 0) {
-        await ddc.hide(denops, context, options);
-      } else {
-        await ddc.show(denops, context, options, completePos, items);
-      }
-    })();
-  }
-
-  batch(denops, async (denops: Denops) => {
-    await vars.g.set(denops, "ddc#_changedtick", 0);
-    await vars.g.set(denops, "ddc#_complete_pos", -1);
-    await vars.g.set(denops, "ddc#_items", []);
-    await vars.g.set(denops, "ddc#_sources", []);
-
-    await denops.call("ddc#on_event", "Initialize");
-
-    ddc.registerAutocmd(denops, [
-      "BufEnter",
-      "BufLeave",
-      "FileType",
-      "InsertEnter",
-      "InsertLeave",
-      "TextChangedI",
-      "TextChangedP",
-    ]);
-    await denops.cmd(
-      "autocmd ddc CmdlineChanged * " +
-        ": if getcmdtype() ==# '=' || getcmdtype() ==# '@'" +
-        "|   call ddc#on_event('CmdlineChanged')" +
-        "| endif",
-    );
-  });
+  ddc.initialize(denops);
 }

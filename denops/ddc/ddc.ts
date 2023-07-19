@@ -5,6 +5,7 @@ import {
   BaseSourceParams,
   BaseUi,
   BaseUiParams,
+  CallbackContext,
   Context,
   DdcEvent,
   DdcGatherItems,
@@ -38,10 +39,12 @@ import { isDdcCallbackCancelError } from "./callback.ts";
 import {
   assertEquals,
   autocmd,
+  batch,
   deadline,
   DeadlineError,
   Denops,
   TimeoutError,
+  vars,
 } from "./deps.ts";
 import { convertKeywordPattern } from "./util.ts";
 
@@ -62,11 +65,39 @@ export class Ddc {
   private currentUiParams: BaseUiParams = defaultDummy();
   private visibleUi = false;
 
+  prevInput = "";
   prevSources: UserSource[] = [];
   prevUi = "";
 
   constructor(loader: Loader) {
     this.loader = loader;
+  }
+
+  initialize(denops: Denops) {
+    batch(denops, async (denops: Denops) => {
+      await vars.g.set(denops, "ddc#_changedtick", 0);
+      await vars.g.set(denops, "ddc#_complete_pos", -1);
+      await vars.g.set(denops, "ddc#_items", []);
+      await vars.g.set(denops, "ddc#_sources", []);
+
+      await denops.call("ddc#on_event", "Initialize");
+
+      this.registerAutocmd(denops, [
+        "BufEnter",
+        "BufLeave",
+        "FileType",
+        "InsertEnter",
+        "InsertLeave",
+        "TextChangedI",
+        "TextChangedP",
+      ]);
+      await denops.cmd(
+        "autocmd ddc CmdlineChanged * " +
+          ": if getcmdtype() ==# '=' || getcmdtype() ==# '@'" +
+          "|   call ddc#on_event('CmdlineChanged')" +
+          "| endif",
+      );
+    });
   }
 
   async registerAutocmd(denops: Denops, events: DdcEvent[]) {
@@ -423,6 +454,18 @@ export class Ddc {
     result.isIncomplete = false;
   }
 
+  async cancelCompletion(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+  ) {
+    await batch(denops, async (denops: Denops) => {
+      await vars.g.set(denops, "ddc#_complete_pos", -1);
+      await vars.g.set(denops, "ddc#_items", []);
+      await this.hide(denops, context, options);
+    });
+  }
+
   async skipCompletion(
     denops: Denops,
     context: Context,
@@ -444,6 +487,43 @@ export class Ddc {
       uiOptions,
       uiParams,
     });
+  }
+
+  async doCompletion(
+    denops: Denops,
+    context: Context,
+    cbContext: CallbackContext,
+    options: DdcOptions,
+  ) {
+    const [completePos, items] = await this.gatherResults(
+      denops,
+      context,
+      cbContext.createOnCallback(),
+      options,
+    );
+
+    this.prevInput = context.input;
+
+    const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
+    if (context.changedTick !== await changedTick) {
+      // Input is changed.  Skip invalid completion.
+      return;
+    }
+
+    await (async function write(ddc: Ddc) {
+      await batch(denops, async (denops: Denops) => {
+        await vars.g.set(denops, "ddc#_changedtick", context.changedTick);
+        await vars.g.set(denops, "ddc#_complete_pos", completePos);
+        await vars.g.set(denops, "ddc#_items", items);
+        await vars.g.set(denops, "ddc#_sources", options.sources);
+      });
+
+      if (items.length === 0) {
+        await ddc.hide(denops, context, options);
+      } else {
+        await ddc.show(denops, context, options, completePos, items);
+      }
+    })(this);
   }
 
   async show(
