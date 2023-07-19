@@ -76,7 +76,7 @@ export class Ddc {
           helper.define(
             event as autocmd.AutocmdEvent,
             "*",
-            `call ddc#_on_event("${event}")`,
+            `call ddc#on_event("${event}")`,
           );
           this.events.push(event);
         }

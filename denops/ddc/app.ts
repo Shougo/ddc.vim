@@ -371,7 +371,7 @@ export function main(denops: Denops) {
     await vars.g.set(denops, "ddc#_items", []);
     await vars.g.set(denops, "ddc#_sources", []);
 
-    await denops.call("ddc#_on_event", "Initialize");
+    await denops.call("ddc#on_event", "Initialize");
 
     ddc.registerAutocmd(denops, [
       "BufEnter",
@@ -385,7 +385,7 @@ export function main(denops: Denops) {
     await denops.cmd(
       "autocmd ddc CmdlineChanged * " +
         ": if getcmdtype() ==# '=' || getcmdtype() ==# '@'" +
-        "|   call ddc#_on_event('CmdlineChanged')" +
+        "|   call ddc#on_event('CmdlineChanged')" +
         "| endif",
     );
   });

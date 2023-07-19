@@ -311,6 +311,8 @@ ddc#enable_cmdline_completion()
 ddc#enable_terminal_completion()
 		Enable ddc.vim terminal completion feature.
 		NOTE: "pum.vim" is needed for the feature.
+		NOTE: It is experimental feature in Vim.  neovim is
+		recommended.
 
 							*ddc#hide()*
 ddc#hide([{event}])
@@ -326,6 +328,11 @@ ddc#hide([{event}])
 ddc#on_complete_done({completed_item})
 		It must be called when completion item is completed.
 		The UI calls the API.
+
+							*ddc#on_event()*
+ddc#on_event({event})
+		Call ddc "onEvent" callback manually.
+		Please see |ddc-events|.
 
 							*ddc#register()*
 ddc#register({type}, {path})
@@ -519,12 +526,18 @@ Below events are only supported.
 "Manual": Called when |ddc#map#manual_complete()|.
 "Update": Called when |ddc#update_items()|.
 
+Default |:autocmd| events:
+
 |TextChangedI|, |TextChangedP|,
 |InsertEnter|, |InsertLeave|,
+|CmdlineEnter|, |CmdlineLeave|,
 |BufEnter|, |BufLeave|,
 |FileType|,
+|CompleteDone|,
 |CmdlineChanged| (|ddc#enable_cmdline_completion()|),
 |TextChangedT| (|ddc#enable_terminal_completion()|),
+
+NOTE: You can call events manually by |ddc#on_event()|.
 
 
 ==============================================================================
@@ -1445,6 +1458,11 @@ A: Please add "TextChangedT" to |ddc-option-autoCompleteEvents|.
 And you need to use "ddc-ui-pum".
 
 https://github.com/Shougo/ddc-ui-pum
+
+NOTE: Use "deol.nvim" and "ddc-source-zsh" is recommend.
+https://github.com/Shougo/deol.nvim
+https://github.com/Shougo/ddc-source-zsh
+
 >
 	call ddc#custom#patch_global('autoCompleteEvents', [
 	      \ 'InsertEnter', 'TextChangedI', 'TextChangedP',
@@ -1463,6 +1481,8 @@ https://github.com/Shougo/ddc-ui-pum
 	\     },
 	\   },
 	\ })
+	" Should set g:deol#prompt_pattern.
+	let g:deol#prompt_pattern = has('win32') ? '\f\+>' : '\w*% \?'
 <
 
 ==============================================================================

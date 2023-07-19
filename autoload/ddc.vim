@@ -38,10 +38,10 @@ function ddc#enable_cmdline_completion() abort
   augroup ddc-cmdline
     autocmd!
     autocmd CmdlineLeave <buffer> call ddc#hide('CmdlineLeave')
-    autocmd CmdlineEnter <buffer> call ddc#_on_event('CmdlineEnter')
+    autocmd CmdlineEnter <buffer> call ddc#on_event('CmdlineEnter')
     autocmd CmdlineChanged <buffer>
           \ : if getcmdtype() !=# '=' && getcmdtype() !=# '@'
-          \ |   call ddc#_on_event('CmdlineChanged')
+          \ |   call ddc#on_event('CmdlineChanged')
           \ | endif
     autocmd ModeChanged c:n call s:disable_cmdline_completion()
   augroup END
@@ -65,7 +65,7 @@ function ddc#enable_terminal_completion() abort
 
   augroup ddc-terminal
     autocmd!
-    autocmd TextChangedT * call ddc#_on_event('TextChangedT')
+    autocmd TextChangedT * call ddc#on_event('TextChangedT')
   augroup END
 endfunction
 
@@ -90,6 +90,15 @@ endfunction
 
 function ddc#update_items(name, items) abort
   call ddc#_notify('updateItems', [a:name, a:items])
+endfunction
+
+function ddc#on_event(event) abort
+  " NOTE: If denops isn't running, stop
+  if !ddc#_denops_running()
+    return
+  endif
+
+  call ddc#_notify('onEvent', [a:event])
 endfunction
 
 function ddc#hide(event = "Manual") abort
@@ -135,15 +144,6 @@ function ddc#_denops_running() abort
   return 'g:loaded_denops'->exists()
         \ && denops#server#status() ==# 'running'
         \ && denops#plugin#is_loaded('ddc')
-endfunction
-
-function ddc#_on_event(event) abort
-  " NOTE: If denops isn't running, stop
-  if !ddc#_denops_running()
-    return
-  endif
-
-  call ddc#_notify('onEvent', [a:event])
 endfunction
 
 function ddc#_notify(method, args) abort
