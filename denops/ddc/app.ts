@@ -343,7 +343,6 @@ export function main(denops: Denops) {
     const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
     if (context.changedTick !== await changedTick) {
       // Input is changed.  Skip invalid completion.
-      await cancelCompletion(denops, context, options);
       return;
     }
 
