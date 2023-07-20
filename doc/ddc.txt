@@ -125,8 +125,8 @@ cmdlineSources
 
 		NOTE: If you set it, |input()| auto completion is enabled.
 
-		NOTE: "pum.vim" is needed for the feature.
-		https://github.com/Shougo/pum.vim
+		NOTE: "ddc-ui-pum" is required for the feature.
+		https://github.com/Shougo/ddc-ui-pum
 
 		Default: []
 >
@@ -305,12 +305,14 @@ ddc#enable_cmdline_completion()
 		NOTE: The command line completion is disabled after command
 		line leave.
 		NOTE: It must be called before command line mode.
-		NOTE: "pum.vim" is needed for the feature.
+		NOTE: "ddc-ui-pum" is required for the feature.
+		https://github.com/Shougo/ddc-ui-pum
 
 					*ddc#enable_terminal_completion()*
 ddc#enable_terminal_completion()
 		Enable ddc.vim terminal completion feature.
-		NOTE: "pum.vim" is needed for the feature.
+		NOTE: "ddc-ui-pum" is required for the feature.
+		https://github.com/Shougo/ddc-ui-pum
 		NOTE: It is experimental feature in Vim.  neovim is
 		recommended.
 
@@ -938,12 +940,36 @@ columns			(dictionary)			(Optional)
 		It adds additional information.
 		The key is column name.
 		The value is column value.
-		NOTE: It is only supported in "pum.vim".
+		NOTE: It is only supported in "ddc-ui-pum".
 
 						*ddc-item-attribute-dup*
 dup			(boolean)			(Optional)
 		If true, the item will be displayed in the popup menu when an
 		item with the same word is already present.
+
+					*ddc-item-attribute-highlights*
+highlights		(object[])			(Optional)
+
+		The list of highlight.
+		NOTE: It is only supported in "ddc-ui-pum".
+
+		name			(string)
+		The highlight name.
+		NOTE: Each highlight must be different name.
+
+		type			(string)
+		The highlight column.
+		It must be "abbr" or "kind" or "menu".
+
+		hl_group		(string)
+		|:highlight| group.  Please see |highlight-groups|.
+
+		col			(number)
+		The highlight start column.
+		NOTE: 1 origin.
+
+		width			(number)
+		The highlight end width.
 
 						*ddc-item-attribute-info*
 info			(string)			(Optional)
