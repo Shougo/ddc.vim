@@ -3,7 +3,7 @@
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
-CONTENTS						*ddc-contents*
+CONTENTS                                                        *ddc-contents*
 
 Introduction		|ddc-introduction|
 Install			|ddc-install|
@@ -35,7 +35,7 @@ Compatibility		|ddc-compatibility|
 
 
 ==============================================================================
-INTRODUCTION						*ddc-introduction*
+INTRODUCTION                                                *ddc-introduction*
 
 *ddc* is the abbreviation of "dark deno-powered completion".  It provides an
 asynchronous keyword completion system in the current buffer.
@@ -45,7 +45,7 @@ It does not work with zero configuration.  You can use other plugins.
 
 
 ==============================================================================
-INSTALL							*ddc-install*
+INSTALL                                                          *ddc-install*
 
 NOTE: Ddc.vim requires Neovim (0.8.0+) or Vim 9.0.1276+ (latest is
 recommended).
@@ -62,10 +62,10 @@ https://github.com/topics/ddc-vim.
 
 
 ==============================================================================
-INTERFACE						*ddc-interface*
+INTERFACE                                                      *ddc-interface*
 
 ------------------------------------------------------------------------------
-OPTIONS							*ddc-options*
+OPTIONS                                                          *ddc-options*
 
 Options can be toggled through the use of |ddc#custom#patch_global()|.
 
@@ -89,13 +89,13 @@ For example:
 
 The set of available options follows.
 
-					*ddc-option-autoCompleteDelay*
+                                                *ddc-option-autoCompleteDelay*
 autoCompleteDelay
 		Delay the completion after input in milliseconds.
 
 		Default: 0
 
-					*ddc-option-autoCompleteEvents*
+                                               *ddc-option-autoCompleteEvents*
 autoCompleteEvents
 		The auto completion fired events.  It must be list of
 		|autocmd-events| string.
@@ -105,7 +105,7 @@ autoCompleteEvents
 			"InsertEnter", "TextChangedI", "TextChangedP",
 		]
 
-				*ddc-option-backspaceCompletion*
+                                              *ddc-option-backspaceCompletion*
 backspaceCompletion
 		If it is enabled, ddc.vim will complete even when backspace is
 		typed.
@@ -114,7 +114,7 @@ backspaceCompletion
 
 		Default: v:false
 
-						*ddc-option-cmdlineSources*
+                                                   *ddc-option-cmdlineSources*
 cmdlineSources
 		It is a list of elements like |ddc-option-sources| or the
 		dictionary.
@@ -141,7 +141,7 @@ cmdlineSources
 		    \ '=': ['input'],
 		    \ })
 <
-						*ddc-option-filterOptions*
+                                                    *ddc-option-filterOptions*
 filterOptions
 		It is a dictionary that maps filter names to its options.
 		See also |ddc-filter-options|.
@@ -153,7 +153,7 @@ filterOptions
 		    \   matcher_head: {},
 		    \ })
 <
-						*ddc-option-filterParams*
+                                                     *ddc-option-filterParams*
 filterParams
 		It is a dictionary that maps filter names to its parameters.
 
@@ -164,12 +164,12 @@ filterParams
 		    \   matcher_head: {},
 		    \ })
 <
-					*ddc-option-keywordPattern*
+                                                   *ddc-option-keywordPattern*
 keywordPattern
 		NOTE: The option is deprecated.
 		Please use |ddc-source-option-keywordPattern| instead.
 
-						*ddc-option-postFilters*
+                                                      *ddc-option-postFilters*
 postFilters
 		It is a list of elements like |ddc-source-option-matchers|.
 		It is called after the items are filtered.
@@ -178,7 +178,7 @@ postFilters
 
 		Default: []
 
-							*ddc-option-sources*
+                                                          *ddc-option-sources*
 sources
 		It is a list of elements which are formatted as:
 >
@@ -197,7 +197,7 @@ sources
 		" e.g.
 		call ddc#custom#patch_global('sources', ['around'])
 <
-						*ddc-option-sourceOptions*
+                                                    *ddc-option-sourceOptions*
 sourceOptions
 		It is a dictionary that maps source names to its options.  The
 		options with the name "_" is used as the options for all
@@ -212,7 +212,7 @@ sourceOptions
 		    \   around: #{ mark: 'A' },
 		    \ })
 <
-						*ddc-option-sourceParams*
+                                                     *ddc-option-sourceParams*
 sourceParams
 		It is a dictionary that maps source names to its parameters.
 		See also |ddc-source-params|.
@@ -224,21 +224,21 @@ sourceParams
 		    \   around: #{ max: 8 },
 		    \ })
 <
-				*ddc-option-specialBufferCompletion*
+                                          *ddc-option-specialBufferCompletion*
 specialBufferCompletion
 		If it is false and 'buftype' is not "", ddc auto completion is
 		disabled automatically.
 
 		Default: v:false
 
-						*ddc-option-ui*
+                                                               *ddc-option-ui*
 ui
 		Specify UI name.
 		NOTE: You must set the option in the first.
 
 		Default: ""
 
-						*ddc-option-uiOptions*
+                                                        *ddc-option-uiOptions*
 uiOptions
 		It is a dictionary that maps UI names to its options.  The
 		options with the name "_" is used as the options for all
@@ -247,7 +247,7 @@ uiOptions
 
 		Default: {}
 
-						*ddc-option-uiParams*
+                                                         *ddc-option-uiParams*
 uiParams
 		It is a dictionary that maps UI names to its parameters.
 		See also |ddc-ui-params|.
@@ -255,9 +255,9 @@ uiParams
 		Default: {}
 
 ------------------------------------------------------------------------------
-FUNCTIONS						*ddc-functions*
+FUNCTIONS                                                      *ddc-functions*
 
-							*ddc#callback()*
+                                                              *ddc#callback()*
 ddc#callback({id} [, {payload}])
 		This is only for ddc plugin developers. It calls back to
 		sources and filters that registered with this id.
@@ -272,14 +272,14 @@ ddc#callback({id} [, {payload}])
 		{payload}: Arbitrary object passed as resolved. The default
 		  value is |v:null|.
 
-							*ddc#disable()*
+                                                               *ddc#disable()*
 ddc#disable()
 		Disable ddc.vim all features permanently.
 		It should be used when ddc.vim is broken.
 		It should not be used for temporary plugin disable.
 		NOTE: It changes the global state.
 
-							*ddc#enable()*
+                                                                *ddc#enable()*
 ddc#enable([{opts}])
 		Enable ddc.vim features and you can use it.
 
@@ -295,7 +295,7 @@ ddc#enable([{opts}])
 
 		NOTE: It changes the global state.
 
-					*ddc#enable_cmdline_completion()*
+                                             *ddc#enable_cmdline_completion()*
 ddc#enable_cmdline_completion()
 		Enable ddc.vim command line completion feature for next
 		command line session.
@@ -308,7 +308,7 @@ ddc#enable_cmdline_completion()
 		NOTE: "ddc-ui-pum" is required for the feature.
 		https://github.com/Shougo/ddc-ui-pum
 
-					*ddc#enable_terminal_completion()*
+                                            *ddc#enable_terminal_completion()*
 ddc#enable_terminal_completion()
 		Enable ddc.vim terminal completion feature.
 		NOTE: "ddc-ui-pum" is required for the feature.
@@ -316,7 +316,7 @@ ddc#enable_terminal_completion()
 		NOTE: It is experimental feature in Vim.  neovim is
 		recommended.
 
-							*ddc#hide()*
+                                                                  *ddc#hide()*
 ddc#hide([{event}])
 		Hide current completion UI.
 		{event} is completion event.
@@ -326,33 +326,33 @@ ddc#hide([{event}])
 >
 		inoremap <C-e>   <Cmd>call ddc#hide()<CR>
 <
-						*ddc#on_complete_done()*
+                                                      *ddc#on_complete_done()*
 ddc#on_complete_done({completed_item})
 		It must be called when completion item is completed.
 		The UI calls the API.
 
-							*ddc#on_event()*
+                                                              *ddc#on_event()*
 ddc#on_event({event})
 		Call ddc "onEvent" callback manually.
 		Please see |ddc-events|.
 
-							*ddc#register()*
+                                                              *ddc#register()*
 ddc#register({type}, {path})
 		Register ddc extension.
 		{type} is "ui" or "source" or "filter".
 		{path} is ddc extension path.
 		NOTE: {path} must be full path.
 
-							*ddc#syntax#get()*
+                                                            *ddc#syntax#get()*
 ddc#syntax#get()
 		Get current syntax groups.
 		NOTE: "nvim-treesitter" is used if it is installed.
 
-							*ddc#syntax#in()*
+                                                             *ddc#syntax#in()*
 ddc#syntax#in({checks})
 		Check {checks} syntax groups in cursor.
 
-							*ddc#update_items()*
+                                                          *ddc#update_items()*
 ddc#update_items({name}, {items})
 		Change source {name}'s items to {items} and refresh current
 		completion.
@@ -361,13 +361,13 @@ ddc#update_items({name}, {items})
 
 		NOTE: It does not work for volatile source.
 
-							*ddc#visible()*
+                                                               *ddc#visible()*
 ddc#visible()
 		Return |v:true| when current completion UI is visible.
 
 CUSTOM FUNCTIONS					*ddc-custom-functions*
 
-							*ddc#custom#alias()*
+                                                          *ddc#custom#alias()*
 ddc#custom#alias({type}, {alias-name}, {base-name})
 		Define {alias-name} alias based on {base-name}.
 		{type} must be "source" or "filter".
@@ -385,70 +385,70 @@ ddc#custom#alias({type}, {alias-name}, {base-name})
 		      \   foo: #{ mark: 'foo' },
 		      \ })
 <
-						*ddc#custom#get_buffer()*
+                                                     *ddc#custom#get_buffer()*
 ddc#custom#get_buffer()
 		Get current buffer specific options.
 
-						*ddc#custom#get_current()*
+                                                    *ddc#custom#get_current()*
 ddc#custom#get_current()
 		Get current options.
 
-						*ddc#custom#get_filetype()*
+                                                   *ddc#custom#get_filetype()*
 ddc#custom#get_filetype()
 		Get filetype specific options.
 
-						*ddc#custom#get_context()*
+                                                    *ddc#custom#get_context()*
 ddc#custom#get_context()
 		Get context specific options.
 
-						*ddc#custom#get_global()*
+                                                     *ddc#custom#get_global()*
 ddc#custom#get_global()
 		Get global options.
 
-						*ddc#custom#load_config()*
+                                                    *ddc#custom#load_config()*
 ddc#custom#load_config({path})
 		Load TypeScript configuration from {path} file.
 		NOTE: {path} must be full path.
 		NOTE: The loading is asynchronous.
 
-						*ddc#custom#patch_buffer()*
+                                                   *ddc#custom#patch_buffer()*
 ddc#custom#patch_buffer({option-name}, {value})
 ddc#custom#patch_buffer({dict})
 		Set local options on current buffer.  The arguments are the
 		same as for |ddc#custom#patch_global()|.
 
-						*ddc#custom#patch_filetype()*
+                                                 *ddc#custom#patch_filetype()*
 ddc#custom#patch_filetype({filetype}, {option-name}, {value})
 ddc#custom#patch_filetype({filetype}, {dict})
 		Set options used for filetypes. {filetype} accepts a string or
 		a list of strings. Options are {dict} or {'{option-name}':
 		{value}}.
 
-						*ddc#custom#patch_global()*
+                                                   *ddc#custom#patch_global()*
 ddc#custom#patch_global({option-name}, {value})
 ddc#custom#patch_global({dict})
 		Set {option-name} option to {value}.
 		If {dict} is available, the key is {option-name} and the value
 		is {value}. See |ddc-options| for available {option-name}.
 
-						*ddc#custom#set_buffer()*
+                                                     *ddc#custom#set_buffer()*
 ddc#custom#set_buffer({dict})
 		Overwrites all local options on current buffer.
 		The {dict} is the same as for |ddc#custom#set_global()|.
 
-						*ddc#custom#set_filetype()*
+                                                   *ddc#custom#set_filetype()*
 ddc#custom#set_filetype({filetype}, {dict})
 		Overwrites all options used for filetypes. {filetype} accepts
 		a string or a list of strings.
 		The {dict} is the same as for |ddc#custom#set_global()|.
 
-						*ddc#custom#set_global()*
+                                                     *ddc#custom#set_global()*
 ddc#custom#set_global({dict})
 		Overwrites all global options.
 		The key is {option-name} and the value is {value} in {dict}.
 		See |ddc-options| for available {option-name}.
 
-					*ddc#custom#set_context_buffer()*
+                                             *ddc#custom#set_context_buffer()*
 ddc#custom#set_context_buffer({func})
 		Overwrites buffer specific options used for context.
 		{func} is function.  {func} returns overwrites options
@@ -456,7 +456,7 @@ ddc#custom#set_context_buffer({func})
 		NOTE: {func} is evaluated after user input and it affects
 		completion performance.
 
-					*ddc#custom#set_context_filetype()*
+                                           *ddc#custom#set_context_filetype()*
 ddc#custom#set_context_filetype({filetype}, {func})
 		Overwrites filetype specific options used for context.
 		{filetype} accepts a string or a list of strings.
@@ -474,7 +474,7 @@ ddc#custom#set_context_filetype({filetype}, {func})
 		    \   'sources': ['nextword', 'around'],
 		    \ } : {} })
 <
-					*ddc#custom#set_context_global()*
+                                             *ddc#custom#set_context_global()*
 ddc#custom#set_context_global({func})
 		Overwrites global options used for context.
 		{func} is function.  {func} returns overwrites options
@@ -485,34 +485,34 @@ ddc#custom#set_context_global({func})
 ------------------------------------------------------------------------------
 KEY MAPPINGS						*ddc-key-mappings*
 
-						*ddc#map#can_complete()*
+                                                      *ddc#map#can_complete()*
 ddc#map#can_complete()
 		Return |v:true| if current word completion is available.
 
-							*ddc#map#complete()*
+                                                          *ddc#map#complete()*
 ddc#map#complete({ui-name})
 		Open current completion popup menu by {ui-name}.
 		NOTE: It must be in |:map-<expr>|.
 
-					*ddc#map#complete_common_string()*
+                                            *ddc#map#complete_common_string()*
 ddc#map#complete_common_string()
 		Complete common string in items.
 		This can be useful when items have a long common prefix.
 		NOTE: It must be in |:map-<expr>|.
 
-							*ddc#map#extend()*
+                                                            *ddc#map#extend()*
 ddc#map#extend({confirm-key})
 		Confirm the items and extend current completion.
 		{confirm-key} is popup confirm key.
 		NOTE: It must be in |:map-<expr>|.
 
-						*ddc#map#insert_item()*
+                                                       *ddc#map#insert_item()*
 ddc#map#insert_item({index})
 		Insert the item at index {index}. Indices start at 0.
 		NOTE: It must be in |:map-<expr>|.
 		NOTE: |v:completed_item| must be writable.
 
-						*ddc#map#manual_complete()*
+                                                   *ddc#map#manual_complete()*
 ddc#map#manual_complete([{options}])
 		Manual trigger ddc completion.
 		{options} is |ddc-options|.
@@ -520,7 +520,7 @@ ddc#map#manual_complete([{options}])
 		|ddc-source-option-minAutoCompleteLength|.
 
 ------------------------------------------------------------------------------
-EVENTS							*ddc-events*
+EVENTS                                                            *ddc-events*
 
 Below events are only supported.
 
@@ -543,7 +543,7 @@ NOTE: You can call events manually by |ddc#on_event()|.
 
 
 ==============================================================================
-EXAMPLES						*ddc-examples*
+EXAMPLES                                                        *ddc-examples*
 >
 	" Customize global settings
 
@@ -603,7 +603,7 @@ EXAMPLES						*ddc-examples*
 <
 
 ==============================================================================
-UIS							*ddc-uis*
+UIS                                                                  *ddc-uis*
 
 NOTE: The UIs are not bundled in ddc.vim.  You need to install them
 to use ddc.vim.  Please search them by https://github.com/topics/ddc-ui
@@ -629,7 +629,7 @@ Please read the UI documentation.
 
 
 ==============================================================================
-SOURCES							*ddc-sources*
+SOURCES                                                          *ddc-sources*
 
 NOTE: The sources are not bundled in ddc.vim.  You need to install them
 to use ddc.vim.  Please search them by https://github.com/topics/ddc-source
@@ -648,7 +648,7 @@ NOTE: The sources cannot set default options for source.  If the source need
 to specify the recommended configuration, you should write it in the
 documentation instead.
 
-						*ddc-source-option-converters*
+                                                *ddc-source-option-converters*
 converters		(string[])
 		It is a list of elements like |ddc-source-option-matchers|.
 		They change items attributes.
@@ -656,7 +656,7 @@ converters		(string[])
 
 		Default: []
 
-						*ddc-source-option-dup*
+                                                       *ddc-source-option-dup*
 dup			(string)		(Optional)
 		It changes duplicated words behavior.
 
@@ -666,7 +666,7 @@ dup			(string)		(Optional)
 
 		Default: "ignore"
 
-						*ddc-source-option-enabledIf*
+                                                 *ddc-source-option-enabledIf*
 enabledIf		(string)
 		The text is evaluated to enable the source.
 		If the result is |v:true| or the text is empty string, the
@@ -674,7 +674,7 @@ enabledIf		(string)
 
 		Default: ''
 
-				*ddc-source-option-forceCompletionPattern*
+                                    *ddc-source-option-forceCompletionPattern*
 forceCompletionPattern	(string)
 		If it matches the input, ddc ignores
 		|ddc-source-option-minAutoCompleteLength|.
@@ -682,7 +682,7 @@ forceCompletionPattern	(string)
 
 		Default: ''
 
-					*ddc-source-option-keywordPattern*
+                                            *ddc-source-option-keywordPattern*
 keywordPattern
 		It defines the keyword pattern for completion.
 		NOTE: It is JavaScript regexp.
@@ -691,19 +691,19 @@ keywordPattern
 
 		Default: '\k*'
 
-					*ddc-source-option-ignoreCase*
+                                                *ddc-source-option-ignoreCase*
 ignoreCase		(boolean)
 		If it is True, ddc ignores case.
 
 		Default: v:false
 
-					*ddc-source-option-isVolatile*
+                                                *ddc-source-option-isVolatile*
 isVolatile		(boolean)
 		If it is True, ddc refresh items always.
 
 		Default: v:false
 
-						*ddc-source-option-mark*
+                                                      *ddc-source-option-mark*
 mark			(string)
 		A text icon indicating the source displayed with the item.
 		NOTE: If the source set item menu, the source must set it.  If
@@ -711,28 +711,28 @@ mark			(string)
 
 		Default: ""
 
-				    *ddc-source-option-maxAutoCompleteLength*
+                                     *ddc-source-option-maxAutoCompleteLength*
 maxAutoCompleteLength	(number)
 		Ignored length of keyword for auto completion.
 		It is useful to edit BASE64 files.
 
 		Default: 80
 
-					*ddc-source-option-maxItems*
+                                                  *ddc-source-option-maxItems*
 maxItems		(number)
 		If there are more items than this value, ddc will ignore the
 		filtering.
 
 		Default: 500
 
-						*ddc-source-option-matcherKey*
+                                                *ddc-source-option-matcherKey*
 matcherKey		(string)
 		Matcher compare key instead of "word".
 		If it is empty string, the feature is disabled.
 
 		Default: ""
 
-						*ddc-source-option-matchers*
+                                                  *ddc-source-option-matchers*
 matchers		(string[])
 		It is a list of elements which are formatted as:
 >
@@ -747,27 +747,27 @@ matchers		(string[])
 
 		Default: []
 
-				*ddc-source-option-maxKeywordLength*
+                                          *ddc-source-option-maxKeywordLength*
 maxKeywordLength	(number)
 		The maximum word of length for items.
 		If it is 0, the feature is disabled.
 
 		Default: 0
 
-				*ddc-source-option-minAutoCompleteLength*
+                                     *ddc-source-option-minAutoCompleteLength*
 minAutoCompleteLength	(number)
 		Length of keyword required for auto completion.
 
 		Default: 2
 
-					*ddc-source-option-minKeywordLength*
+                                          *ddc-source-option-minKeywordLength*
 minKeywordLength	(number)
 		The minimum word of length for items.
 		If it is 0, the feature is disabled.
 
 		Default: 0
 
-						*ddc-source-option-sorters*
+                                                   *ddc-source-option-sorters*
 sorters			(string[])
 		It is a list of elements like |ddc-source-option-matchers|.
 		They sort items.
@@ -775,7 +775,7 @@ sorters			(string[])
 
 		Default: []
 
-					    *ddc-source-option-timeout*
+                                                   *ddc-source-option-timeout*
 timeout			(number)
 		The |ddc-source-attribute-gather| timeout for completion.
 
@@ -791,7 +791,7 @@ Please read the source documentation.
 
 
 ==============================================================================
-FILTERS							*ddc-filters*
+FILTERS                                                          *ddc-filters*
 
 Once items have been supplied by one or more sources, they are passed through
 the filters, which are matchers, converters or sorters. Sources can have
@@ -841,28 +841,28 @@ NOTE: If you call Vim functions, it is not asynchronous.
 ------------------------------------------------------------------------------
 UI ATTRIBUTES				*ddc-ui-attributes*
 
-						*ddc-ui-attribute-hide*
+                                                       *ddc-ui-attribute-hide*
 hide			(function)			(Required)
 		Called to hide UI.
 
-						*ddc-ui-attribute-show*
+                                                       *ddc-ui-attribute-show*
 show			(function)			(Required)
 		Called to show UI.
 
-					*ddc-source-ui-skipCompletion*
+                                                *ddc-source-ui-skipCompletion*
 skipCompletion		(function)			(Optional)
 		Called to skip current completion.
 		It returns True, to skip completion.
 
-						*ddc-ui-attribute-onInit*
+                                                     *ddc-ui-attribute-onInit*
 onInit			(function)			(Optional)
 		Called before call UI functions.
 
-						*ddc-ui-attribute-params*
+                                                     *ddc-ui-attribute-params*
 params			(function)			(Required)
 		Called to get UI params.
 
-						*ddc-ui-attribute-visible*
+                                                    *ddc-ui-attribute-visible*
 visible			(function)			(Optional)
 		Called to check current UI is visible.
 
@@ -881,7 +881,7 @@ NOTE: If you call Vim functions, it is not asynchronous.
 ------------------------------------------------------------------------------
 SOURCE ATTRIBUTES				*ddc-source-attributes*
 
-						*ddc-source-attribute-events*
+                                                 *ddc-source-attribute-events*
 events			(string[])			(Optional)
 		List of events for which |ddc-source-attribute-onEvent|
 		should get called.
@@ -889,7 +889,7 @@ events			(string[])			(Optional)
 
 		Default: []
 
-					*ddc-source-attribute-isBytePos*
+                                              *ddc-source-attribute-isBytePos*
 isBytePos		(boolean)			(Optional)
 		If |ddc-source-attribute-getCompletePosition| returns byte
 		position, it must be true.
@@ -897,57 +897,57 @@ isBytePos		(boolean)			(Optional)
 
 		Default: false
 
-						*ddc-source-attribute-gather*
+                                                 *ddc-source-attribute-gather*
 gather			(function)			(Required)
 		Called to gather items.
 
-				*ddc-source-attribute-getCompletePosition*
+                                    *ddc-source-attribute-getCompletePosition*
 getCompletePosition	(function)			(Optional)
 		Called to get the position of the current completion.
 
 		Default : |ddc-source-option-keywordPattern| is used.
 
-					*ddc-source-attribute-onCompleteDone*
+                                         *ddc-source-attribute-onCompleteDone*
 onCompleteDone		(function)			(Optional)
 		Called after the completion.
 		It is useful to substitute text after completion.
 		NOTE: |ddc-item-attribute-user_data| must be "UserData" to use
 		the feature.
 
-						*ddc-source-attribute-onEvent*
+                                                *ddc-source-attribute-onEvent*
 onEvent			(function)			(Optional)
 		Called for the autocommands.
 		It is useful to make cache.
 
-						*ddc-source-attribute-onInit*
+                                                 *ddc-source-attribute-onInit*
 onInit			(function)			(Optional)
 		Called before call source functions.
 
-						*ddc-source-attribute-params*
+                                                 *ddc-source-attribute-params*
 params			(function)			(Required)
 		Called to get source params.
 
 ------------------------------------------------------------------------------
 ITEM ATTRIBUTES					*ddc-item-attributes*
 
-						*ddc-item-attribute-abbr*
+                                                     *ddc-item-attribute-abbr*
 abbr			(string)			(Optional)
 		The abbreviation of a item. It is displayed in popup
 		window.
 
-						*ddc-item-attribute-columns*
+                                                  *ddc-item-attribute-columns*
 columns			(dictionary)			(Optional)
 		It adds additional information.
 		The key is column name.
 		The value is column value.
 		NOTE: It is only supported in "ddc-ui-pum".
 
-						*ddc-item-attribute-dup*
+                                                      *ddc-item-attribute-dup*
 dup			(boolean)			(Optional)
 		If true, the item will be displayed in the popup menu when an
 		item with the same word is already present.
 
-					*ddc-item-attribute-highlights*
+                                               *ddc-item-attribute-highlights*
 highlights		(object[])			(Optional)
 
 		The list of highlight.
@@ -971,25 +971,25 @@ highlights		(object[])			(Optional)
 		width			(number)
 		The highlight end width.
 
-						*ddc-item-attribute-info*
+                                                     *ddc-item-attribute-info*
 info			(string)			(Optional)
 		The preview information of a item. If 'completeopt'
 		contains "preview", it will be displayed in |preview-window|.
 
-						*ddc-item-attribute-kind*
+                                                     *ddc-item-attribute-kind*
 kind			(string)			(Optional)
 		The kind of a item. It is displayed in popup window.
 
-						*ddc-item-attribute-menu*
+                                                     *ddc-item-attribute-menu*
 menu			(string)			(Optional)
 		The menu information of a item. It is displayed in popup
 		window.
 
-						*ddc-item-attribute-user_data*
+                                                *ddc-item-attribute-user_data*
 user_data		(UserData | string)	(Optional)
 		The source specific data.
 
-						*ddc-item-attribute-word*
+                                                     *ddc-item-attribute-word*
 word			(string)			(Required)
 		The completion word of a item. It is used for matching
 		inputs.
@@ -1009,7 +1009,7 @@ NOTE: If you call Vim functions, it is not asynchronous.
 ------------------------------------------------------------------------------
 FILTER ATTRIBUTES				*ddc-filter-attributes*
 
-						*ddc-filter-attribute-events*
+                                                 *ddc-filter-attribute-events*
 events			(string[])			(Optional)
 		List of events for which |ddc-filter-attribute-onEvent|
 		should get called.
@@ -1017,20 +1017,20 @@ events			(string[])			(Optional)
 
 		Default: []
 
-						*ddc-filter-attribute-filter*
+                                                 *ddc-filter-attribute-filter*
 filter			(function)			(Required)
 		Called to filter items.
 
-						*ddc-filter-attribute-onEvent*
+                                                *ddc-filter-attribute-onEvent*
 onEvent			(function)			(Optional)
 		Called for the autocommands.
 		It is useful to make cache.
 
-						*ddc-filter-attribute-onInit*
+                                                 *ddc-filter-attribute-onInit*
 onInit			(function)			(Optional)
 		Called before call filter functions.
 
-						*ddc-filter-attribute-params*
+                                                 *ddc-filter-attribute-params*
 params			(function)			(Required)
 		Called to get filter params.
 
@@ -1123,7 +1123,7 @@ FAQ 26:							|ddc-faq-26|
 
 
 ------------------------------------------------------------------------------
-							*ddc-faq-1*
+                                                                   *ddc-faq-1*
 Q: How to donate money to you?
 
 A: I have started github sponsorship to spend more time for Vim/neovim
@@ -1131,7 +1131,7 @@ plugins.  You can donate money to help me!
 
    https://github.com/sponsors/Shougo
 
-							*ddc-faq-2*
+                                                                   *ddc-faq-2*
 Q: Why does ddc.vim not include any UIs/sources/matchers/sorters/converters?
 
 A: Because I cannot determine the best default
@@ -1141,14 +1141,14 @@ So ddc.vim should not define the defaults.
 You must define your defaults by configuration.
 ddc.vim does not conflict with your defaults.
 
-							*ddc-faq-3*
+                                                                   *ddc-faq-3*
 Q: Why do sources have no default options?
 
 A: Because users can customize sources perfectly.  If a source has the
 default, users have to check them.  It increases configuration cost.
 The config should work as users config.
 
-							*ddc-faq-4*
+                                                                   *ddc-faq-4*
 Q: I want to use inline suggestion like fish shell.
 
 A: NOTE: "ddc-ui-inline" is required.
@@ -1158,7 +1158,7 @@ https://github.com/Shougo/ddc-ui-inline
 	inoremap <expr> <C-t>       ddc#map#insert_item(0)
 	call ddc#custom#patch_global('ui', 'inline')
 <
-							*ddc-faq-5*
+                                                                   *ddc-faq-5*
 Q: The Linked/chained completion exists like vim-mucomplete?
 
 A: It is not implemented, but you can emulate the behavior by
@@ -1172,7 +1172,7 @@ A: It is not implemented, but you can emulate the behavior by
 	endfunction
 	inoremap <expr> <C-t>  MyChainCompletion()
 <
-							*ddc-faq-6*
+                                                                   *ddc-faq-6*
 Q: I want to silence the |ins-completion-menu| messages in the command line
 such as "-- XXX completion (YYY)", "match 1 of 2", "The only match", "Pattern
 not found", "Back at original", etc.
@@ -1181,19 +1181,19 @@ A: You can disable the messages through the 'shortmess' option. >
 
 	set shortmess+=c
 <
-							*ddc-faq-7*
+                                                                   *ddc-faq-7*
 Q: I want to use the auto select feature.
 
 A: You can use it by the 'completeopt' option. >
 
 	set completeopt+=noinsert
 <
-							*ddc-faq-8*
+                                                                   *ddc-faq-8*
 Q: How do I select one of the responses from the pop up?
 
 A: Please press <C-y> on the item.
 
-							*ddc-faq-9*
+                                                                   *ddc-faq-9*
 Q: I want to close the preview window after completion is done.
 
 A: >
@@ -1206,13 +1206,13 @@ Or
    NOTE: It conflicts with delimitMate.
    https://github.com/Shougo/deoplete.nvim/issues/234
 
-							*ddc-faq-10*
+                                                                  *ddc-faq-10*
 Q: I want to disable the preview window feature.
 
 A: >
 	set completeopt-=preview
 <
-							*ddc-faq-11*
+                                                                  *ddc-faq-11*
 Q: I want to look selected function's arguments. But I don't like preview
 window feature.
 
@@ -1226,7 +1226,7 @@ A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
    https://github.com/ray-x/lsp_signature.nvim
    https://github.com/matsui54/denops-signature_help
 
-							*ddc-faq-12*
+                                                                  *ddc-faq-12*
 Q: I want to use floating preview window feature.
 
 A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
@@ -1241,7 +1241,7 @@ A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
    NOTE: float-preview.nvim does not support "completionItem/resolve"
    behavior.  So ddc-nvim-lsp-doc is better.
 
-							*ddc-faq-13*
+                                                                  *ddc-faq-13*
 Q: Why don't create file/path source is for ddc.vim?
 
 A: I know it is the important source.  But it is not easy to implement.
@@ -1266,7 +1266,7 @@ But other people has implemented it instead.
 
 https://github.com/LumaKernel/ddc-source-file
 
-							*ddc-faq-14*
+                                                                  *ddc-faq-14*
 Q: I want to enable "skkeleton" source when "skkeleton" is enabled only.
 
 A: >
@@ -1282,7 +1282,7 @@ A: >
 	  call ddc#custom#set_buffer(s:prev_buffer_config)
 	endfunction
 <
-							*ddc-faq-15*
+                                                                  *ddc-faq-15*
 Q: I want to enable command line completion.
 
 A: You need to configure like this.
@@ -1327,7 +1327,7 @@ https://github.com/Shougo/ddc-source-cmdline-history
 	  silent! cunmap <C-e>
 	endfunction
 <
-							*ddc-faq-16*
+                                                                  *ddc-faq-16*
 Q: I want to enable |i_CTRL-R_=|(the expression register) completion.
 
 A: You need to configure like this.
@@ -1348,14 +1348,14 @@ https://github.com/Shougo/ddc-source-input
 	\   },
 	\ })
 <
-							*ddc-faq-17*
+                                                                  *ddc-faq-17*
 Q: Terminal title flickers when completion menu opens in neovim.
 
 A: It is the problem of |nvim_win_set_option()|.  To avoid the problem, you
 need to use the function.
 https://github.com/hrsh7th/nvim-cmp/issues/309#issuecomment-940740456
 
-							*ddc-faq-18*
+                                                                  *ddc-faq-18*
 Q: I want to enable auto completion in fine-cmdline.nvim
 https://github.com/VonHeikemen/fine-cmdline.nvim
 
@@ -1393,14 +1393,14 @@ A: NOTE: Experimental >
 	    \   specialBufferCompletion: v:true,
 	    \ })
 <
-							*ddc-faq-19*
+                                                                  *ddc-faq-19*
 Q: The auto completion does not work if 'textwidth' is set.
 
 A: If the input text is longer than 'textwidth', the completed text
 will be the next line.  It breaks auto completion behavior.  So the auto
 completion is disabled.
 
-							*ddc-faq-20*
+                                                                  *ddc-faq-20*
 Q: I want to disable ddc auto completion.
 
 A: You need to set ui manually.
@@ -1423,7 +1423,7 @@ https://github.com/Shougo/pum.vim
 	      \   }
 	      \ })
 <
-							*ddc-faq-21*
+                                                                  *ddc-faq-21*
 Q: ddc.vim starting is slow.
 
 A: It may be slow in Windows environment.  You should use denops shared server
@@ -1431,7 +1431,7 @@ feature.
 
 https://github.com/vim-denops/denops.vim#shared-server
 
-							*ddc-faq-22*
+                                                                  *ddc-faq-22*
 Q: ddc.vim does not work in |command-line-window|.
 
 A: ddc.vim does not work in |command-line-window| with "pum.vim".
@@ -1441,20 +1441,20 @@ I don't recommend for you to use |command-line-window|.
 If you really want to need the completion, please enable
 |ddc-option-specialBufferCompletion| without "pum.vim"
 
-							*ddc-faq-23*
+                                                                  *ddc-faq-23*
 Q: "copilot.vim" does not work when ddc.vim popup is visible.
 
 A: "copilot.vim" checks |pumvisible()|.  You should disable it. >
 
 	let g:copilot_hide_during_completion = 0
 <
-							*ddc-faq-24*
+                                                                  *ddc-faq-24*
 Q: ddc.vim does not work when "dps-ghosttext.vim" is enabled.
 
 A: "dps-ghosttext.vim" creates the special buffer which 'buftype' is "nofile".
 You need to enable |ddc-option-specialBufferCompletion| for it.
 
-							*ddc-faq-25*
+                                                                  *ddc-faq-25*
 Q: I want to narrow current items without auto completion.
 
 A: You can narrow current items by "ddu.vim" like this.
@@ -1477,7 +1477,7 @@ A: You can narrow current items by "ddu.vim" like this.
 <
 NOTE: "ddu.vim" configuration is required.
 
-							*ddc-faq-26*
+                                                                  *ddc-faq-26*
 Q: I want to enable completion in |:terminal|.
 
 A: Please add "TextChangedT" to |ddc-option-autoCompleteEvents|.
@@ -1512,7 +1512,7 @@ https://github.com/Shougo/ddc-source-zsh
 <
 
 ==============================================================================
-COMPATIBILITY						*ddc-compatibility*
+COMPATIBILITY                                              *ddc-compatibility*
 
 2023.07.08
 * Vim 9.0.1276+ or neovim 0.8+ is required to support the latest MacVim.
