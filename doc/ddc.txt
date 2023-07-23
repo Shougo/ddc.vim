@@ -1121,6 +1121,9 @@ FAQ 25:							|ddc-faq-25|
 FAQ 26:							|ddc-faq-26|
 	I want to enable completion in |:terminal|.
 
+FAQ 27:							|ddc-faq-27|
+	The popup menu is flickerd when update input.
+
 
 ------------------------------------------------------------------------------
                                                                    *ddc-faq-1*
@@ -1510,6 +1513,17 @@ https://github.com/Shougo/ddc-source-zsh
 	" Should set g:deol#prompt_pattern.
 	let g:deol#prompt_pattern = has('win32') ? '\f\+>' : '\w*% \?'
 <
+
+                                                                  *ddc-faq-27*
+Q: The popup menu is flickerd when update input.
+
+A: It is Vim/neovim's native completion feature.
+The popup menu must be closed when completion is update.
+
+You can use "ddc-ui-pum" for it instead.
+
+https://github.com/Shougo/ddc-ui-pum
+
 
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
