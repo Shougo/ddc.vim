@@ -365,7 +365,7 @@ ddc#update_items({name}, {items})
 ddc#visible()
 		Return |v:true| when current completion UI is visible.
 
-CUSTOM FUNCTIONS					*ddc-custom-functions*
+CUSTOM FUNCTIONS                                        *ddc-custom-functions*
 
                                                           *ddc#custom#alias()*
 ddc#custom#alias({type}, {alias-name}, {base-name})
@@ -483,7 +483,7 @@ ddc#custom#set_context_global({func})
 		completion performance.
 
 ------------------------------------------------------------------------------
-KEY MAPPINGS						*ddc-key-mappings*
+KEY MAPPINGS                                                *ddc-key-mappings*
 
                                                       *ddc#map#can_complete()*
 ddc#map#can_complete()
@@ -615,12 +615,12 @@ The UIs must put under "denops/@ddc-uis/*.ts".
 NOTE: The name is named by file name.
 
 ------------------------------------------------------------------------------
-UI OPTIONS						*ddc-ui-options*
+UI OPTIONS                                                    *ddc-ui-options*
 
 Undefined now
 
 ------------------------------------------------------------------------------
-UI PARAMS						*ddc-ui-params*
+UI PARAMS                                                      *ddc-ui-params*
 
 These are the parameters that each UIs can have.  You can select the
 behavior and tune the performance.
@@ -642,7 +642,7 @@ The sources must put under "denops/@ddc-sources/*.ts".
 NOTE: The name is named by file name.
 
 ------------------------------------------------------------------------------
-SOURCE OPTIONS						*ddc-source-options*
+SOURCE OPTIONS                                            *ddc-source-options*
 
 NOTE: The sources cannot set default options for source.  If the source need
 to specify the recommended configuration, you should write it in the
@@ -782,7 +782,7 @@ timeout			(number)
 		Default: 2000
 
 ------------------------------------------------------------------------------
-SOURCE PARAMS					*ddc-source-params*
+SOURCE PARAMS                                              *ddc-source-params*
 
 These are the parameters that each source can have.  You can select the
 behavior and tune the performance.
@@ -814,12 +814,12 @@ The filters must put under "denops/@ddc-filters/*.ts".
 NOTE: The name is named by file name.
 
 ------------------------------------------------------------------------------
-FILTER OPTIONS						*ddc-filter-options*
+FILTER OPTIONS                                            *ddc-filter-options*
 
 Undefined now
 
 ------------------------------------------------------------------------------
-FILTER PARAMS						*ddc-filter-params*
+FILTER PARAMS                                              *ddc-filter-params*
 
 These are the parameters that each filter can have.  You can select the
 behavior and tune the performance.
@@ -828,7 +828,7 @@ Please read the filter documentation.
 
 
 ==============================================================================
-CREATE UI						*ddc-create-ui*
+CREATE UI                                                      *ddc-create-ui*
 
 To create UI, you should read other UIs implementation.
 
@@ -839,7 +839,7 @@ NOTE: The sources must be written in TypeScript language.
 NOTE: If you call Vim functions, it is not asynchronous.
 
 ------------------------------------------------------------------------------
-UI ATTRIBUTES				*ddc-ui-attributes*
+UI ATTRIBUTES                                              *ddc-ui-attributes*
 
                                                        *ddc-ui-attribute-hide*
 hide			(function)			(Required)
@@ -868,7 +868,7 @@ visible			(function)			(Optional)
 
 
 ==============================================================================
-CREATE SOURCE						*ddc-create-source*
+CREATE SOURCE                                              *ddc-create-source*
 
 To create source, you should read other sources implementation.
 
@@ -879,7 +879,7 @@ NOTE: The sources must be written in TypeScript language.
 NOTE: If you call Vim functions, it is not asynchronous.
 
 ------------------------------------------------------------------------------
-SOURCE ATTRIBUTES				*ddc-source-attributes*
+SOURCE ATTRIBUTES                                      *ddc-source-attributes*
 
                                                  *ddc-source-attribute-events*
 events			(string[])			(Optional)
@@ -928,7 +928,7 @@ params			(function)			(Required)
 		Called to get source params.
 
 ------------------------------------------------------------------------------
-ITEM ATTRIBUTES					*ddc-item-attributes*
+ITEM ATTRIBUTES                                          *ddc-item-attributes*
 
                                                      *ddc-item-attribute-abbr*
 abbr			(string)			(Optional)
@@ -996,7 +996,7 @@ word			(string)			(Required)
 
 
 ==============================================================================
-CREATE FILTER						*ddc-create-filter*
+CREATE FILTER                                              *ddc-create-filter*
 
 To create filter, you should read other filters implementation.
 
@@ -1007,7 +1007,7 @@ NOTE: The filters must be written in TypeScript language.
 NOTE: If you call Vim functions, it is not asynchronous.
 
 ------------------------------------------------------------------------------
-FILTER ATTRIBUTES				*ddc-filter-attributes*
+FILTER ATTRIBUTES                                      *ddc-filter-attributes*
 
                                                  *ddc-filter-attribute-events*
 events			(string[])			(Optional)
