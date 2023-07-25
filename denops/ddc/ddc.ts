@@ -47,7 +47,7 @@ import {
   TimeoutError,
   vars,
 } from "./deps.ts";
-import { convertKeywordPattern } from "./util.ts";
+import { convertKeywordPattern, errorException } from "./util.ts";
 
 type DdcResult = {
   items: Item[];
@@ -1328,31 +1328,6 @@ async function callFilterFilter(
     }
 
     return [];
-  }
-}
-
-async function errorException(denops: Denops, e: unknown, message: string) {
-  await denops.call(
-    "ddc#util#print_error",
-    message,
-  );
-  if (e instanceof Error) {
-    await denops.call(
-      "ddc#util#print_error",
-      e.message,
-    );
-    if (e.stack) {
-      await denops.call(
-        "ddc#util#print_error",
-        e.stack,
-      );
-    }
-  } else {
-    await denops.call(
-      "ddc#util#print_error",
-      "unknown error object",
-    );
-    console.error(e);
   }
 }
 

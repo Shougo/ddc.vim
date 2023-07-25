@@ -54,6 +54,31 @@ function vimoption2ts(option: string): string {
   return patterns.join("");
 }
 
+export async function errorException(denops: Denops, e: unknown, message: string) {
+  await denops.call(
+    "ddc#util#print_error",
+    message,
+  );
+  if (e instanceof Error) {
+    await denops.call(
+      "ddc#util#print_error",
+      e.message,
+    );
+    if (e.stack) {
+      await denops.call(
+        "ddc#util#print_error",
+        e.stack,
+      );
+    }
+  } else {
+    await denops.call(
+      "ddc#util#print_error",
+      "unknown error object",
+    );
+    console.error(e);
+  }
+}
+
 Deno.test("vimoption2ts", () => {
   assertEquals(vimoption2ts("@,48-57,_,\\"), "a-zA-Z0-9_\\\\");
   assertEquals(vimoption2ts("@,-,48-57,_"), "a-zA-Z0-9_-");
