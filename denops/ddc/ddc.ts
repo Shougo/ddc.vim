@@ -1348,7 +1348,11 @@ async function errorException(denops: Denops, e: unknown, message: string) {
       );
     }
   } else {
-    console.log(e);
+    await denops.call(
+      "ddc#util#print_error",
+      "unknown error object",
+    );
+    console.error(e);
   }
 }
 
