@@ -23,6 +23,7 @@ Sources			|ddc-sources|
 Filters			|ddc-filters|
   Filter options	  |ddc-filter-options|
   Filter params		  |ddc-filter-params|
+Types			|ddc-types|
 Create UI		|ddc-create-ui|
   UI attributes		  |ddc-ui-attributes|
 Create source		|ddc-create-source|
@@ -825,6 +826,14 @@ These are the parameters that each filter can have.  You can select the
 behavior and tune the performance.
 
 Please read the filter documentation.
+
+
+==============================================================================
+TYPES                                                              *ddc-types*
+
+Please see the TypeScript definition.
+
+https://deno.land/x/ddc_vim/types.ts?doc
 
 
 ==============================================================================
