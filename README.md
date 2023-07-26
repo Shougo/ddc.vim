@@ -25,8 +25,6 @@ The development is supported by
 
 - [Introduction](#introduction)
 - [Install](#install)
-  - [Requirements](#requirements)
-- [Configuration](#configuration)
 - [Screenshots](#screenshots)
 
 <!-- vim-markdown-toc -->
@@ -50,7 +48,18 @@ better than neovim Python interface.
 recommended) or Vim 9.0+. See [requirements](#requirements) if you aren't sure
 whether you have this.
 
-For vim-plug
+### Requirements
+
+Ddc.vim requires both Deno and denops.vim.
+
+- <https://deno.land/>
+- <https://github.com/vim-denops/denops.vim>
+
+**NOTE:** Ddc.vim does not include any UIs, sources and filters. You must
+install them which you want manually. You can search ddc plugins(sources and
+filters) from [here](https://github.com/topics/ddc-vim).
+
+### For vim-plug
 
 ```vim
 call plug#begin()
@@ -71,7 +80,7 @@ Plug 'vim-denops/denops.vim'
 call plug#end()
 ```
 
-For dein.vim
+### For dein.vim
 
 ```vim
 call dein#begin()
@@ -91,75 +100,6 @@ call dein#add('vim-denops/denops.vim')
 
 call dein#end()
 ```
-
-**NOTE:** Ddc.vim does not include any UIs, sources and filters. You must
-install them which you want manually. You can search ddc plugins(sources and
-filters) from [here](https://github.com/topics/ddc-vim).
-
-### Requirements
-
-Ddc.vim requires both Deno and denops.vim.
-
-- <https://deno.land/>
-- <https://github.com/vim-denops/denops.vim>
-
-## Configuration
-
-```vim
-" Customize global settings
-
-" You must set the default ui.
-" NOTE: native ui
-" https://github.com/Shougo/ddc-ui-native
-call ddc#custom#patch_global('ui', 'native')
-
-" Use around source.
-" https://github.com/Shougo/ddc-source-around
-call ddc#custom#patch_global('sources', ['around'])
-
-" Use matcher_head and sorter_rank.
-" https://github.com/Shougo/ddc-matcher_head
-" https://github.com/Shougo/ddc-sorter_rank
-call ddc#custom#patch_global('sourceOptions', #{
-      \ _: #{
-      \   matchers: ['matcher_head'],
-      \   sorters: ['sorter_rank']},
-      \ })
-
-" Change source options
-call ddc#custom#patch_global('sourceOptions', #{
-      \   around: #{ mark: 'A' },
-      \ })
-call ddc#custom#patch_global('sourceParams', #{
-      \   around: #{ maxSize: 500 },
-      \ })
-
-" Customize settings on a filetype
-call ddc#custom#patch_filetype(['c', 'cpp'], 'sources',
-      \ ['around', 'clangd'])
-call ddc#custom#patch_filetype(['c', 'cpp'], 'sourceOptions', #{
-      \   clangd: #{ mark: 'C' },
-      \ })
-call ddc#custom#patch_filetype('markdown', 'sourceParams', #{
-      \   around: #{ maxSize: 100 },
-      \ })
-
-" Mappings
-
-" <TAB>: completion.
-inoremap <silent><expr> <TAB>
-\ pumvisible() ? '<C-n>' :
-\ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
-\ '<TAB>' : ddc#map#manual_complete()
-
-" <S-TAB>: completion back.
-inoremap <expr><S-TAB>  pumvisible() ? '<C-p>' : '<C-h>'
-
-" Use ddc.
-call ddc#enable()
-```
-
-See `:help ddc-options` for a complete list of options.
 
 ## Screenshots
 
