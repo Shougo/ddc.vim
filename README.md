@@ -24,8 +24,8 @@ The development is supported by
 <!-- vim-markdown-toc GFM -->
 
 - [Introduction](#introduction)
-- [Install](#install)
 - [Screenshots](#screenshots)
+- [Install](#install)
 
 <!-- vim-markdown-toc -->
 
@@ -41,6 +41,14 @@ better than neovim Python interface.
 - Speed
 - Library
 - Easy to hack
+
+## Screenshots
+
+Please see: https://github.com/Shougo/ddc.vim/issues/32
+
+![nvim-lsp](https://user-images.githubusercontent.com/41495/129931010-258d3917-7379-4b40-b3cc-2313c9fbe600.png)
+
+![command line completion](https://user-images.githubusercontent.com/41495/135711007-8c24c606-2c5d-41f5-a445-dce0127aa97a.png)
 
 ## Install
 
@@ -100,13 +108,3 @@ call dein#add('vim-denops/denops.vim')
 
 call dein#end()
 ```
-
-## Screenshots
-
-Please see: https://github.com/Shougo/ddc.vim/issues/32
-
-![nvim-lsp](https://user-images.githubusercontent.com/41495/129931010-258d3917-7379-4b40-b3cc-2313c9fbe600.png)
-
-![command line completion](https://user-images.githubusercontent.com/41495/135711007-8c24c606-2c5d-41f5-a445-dce0127aa97a.png)
-
-## Plans
