@@ -15,7 +15,7 @@ export * as base64 from "https://deno.land/std@0.196.0/encoding/base64.ts";
 export {
   assertEquals,
   equal,
-} from "https://deno.land/std@0.196.0/testing/asserts.ts";
+} from "https://deno.land/std@0.196.0/assert/mod.ts";
 export { parse, toFileUrl } from "https://deno.land/std@0.196.0/path/mod.ts";
 export {
   deadline,
