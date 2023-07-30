@@ -110,7 +110,11 @@ export function main(denops: Denops) {
     async loadConfig(arg1: unknown): Promise<void> {
       await lock.lock(async () => {
         const path = ensure(arg1, is.String);
-        const mod = await import(toFileUrl(path).href);
+        // NOTE: Import module with fragment so that reload works properly.
+        // https://github.com/vim-denops/denops.vim/issues/227
+        const mod = await import(
+          `${toFileUrl(path).href}#${performance.now()}`
+        );
         const obj = new mod.Config();
         await obj.config({ denops, contextBuilder, setAlias });
       });

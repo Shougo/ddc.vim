@@ -54,7 +54,11 @@ function vimoption2ts(option: string): string {
   return patterns.join("");
 }
 
-export async function errorException(denops: Denops, e: unknown, message: string) {
+export async function errorException(
+  denops: Denops,
+  e: unknown,
+  message: string,
+) {
   await denops.call(
     "ddc#util#print_error",
     message,
