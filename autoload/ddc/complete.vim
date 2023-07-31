@@ -23,9 +23,6 @@ function ddc#complete#_on_complete_done(completed_item) abort
     let sourceName = items[0].__sourceName
   endif
 
-  " Skip next complete after insertion
-  let g:ddc#_skip_next_complete += 1
-
   call denops#request('ddc', 'onCompleteDone',
         \ [sourceName, a:completed_item.user_data])
 endfunction

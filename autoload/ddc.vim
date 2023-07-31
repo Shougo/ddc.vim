@@ -119,6 +119,12 @@ function ddc#complete_info() abort
         \ pum#complete_info() : complete_info()
 endfunction
 
+function ddc#skip_next_complete() abort
+  if 'g:ddc#_skip_next_complete'->exists()
+    let g:ddc#_skip_next_complete += 1
+  endif
+endfunction
+
 const s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
 const s:sep = has('win32') ? '\' : '/'
 function ddc#_register() abort

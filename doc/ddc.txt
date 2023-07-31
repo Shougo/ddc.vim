@@ -344,6 +344,11 @@ ddc#register({type}, {path})
 		{path} is ddc extension path.
 		NOTE: {path} must be full path.
 
+                                                    *ddc#skip_next_complete()*
+ddc#skip_next_complete()
+		Skip the next auto completion.
+		It is used to disable auto completion.
+
                                                             *ddc#syntax#get()*
 ddc#syntax#get()
 		Get current syntax groups.
