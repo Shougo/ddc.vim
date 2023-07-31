@@ -970,8 +970,11 @@ highlights		(object[])			(Optional)
 		NOTE: It is only supported in "ddc-ui-pum".
 
 		name			(string)
-		The highlight name.
-		NOTE: Each highlight must be different name.
+		The highlight name. It is used for |prop_type_add()| in Vim.
+		It is not used in Neovim.
+		NOTE: Each name must be unique for the highlight group.
+		Because of possible interference with other plugins, a naming
+		convention like `ddc-{type}-{name}-{group}` is recommended.
 
 		type			(string)
 		The highlight column.
