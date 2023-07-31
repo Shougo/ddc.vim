@@ -927,6 +927,8 @@ onCompleteDone		(function)			(Optional)
 		It is useful to substitute text after completion.
 		NOTE: |ddc-item-attribute-user_data| must be "UserData" to use
 		the feature.
+		NOTE: If it changes the text, it should call
+		|ddc#skip_next_complete()|.
 
                                                 *ddc-source-attribute-onEvent*
 onEvent			(function)			(Optional)
