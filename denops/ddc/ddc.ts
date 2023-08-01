@@ -330,6 +330,7 @@ export class Ddc {
 
       const prevResult = this.prevResults[s.name];
 
+      // NOTE: Use deepcopy.  Because of filters may break original items.
       const fis = await this.filterItems(
         denops,
         context,
@@ -337,12 +338,8 @@ export class Ddc {
         options,
         o,
         completeStr,
-        prevResult.items,
+        structuredClone(prevResult.items),
       );
-
-      // Cache filtered result
-      prevResult.completeStr = completeStr;
-      prevResult.items = fis;
 
       const items = fis.map((c) => (
         {
