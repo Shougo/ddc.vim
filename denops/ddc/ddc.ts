@@ -253,10 +253,12 @@ export class Ddc {
         o,
         p,
       );
+
       const forceCompletion = o.forceCompletionPattern.length !== 0 &&
         context.input.search(
             new RegExp("(?:" + o.forceCompletionPattern + ")$"),
           ) !== -1;
+
       // NOTE: If forceCompletion and not matched getCompletePosition(),
       // Use cursor position instead.
       const completePos = (pos < 0 && forceCompletion)
@@ -271,7 +273,7 @@ export class Ddc {
         ? this.prevResults[s.name]
         : null;
 
-      const triggerForIncomplete = !forceCompletion &&
+      const triggerForIncomplete =
         (checkPrevResult?.isIncomplete ?? false) &&
         context.lineNr === checkPrevResult?.lineNr &&
         completePos === checkPrevResult?.completePos;
