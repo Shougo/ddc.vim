@@ -140,9 +140,6 @@ export type DdcItem =
   & {
     __sourceName: string;
     __dup: "keep" | "force" | "ignore";
-    dup: boolean;
-    equal: boolean;
-    icase: boolean;
   };
 
 /**

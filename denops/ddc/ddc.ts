@@ -273,8 +273,7 @@ export class Ddc {
         ? this.prevResults[s.name]
         : null;
 
-      const triggerForIncomplete =
-        (checkPrevResult?.isIncomplete ?? false) &&
+      const triggerForIncomplete = (checkPrevResult?.isIncomplete ?? false) &&
         context.lineNr === checkPrevResult?.lineNr &&
         completePos === checkPrevResult?.completePos;
 
@@ -354,9 +353,6 @@ export class Ddc {
           __sourceName: s.name,
           __dup: o.dup,
           abbr: formatAbbr(c.word, c.abbr),
-          dup: true,
-          equal: true,
-          icase: true,
           kind: c.kind ? c.kind : "",
           info: c.info ? c.info : "",
           menu: formatMenu(o.mark, c.menu),
