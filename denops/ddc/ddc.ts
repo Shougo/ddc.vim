@@ -51,6 +51,7 @@ import { convertKeywordPattern, errorException } from "./util.ts";
 
 type DdcResult = {
   items: Item[];
+  completePos: number;
   completeStr: string;
   prevInput: string;
   lineNr: number;
@@ -264,12 +265,20 @@ export class Ddc {
         ? byteposToCharpos(context.input, pos)
         : pos;
       const completeStr = context.input.slice(completePos);
-      const incomplete = this.prevResults[s.name]?.isIncomplete ?? false;
-      const triggerForIncomplete = !forceCompletion && incomplete &&
-        context.lineNr === this.prevResults[s.name].lineNr;
+
+      // Check previous result.
+      const checkPrevResult = s.name in this.prevResults
+        ? this.prevResults[s.name]
+        : null;
+
+      const triggerForIncomplete = !forceCompletion &&
+        (checkPrevResult?.isIncomplete ?? false) &&
+        context.lineNr === checkPrevResult?.lineNr &&
+        completePos === checkPrevResult?.completePos;
+
       if (
         completePos < 0 ||
-        (!forceCompletion &&
+        (!forceCompletion && !triggerForIncomplete &&
           (context.event !== "Manual" && context.event !== "Update") &&
           (completeStr.length < o.minAutoCompleteLength ||
             completeStr.length > o.maxAutoCompleteLength))
@@ -277,11 +286,6 @@ export class Ddc {
         delete this.prevResults[s.name];
         return;
       }
-
-      // Check previous result.
-      const checkPrevResult = s.name in this.prevResults
-        ? this.prevResults[s.name]
-        : null;
 
       const prevInput = context.input.slice(0, completePos);
 
@@ -321,6 +325,7 @@ export class Ddc {
 
         this.prevResults[s.name] = {
           items,
+          completePos,
           completeStr,
           prevInput,
           lineNr: context.lineNr,

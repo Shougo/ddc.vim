@@ -914,6 +914,15 @@ isBytePos		(boolean)			(Optional)
                                                  *ddc-source-attribute-gather*
 gather			(function)			(Required)
 		Called to gather items.
+		The function must return items list or below dictionary.
+>
+		{
+		    items: Item[],
+		    isIncomplete: boolean,
+		}
+<
+		If "isIncomplete" is set, the items can be replaced by
+		|ddc#update_items()|.
 
                                     *ddc-source-attribute-getCompletePosition*
 getCompletePosition	(function)			(Optional)
