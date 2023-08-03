@@ -374,7 +374,7 @@ export class Ddc {
     const completePos = Math.min(...fs.map((v) => v[0]));
 
     // Flatten items
-    const items = fs.flatMap(([pos, items]) =>
+    let items = fs.flatMap(([pos, items]) =>
       items.map((c) => {
         // NOTE: Merge word by completePos
         const word = context.input.substring(completePos, pos) + c.word;
@@ -387,6 +387,33 @@ export class Ddc {
       })
     );
 
+    // Post filters
+    for (const userFilter of options.postFilters) {
+      const [filter, filterOptions, filterParams] = await this.getFilter(
+        denops,
+        options,
+        userFilter,
+      );
+      if (!filter) {
+        continue;
+      }
+
+      // @ts-ignore: postFilters does not change items keys
+      items = await callFilterFilter(
+        filter,
+        denops,
+        context,
+        onCallback,
+        options,
+        defaultSourceOptions(),
+        filterOptions,
+        filterParams,
+        context.input.slice(completePos),
+        items,
+      );
+    }
+
+    // Remove dup items
     const seen = new Set();
     let retItems: DdcItem[] = [];
     for (const item of items) {
@@ -409,32 +436,6 @@ export class Ddc {
 
       seen.add(item.word);
       retItems.push(item);
-    }
-
-    // Post filters
-    for (const userFilter of options.postFilters) {
-      const [filter, filterOptions, filterParams] = await this.getFilter(
-        denops,
-        options,
-        userFilter,
-      );
-      if (!filter) {
-        continue;
-      }
-
-      // @ts-ignore: postFilters does not change items keys
-      retItems = await callFilterFilter(
-        filter,
-        denops,
-        context,
-        onCallback,
-        options,
-        defaultSourceOptions(),
-        filterOptions,
-        filterParams,
-        context.input.slice(completePos),
-        retItems,
-      );
     }
 
     // Convert2byte for Vim
