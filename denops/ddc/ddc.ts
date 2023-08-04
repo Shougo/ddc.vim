@@ -70,6 +70,7 @@ export class Ddc {
 
   prevSources: UserSource[] = [];
   prevUi = "";
+  prevEvent = "";
 
   constructor(loader: Loader) {
     this.loader = loader;
@@ -595,6 +596,7 @@ export class Ddc {
     });
 
     this.prevUi = options.ui;
+    this.prevEvent = context.event;
     this.visibleUi = true;
   }
 
@@ -627,6 +629,10 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<boolean> {
+    if (this.visibleUi) {
+      return true;
+    }
+
     const [ui, uiOptions, uiParams] = await this.getUi(
       denops,
       context,
@@ -634,10 +640,6 @@ export class Ddc {
     );
     if (!ui) {
       return false;
-    }
-
-    if (this.visibleUi) {
-      return true;
     }
 
     // Check UI is visible

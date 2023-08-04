@@ -237,10 +237,12 @@ export function main(denops: Denops) {
       visible && ddc.prevUi !== "" &&
       options.autoCompleteEvents.indexOf(event) > 0
     ) {
-      // NOTE: If UI is visible, use prevSources/prevUi instead to update
-      // current items
+      // NOTE: If UI is visible, use prevSources/prevUi/prevEvent instead to
+      // update current items
+
       options.sources = ddc.prevSources;
       options.ui = ddc.prevUi;
+      context.event = ddc.prevEvent;
     }
 
     await ddc.onEvent(
