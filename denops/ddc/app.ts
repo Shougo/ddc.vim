@@ -237,14 +237,14 @@ export function main(denops: Denops) {
       visible && ddc.prevUi !== "" &&
       options.autoCompleteEvents.indexOf(event) > 0
     ) {
-      // NOTE: If UI is visible, use prevSources/prevUi/prevEvent instead to
-      // update current items
+      // NOTE: If UI is visible, use prevSources/prevUi/prevEvent to update
+      // current items
 
       options.sources = ddc.prevSources;
       options.ui = ddc.prevUi;
 
       if (ddc.prevEvent === "Manual") {
-        // Overwrite event if manaul completion
+        // Overwrite event if manual completion
         context.event = ddc.prevEvent;
       }
     }

@@ -524,6 +524,9 @@ ddc#map#manual_complete([{options}])
 		{options} is |ddc-options|.
 		NOTE: Manual completion ignores
 		|ddc-source-option-minAutoCompleteLength|.
+		NOTE: After you open completion UI in manual completion, your
+		next input will be used as manual completion until the items
+		are empty or |ddc#hide()| is called.
 
 ------------------------------------------------------------------------------
 EVENTS                                                            *ddc-events*

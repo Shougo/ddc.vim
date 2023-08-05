@@ -501,7 +501,10 @@ export class Ddc {
       return true;
     }
 
-    if (options.autoCompleteEvents.indexOf(context.event) < 0) {
+    if (
+      context.event !== "Manual" &&
+      options.autoCompleteEvents.indexOf(context.event) < 0
+    ) {
       return true;
     }
 
