@@ -235,7 +235,8 @@ export function main(denops: Denops) {
     const visible = await ddc.visible(denops, context, options);
     if (
       visible && ddc.prevUi !== "" &&
-      options.autoCompleteEvents.indexOf(event) > 0
+      options.autoCompleteEvents.indexOf(event) > 0 &&
+      ddc.prevEvent === "Manual"
     ) {
       // NOTE: If UI is visible, use prevSources/prevUi/prevEvent to update
       // current items
@@ -243,10 +244,8 @@ export function main(denops: Denops) {
       options.sources = ddc.prevSources;
       options.ui = ddc.prevUi;
 
-      if (ddc.prevEvent === "Manual") {
-        // Overwrite event if manual completion
-        context.event = ddc.prevEvent;
-      }
+      // Overwrite event if manual completion
+      context.event = ddc.prevEvent;
     }
 
     await ddc.onEvent(
