@@ -242,7 +242,11 @@ export function main(denops: Denops) {
 
       options.sources = ddc.prevSources;
       options.ui = ddc.prevUi;
-      context.event = ddc.prevEvent;
+
+      if (ddc.prevEvent === "Manual") {
+        // Overwrite event if manaul completion
+        context.event = ddc.prevEvent;
+      }
     }
 
     await ddc.onEvent(
