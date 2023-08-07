@@ -970,11 +970,6 @@ columns			(dictionary)			(Optional)
 		The value is column value.
 		NOTE: It is only supported in "ddc-ui-pum".
 
-                                                      *ddc-item-attribute-dup*
-dup			(boolean)			(Optional)
-		If true, the item will be displayed in the popup menu when an
-		item with the same word is already present.
-
                                                *ddc-item-attribute-highlights*
 highlights		(object[])			(Optional)
 
