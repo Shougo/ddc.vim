@@ -31,6 +31,8 @@ Create source		|ddc-create-source|
   Item attributes	  |ddc-item-attributes|
 Create filter		|ddc-create-filter|
   filter attributes	  |ddc-filter-attributes|
+Previewer		|ddc-previewer|
+  previewer attributes	  |ddc-previewer-attributes|
 FAQ			|ddc-faq|
 Compatibility		|ddc-compatibility|
 
@@ -1059,6 +1061,52 @@ onInit			(function)			(Optional)
                                                  *ddc-filter-attribute-params*
 params			(function)			(Required)
 		Called to get filter params.
+
+
+==============================================================================
+PREVIEWER                                                      *ddc-previewer*
+
+Previewer defines how the preview is rendered by UI.
+
+
+                                              *ddc-previewer-CommandPreviewer*
+CommandPreviewer
+	Preview type which shows the command specified by the
+	|ddc-previewer-attribute-command|.
+
+                                             *ddc-previewer-MarkdownPreviewer*
+MarkdownPreviewer
+	Preview type which shows the markdown contents specified by the
+	|ddc-previewer-attribute-contents|.
+
+                                                 *ddc-previewer-TextPreviewer*
+TextPreviewer
+	Preview type which shows the text contents specified by the
+	|ddc-previewer-attribute-contents|.
+
+
+------------------------------------------------------------------------------
+PREVIEWER ATTRIBUTES                                *ddc-previewer-attributes*
+
+                                             *ddc-previewer-attribute-command*
+command			(string)			(Required)
+		Commands passed to |win_execute()| to render the preview.
+		NOTE: It is only avaiable in |ddc-previewer-CommandPreviewer|.
+
+                                            *ddc-previewer-attribute-contents*
+contents		(string[])			(Required)
+		Contents to be shown in the preview buffer.
+		NOTE: It is only avaiable in |ddc-previewer-MarkdownPreviewer|
+		or |ddc-previewer-TextPreviewer|.
+
+                                                *ddc-previewer-attribute-kind*
+kind			(string)			(Required)
+		Previewer type.
+		It must be "command" or "markdown" or "text".
+
+		"command"	CommandPreviewer
+		"markdown"	MarkdownPreviewer
+		"text"		TextPreviewer
 
 
 ==============================================================================

@@ -154,34 +154,25 @@ export interface CallbackContext {
   createOnCallback(): OnCallback;
 }
 
+type EmptyPreviewer = Record<never, never>;
+
 export type CommandPreviewer = {
   kind: "command";
 
-  /**
-   * Command passed to `win_execute()` to render the preview
-   */
   command: string;
-};
-
-type TextPreviewer = {
-  kind: "text";
-
-  /**
-   * Path of file to preview
-   */
-  text: string;
 };
 
 type MarkdownPreviewer = {
   kind: "markdown";
 
-  /**
-   * Path of file to preview
-   */
-  text: string;
+  contents: string;
 };
 
-type EmptyPreviewer = Record<never, never>;
+type TextPreviewer = {
+  kind: "text";
+
+  contents: string;
+};
 
 /**
  *  Previewer defines how the preview is rendered
@@ -190,5 +181,5 @@ type EmptyPreviewer = Record<never, never>;
 export type Previewer =
   | EmptyPreviewer
   | CommandPreviewer
-  | TextPreviewer
-  | MarkdownPreviewer;
+  | MarkdownPreviewer
+  | TextPreviewer;
