@@ -110,9 +110,9 @@ function ddc#visible() abort
         \ denops#request('ddc', 'visible', []) : v:false
 endfunction
 
-function ddc#get_previewer(item) abort
+function ddc#get_previewer(item, context={}) abort
   return ddc#_denops_running() ?
-        \ denops#request('ddc', 'getPreviewer', [a:item]) : {}
+        \ denops#request('ddc', 'getPreviewer', [a:item, a:context]) : {}
 endfunction
 
 function ddc#register(type, path) abort

@@ -15,6 +15,7 @@ import {
   FilterOptions,
   Item,
   OnCallback,
+  PreviewContext,
   Previewer,
   SourceName,
   SourceOptions,
@@ -890,6 +891,7 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
     item: DdcItem,
+    previewContext: PreviewContext,
   ): Promise<Previewer> {
     if (!item.__sourceName) {
       return {};
@@ -911,6 +913,7 @@ export class Ddc {
       sourceOptions,
       sourceParams,
       item,
+      previewContext,
     });
 
     return previewer;

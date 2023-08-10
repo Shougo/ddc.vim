@@ -320,8 +320,9 @@ ddc#enable_terminal_completion()
 		recommended.
 
                                                          *ddc#get_previewer()*
-ddc#get_previewer({item})
+ddc#get_previewer({item}[, {context}])
 		Get |ddc-previewer| from {item}.
+		{context} is used as preview window context.
 		It is useful to render preview information dynamically.
 
                                                                   *ddc#hide()*

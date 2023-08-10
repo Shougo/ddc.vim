@@ -5,6 +5,7 @@ import {
   DdcItem,
   DdcOptions,
   OnCallback,
+  PreviewContext,
   Previewer,
   SourceOptions,
 } from "../types.ts";
@@ -49,6 +50,7 @@ export type GetPreviewerArguments<Params extends BaseSourceParams> = {
   sourceOptions: SourceOptions;
   sourceParams: Params;
   item: DdcItem;
+  previewContext: PreviewContext;
 };
 
 export type GetCompletePositionArguments<Params extends BaseSourceParams> = {
