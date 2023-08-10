@@ -319,6 +319,11 @@ ddc#enable_terminal_completion()
 		NOTE: It is experimental feature in Vim.  neovim is
 		recommended.
 
+                                                         *ddc#get_previewer()*
+ddc#get_previewer({item})
+		Get |ddc-previewer| from {item}.
+		It is useful to render preview information dynamically.
+
                                                                   *ddc#hide()*
 ddc#hide([{event}])
 		Hide current completion UI.
@@ -934,6 +939,10 @@ getCompletePosition	(function)			(Optional)
 		Called to get the position of the current completion.
 
 		Default : |ddc-source-option-keywordPattern| is used.
+
+                                           *ddc-source-attribute-getPreviewer*
+getPreviewer		(function)			(Optional)
+		Called to get |ddc-previewer|.
 
                                          *ddc-source-attribute-onCompleteDone*
 onCompleteDone		(function)			(Optional)
