@@ -165,13 +165,13 @@ export type CommandPreviewer = {
 type MarkdownPreviewer = {
   kind: "markdown";
 
-  contents: string;
+  contents: string[];
 };
 
 type TextPreviewer = {
   kind: "text";
 
-  contents: string;
+  contents: string[];
 };
 
 /**
