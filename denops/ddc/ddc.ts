@@ -15,6 +15,7 @@ import {
   FilterOptions,
   Item,
   OnCallback,
+  Previewer,
   SourceName,
   SourceOptions,
   UiOptions,
@@ -882,6 +883,37 @@ export class Ddc {
     await checkFilterOnInit(filter, denops, filterOptions, filterParams);
 
     return [filter, filterOptions, filterParams];
+  }
+
+  async getPreviewer(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+    item: DdcItem,
+  ): Promise<Previewer> {
+    if (!item.__sourceName) {
+      return {};
+    }
+
+    const [source, sourceOptions, sourceParams] = await this.getSource(
+      denops,
+      options,
+      item.__sourceName,
+    );
+    if (!source || !source.getPreviewer) {
+      return {};
+    }
+
+    const previewer = await source.getPreviewer({
+      denops,
+      context,
+      options,
+      sourceOptions,
+      sourceParams,
+      item,
+    });
+
+    return previewer;
   }
 }
 

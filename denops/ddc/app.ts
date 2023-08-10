@@ -7,6 +7,7 @@ import {
   DdcOptions,
   DdcUserData,
   Item,
+  Previewer,
   UserOptions,
 } from "./types.ts";
 import { Denops, ensure, is, Lock, toFileUrl, vars } from "./deps.ts";
@@ -106,6 +107,12 @@ export function main(denops: Denops) {
     },
     getCurrent(): Promise<DdcOptions> {
       return Promise.resolve(contextBuilder.getCurrent(denops));
+    },
+    async getPreviewer(arg1: unknown): Promise<Previewer> {
+      const [_skip, context, options] = await contextBuilder
+        .createContext(denops, "Manual");
+      const item = ensure(arg1, is.Record) as DdcItem;
+      return await ddc.getPreviewer(denops, context, options, item);
     },
     async loadConfig(arg1: unknown): Promise<void> {
       await lock.lock(async () => {

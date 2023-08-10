@@ -153,3 +153,42 @@ export interface CallbackContext {
   revoke(): void;
   createOnCallback(): OnCallback;
 }
+
+export type CommandPreviewer = {
+  kind: "command";
+
+  /**
+   * Command passed to `win_execute()` to render the preview
+   */
+  command: string;
+};
+
+type TextPreviewer = {
+  kind: "text";
+
+  /**
+   * Path of file to preview
+   */
+  text: string;
+};
+
+type MarkdownPreviewer = {
+  kind: "markdown";
+
+  /**
+   * Path of file to preview
+   */
+  text: string;
+};
+
+type EmptyPreviewer = Record<never, never>;
+
+/**
+ *  Previewer defines how the preview is rendered
+ *  This must be implemented in the ddc-source
+ */
+export type Previewer =
+  | EmptyPreviewer
+  | CommandPreviewer
+  | TextPreviewer
+  | MarkdownPreviewer;
