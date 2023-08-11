@@ -102,6 +102,10 @@ export abstract class BaseSource<
     return { kind: "empty" };
   }
 
+  getCompletePosition(
+    args: GetCompletePositionArguments<Params>,
+  ): number | Promise<number>;
+
   async getCompletePosition(
     args: GetCompletePositionArguments<Params>,
   ): Promise<number> {
