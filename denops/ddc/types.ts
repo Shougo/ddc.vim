@@ -153,3 +153,45 @@ export interface CallbackContext {
   revoke(): void;
   createOnCallback(): OnCallback;
 }
+
+/**
+ * Information of preview window
+ */
+export type PreviewContext = {
+  row?: number;
+  col?: number;
+  width?: number;
+  height?: number;
+  isFloating?: boolean;
+  split?: "horizontal" | "vertical" | "no";
+};
+
+type EmptyPreviewer = Record<never, never>;
+
+export type CommandPreviewer = {
+  kind: "command";
+
+  command: string;
+};
+
+type MarkdownPreviewer = {
+  kind: "markdown";
+
+  contents: string[];
+};
+
+type TextPreviewer = {
+  kind: "text";
+
+  contents: string[];
+};
+
+/**
+ *  Previewer defines how the preview is rendered
+ *  This must be implemented in the ddc-source
+ */
+export type Previewer =
+  | EmptyPreviewer
+  | CommandPreviewer
+  | MarkdownPreviewer
+  | TextPreviewer;

@@ -2,8 +2,11 @@ import {
   Context,
   DdcEvent,
   DdcGatherItems,
+  DdcItem,
   DdcOptions,
   OnCallback,
+  PreviewContext,
+  Previewer,
   SourceOptions,
 } from "../types.ts";
 import { Denops } from "../deps.ts";
@@ -40,6 +43,16 @@ export type OnCompleteDoneArguments<
   userData: UserData;
 };
 
+export type GetPreviewerArguments<Params extends BaseSourceParams> = {
+  denops: Denops;
+  context: Context;
+  options: DdcOptions;
+  sourceOptions: SourceOptions;
+  sourceParams: Params;
+  item: DdcItem;
+  previewContext: PreviewContext;
+};
+
 export type GetCompletePositionArguments<Params extends BaseSourceParams> = {
   denops: Denops;
   context: Context;
@@ -67,7 +80,7 @@ export abstract class BaseSource<
 > {
   name = "";
   isInitialized = false;
-  apiVersion = 5;
+  apiVersion = 6;
 
   events: DdcEvent[] = [];
   isBytePos = false;
@@ -79,6 +92,13 @@ export abstract class BaseSource<
   async onCompleteDone(
     _args: OnCompleteDoneArguments<Params, UserData>,
   ): Promise<void> {}
+
+  // deno-lint-ignore require-await
+  async getPreviewer(
+    _args: GetPreviewerArguments<Params>,
+  ): Promise<Previewer> {
+    return Promise.resolve({});
+  }
 
   async getCompletePosition(
     args: GetCompletePositionArguments<Params>,

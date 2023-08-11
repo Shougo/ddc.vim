@@ -31,6 +31,8 @@ Create source		|ddc-create-source|
   Item attributes	  |ddc-item-attributes|
 Create filter		|ddc-create-filter|
   filter attributes	  |ddc-filter-attributes|
+Previewer		|ddc-previewer|
+  previewer attributes	  |ddc-previewer-attributes|
 FAQ			|ddc-faq|
 Compatibility		|ddc-compatibility|
 
@@ -316,6 +318,12 @@ ddc#enable_terminal_completion()
 		https://github.com/Shougo/ddc-ui-pum
 		NOTE: It is experimental feature in Vim.  neovim is
 		recommended.
+
+                                                         *ddc#get_previewer()*
+ddc#get_previewer({item}[, {context}])
+		Get |ddc-previewer| from {item}.
+		{context} is used as preview window context.
+		It is useful to render preview information dynamically.
 
                                                                   *ddc#hide()*
 ddc#hide([{event}])
@@ -933,6 +941,10 @@ getCompletePosition	(function)			(Optional)
 
 		Default : |ddc-source-option-keywordPattern| is used.
 
+                                           *ddc-source-attribute-getPreviewer*
+getPreviewer		(function)			(Optional)
+		Called to get |ddc-previewer|.
+
                                          *ddc-source-attribute-onCompleteDone*
 onCompleteDone		(function)			(Optional)
 		Called after the completion.
@@ -1059,6 +1071,52 @@ onInit			(function)			(Optional)
                                                  *ddc-filter-attribute-params*
 params			(function)			(Required)
 		Called to get filter params.
+
+
+==============================================================================
+PREVIEWER                                                      *ddc-previewer*
+
+Previewer defines how the preview is rendered by UI.
+
+
+                                              *ddc-previewer-CommandPreviewer*
+CommandPreviewer
+	Preview type which shows the command specified by the
+	|ddc-previewer-attribute-command|.
+
+                                             *ddc-previewer-MarkdownPreviewer*
+MarkdownPreviewer
+	Preview type which shows the markdown contents specified by the
+	|ddc-previewer-attribute-contents|.
+
+                                                 *ddc-previewer-TextPreviewer*
+TextPreviewer
+	Preview type which shows the text contents specified by the
+	|ddc-previewer-attribute-contents|.
+
+
+------------------------------------------------------------------------------
+PREVIEWER ATTRIBUTES                                *ddc-previewer-attributes*
+
+                                             *ddc-previewer-attribute-command*
+command			(string)			(Required)
+		Commands passed to |win_execute()| to render the preview.
+		NOTE: It is only avaiable in |ddc-previewer-CommandPreviewer|.
+
+                                            *ddc-previewer-attribute-contents*
+contents		(string[])			(Required)
+		Contents to be shown in the preview buffer.
+		NOTE: It is only avaiable in |ddc-previewer-MarkdownPreviewer|
+		or |ddc-previewer-TextPreviewer|.
+
+                                                *ddc-previewer-attribute-kind*
+kind			(string)			(Required)
+		Previewer type.
+		It must be "command" or "markdown" or "text".
+
+		"command"	CommandPreviewer
+		"markdown"	MarkdownPreviewer
+		"text"		TextPreviewer
 
 
 ==============================================================================
