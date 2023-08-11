@@ -166,7 +166,9 @@ export type PreviewContext = {
   split?: "horizontal" | "vertical" | "no";
 };
 
-type EmptyPreviewer = Record<never, never>;
+type EmptyPreviewer = {
+  kind: "empty";
+};
 
 export type CommandPreviewer = {
   kind: "command";

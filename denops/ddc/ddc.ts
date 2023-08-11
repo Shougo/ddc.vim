@@ -894,7 +894,7 @@ export class Ddc {
     previewContext: PreviewContext,
   ): Promise<Previewer> {
     if (!item.__sourceName) {
-      return {};
+      return { kind: "empty" };
     }
 
     const [source, sourceOptions, sourceParams] = await this.getSource(
@@ -903,7 +903,7 @@ export class Ddc {
       item.__sourceName,
     );
     if (!source || !source.getPreviewer) {
-      return {};
+      return { kind: "empty" };
     }
 
     const previewer = await source.getPreviewer({

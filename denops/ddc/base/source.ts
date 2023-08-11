@@ -2,8 +2,8 @@ import {
   Context,
   DdcEvent,
   DdcGatherItems,
-  DdcItem,
   DdcOptions,
+  Item,
   OnCallback,
   PreviewContext,
   Previewer,
@@ -43,13 +43,16 @@ export type OnCompleteDoneArguments<
   userData: UserData;
 };
 
-export type GetPreviewerArguments<Params extends BaseSourceParams> = {
+export type GetPreviewerArguments<
+  Params extends BaseSourceParams,
+  UserData extends unknown = unknown,
+> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
-  item: DdcItem;
+  item: Item<UserData>;
   previewContext: PreviewContext;
 };
 
@@ -97,7 +100,7 @@ export abstract class BaseSource<
   async getPreviewer(
     _args: GetPreviewerArguments<Params>,
   ): Promise<Previewer> {
-    return Promise.resolve({});
+    return Promise.resolve({ kind: "empty" });
   }
 
   async getCompletePosition(

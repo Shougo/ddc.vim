@@ -112,7 +112,10 @@ endfunction
 
 function ddc#get_previewer(item, context={}) abort
   return ddc#_denops_running() ?
-        \ denops#request('ddc', 'getPreviewer', [a:item, a:context]) : {}
+        \ denops#request('ddc', 'getPreviewer', [a:item, a:context]) :
+        \ #{
+        \   kind: 'empty',
+        \ }
 endfunction
 
 function ddc#register(type, path) abort
