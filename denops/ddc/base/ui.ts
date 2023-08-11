@@ -48,20 +48,20 @@ export abstract class BaseUi<Params extends BaseUiParams> {
   isInitialized = false;
   apiVersion = 2;
 
-  async onInit(_args: OnInitArguments<Params>): Promise<void> {}
+  onInit(_args: OnInitArguments<Params>): void | Promise<void> {}
 
   skipCompletion(
     _args: SkipCompletionArguments<Params>,
-  ): Promise<boolean> {
-    return Promise.resolve(false);
+  ): boolean | Promise<boolean> {
+    return false;
   }
 
-  async show(_args: ShowArguments<Params>): Promise<void> {}
+  show(_args: ShowArguments<Params>): void | Promise<void> {}
 
-  async hide(_args: HideArguments<Params>): Promise<void> {}
+  hide(_args: HideArguments<Params>): void | Promise<void> {}
 
-  visible(_args: VisibleArguments<Params>): Promise<boolean> {
-    return Promise.resolve(true);
+  visible(_args: VisibleArguments<Params>): boolean | Promise<boolean> {
+    return true;
   }
 
   abstract params(): Params;

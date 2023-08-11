@@ -45,11 +45,11 @@ export abstract class BaseFilter<Params extends BaseFilterParams> {
 
   events: DdcEvent[] = [];
 
-  async onInit(_args: OnInitArguments<Params>): Promise<void> {}
+  onInit(_args: OnInitArguments<Params>): void | Promise<void> {}
 
-  async onEvent(_args: OnEventArguments<Params>): Promise<void> {}
+  onEvent(_args: OnEventArguments<Params>): void | Promise<void> {}
 
-  abstract filter({}: FilterArguments<Params>): Promise<Item[]>;
+  abstract filter({}: FilterArguments<Params>): Item[] | Promise<Item[]>;
 
   abstract params(): Params;
 }

@@ -88,20 +88,23 @@ export abstract class BaseSource<
   events: DdcEvent[] = [];
   isBytePos = false;
 
-  async onInit(_args: OnInitArguments<Params>): Promise<void> {}
+  onInit(_args: OnInitArguments<Params>): void | Promise<void> {}
 
-  async onEvent(_args: OnEventArguments<Params>): Promise<void> {}
+  onEvent(_args: OnEventArguments<Params>): void | Promise<void> {}
 
-  async onCompleteDone(
+  onCompleteDone(
     _args: OnCompleteDoneArguments<Params, UserData>,
-  ): Promise<void> {}
+  ): void | Promise<void> {}
 
-  // deno-lint-ignore require-await
-  async getPreviewer(
+  getPreviewer(
     _args: GetPreviewerArguments<Params>,
-  ): Promise<Previewer> {
-    return Promise.resolve({ kind: "empty" });
+  ): Previewer | Promise<Previewer> {
+    return { kind: "empty" };
   }
+
+  getCompletePosition(
+    args: GetCompletePositionArguments<Params>,
+  ): number | Promise<number>;
 
   async getCompletePosition(
     args: GetCompletePositionArguments<Params>,
