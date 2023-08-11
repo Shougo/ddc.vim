@@ -128,7 +128,7 @@ export class Ddc {
   ): Promise<void> {
     let filters: UserFilter[] = [];
     for (let userSource of options.sources) {
-      if (typeof (userSource) === "string") {
+      if (typeof userSource === "string") {
         userSource = {
           name: userSource,
         };
@@ -1373,11 +1373,11 @@ async function callFilterFilter(
 }
 
 function source2Name(s: UserSource) {
-  return typeof (s) === "string" ? s : s.name;
+  return typeof s === "string" ? s : s.name;
 }
 
 function filter2Name(f: UserFilter) {
-  return typeof (f) === "string" ? f : f.name;
+  return typeof f === "string" ? f : f.name;
 }
 
 Deno.test("byteposToCharpos", () => {
