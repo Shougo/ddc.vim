@@ -199,7 +199,8 @@ type TextPreviewer = {
  *  This must be implemented in the ddc-source
  */
 export type Previewer =
-  | EmptyPreviewer
   | CommandPreviewer
+  | EmptyPreviewer
+  | HelpPreviewer
   | MarkdownPreviewer
   | TextPreviewer;
