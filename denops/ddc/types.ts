@@ -176,6 +176,12 @@ export type CommandPreviewer = {
   command: string;
 };
 
+export type HelpPreviewer = {
+  kind: "help";
+
+  tag: string;
+};
+
 type MarkdownPreviewer = {
   kind: "markdown";
 

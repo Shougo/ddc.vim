@@ -1084,6 +1084,11 @@ CommandPreviewer
 	Preview type which shows the command specified by the
 	|ddc-previewer-attribute-command|.
 
+                                              *ddc-previewer-HelpPreviewer*
+HelpPreviewer
+	Preview type which shows the |:help| specified by the
+	|ddc-previewer-attribute-tag|.
+
                                              *ddc-previewer-MarkdownPreviewer*
 MarkdownPreviewer
 	Preview type which shows the markdown contents specified by the
@@ -1115,8 +1120,14 @@ kind			(string)			(Required)
 		It must be "command" or "markdown" or "text".
 
 		"command"	CommandPreviewer
+		"help"		HelpPreviewer
 		"markdown"	MarkdownPreviewer
 		"text"		TextPreviewer
+
+                                                 *ddc-previewer-attribute-tag*
+tag			(string)			(Required)
+		Tag passed to |:help| to render the preview.
+		NOTE: It is only avaiable in |ddc-previewer-HelpPreviewer|.
 
 
 ==============================================================================
