@@ -27,6 +27,26 @@ export function main(denops: Denops) {
     loader.registerAlias(extType, alias, base);
   };
 
+  const sourceNameFromItem = async (item: DdcItem) => {
+    if (item.__sourceName) {
+      return item.__sourceName;
+    }
+
+    // Get source name from previous items
+    const items = await vars.g.get(denops, "ddc#_items") as DdcItem[];
+    const sourceItems = items.filter(
+      (i) =>
+        i.word === item.word && i.abbr === item.abbr && i.kind === item.kind &&
+        i.menu === item.menu,
+    );
+
+    if (sourceItems.length === 0) {
+      return "";
+    }
+
+    return sourceItems[0].__sourceName;
+  };
+
   denops.dispatcher = {
     alias(arg1: unknown, arg2: unknown, arg3: unknown): Promise<void> {
       setAlias(
@@ -113,12 +133,14 @@ export function main(denops: Denops) {
       const [_skip, context, options] = await contextBuilder
         .createContext(denops, "Manual");
       const item = ensure(arg1, is.Record) as DdcItem;
+      const sourceName = await sourceNameFromItem(item);
       const previewContext = ensure(arg2, is.Record) as PreviewContext;
       return await ddc.getPreviewer(
         denops,
         context,
         options,
         item,
+        sourceName,
         previewContext,
       );
     },
@@ -184,12 +206,12 @@ export function main(denops: Denops) {
       cbContext.emit(ensure(id, is.String), payload);
       return Promise.resolve();
     },
-    async onCompleteDone(arg1: unknown, arg2: unknown): Promise<void> {
-      const sourceName = ensure(arg1, is.String);
-      const userData = ensure(arg2, is.Record) as DdcUserData;
+    async onCompleteDone(arg1: unknown): Promise<void> {
+      const item = ensure(arg1, is.Record) as DdcItem;
+      const sourceName = await sourceNameFromItem(item);
       const [skip, context, options] = await contextBuilder
         .createContext(denops, "CompleteDone");
-      if (skip) return;
+      if (skip || sourceName.length === 0) return;
 
       // Convert to UserSource
       const userSource =
@@ -204,7 +226,7 @@ export function main(denops: Denops) {
         cbContext.createOnCallback(),
         options,
         userSource,
-        userData,
+        item.user_data,
       );
     },
     async show(arg1: unknown): Promise<void> {

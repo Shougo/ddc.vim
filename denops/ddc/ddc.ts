@@ -891,16 +891,17 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
     item: DdcItem,
+    sourceName: SourceName,
     previewContext: PreviewContext,
   ): Promise<Previewer> {
-    if (!item.__sourceName) {
+    if (sourceName.length === 0) {
       return { kind: "empty" };
     }
 
     const [source, sourceOptions, sourceParams] = await this.getSource(
       denops,
       options,
-      item.__sourceName,
+      sourceName,
     );
     if (!source || !source.getPreviewer) {
       return { kind: "empty" };
