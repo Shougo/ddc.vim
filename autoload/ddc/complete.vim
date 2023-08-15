@@ -1,13 +1,3 @@
-function ddc#complete#_on_complete_done(completed_item) abort
-  if !ddc#_denops_running() || a:completed_item->empty()
-        \ || !(a:completed_item->has_key('user_data'))
-        \ || a:completed_item.user_data->type() != v:t_dict
-    return
-  endif
-
-  call denops#request('ddc', 'onCompleteDone', [a:completed_item])
-endfunction
-
 function ddc#complete#_skip(pos, items) abort
   if a:pos < 0 || g:ddc#_changedtick != b:changedtick
     return v:true

@@ -77,7 +77,14 @@ function ddc#disable() abort
 endfunction
 
 function ddc#on_complete_done(completed_item) abort
-  call ddc#complete#_on_complete_done(a:completed_item)
+  if !ddc#_denops_running()
+        \ || a:completed_item->empty()
+        \ || !(a:completed_item->has_key('user_data'))
+        \ || a:completed_item.user_data->type() != v:t_dict
+    return
+  endif
+
+  call denops#request('ddc', 'onCompleteDone', [a:completed_item])
 endfunction
 
 function ddc#syntax_in(groups) abort
