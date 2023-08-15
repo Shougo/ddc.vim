@@ -5,7 +5,6 @@ import {
   DdcExtType,
   DdcItem,
   DdcOptions,
-  DdcUserData,
   Item,
   PreviewContext,
   Previewer,
