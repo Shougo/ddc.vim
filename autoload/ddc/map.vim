@@ -106,7 +106,7 @@ function ddc#map#insert_item(number) abort
   endif
   " NOTE: Fire Source.onCompleteDone after insert the item.
   let chars .=
-        \ "\<Cmd>call ddc#complete#_on_complete_done(v:completed_item)\<CR>"
+        \ "\<Cmd>call ddc#on_complete_done(v:completed_item)\<CR>"
   return chars
 endfunction
 
