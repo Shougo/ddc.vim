@@ -1330,14 +1330,11 @@ Q: I want to use floating preview window feature.
 A: ddc.vim does not implement the feature.  ddc.vim provides auto completion
    feature only.  The extra tasks are out of the range.
 
-   You can do it by float-preview.nvim plugin.
-   https://github.com/ncm2/float-preview.nvim
+   You can use below plugins.
 
-   Or you can use ddc-nvim-lsp-doc plugin for nvim-lsp.
+   https://github.com/Shougo/pum.vim
    https://github.com/matsui54/denops-popup-preview.vim
-
-   NOTE: float-preview.nvim does not support "completionItem/resolve"
-   behavior.  So ddc-nvim-lsp-doc is better.
+   https://github.com/uga-rosa/ddc-previewer-floating
 
                                                                   *ddc-faq-13*
 Q: Why don't create file/path source is for ddc.vim?
