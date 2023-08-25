@@ -1131,7 +1131,7 @@ tag			(string)			(Required)
 
 
 ==============================================================================
-FREQUENTLY ASKED QUESTIONS (FAQ)			*ddc-faq*
+FAQ                                                                  *ddc-faq*
 
 
 FAQ 1:							|ddc-faq-1|
