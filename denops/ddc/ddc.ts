@@ -234,7 +234,7 @@ export class Ddc {
   ): Promise<[number, DdcItem[]]> {
     this.prevSources = options.sources;
 
-    const rs = await Promise.all(options.sources.map(async (userSource) => {
+    const rs = options.sources.map(async (userSource) => {
       const [s, o, p] = await this.getSource(
         denops,
         options,
@@ -366,10 +366,17 @@ export class Ddc {
       }
 
       return [completePos, items] as const;
-    }));
+    });
 
     // Remove invalid source
-    const fs = rs.filter(<T>(v?: T): v is T => !!v);
+    // NOTE: denops cannot use Promise.all()
+    const fs = [];
+    for (const r of rs) {
+      const result = await r;
+      if (result) {
+        fs.push(result);
+      }
+    }
     if (!fs.length) {
       return [-1, []];
     }
