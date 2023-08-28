@@ -382,21 +382,20 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     lineNr,
     nextInput,
     wildMenuMode,
-  ] = [
-    await fn.bufnr(denops),
-    await changedByCompletionPromise,
-    await changedTickPromise,
-    await filetypePromise,
-    await inputPromise,
-    await enabledEskkPromise,
-    await enabledSkkeletonPromise,
-    await op.iminsert.getLocal(denops),
-    await op.paste.get(denops),
-    await fn.line(denops, "."),
-    await nextInputPromise,
-    await fn.wildmenumode(denops),
-  ];
-
+  ] = await Promise.all([
+    fn.bufnr(denops),
+    changedByCompletionPromise,
+    changedTickPromise,
+    filetypePromise,
+    inputPromise,
+    enabledEskkPromise,
+    enabledSkkeletonPromise,
+    op.iminsert.getLocal(denops),
+    op.paste.get(denops),
+    fn.line(denops, "."),
+    nextInputPromise,
+    fn.wildmenumode(denops) as Promise<number>,
+  ]);
   return {
     bufnr,
     changedByCompletion,
