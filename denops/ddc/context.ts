@@ -1,4 +1,13 @@
-import { assertEquals, Denops, ensure, fn, is, op, vars } from "./deps.ts";
+import {
+  assertEquals,
+  collect,
+  Denops,
+  ensure,
+  fn,
+  is,
+  op,
+  vars,
+} from "./deps.ts";
 import {
   BaseFilterParams,
   BaseSourceParams,
@@ -327,10 +336,6 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     return event === "TextChangedP" && Object.keys(completedItem).length !== 0;
   })();
 
-  const changedTickPromise = vars.b.get(denops, "changedtick") as Promise<
-    number
-  >;
-
   type ContextFiletype = "context_filetype" | "treesitter" | "none";
 
   const filetypePromise: Promise<string> = (async () => {
@@ -350,30 +355,13 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     return ensure(await op.filetype.getLocal(denops), is.String);
   })();
 
-  const enabledEskkPromise = _call(denops, "eskk#is_enabled", false);
-
-  const enabledSkkeletonPromise = _call(denops, "skkeleton#is_enabled", false);
-
   const mode: string = event === "InsertEnter"
     ? "i"
     : ensure(await fn.mode(denops), is.String);
 
-  const inputPromise = denops.call("ddc#util#get_input", event) as Promise<
-    string
-  >;
-
-  const nextInputPromise = denops.call(
-    "ddc#util#get_next_input",
-    event,
-  ) as Promise<
-    string
-  >;
-
   const [
     bufnr,
-    changedByCompletion,
     changedTick,
-    filetype,
     input,
     enabledEskk,
     enabledSkkeleton,
@@ -382,20 +370,22 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     lineNr,
     nextInput,
     wildMenuMode,
-  ] = await Promise.all([
+  ] = await collect(denops, (denops) => [
     fn.bufnr(denops),
-    changedByCompletionPromise,
-    changedTickPromise,
-    filetypePromise,
-    inputPromise,
-    enabledEskkPromise,
-    enabledSkkeletonPromise,
+    vars.b.get(denops, "changedtick") as Promise<number>,
+    denops.call("ddc#util#get_input", event) as Promise<string>,
+    _call(denops, "eskk#is_enabled", false),
+    _call(denops, "skkeleton#is_enabled", false),
     op.iminsert.getLocal(denops),
     op.paste.get(denops),
     fn.line(denops, "."),
-    nextInputPromise,
+    denops.call("ddc#util#get_next_input", event) as Promise<string>,
     fn.wildmenumode(denops) as Promise<number>,
   ]);
+
+  const filetype = await filetypePromise;
+  const changedByCompletion = await changedByCompletionPromise;
+
   return {
     bufnr,
     changedByCompletion,
