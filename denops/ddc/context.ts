@@ -355,36 +355,39 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     return ensure(await op.filetype.getLocal(denops), is.String);
   })();
 
-  const mode: string = event === "InsertEnter"
-    ? "i"
-    : ensure(await fn.mode(denops), is.String);
-
   const [
     bufnr,
     changedTick,
-    input,
     enabledEskk,
     enabledSkkeleton,
     iminsert,
     isPaste,
     lineNr,
-    nextInput,
     wildMenuMode,
   ] = await collect(denops, (denops) => [
     fn.bufnr(denops),
     vars.b.get(denops, "changedtick") as Promise<number>,
-    denops.call("ddc#util#get_input", event) as Promise<string>,
     _call(denops, "eskk#is_enabled", false),
     _call(denops, "skkeleton#is_enabled", false),
     op.iminsert.getLocal(denops),
     op.paste.get(denops),
     fn.line(denops, "."),
-    denops.call("ddc#util#get_next_input", event) as Promise<string>,
     fn.wildmenumode(denops) as Promise<number>,
   ]);
 
+  // NOTE: don't use collect() for it.
+  // Other plugins may change the state.
+  const mode: string = event === "InsertEnter"
+    ? "i"
+    : ensure(await fn.mode(denops), is.String);
+
   const filetype = await filetypePromise;
   const changedByCompletion = await changedByCompletionPromise;
+  const input = await denops.call("ddc#util#get_input", event) as string;
+  const nextInput = await denops.call(
+    "ddc#util#get_next_input",
+    event,
+  ) as string;
 
   return {
     bufnr,
