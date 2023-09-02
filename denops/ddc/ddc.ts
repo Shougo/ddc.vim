@@ -476,10 +476,6 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ) {
-    if (context.event !== "InsertEnter" && context.mode === "n") {
-      return true;
-    }
-
     // NOTE: Don't complete when backspace by default, because of completion
     // flicker.
     const checkBackSpace = !options.backspaceCompletion &&
@@ -506,9 +502,11 @@ export class Ddc {
       return true;
     }
 
+    // Check autoCompleteEvents
     if (
-      context.event !== "Manual" &&
-      options.autoCompleteEvents.indexOf(context.event) < 0
+      (context.event !== "InsertEnter" && context.mode === "n") ||
+      (context.event !== "Manual" &&
+        options.autoCompleteEvents.indexOf(context.event) < 0)
     ) {
       return true;
     }
