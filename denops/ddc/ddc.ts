@@ -496,10 +496,13 @@ export class Ddc {
     }
 
     // Skip special buffers.
-    const buftype = await op.buftype.getLocal(denops);
     if (
-      buftype !== "" && !options.specialBufferCompletion && context.mode !== "c"
+      await op.buftype.getLocal(denops) !== "" &&
+      !options.specialBufferCompletion && context.mode !== "c"
     ) {
+      // NOTE: cancelCompletion is needed.
+      await this.cancelCompletion(denops, context, options);
+
       return true;
     }
 
