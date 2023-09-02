@@ -375,12 +375,11 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     fn.wildmenumode(denops) as Promise<number>,
   ]);
 
-  // NOTE: don't use collect() for it.
+  // NOTE: don't use collect() for them.
   // Other plugins may change the state.
   const mode: string = event === "InsertEnter"
     ? "i"
     : ensure(await fn.mode(denops), is.String);
-
   const filetype = await filetypePromise;
   const changedByCompletion = await changedByCompletionPromise;
   const input = await denops.call("ddc#util#get_input", event) as string;
