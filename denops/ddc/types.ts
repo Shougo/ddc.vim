@@ -3,13 +3,12 @@ import { BaseUiParams } from "./base/ui.ts";
 import { BaseSourceParams } from "./base/source.ts";
 import { BaseFilterParams } from "./base/filter.ts";
 
-export { BaseUi } from "./base/ui.ts";
-export { BaseSource } from "./base/source.ts";
-export { BaseFilter } from "./base/filter.ts";
 export { BaseConfig } from "./base/config.ts";
-
+export { BaseUi } from "./base/ui.ts";
 export type { BaseUiParams } from "./base/ui.ts";
+export { BaseSource } from "./base/source.ts";
 export type { BaseSourceParams } from "./base/source.ts";
+export { BaseFilter } from "./base/filter.ts";
 export type { BaseFilterParams } from "./base/filter.ts";
 
 export { ContextBuilder } from "./context.ts";
