@@ -661,9 +661,8 @@ NOTE: The name is named by file name.
 ------------------------------------------------------------------------------
 SOURCE OPTIONS                                            *ddc-source-options*
 
-NOTE: The sources cannot set default options for source.  If the source need
-to specify the recommended configuration, you should write it in the
-documentation instead.
+NOTE: The sources cannot set default options.  If they need to specify the
+recommended configuration, you should write it in the documentation instead.
 
                                                 *ddc-source-option-converters*
 converters		(string[])
