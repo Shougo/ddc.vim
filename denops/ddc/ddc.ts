@@ -45,6 +45,8 @@ import {
   deadline,
   DeadlineError,
   Denops,
+  equal,
+  fn,
   op,
   TimeoutError,
   vars,
@@ -545,7 +547,11 @@ export class Ddc {
     this.prevInput = context.input;
 
     const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
-    if (context.changedTick !== await changedTick) {
+    const cursor = fn.getcurpos(denops);
+    if (
+      context.changedTick !== await changedTick ||
+      !equal(context.cursor, await cursor)
+    ) {
       // Input is changed.  Skip invalid completion.
       return;
     }

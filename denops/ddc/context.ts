@@ -292,6 +292,7 @@ type World = {
   bufnr: number;
   changedByCompletion: boolean;
   changedTick: number;
+  cursor: (number | undefined)[];
   event: DdcEvent;
   filetype: string;
   input: string;
@@ -308,6 +309,7 @@ function initialWorld(): World {
     bufnr: 0,
     changedByCompletion: false,
     changedTick: 0,
+    cursor: [],
     event: "Manual",
     filetype: "",
     input: "",
@@ -358,6 +360,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   const [
     bufnr,
     changedTick,
+    cursor,
     enabledEskk,
     enabledSkkeleton,
     iminsert,
@@ -367,6 +370,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   ] = await collect(denops, (denops) => [
     fn.bufnr(denops),
     vars.b.get(denops, "changedtick") as Promise<number>,
+    fn.getcurpos(denops),
     _call(denops, "eskk#is_enabled", false),
     _call(denops, "skkeleton#is_enabled", false),
     op.iminsert.getLocal(denops),
@@ -392,6 +396,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     bufnr,
     changedByCompletion,
     changedTick,
+    cursor,
     event,
     filetype,
     input,
@@ -443,6 +448,7 @@ export class ContextBuilder {
 
     const context = {
       changedTick: world.changedTick,
+      cursor: world.cursor,
       event: event,
       filetype: world.filetype,
       input: world.input,
