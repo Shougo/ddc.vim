@@ -9,13 +9,9 @@ export async function convertKeywordPattern(
     ? await op.iskeyword.getLocal(denops)
     : await op.iskeyword.getBuffer(denops, bufnr);
   const keyword = vimoption2ts(iskeyword);
-  const replaced = keywordPattern.replaceAll(
-    /\\k/g,
-    () => "[" + keyword + "]",
-  ).replaceAll(
-    /\[:keyword:\]/g,
-    () => keyword,
-  )
+  const replaced = keywordPattern
+    .replaceAll("\\k", "[" + keyword + "]")
+    .replaceAll("[:keyword:]", keyword);
   return replaced;
 }
 
