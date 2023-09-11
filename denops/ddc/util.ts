@@ -8,10 +8,15 @@ export async function convertKeywordPattern(
   const iskeyword = bufnr === undefined
     ? await op.iskeyword.getLocal(denops)
     : await op.iskeyword.getBuffer(denops, bufnr);
-  return keywordPattern.replaceAll(
+  const keyword = vimoption2ts(iskeyword);
+  const replaced = keywordPattern.replaceAll(
     /\\k/g,
-    () => "[" + vimoption2ts(iskeyword) + "]",
-  );
+    () => "[" + keyword + "]",
+  ).replaceAll(
+    /\[:keyword:\]/g,
+    () => keyword,
+  )
+  return replaced;
 }
 
 function vimoption2ts(option: string): string {
