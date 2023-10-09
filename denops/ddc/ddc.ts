@@ -583,7 +583,6 @@ export class Ddc {
     const skip = await denops.call(
       "ddc#util#check_skip",
       completePos,
-      items,
     );
     if (skip) {
       return;
