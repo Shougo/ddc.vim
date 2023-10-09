@@ -54,7 +54,7 @@ function ddc#util#check_skip(pos, items) abort
 
   " NOTE: If the input text is longer than 'textwidth', the completed text
   " will be the next line.  It breaks auto completion behavior.
-  if &l:formatoptions =~# '[tca]' && &l:textwidth > 0
+  if &l:formatoptions =~# '[ta]' && &l:textwidth > 0
     const input = getline('.')[: a:pos]
     const displaywidth = max(a:items->copy()
           \ ->map({ _, val -> strdisplaywidth(input .. val.word) })) + 1

@@ -448,6 +448,7 @@ export class Ddc {
 
     return [completePosBytes, retItems];
   }
+
   updateItems(
     name: string,
     items: Item[],
