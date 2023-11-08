@@ -1162,16 +1162,6 @@ async function callSourceOnEvent(
   }
 
   try {
-    if (source.apiVersion < 5) {
-      // NOTE: It is for backward compatibility.
-      // Convert keywordPattern
-      // deno-lint-ignore-file
-      options.keywordPattern = await convertKeywordPattern(
-        denops,
-        sourceOptions.keywordPattern,
-      );
-    }
-
     await source.onEvent({
       denops,
       context,
@@ -1245,15 +1235,6 @@ async function callSourceGetCompletePosition(
   sourceParams: BaseSourceParams,
 ): Promise<number> {
   try {
-    if (source.apiVersion < 5) {
-      // NOTE: It is for backward compatibility.
-      // Convert keywordPattern
-      options.keywordPattern = await convertKeywordPattern(
-        denops,
-        sourceOptions.keywordPattern,
-      );
-    }
-
     return await source.getCompletePosition({
       denops,
       context,

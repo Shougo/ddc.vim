@@ -1620,6 +1620,9 @@ https://github.com/Shougo/ddc-ui-pum
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
 
+2023.11.08
+* Remove keywordPattern backward compatibility.
+
 2023.07.08
 * Vim 9.0.1276+ or neovim 0.8+ is required to support the latest MacVim.
 
