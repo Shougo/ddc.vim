@@ -51,7 +51,7 @@ import {
   TimeoutError,
   vars,
 } from "./deps.ts";
-import { convertKeywordPattern, errorException } from "./util.ts";
+import { errorException } from "./util.ts";
 
 type DdcResult = {
   items: Item[];
