@@ -39,7 +39,6 @@ export type OnCompleteDoneArguments<
   denops: Denops;
   context: Context;
   onCallback: OnCallback;
-  loader: Loader;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
