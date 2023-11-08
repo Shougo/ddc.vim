@@ -170,6 +170,7 @@ export class Ddc {
         options,
         sourceOptions,
         sourceParams,
+        this.loader,
       );
     }
 
@@ -224,6 +225,7 @@ export class Ddc {
       options,
       sourceOptions,
       sourceParams,
+      this.loader,
       userData,
     );
   }
@@ -254,6 +256,7 @@ export class Ddc {
         denops,
         context,
         onCallback,
+        this.loader,
         options,
         o,
         p,
@@ -312,6 +315,7 @@ export class Ddc {
           options,
           o,
           p,
+          this.loader,
           completePos,
           completeStr,
           triggerForIncomplete,
@@ -849,7 +853,13 @@ export class Ddc {
       userSource,
     );
 
-    await checkSourceOnInit(source, denops, sourceOptions, sourceParams);
+    await checkSourceOnInit(
+      source,
+      denops,
+      sourceOptions,
+      sourceParams,
+      this.loader,
+    );
 
     return [source, sourceOptions, sourceParams];
   }
@@ -920,6 +930,7 @@ export class Ddc {
       options,
       sourceOptions,
       sourceParams,
+      loader: this.loader,
       item,
       previewContext,
     });
@@ -1077,6 +1088,7 @@ async function checkSourceOnInit(
   denops: Denops,
   sourceOptions: SourceOptions,
   sourceParams: BaseSourceParams,
+  loader: Loader,
 ) {
   if (source.isInitialized) {
     return;
@@ -1087,6 +1099,7 @@ async function checkSourceOnInit(
       denops,
       sourceOptions,
       sourceParams,
+      loader,
     });
 
     source.isInitialized = true;
@@ -1142,6 +1155,7 @@ async function callSourceOnEvent(
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: BaseSourceParams,
+  loader: Loader,
 ) {
   if (!source.events?.includes(context.event)) {
     return;
@@ -1165,6 +1179,7 @@ async function callSourceOnEvent(
       options,
       sourceOptions,
       sourceParams,
+      loader,
     });
   } catch (e: unknown) {
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
@@ -1190,6 +1205,7 @@ async function callSourceOnCompleteDone<
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Params,
+  loader: Loader,
   userData: UserData,
 ) {
   try {
@@ -1200,6 +1216,7 @@ async function callSourceOnCompleteDone<
       options,
       sourceOptions,
       sourceParams,
+      loader,
       // This is preventing users from accessing the internal properties.
       // deno-lint-ignore no-explicit-any
       userData: userData as any,
@@ -1222,6 +1239,7 @@ async function callSourceGetCompletePosition(
   denops: Denops,
   context: Context,
   onCallback: OnCallback,
+  loader: Loader,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: BaseSourceParams,
@@ -1240,6 +1258,7 @@ async function callSourceGetCompletePosition(
       denops,
       context,
       onCallback,
+      loader,
       options,
       sourceOptions,
       sourceParams,
@@ -1270,6 +1289,7 @@ async function callSourceGather<
   options: DdcOptions,
   sourceOptions: SourceOptions,
   sourceParams: Params,
+  loader: Loader,
   completePos: number,
   completeStr: string,
   isIncomplete: boolean,
@@ -1282,6 +1302,7 @@ async function callSourceGather<
       options,
       sourceOptions,
       sourceParams,
+      loader,
       completePos,
       completeStr,
       isIncomplete,

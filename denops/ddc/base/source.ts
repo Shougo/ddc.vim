@@ -11,6 +11,7 @@ import {
 } from "../types.ts";
 import { Denops } from "../deps.ts";
 import { convertKeywordPattern } from "../util.ts";
+import { Loader } from "../loader.ts";
 
 export type BaseSourceParams = Record<string, unknown>;
 
@@ -18,6 +19,7 @@ export type OnInitArguments<Params extends BaseSourceParams> = {
   denops: Denops;
   sourceOptions: SourceOptions;
   sourceParams: Params;
+  loader: Loader;
 };
 
 export type OnEventArguments<Params extends BaseSourceParams> = {
@@ -27,6 +29,7 @@ export type OnEventArguments<Params extends BaseSourceParams> = {
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
+  loader: Loader;
 };
 
 export type OnCompleteDoneArguments<
@@ -36,9 +39,11 @@ export type OnCompleteDoneArguments<
   denops: Denops;
   context: Context;
   onCallback: OnCallback;
+  loader: Loader;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
+  loader: Loader;
   // To prevent users from accessing internal variables.
   userData: UserData;
 };
@@ -54,6 +59,7 @@ export type GetPreviewerArguments<
   sourceParams: Params;
   item: Item<UserData>;
   previewContext: PreviewContext;
+  loader: Loader;
 };
 
 export type GetCompletePositionArguments<Params extends BaseSourceParams> = {
@@ -63,6 +69,7 @@ export type GetCompletePositionArguments<Params extends BaseSourceParams> = {
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
+  loader: Loader;
 };
 
 export type GatherArguments<Params extends BaseSourceParams> = {
@@ -72,6 +79,7 @@ export type GatherArguments<Params extends BaseSourceParams> = {
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
+  loader: Loader;
   completePos: number;
   completeStr: string;
   isIncomplete?: boolean;
