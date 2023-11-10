@@ -1103,6 +1103,14 @@ async function checkSourceOnInit(
     });
 
     source.isInitialized = true;
+
+    if (source.apiVersion < 5) {
+      // API version check
+      await denops.call(
+        "ddc#util#print_error",
+        `source is too old: "${source.name}"`,
+      );
+    }
   } catch (e: unknown) {
     if (isTimeoutError(e)) {
       // Ignore timeout error
