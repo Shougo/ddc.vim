@@ -517,7 +517,7 @@ ddc#map#complete_common_string()
                                                             *ddc#map#extend()*
 ddc#map#extend({confirm-key})
 		Confirm the items and extend current completion.
-		{confirm-key} is popup confirm key.
+		{confirm-key} is popup confirm key like <C-y>.
 		NOTE: It must be in |:map-<expr>|.
 
                                                        *ddc#map#insert_item()*
