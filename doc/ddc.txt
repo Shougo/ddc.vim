@@ -100,8 +100,8 @@ autoCompleteDelay
 
                                                *ddc-option-autoCompleteEvents*
 autoCompleteEvents
-		The auto completion fired events.  It must be list of
-		|autocmd-events| string.
+		The events to fire auto completion or narrow current items.
+		It must be list of |autocmd-events| string.
 		NOTE: Supported events is described in |ddc-events|.
 
 		Default: [
@@ -535,6 +535,8 @@ ddc#map#manual_complete([{options}])
 		NOTE: After you open completion UI in manual completion, your
 		next input will be used as manual completion until the items
 		are empty or |ddc#hide()| is called.
+		NOTE: If you want to narrow manual completion items, you must
+		set |ddc-option-autoCompleteEvents|.
 
 ------------------------------------------------------------------------------
 EVENTS                                                            *ddc-events*
