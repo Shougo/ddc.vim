@@ -84,6 +84,26 @@ export async function errorException(
   }
 }
 
+export async function safeStat(path: string): Promise<Deno.FileInfo | null> {
+  // NOTE: Deno.stat() may be failed
+  try {
+    const stat = await Deno.lstat(path);
+    if (stat.isSymlink) {
+      try {
+        const stat = await Deno.stat(path);
+        stat.isSymlink = true;
+        return stat;
+      } catch (_: unknown) {
+        // Ignore stat exception
+      }
+    }
+    return stat;
+  } catch (_: unknown) {
+    // Ignore stat exception
+  }
+  return null;
+}
+
 Deno.test("vimoption2ts", () => {
   assertEquals(vimoption2ts("@,48-57,_,\\"), "a-zA-Z0-9_\\\\");
   assertEquals(vimoption2ts("@,-,48-57,_"), "a-zA-Z0-9_-");

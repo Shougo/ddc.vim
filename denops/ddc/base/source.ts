@@ -10,7 +10,7 @@ import {
   SourceOptions,
 } from "../types.ts";
 import { Denops } from "../deps.ts";
-import { convertKeywordPattern } from "../util.ts";
+import { convertKeywordPattern } from "../utils.ts";
 import { Loader } from "../loader.ts";
 
 export type BaseSourceParams = Record<string, unknown>;

@@ -51,7 +51,7 @@ import {
   TimeoutError,
   vars,
 } from "./deps.ts";
-import { errorException } from "./util.ts";
+import { errorException } from "./utils.ts";
 
 type DdcResult = {
   items: Item[];

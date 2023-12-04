@@ -99,6 +99,10 @@ function ddc#update_items(name, items) abort
   call ddc#_notify('updateItems', [a:name, a:items])
 endfunction
 
+function ddc#set_static_import_path(path) abort
+  call ddc#_notify('setStaticImportPath', [a:path])
+endfunction
+
 function ddc#on_event(event) abort
   " NOTE: If denops isn't running, stop
   if !ddc#_denops_running()
