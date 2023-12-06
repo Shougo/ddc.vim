@@ -21,9 +21,20 @@ function ddc#enable(opts = {}) abort
     silent! call context_filetype#get_filetype()
   endif
 
+  " Create default mods file.
+  const mods = [s:root_dir, 'denops', 'ddc', '_mods.js']->join(s:sep)
+  if !(mods->filereadable())
+    call writefile([
+          \   'export const mods = {};',
+          \ ], mods)
+  endif
+
   let g:ddc#_started = reltime()
   let g:ddc#_context_filetype = context_filetype
   let g:ddc#_skip_next_complete = 0
+  if !('g:ddc#_mods'->exists())
+    const g:ddc#_mods = mods
+  endif
 
   " NOTE: ddc.vim must be registered manually.
   autocmd ddc User DenopsReady silent! call ddc#_register()
@@ -99,8 +110,8 @@ function ddc#update_items(name, items) abort
   call ddc#_notify('updateItems', [a:name, a:items])
 endfunction
 
-function ddc#set_static_import_path(path) abort
-  call ddc#_notify('setStaticImportPath', [a:path])
+function ddc#set_static_import_path() abort
+  call ddc#_notify('setStaticImportPath', [])
 endfunction
 
 function ddc#on_event(event) abort

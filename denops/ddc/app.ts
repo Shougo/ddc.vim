@@ -128,8 +128,8 @@ export function main(denops: Denops) {
     getCurrent(): Promise<DdcOptions> {
       return Promise.resolve(contextBuilder.getCurrent(denops));
     },
-    async setStaticImportPath(arg1: unknown): Promise<void> {
-      await loader.initStaticImportPath(denops, arg1 as string);
+    async setStaticImportPath(): Promise<void> {
+      await loader.initStaticImportPath(denops);
       return Promise.resolve();
     },
     async getPreviewer(arg1: unknown, arg2: unknown): Promise<Previewer> {

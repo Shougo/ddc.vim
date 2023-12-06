@@ -25,6 +25,7 @@ jobs:
 
       - name: Check Type
         run: |
+          echo "export const mods = {};" > denops/ddc/_mods.js
           find denops -name "*.ts"| xargs deno test --unstable --no-run -A
 
       - name: Check with deno lint
@@ -44,5 +45,6 @@ jobs:
 
       - name: Test
         run: |
+          echo "export const mods = {};" > denops/ddc/_mods.js
           grep -rl Deno.test denops| xargs deno test --unstable -A
         timeout-minutes: 5
