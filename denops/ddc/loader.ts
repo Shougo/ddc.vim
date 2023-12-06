@@ -10,7 +10,16 @@ import {
   SourceName,
   UiName,
 } from "./types.ts";
-import { basename, Denops, fn, Lock, op, parse, toFileUrl, vars } from "./deps.ts";
+import {
+  basename,
+  Denops,
+  fn,
+  Lock,
+  op,
+  parse,
+  toFileUrl,
+  vars,
+} from "./deps.ts";
 import { mods } from "./_mods.js";
 
 export class Loader {
