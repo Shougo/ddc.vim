@@ -363,7 +363,6 @@ ddc#set_static_import_path()
 >
 		$ git update-index --skip-worktree denops/ddc/_mods.js
 <
-
                                                     *ddc#skip_next_complete()*
 ddc#skip_next_complete()
 		Skip the next auto completion.
