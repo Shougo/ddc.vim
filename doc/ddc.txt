@@ -358,6 +358,11 @@ ddc#set_static_import_path()
 		Make static import file to optimize load ddu extensions from
 		current 'runtimepath'.
 		NOTE: It should be called if you have updated plugins.
+		NOTE: It changes "denops/ddc/_mods.js" in the repository.
+		"--skip-worktree" is recommended if you use "git".
+>
+		$ git update-index --skip-worktree denops/ddc/_mods.js
+<
 
                                                     *ddc#skip_next_complete()*
 ddc#skip_next_complete()
