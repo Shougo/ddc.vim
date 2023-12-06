@@ -21,19 +21,11 @@ function ddc#enable(opts = {}) abort
     silent! call context_filetype#get_filetype()
   endif
 
-  " Create default mods file.
-  const mods = [s:root_dir, 'denops', 'ddc', '_mods.js']->join(s:sep)
-  if !(mods->filereadable())
-    call writefile([
-          \   'export const mods = {};',
-          \ ], mods)
-  endif
-
   let g:ddc#_started = reltime()
   let g:ddc#_context_filetype = context_filetype
   let g:ddc#_skip_next_complete = 0
   if !('g:ddc#_mods'->exists())
-    const g:ddc#_mods = mods
+    const g:ddc#_mods = [s:root_dir, 'denops', 'ddc', '_mods.js']->join(s:sep)
   endif
 
   " NOTE: ddc.vim must be registered manually.
