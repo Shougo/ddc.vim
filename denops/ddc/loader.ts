@@ -42,11 +42,9 @@ export class Loader {
     const runtimepath = await op.runtimepath.getGlobal(denops);
     for (
       const glob of [
-        "denops/@ddu-columns/*.ts",
-        "denops/@ddu-filters/*.ts",
-        "denops/@ddu-kinds/*.ts",
-        "denops/@ddu-sources/*.ts",
-        "denops/@ddu-uis/*.ts",
+        "denops/@ddc-filters/*.ts",
+        "denops/@ddc-sources/*.ts",
+        "denops/@ddc-uis/*.ts",
       ]
     ) {
       mods = mods.concat(
