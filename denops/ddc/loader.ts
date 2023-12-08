@@ -60,11 +60,13 @@ export class Loader {
 
     const staticLines = [];
     for (const [index, path] of mods.entries()) {
-      staticLines.push(`import * as mod${index} from "${toFileUrl(path)}"`);
+      staticLines.push(
+        `import * as mod${index} from "${toFileUrl(path)}.href"`,
+      );
     }
     staticLines.push("export const mods = {");
     for (const [index, path] of mods.entries()) {
-      staticLines.push(`  "${toFileUrl(path)}":`);
+      staticLines.push(`  "${toFileUrl(path).href}":`);
       staticLines.push(`    mod${index},`);
     }
     staticLines.push("};");
