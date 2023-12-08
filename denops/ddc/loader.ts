@@ -61,7 +61,7 @@ export class Loader {
     const staticLines = [];
     for (const [index, path] of mods.entries()) {
       staticLines.push(
-        `import * as mod${index} from "${toFileUrl(path)}.href"`,
+        `import * as mod${index} from "${toFileUrl(path).href}"`,
       );
     }
     staticLines.push("export const mods = {");
