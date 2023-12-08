@@ -70,8 +70,11 @@ function ddc#custom#get_filetype() abort
   return ddc#_denops_running() ? denops#request('ddc', 'getFiletype', []) : {}
 endfunction
 function ddc#custom#get_buffer() abort
-  return ddc#_denops_running() ?
-        \ get(denops#request('ddc', 'getBuffer', []), bufnr('%'), {}) : {}
+  if !ddc#_denops_running()
+    return {}
+  endif
+  let buffer = denops#request('ddc', 'getBuffer', [])
+  return buffer->type() == v:t_dict ? get(buffer, bufnr('%'), {}) : {}
 endfunction
 function ddc#custom#get_context() abort
   return ddc#_denops_running() ? denops#request('ddc', 'getContext', []) : {}
