@@ -60,7 +60,7 @@ export class Loader {
 
     const staticLines = [];
     for (const [index, path] of mods.entries()) {
-      staticLines.push(`import * as mod${index} from "file://${path}"`);
+      staticLines.push(`import * as mod${index} from "${toFileUrl(path)}"`);
     }
     staticLines.push("export const mods = {");
     for (const [index, path] of mods.entries()) {
