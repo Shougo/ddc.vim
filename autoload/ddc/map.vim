@@ -18,12 +18,12 @@ function ddc#map#manual_complete(options = {}) abort
 endfunction
 
 function ddc#map#can_complete() abort
-  return !(g:->get('ddc#_items', [])->empty())
+  return !g:->get('ddc#_items', [])->empty()
         \ && g:->get('ddc#_complete_pos', -1) >= 0
 endfunction
 
 function ddc#map#extend(confirm_key) abort
-  if !('g:ddc#_sources'->exists())
+  if !'g:ddc#_sources'->exists()
     return ''
   endif
   return a:confirm_key .. ddc#map#manual_complete(g:ddc#_sources)

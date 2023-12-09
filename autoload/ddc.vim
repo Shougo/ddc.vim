@@ -1,5 +1,5 @@
 function ddc#enable(opts = {}) abort
-  if denops#plugin#is_loaded('ddc')
+  if 'ddc'->denops#plugin#is_loaded()
     return
   endif
 
@@ -24,7 +24,7 @@ function ddc#enable(opts = {}) abort
   let g:ddc#_started = reltime()
   let g:ddc#_context_filetype = context_filetype
   let g:ddc#_skip_next_complete = 0
-  if !('g:ddc#_mods'->exists())
+  if !'g:ddc#_mods'->exists()
     const g:ddc#_mods = [s:root_dir, 'denops', 'ddc', '_mods.js']->join(s:sep)
   endif
 
@@ -82,7 +82,7 @@ endfunction
 function ddc#on_complete_done(completed_item) abort
   if !ddc#_denops_running()
         \ || a:completed_item->empty()
-        \ || !(a:completed_item->has_key('user_data'))
+        \ || !a:completed_item->has_key('user_data')
         \ || a:completed_item.user_data->type() != v:t_dict
     return
   endif
@@ -147,7 +147,7 @@ function ddc#skip_next_complete() abort
   endif
 endfunction
 
-const s:root_dir = fnamemodify(expand('<sfile>'), ':h:h')
+const s:root_dir = '<sfile>'->expand()->fnamemodify(':h:h')
 const s:sep = has('win32') ? '\' : '/'
 function ddc#_register() abort
   call denops#plugin#register('ddc',
