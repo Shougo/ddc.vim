@@ -43,7 +43,7 @@ function ddc#custom#set_context_buffer(func) abort
 endfunction
 
 function ddc#custom#load_config(path) abort
-  if !(a:path->filereadable())
+  if !a:path->filereadable()
     call ddc#util#print_error(printf('"%s" is not found.', a:path))
     return
   endif
@@ -85,7 +85,7 @@ endfunction
 
 function s:notify(method, args) abort
   " Save notify args
-  if !('g:ddc#_customs'->exists())
+  if !'g:ddc#_customs'->exists()
     let g:ddc#_customs = []
   endif
 
