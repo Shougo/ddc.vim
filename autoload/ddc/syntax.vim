@@ -13,7 +13,7 @@ function ddc#syntax#get() abort
   if mode() ==# 'i' && curpos[1] > 1
     let curpos[1] -= 1
   endif
-  return &l:syntax !=# '' ? s:get_syn_names([curpos[0], curpos[1]])
+  return &l:syntax !=# '' ? s:get_syn_names(curpos)
         \ : has('nvim') ?
         \   v:lua.vim.treesitter.get_captures_at_pos(0,
         \     curpos[0] - 1, curpos[1] - 1)->map('v:val.capture')
