@@ -9,9 +9,15 @@ function ddc#syntax#in(checks) abort
 endfunction
 
 function ddc#syntax#get() abort
-  const curpos = getcurpos()[1:2]
-  return &l:syntax !=# '' ? s:get_syn_names([curpos[0], curpos[1] - 1]) :
-        \ has('nvim') ? v:lua.vim.treesitter.get_captures_at_cursor(0) :  []
+  let curpos = getcurpos()[1:2]
+  if mode() ==# 'i' && curpos[1] > 1
+    let curpos[1] -= 1
+  endif
+  return &l:syntax !=# '' ? s:get_syn_names([curpos[0], curpos[1] - 1])
+        \ : has('nvim') ?
+        \   v:lua.vim.treesitter.get_captures_at_pos(0,
+        \     curpos[0] - 1, curpos[1] - 1)->map('v:val.capture')
+        \ : []
 endfunction
 
 function ddc#syntax#lang() abort
