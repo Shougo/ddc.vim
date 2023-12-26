@@ -10,7 +10,7 @@ endfunction
 
 function ddc#syntax#get() abort
   let curpos = getcurpos()[1:2]
-  if mode() ==# 'i' && curpos[1] > 1
+  if mode() ==# 'i'
     let curpos[1] -= 1
   endif
   return &l:syntax !=# '' ? s:get_syn_names(curpos)
