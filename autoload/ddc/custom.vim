@@ -52,35 +52,26 @@ function ddc#custom#load_config(path) abort
 endfunction
 
 function ddc#custom#alias(type, alias, base) abort
-  if ddc#_denops_running()
-    call denops#notify('ddc', 'alias', [a:type, a:alias, a:base])
-  else
-    execute printf('autocmd User DenopsPluginPost:ddc call ' .
-          \ 'denops#notify("ddc", "alias", ["%s", "%s", "%s"])',
-          \ a:type, a:alias, a:base)
-  endif
+  call ddc#denops#_notify('alias', [a:type, a:alias, a:base])
 endfunction
 
 " This should be called manually, so wait until DenopsPluginPost:ddc by the
 " user himself.
 function ddc#custom#get_global() abort
-  return ddc#_denops_running() ? denops#request('ddc', 'getGlobal', []) : {}
+  return ddc#denops#_request('getGlobal', [], {})
 endfunction
 function ddc#custom#get_filetype() abort
-  return ddc#_denops_running() ? denops#request('ddc', 'getFiletype', []) : {}
+  return ddc#denops#_request('getFiletype', [], {})
 endfunction
 function ddc#custom#get_buffer() abort
-  if !ddc#_denops_running()
-    return {}
-  endif
-  let buffer = denops#request('ddc', 'getBuffer', [])
+  let buffer = ddc#denops#_request('getBuffer', [], {})
   return buffer->type() == v:t_dict ? get(buffer, bufnr('%'), {}) : {}
 endfunction
 function ddc#custom#get_context() abort
-  return ddc#_denops_running() ? denops#request('ddc', 'getContext', []) : {}
+  return ddc#denops#_request('getContext', [], {})
 endfunction
 function ddc#custom#get_current() abort
-  return ddc#_denops_running() ? denops#request('ddc', 'getCurrent', []) : {}
+  return ddc#denops#_request('getCurrent', [], {})
 endfunction
 
 function s:notify(method, args) abort
@@ -91,7 +82,7 @@ function s:notify(method, args) abort
 
   call add(g:ddc#_customs, #{ method: a:method, args: a:args })
 
-  return ddc#_notify(a:method, a:args)
+  return ddc#denops#_notify(a:method, a:args)
 endfunction
 
 function s:normalize_key_or_dict(key_or_dict, value) abort

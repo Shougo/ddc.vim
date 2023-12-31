@@ -24,14 +24,12 @@ function ddc#enable(opts = {}) abort
   let g:ddc#_started = reltime()
   let g:ddc#_context_filetype = context_filetype
   let g:ddc#_skip_next_complete = 0
-  if !'g:ddc#_mods'->exists()
-    const g:ddc#_mods = [s:root_dir, 'denops', 'ddc', '_mods.js']->join(s:sep)
-  endif
 
   " NOTE: ddc.vim must be registered manually.
-  autocmd ddc User DenopsReady silent! call ddc#_register()
   if 'g:loaded_denops'->exists() && denops#server#status() ==# 'running'
-    silent! call ddc#_register()
+    silent! call ddc#denops#_register()
+  else
+    autocmd ddc User DenopsReady silent! call ddc#denops#_register()
   endif
 endfunction
 
@@ -80,14 +78,13 @@ function ddc#disable() abort
 endfunction
 
 function ddc#on_complete_done(completed_item) abort
-  if !ddc#_denops_running()
-        \ || a:completed_item->empty()
+  if a:completed_item->empty()
         \ || !a:completed_item->has_key('user_data')
         \ || a:completed_item.user_data->type() != v:t_dict
     return
   endif
 
-  call denops#request('ddc', 'onCompleteDone', [a:completed_item])
+  call ddc#denops#_request('ddc', 'onCompleteDone', [a:completed_item])
 endfunction
 
 function ddc#syntax_in(groups) abort
@@ -95,45 +92,45 @@ function ddc#syntax_in(groups) abort
 endfunction
 
 function ddc#callback(id, payload = v:null) abort
-  call ddc#_notify('onCallback', [a:id, a:payload])
+  call ddc#denops#_notify('onCallback', [a:id, a:payload])
 endfunction
 
 function ddc#update_items(name, items) abort
-  call ddc#_notify('updateItems', [a:name, a:items])
+  call ddc#denops#_notify('updateItems', [a:name, a:items])
 endfunction
 
 function ddc#set_static_import_path() abort
-  call ddc#_notify('setStaticImportPath', [])
+  call ddc#denops#_notify('setStaticImportPath', [])
 endfunction
 
 function ddc#on_event(event) abort
   " NOTE: If denops isn't running, stop
-  if !ddc#_denops_running()
+  if !ddc#denops#_running()
     return
   endif
 
-  call ddc#_notify('onEvent', [a:event])
+  call ddc#denops#_notify('onEvent', [a:event])
 endfunction
 
 function ddc#hide(event = "Manual") abort
-  call ddc#_notify('hide', [a:event])
+  call ddc#denops#_notify('hide', [a:event])
 endfunction
 
 function ddc#visible() abort
-  return ddc#_denops_running() ?
-        \ denops#request('ddc', 'visible', []) : v:false
+  return ddc#denops#_request('visible', [], v:false)
 endfunction
 
 function ddc#get_previewer(item, context={}) abort
-  return ddc#_denops_running() ?
-        \ denops#request('ddc', 'getPreviewer', [a:item, a:context]) :
-        \ #{
-        \   kind: 'empty',
-        \ }
+  return ddc#denops#_request(
+        \   'getPreviewer', [a:item, a:context],
+        \   #{
+        \     kind: 'empty',
+        \   },
+        \ )
 endfunction
 
 function ddc#register(type, path) abort
-  call ddc#_notify('register', [a:type, a:path])
+  call ddc#denops#_notify('register', [a:type, a:path])
 endfunction
 
 function ddc#complete_info() abort
@@ -144,47 +141,5 @@ endfunction
 function ddc#skip_next_complete() abort
   if 'g:ddc#_skip_next_complete'->exists()
     let g:ddc#_skip_next_complete += 1
-  endif
-endfunction
-
-const s:root_dir = '<sfile>'->expand()->fnamemodify(':h:h')
-const s:sep = has('win32') ? '\' : '/'
-function ddc#_register() abort
-  call ddc#_load('ddc', [s:root_dir, 'denops', 'ddc', 'app.ts']->join(s:sep))
-
-  autocmd ddc User DenopsClosed call s:stopped()
-endfunction
-function ddc#_load(name, path) abort
-  try
-    call denops#plugin#load(a:name, a:path)
-  catch /^Vim\%((\a\+)\)\=:E117:/
-    " Fallback to `register` for backward compatibility
-    call denops#plugin#register(a:name, a:path, #{ mode: 'skip' })
-  endtry
-endfunction
-
-function s:stopped() abort
-  unlet! g:ddc#_initialized
-
-  " Restore custom config
-  if 'g:ddc#_customs'->exists()
-    for custom in g:ddc#_customs
-      call ddc#_notify(custom.method, custom.args)
-    endfor
-  endif
-endfunction
-
-function ddc#_denops_running() abort
-  return 'g:loaded_denops'->exists()
-        \ && denops#server#status() ==# 'running'
-        \ && denops#plugin#is_loaded('ddc')
-endfunction
-
-function ddc#_notify(method, args) abort
-  if ddc#_denops_running()
-    call denops#notify('ddc', a:method, a:args)
-  else
-    execute printf('autocmd User DenopsPluginPost:ddc call '
-          \ .. 'denops#notify("ddc", "%s", %s)', a:method, a:args->string())
   endif
 endfunction
