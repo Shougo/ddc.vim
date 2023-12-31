@@ -150,11 +150,17 @@ endfunction
 const s:root_dir = '<sfile>'->expand()->fnamemodify(':h:h')
 const s:sep = has('win32') ? '\' : '/'
 function ddc#_register() abort
-  call denops#plugin#register('ddc',
-        \ [s:root_dir, 'denops', 'ddc', 'app.ts']->join(s:sep),
-        \ #{ mode: 'skip' })
+  call ddc#_load('ddc', [s:root_dir, 'denops', 'ddc', 'app.ts']->join(s:sep))
 
   autocmd ddc User DenopsClosed call s:stopped()
+endfunction
+function ddc#_load(name, path) abort
+  try
+    call denops#plugin#load(a:name, a:path)
+  catch /^Vim\%((\a\+)\)\=:E117:/
+    " Fallback to `register` for backward compatibility
+    call denops#plugin#register(a:name, a:path, #{ mode: 'skip' })
+  endtry
 endfunction
 
 function s:stopped() abort
