@@ -1,19 +1,10 @@
 function ddc#map#complete(ui) abort
-  if !ddc#_denops_running()
-    return
-  endif
-
-  call denops#notify('ddc', 'show', [a:ui])
+  call ddc#denops#_notify('show', [a:ui])
   return ''
 endfunction
 
 function ddc#map#manual_complete(options = {}) abort
-  if !ddc#_denops_running()
-    call ddc#enable()
-    call denops#plugin#wait('ddc')
-  endif
-
-  call denops#notify('ddc', 'manualComplete', [a:options])
+  call ddc#denops#_notify('manualComplete', [a:options])
   return ''
 endfunction
 
