@@ -1,36 +1,5 @@
 function ddc#enable(opts = {}) abort
-  if 'ddc'->denops#plugin#is_loaded()
-    return
-  endif
-
-  if !has('patch-9.0.1276') && !has('nvim-0.8')
-    call ddc#util#print_error(
-          \ 'ddc requires Vim 9.0.1276+ or neovim 0.8.0+.')
-    return
-  endif
-
-  augroup ddc
-    autocmd!
-    autocmd InsertLeave * call ddc#hide('InsertLeave')
-  augroup END
-
-  let context_filetype = a:opts->get('context_filetype', 'none')
-
-  if context_filetype ==# 'context_filetype'
-    " Force context_filetype call
-    silent! call context_filetype#get_filetype()
-  endif
-
-  let g:ddc#_started = reltime()
-  let g:ddc#_context_filetype = context_filetype
-  let g:ddc#_skip_next_complete = 0
-
-  " NOTE: ddc.vim must be registered manually.
-  if 'g:loaded_denops'->exists() && denops#server#status() ==# 'running'
-    silent! call ddc#denops#_register()
-  else
-    autocmd ddc User DenopsReady silent! call ddc#denops#_register()
-  endif
+  call ddc#denops#_init(a:opts)
 endfunction
 
 function ddc#enable_cmdline_completion() abort
