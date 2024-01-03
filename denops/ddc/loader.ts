@@ -23,18 +23,18 @@ import {
 import { mods } from "./_mods.js";
 
 export class Loader {
-  private uis: Record<UiName, BaseUi<BaseUiParams>> = {};
-  private sources: Record<SourceName, BaseSource<BaseSourceParams>> = {};
-  private filters: Record<FilterName, BaseFilter<BaseFilterParams>> = {};
-  private aliases: Record<DdcExtType, Record<string, string>> = {
+  #uis: Record<UiName, BaseUi<BaseUiParams>> = {};
+  #sources: Record<SourceName, BaseSource<BaseSourceParams>> = {};
+  #filters: Record<FilterName, BaseFilter<BaseFilterParams>> = {};
+  #aliases: Record<DdcExtType, Record<string, string>> = {
     ui: {},
     source: {},
     filter: {},
   };
-  private checkPaths: Record<string, boolean> = {};
-  private registerLock = new Lock(0);
-  private cachedPaths: Record<string, string> = {};
-  private prevRuntimepath = "";
+  #checkPaths: Record<string, boolean> = {};
+  #registerLock = new Lock(0);
+  #cachedPaths: Record<string, string> = {};
+  #prevRuntimepath = "";
 
   async initStaticImportPath(denops: Denops) {
     // Generate _mods.ts
@@ -82,51 +82,51 @@ export class Loader {
     name: string,
   ) {
     const runtimepath = await op.runtimepath.getGlobal(denops);
-    if (runtimepath !== this.prevRuntimepath) {
-      this.cachedPaths = await globpath(
+    if (runtimepath !== this.#prevRuntimepath) {
+      this.#cachedPaths = await globpath(
         denops,
         "denops/@ddc-*s",
       );
-      this.prevRuntimepath = runtimepath;
+      this.#prevRuntimepath = runtimepath;
     }
 
     const key = `@ddc-${type}s/${this.getAlias(type, name) ?? name}`;
 
-    if (!this.cachedPaths[key]) {
+    if (!this.#cachedPaths[key]) {
       return;
     }
 
-    await this.registerPath(type, this.cachedPaths[key]);
+    await this.registerPath(type, this.#cachedPaths[key]);
   }
 
   registerAlias(type: DdcExtType, alias: string, base: string) {
-    this.aliases[type][alias] = base;
+    this.#aliases[type][alias] = base;
   }
 
   async registerPath(type: DdcExtType, path: string) {
-    await this.registerLock.lock(async () => {
-      await this.register(type, path);
+    await this.#registerLock.lock(async () => {
+      await this.#register(type, path);
     });
   }
 
   getAliasNames(type: DdcExtType) {
-    return Object.keys(this.aliases[type]);
+    return Object.keys(this.#aliases[type]);
   }
   getAlias(type: DdcExtType, name: string) {
-    return this.aliases[type][name];
+    return this.#aliases[type][name];
   }
   getUi(name: UiName) {
-    return this.uis[name];
+    return this.#uis[name];
   }
   getSource(name: SourceName) {
-    return this.sources[name];
+    return this.#sources[name];
   }
   getFilter(name: FilterName) {
-    return this.filters[name];
+    return this.#filters[name];
   }
 
-  private async register(type: DdcExtType, path: string) {
-    if (path in this.checkPaths) {
+  async #register(type: DdcExtType, path: string) {
+    if (path in this.#checkPaths) {
       return;
     }
 
@@ -141,21 +141,21 @@ export class Loader {
         add = (name: string) => {
           const ui = new mod.Ui();
           ui.name = name;
-          this.uis[ui.name] = ui;
+          this.#uis[ui.name] = ui;
         };
         break;
       case "source":
         add = (name: string) => {
           const source = new mod.Source();
           source.name = name;
-          this.sources[source.name] = source;
+          this.#sources[source.name] = source;
         };
         break;
       case "filter":
         add = (name: string) => {
           const filter = new mod.Filter();
           filter.name = name;
-          this.filters[filter.name] = filter;
+          this.#filters[filter.name] = filter;
         };
         break;
     }
@@ -170,7 +170,7 @@ export class Loader {
       add(alias);
     }
 
-    this.checkPaths[path] = true;
+    this.#checkPaths[path] = true;
   }
 }
 

@@ -63,21 +63,21 @@ type DdcResult = {
 };
 
 export class Ddc {
-  private loader: Loader;
-  private prevResults: Record<SourceName, DdcResult> = {};
-  private events: DdcEvent[] = [];
-  private currentUi: BaseUi<BaseUiParams> | undefined = undefined;
-  private currentUiOptions: UiOptions = defaultUiOptions();
-  private currentUiParams: BaseUiParams = defaultDummy();
-  private visibleUi = false;
-  private prevInput = "";
+  #loader: Loader;
+  #prevResults: Record<SourceName, DdcResult> = {};
+  #events: DdcEvent[] = [];
+  #currentUi: BaseUi<BaseUiParams> | undefined = undefined;
+  #currentUiOptions: UiOptions = defaultUiOptions();
+  #currentUiParams: BaseUiParams = defaultDummy();
+  #visibleUi = false;
+  #prevInput = "";
 
   prevSources: UserSource[] = [];
   prevUi = "";
   prevEvent = "";
 
   constructor(loader: Loader) {
-    this.loader = loader;
+    this.#loader = loader;
   }
 
   initialize(denops: Denops) {
@@ -110,13 +110,13 @@ export class Ddc {
   async registerAutocmd(denops: Denops, events: DdcEvent[]) {
     await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
       for (const event of events) {
-        if (!this.events.includes(event)) {
+        if (!this.#events.includes(event)) {
           helper.define(
             event as autocmd.AutocmdEvent,
             "*",
             `call ddc#on_event("${event}")`,
           );
-          this.events.push(event);
+          this.#events.push(event);
         }
       }
     });
@@ -170,7 +170,7 @@ export class Ddc {
         options,
         sourceOptions,
         sourceParams,
-        this.loader,
+        this.#loader,
       );
     }
 
@@ -225,7 +225,7 @@ export class Ddc {
       options,
       sourceOptions,
       sourceParams,
-      this.loader,
+      this.#loader,
       userData,
     );
   }
@@ -256,7 +256,7 @@ export class Ddc {
         denops,
         context,
         onCallback,
-        this.loader,
+        this.#loader,
         options,
         o,
         p,
@@ -277,8 +277,8 @@ export class Ddc {
       const completeStr = context.input.slice(completePos);
 
       // Check previous result.
-      const checkPrevResult = s.name in this.prevResults
-        ? this.prevResults[s.name]
+      const checkPrevResult = s.name in this.#prevResults
+        ? this.#prevResults[s.name]
         : null;
 
       const triggerForIncomplete = (checkPrevResult?.isIncomplete ?? false) &&
@@ -292,7 +292,7 @@ export class Ddc {
           (completeStr.length < o.minAutoCompleteLength ||
             completeStr.length > o.maxAutoCompleteLength))
       ) {
-        delete this.prevResults[s.name];
+        delete this.#prevResults[s.name];
         return;
       }
 
@@ -315,7 +315,7 @@ export class Ddc {
           options,
           o,
           p,
-          this.loader,
+          this.#loader,
           completePos,
           completeStr,
           triggerForIncomplete,
@@ -333,7 +333,7 @@ export class Ddc {
           isIncomplete = false;
         }
 
-        this.prevResults[s.name] = {
+        this.#prevResults[s.name] = {
           items,
           completePos,
           completeStr,
@@ -343,10 +343,10 @@ export class Ddc {
         };
       }
 
-      const prevResult = this.prevResults[s.name];
+      const prevResult = this.#prevResults[s.name];
 
       // NOTE: Use deepcopy.  Because of filters may break original items.
-      const fis = await this.filterItems(
+      const fis = await this.#filterItems(
         denops,
         context,
         onCallback,
@@ -457,7 +457,7 @@ export class Ddc {
     name: string,
     items: Item[],
   ) {
-    const result = name in this.prevResults ? this.prevResults[name] : null;
+    const result = name in this.#prevResults ? this.#prevResults[name] : null;
     if (!result) {
       return;
     }
@@ -486,11 +486,11 @@ export class Ddc {
     // NOTE: Don't complete when backspace by default, because of completion
     // flicker.
     const checkBackSpace = !options.backspaceCompletion &&
-      context.input !== this.prevInput &&
-      context.input.length + 1 === this.prevInput.length &&
-      this.prevInput.startsWith(context.input);
+      context.input !== this.#prevInput &&
+      context.input.length + 1 === this.#prevInput.length &&
+      this.#prevInput.startsWith(context.input);
     if (checkBackSpace) {
-      this.prevInput = context.input;
+      this.#prevInput = context.input;
 
       // NOTE: cancelCompletion is needed.
       await this.cancelCompletion(denops, context, options);
@@ -518,7 +518,7 @@ export class Ddc {
       return true;
     }
 
-    const [ui, uiOptions, uiParams] = await this.getUi(
+    const [ui, uiOptions, uiParams] = await this.#getUi(
       denops,
       context,
       options,
@@ -549,7 +549,7 @@ export class Ddc {
       options,
     );
 
-    this.prevInput = context.input;
+    this.#prevInput = context.input;
 
     const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
     const cursor = fn.getcurpos(denops);
@@ -592,7 +592,7 @@ export class Ddc {
       return;
     }
 
-    const [ui, uiOptions, uiParams] = await this.getUi(
+    const [ui, uiOptions, uiParams] = await this.#getUi(
       denops,
       context,
       options,
@@ -613,7 +613,7 @@ export class Ddc {
 
     this.prevUi = options.ui;
     this.prevEvent = context.event;
-    this.visibleUi = true;
+    this.#visibleUi = true;
   }
 
   async hide(
@@ -621,7 +621,7 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ) {
-    const [ui, uiOptions, uiParams] = await this.getUi(
+    const [ui, uiOptions, uiParams] = await this.#getUi(
       denops,
       context,
       options,
@@ -637,7 +637,7 @@ export class Ddc {
       uiOptions,
       uiParams,
     });
-    this.visibleUi = false;
+    this.#visibleUi = false;
   }
 
   async visible(
@@ -645,11 +645,11 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<boolean> {
-    if (this.visibleUi) {
+    if (this.#visibleUi) {
       return true;
     }
 
-    const [ui, uiOptions, uiParams] = await this.getUi(
+    const [ui, uiOptions, uiParams] = await this.#getUi(
       denops,
       context,
       options,
@@ -671,7 +671,7 @@ export class Ddc {
       : true;
   }
 
-  private async filterItems(
+  async #filterItems(
     denops: Denops,
     context: Context,
     onCallback: OnCallback,
@@ -755,7 +755,7 @@ export class Ddc {
     return cdd;
   }
 
-  private async getUi(
+  async #getUi(
     denops: Denops,
     context: Context,
     options: DdcOptions,
@@ -774,10 +774,10 @@ export class Ddc {
       ];
     }
 
-    if (!this.loader.getUi(options.ui)) {
-      await this.loader.autoload(denops, "ui", options.ui);
+    if (!this.#loader.getUi(options.ui)) {
+      await this.#loader.autoload(denops, "ui", options.ui);
     }
-    const ui = this.loader.getUi(options.ui);
+    const ui = this.#loader.getUi(options.ui);
     if (!ui) {
       await denops.call(
         "ddc#util#print_error",
@@ -792,25 +792,25 @@ export class Ddc {
 
     const [uiOptions, uiParams] = uiArgs(options, ui);
 
-    if (ui !== this.currentUi) {
+    if (ui !== this.#currentUi) {
       // UI is changed
 
-      if (this.currentUi) {
+      if (this.#currentUi) {
         // Hide current UI
-        await this.currentUi.hide({
+        await this.#currentUi.hide({
           denops,
           context,
           options,
-          uiOptions: this.currentUiOptions,
-          uiParams: this.currentUiParams,
+          uiOptions: this.#currentUiOptions,
+          uiParams: this.#currentUiParams,
         });
 
-        this.visibleUi = false;
+        this.#visibleUi = false;
       }
 
-      this.currentUi = ui;
-      this.currentUiOptions = uiOptions;
-      this.currentUiParams = uiParams;
+      this.#currentUi = ui;
+      this.#currentUiOptions = uiOptions;
+      this.#currentUiParams = uiParams;
     }
 
     await checkUiOnInit(ui, denops, uiOptions, uiParams);
@@ -830,11 +830,11 @@ export class Ddc {
     ]
   > {
     const name = source2Name(userSource);
-    if (!this.loader.getSource(name)) {
-      await this.loader.autoload(denops, "source", name);
+    if (!this.#loader.getSource(name)) {
+      await this.#loader.autoload(denops, "source", name);
     }
 
-    const source = this.loader.getSource(name);
+    const source = this.#loader.getSource(name);
     if (!source) {
       await denops.call(
         "ddc#util#print_error",
@@ -858,7 +858,7 @@ export class Ddc {
       denops,
       sourceOptions,
       sourceParams,
-      this.loader,
+      this.#loader,
     );
 
     return [source, sourceOptions, sourceParams];
@@ -876,11 +876,11 @@ export class Ddc {
     ]
   > {
     const name = filter2Name(userFilter);
-    if (!this.loader.getFilter(name)) {
-      await this.loader.autoload(denops, "filter", name);
+    if (!this.#loader.getFilter(name)) {
+      await this.#loader.autoload(denops, "filter", name);
     }
 
-    const filter = this.loader.getFilter(name);
+    const filter = this.#loader.getFilter(name);
     if (!filter) {
       await denops.call(
         "ddc#util#print_error",
@@ -930,7 +930,7 @@ export class Ddc {
       options,
       sourceOptions,
       sourceParams,
-      loader: this.loader,
+      loader: this.#loader,
       item,
       previewContext,
     });

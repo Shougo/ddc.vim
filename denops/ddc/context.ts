@@ -418,8 +418,8 @@ function isNegligible(older: World, newer: World): boolean {
 }
 
 export class ContextBuilder {
-  private lastWorld: World = initialWorld();
-  private custom: Custom = new Custom();
+  #lastWorld: World = initialWorld();
+  #custom: Custom = new Custom();
 
   // Re-export for denops.dispatcher
   async _cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
@@ -432,8 +432,8 @@ export class ContextBuilder {
     options: UserOptions = {},
   ): Promise<[boolean, Context, DdcOptions]> {
     const world = await this._cacheWorld(denops, event);
-    const old = this.lastWorld;
-    this.lastWorld = world;
+    const old = this.#lastWorld;
+    this.#lastWorld = world;
     let skip = false;
     const skipNegligible = event !== "Initialize" && event !== "Manual" &&
       event !== "Update" && event !== "CompleteDone" &&
@@ -457,7 +457,7 @@ export class ContextBuilder {
       nextInput: world.nextInput,
     };
 
-    const userOptions = await this._getUserOptions(denops, world, options);
+    const userOptions = await this.#getUserOptions(denops, world, options);
 
     await this.validate(denops, "options", userOptions, defaultDdcOptions());
     for (const key in userOptions.sourceOptions) {
@@ -488,12 +488,12 @@ export class ContextBuilder {
     ];
   }
 
-  async _getUserOptions(
+  async #getUserOptions(
     denops: Denops,
     world: World,
     options: UserOptions = {},
   ): Promise<DdcOptions> {
-    return await this.custom.get(
+    return await this.#custom.get(
       denops,
       world.filetype,
       world.bufnr,
@@ -502,20 +502,20 @@ export class ContextBuilder {
   }
 
   getGlobal(): Partial<DdcOptions> {
-    return this.custom.global;
+    return this.#custom.global;
   }
   getFiletype(): Record<string, Partial<DdcOptions>> {
-    return this.custom.filetype;
+    return this.#custom.filetype;
   }
   getContext(): ContextCallbacks {
-    return this.custom.context;
+    return this.#custom.context;
   }
   getBuffer(): Record<number, Partial<DdcOptions>> {
-    return this.custom.buffer;
+    return this.#custom.buffer;
   }
   async getCurrent(denops: Denops): Promise<DdcOptions> {
     const world = await this._cacheWorld(denops, "Manual");
-    return this._getUserOptions(denops, world);
+    return this.#getUserOptions(denops, world);
   }
 
   async validate(
@@ -535,32 +535,32 @@ export class ContextBuilder {
   }
 
   setGlobal(options: Partial<DdcOptions>) {
-    this.custom.setGlobal(options);
+    this.#custom.setGlobal(options);
   }
   setFiletype(ft: string, options: Partial<DdcOptions>) {
-    this.custom.setFiletype(ft, options);
+    this.#custom.setFiletype(ft, options);
   }
   setBuffer(bufnr: number, options: Partial<DdcOptions>) {
-    this.custom.setBuffer(bufnr, options);
+    this.#custom.setBuffer(bufnr, options);
   }
   setContextGlobal(callback: ContextCallback) {
-    this.custom.setContextGlobal(callback);
+    this.#custom.setContextGlobal(callback);
   }
   setContextFiletype(callback: ContextCallback, ft: string) {
-    this.custom.setContextFiletype(callback, ft);
+    this.#custom.setContextFiletype(callback, ft);
   }
   setContextBuffer(callback: ContextCallback, bufnr: number) {
-    this.custom.setContextBuffer(callback, bufnr);
+    this.#custom.setContextBuffer(callback, bufnr);
   }
 
   patchGlobal(options: Partial<DdcOptions>) {
-    this.custom.patchGlobal(options);
+    this.#custom.patchGlobal(options);
   }
   patchFiletype(ft: string, options: Partial<DdcOptions>) {
-    this.custom.patchFiletype(ft, options);
+    this.#custom.patchFiletype(ft, options);
   }
   patchBuffer(bufnr: number, options: Partial<DdcOptions>) {
-    this.custom.patchBuffer(bufnr, options);
+    this.#custom.patchBuffer(bufnr, options);
   }
 }
 
