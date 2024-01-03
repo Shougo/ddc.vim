@@ -81,7 +81,7 @@ function s:stopped() abort
   " Restore custom config
   if 'g:ddc#_customs'->exists()
     for custom in g:ddc#_customs
-      call ddc#_notify(custom.method, custom.args)
+      call ddc#denops#_notify(custom.method, custom.args)
     endfor
   endif
 endfunction
