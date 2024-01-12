@@ -55,8 +55,7 @@ export type DdcOptions = {
   cmdlineSources: UserSource[] | Record<string, UserSource[]>;
   filterOptions: Record<FilterName, Partial<FilterOptions>>;
   filterParams: Record<FilterName, Partial<BaseFilterParams>>;
-  /** @deprecated **/
-  keywordPattern: string;
+  hideOnEvents: boolean;
   postFilters: UserFilter[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<BaseSourceParams>>;

@@ -316,6 +316,11 @@ export function main(denops: Denops) {
       );
     }
 
+    if (options.hideOnEvents) {
+      // Hide the current completion
+      await ddc.hide(denops, context, options);
+    }
+
     await ddc.doCompletion(denops, context, cbContext, options);
   }
 

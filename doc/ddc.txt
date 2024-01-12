@@ -113,7 +113,7 @@ backspaceCompletion
 		If it is enabled, ddc.vim will complete even when backspace is
 		typed.
 		NOTE: It is disabled by default since backspace completion
-		will cause completion flicker.
+		will cause screen flicker.
 
 		Default: v:false
 
@@ -167,6 +167,14 @@ filterParams
 		    \   matcher_head: {},
 		    \ })
 <
+                                                     *ddc-option-hideOnEvents*
+hideOnEvents
+		If it is enabled, ddc.vim will hide UI when
+		|ddc-option-autoCompleteEvents| is fired.
+		NOTE: It will increase screen flicker.
+
+		Default: v:false
+
                                                    *ddc-option-keywordPattern*
 keywordPattern
 		NOTE: The option is deprecated.
@@ -960,12 +968,13 @@ getPreviewer		(function)			(Optional)
 
                                          *ddc-source-attribute-onCompleteDone*
 onCompleteDone		(function)			(Optional)
-		Called after the completion.
+		Called after the completion text is inserted.
 		It is useful to substitute text after completion.
 		NOTE: |ddc-item-attribute-user_data| must be "UserData" to use
 		the feature.
 		NOTE: If it changes the text, it should call
 		|ddc#skip_next_complete()|.
+		NOTE: The buffer text may be changed from the completion.
 
                                                 *ddc-source-attribute-onEvent*
 onEvent			(function)			(Optional)
@@ -1786,7 +1795,7 @@ COMPATIBILITY                                              *ddc-compatibility*
 * Use 'iskeyword' for |ddc-option-keywordPattern|.
 
 2021.08.14
-* Don't complete when backspace, because of completion flicker.
+* Don't complete when backspace, because of screen flicker.
 
 2021.08.13
 * Disable special buffers completion except

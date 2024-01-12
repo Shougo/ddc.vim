@@ -74,7 +74,7 @@ export function defaultDdcOptions(): DdcOptions {
     cmdlineSources: [],
     filterOptions: {},
     filterParams: {},
-    keywordPattern: "\\k*",
+    hideOnEvents: false,
     postFilters: [],
     sourceOptions: {},
     sourceParams: {},
