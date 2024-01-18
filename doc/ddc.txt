@@ -421,22 +421,27 @@ ddc#custom#alias({type}, {alias-name}, {base-name})
                                                      *ddc#custom#get_buffer()*
 ddc#custom#get_buffer()
 		Get current buffer specific options.
+		NOTE: It must be called after |DenopsReady|.
 
                                                     *ddc#custom#get_current()*
 ddc#custom#get_current()
 		Get current options.
+		NOTE: It must be called after |DenopsReady|.
 
                                                    *ddc#custom#get_filetype()*
 ddc#custom#get_filetype()
 		Get filetype specific options.
+		NOTE: It must be called after |DenopsReady|.
 
                                                     *ddc#custom#get_context()*
 ddc#custom#get_context()
 		Get context specific options.
+		NOTE: It must be called after |DenopsReady|.
 
                                                      *ddc#custom#get_global()*
 ddc#custom#get_global()
 		Get global options.
+		NOTE: It must be called after |DenopsReady|.
 
                                                     *ddc#custom#load_config()*
 ddc#custom#load_config({path})
