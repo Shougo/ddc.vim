@@ -25,7 +25,9 @@ function ddc#denops#_init(opts = {}) abort
   let g:ddc#_skip_next_complete = 0
 
   " NOTE: ddc.vim must be registered manually.
-  if 'g:loaded_denops'->exists() && denops#server#status() ==# 'running'
+  if 'g:loaded_denops'->exists() &&
+        \ (denops#server#status() ==# 'preparing' ||
+        \  denops#server#status() ==# 'running')
     silent! call s:register()
   else
     autocmd ddc User DenopsReady silent! call s:register()
