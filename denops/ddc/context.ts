@@ -376,7 +376,7 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     op.iminsert.getLocal(denops),
     // NOTE: op.paste does not work in denops_std@v6.0.0
     //op.paste.get(denops),
-    denops.call("eval", "&paste"),
+    denops.call("eval", "&paste") as Promise<boolean>,
     fn.line(denops, "."),
     fn.wildmenumode(denops) as Promise<number>,
   ]);
