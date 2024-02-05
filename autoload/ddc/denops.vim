@@ -26,11 +26,11 @@ function ddc#denops#_init(opts = {}) abort
 
   " NOTE: ddc.vim must be registered manually.
   if 'g:loaded_denops'->exists() &&
-        \ (denops#server#status() ==# 'preparing' ||
+        \ ('<amatch>'->expand() ==# 'DenopsReady' ||
         \  denops#server#status() ==# 'running')
-    silent! call s:register()
+    call s:register()
   else
-    autocmd ddc User DenopsReady silent! call s:register()
+    autocmd ddc User DenopsReady call s:register()
   endif
 endfunction
 

@@ -6,6 +6,7 @@ import {
   fn,
   is,
   op,
+  vimOp,
   vars,
 } from "./deps.ts";
 import {
@@ -374,9 +375,8 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     _call(denops, "eskk#is_enabled", false),
     _call(denops, "skkeleton#is_enabled", false),
     op.iminsert.getLocal(denops),
-    // NOTE: op.paste does not work in denops_std@v6.0.0
-    //op.paste.get(denops),
-    denops.call("eval", "&paste") as Promise<boolean>,
+    // NOTE: op.paste is deprecated in neovim
+    vimOp.paste.get(denops),
     fn.line(denops, "."),
     fn.wildmenumode(denops) as Promise<number>,
   ]);
