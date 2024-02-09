@@ -6,8 +6,8 @@ import {
   fn,
   is,
   op,
-  vimOp,
   vars,
+  vimOp,
 } from "./deps.ts";
 import {
   BaseFilterParams,
