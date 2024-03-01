@@ -17,10 +17,8 @@ on:
 jobs:
   deno-lint:
     runs-on: ubuntu-latest
-    runs:
-      using: 'node20'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: denoland/setup-deno@main
         with:
           deno-version: ${{ env.DENO_VERSION }}
@@ -41,7 +39,7 @@ jobs:
     runs:
       using: 'node20'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: denoland/setup-deno@main
         with:
           deno-version: ${{ env.DENO_VERSION }}
