@@ -4,9 +4,6 @@ env:
   DENO_VERSION: 1.x
   DENOPS_PATH: "./"
 
-runs:
-  using: 'node20'
-
 on:
   schedule:
     - cron: "0 7 * * 0"
@@ -20,6 +17,8 @@ on:
 jobs:
   deno-lint:
     runs-on: ubuntu-latest
+    runs:
+      using: 'node20'
     steps:
       - uses: actions/checkout@v2
       - uses: denoland/setup-deno@main
@@ -39,6 +38,8 @@ jobs:
 
   deno-test:
     runs-on: ubuntu-latest
+    runs:
+      using: 'node20'
     steps:
       - uses: actions/checkout@v2
       - uses: denoland/setup-deno@main
