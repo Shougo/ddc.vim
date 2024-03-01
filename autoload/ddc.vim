@@ -14,7 +14,6 @@ function ddc#enable_cmdline_completion() abort
           \ |   call ddc#on_event('CmdlineChanged')
           \ | endif
     autocmd ModeChanged c:n call s:disable_cmdline_completion()
-    autocmd ModeChanged *:i call ddc#on_event('InsertEnter')
   augroup END
 
   let b:ddc_cmdline_completion = v:true

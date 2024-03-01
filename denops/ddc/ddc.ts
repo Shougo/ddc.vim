@@ -99,6 +99,9 @@ export class Ddc {
         "TextChangedP",
       ]);
       await denops.cmd(
+        "autocmd ddc ModeChanged *:i call ddc#on_event('InsertEnter')"
+      );
+      await denops.cmd(
         "autocmd ddc CmdlineChanged * " +
           ": if getcmdtype() ==# '=' || getcmdtype() ==# '@'" +
           "|   call ddc#on_event('CmdlineChanged')" +
