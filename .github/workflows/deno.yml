@@ -4,6 +4,9 @@ env:
   DENO_VERSION: 1.x
   DENOPS_PATH: "./"
 
+runs:
+  using: 'node20'
+
 on:
   schedule:
     - cron: "0 7 * * 0"
