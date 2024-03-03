@@ -93,7 +93,6 @@ export class Ddc {
         "BufEnter",
         "BufLeave",
         "FileType",
-        "InsertEnter",
         "InsertLeave",
         "TextChangedI",
         "TextChangedP",
