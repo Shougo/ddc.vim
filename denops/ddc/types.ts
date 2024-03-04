@@ -91,6 +91,7 @@ export type SourceOptions = {
   minKeywordLength: number;
   sorters: UserFilter[];
   timeout: number;
+  replaceSourceInputPattern: string;
 };
 
 export type FilterOptions = {

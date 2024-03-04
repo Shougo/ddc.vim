@@ -810,6 +810,17 @@ minKeywordLength	(number)
 
 		Default: 0
 
+                                 *ddc-source-option-replaceSourceInputPattern*
+replaceSourceInputPattern
+		It defines the replace pattern for source input text.
+		It is useful when if you use non-forward-matching filter
+		algorithms (e.g., fuzzy matching).
+
+		NOTE: It is JavaScript regexp.
+		NOTE: "\k" is not converted.
+
+		Default: ''
+
                                                    *ddc-source-option-sorters*
 sorters			(string[])
 		It is a list of elements like |ddc-source-option-matchers|.

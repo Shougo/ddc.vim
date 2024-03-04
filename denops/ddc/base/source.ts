@@ -153,6 +153,7 @@ export function defaultSourceOptions(): SourceOptions {
     maxKeywordLength: 0,
     minAutoCompleteLength: 2,
     minKeywordLength: 0,
+    replaceSourceInputPattern: "",
     sorters: [],
     timeout: 2000,
   };

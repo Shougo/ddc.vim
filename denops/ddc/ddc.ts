@@ -309,17 +309,27 @@ export class Ddc {
         (o.isVolatile && context.event !== "Update")
       ) {
         // Not matched.
+
+        const replacePattern = new RegExp(o.replaceSourceInputPattern);
+
         const result = await callSourceGather(
           s,
           denops,
-          context,
+          {
+            ...context,
+            input: o.replaceSourceInputPattern.length !== 0
+              ? context.input.replace(replacePattern, "")
+              : context.input,
+          },
           onCallback,
           options,
           o,
           p,
           this.#loader,
           completePos,
-          completeStr,
+          o.replaceSourceInputPattern.length !== 0
+            ? completeStr.replace(replacePattern, "")
+            : completeStr,
           triggerForIncomplete,
         );
 
