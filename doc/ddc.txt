@@ -812,7 +812,8 @@ minKeywordLength	(number)
 
                                  *ddc-source-option-replaceSourceInputPattern*
 replaceSourceInputPattern
-		It defines the replace pattern for source input text.
+		It defines the regexp pattern to remove a match in the source
+		input text.
 		It is useful when if you use non-forward-matching filter
 		algorithms (e.g., fuzzy matching).
 
