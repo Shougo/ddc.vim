@@ -14,6 +14,7 @@ import {
   basename,
   Denops,
   fn,
+  is,
   Lock,
   op,
   parse,
@@ -189,15 +190,18 @@ async function globpath(
     1,
   );
 
-  for (const path of glob) {
-    // Skip already added name.
-    const parsed = parse(path);
-    const key = `${basename(parsed.dir)}/${parsed.name}`;
-    if (key in paths) {
-      continue;
-    }
+  if (is.Array(glob)) {
+    // NOTE: glob may be invalid.
+    for (const path of glob) {
+      // Skip already added name.
+      const parsed = parse(path);
+      const key = `${basename(parsed.dir)}/${parsed.name}`;
+      if (key in paths) {
+        continue;
+      }
 
-    paths[key] = path;
+      paths[key] = path;
+    }
   }
 
   return paths;
