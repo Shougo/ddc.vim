@@ -71,10 +71,9 @@ export class Ddc {
   #currentUiParams: BaseUiParams = defaultDummy();
   #visibleUi = false;
   #prevInput = "";
-
-  prevSources: UserSource[] = [];
-  prevUi = "";
-  prevEvent = "";
+  #prevSources: UserSource[] = [];
+  #prevUi = "";
+  #prevEvent = "";
 
   constructor(loader: Loader) {
     this.#loader = loader;
@@ -238,7 +237,7 @@ export class Ddc {
     onCallback: OnCallback,
     options: DdcOptions,
   ): Promise<[number, DdcItem[]]> {
-    this.prevSources = options.sources;
+    this.#prevSources = options.sources;
 
     const rs = await Promise.all(options.sources.map(async (userSource) => {
       const [s, o, p] = await this.getSource(
@@ -548,6 +547,30 @@ export class Ddc {
     });
   }
 
+  async checkManualCompletion(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+    event: string,
+  ) {
+    // NOTE: Continue manual completion if narrowing words
+    const check = options.autoCompleteEvents.indexOf(event) > 0 &&
+      this.#prevEvent === "Manual" &&
+      context.input.startsWith(this.#prevInput) &&
+      context.input.replace(/\S+$/, "") ===
+        this.#prevInput.replace(/\S+$/, "") &&
+      await this.visible(denops, context, options);
+
+    if (check) {
+      // NOTE: Use prevSources/prevUi/prevEvent to update current items
+      options.sources = this.#prevSources;
+      options.ui = this.#prevUi;
+
+      // Overwrite event if manual completion
+      context.event = this.#prevEvent;
+    }
+  }
+
   async doCompletion(
     denops: Denops,
     context: Context,
@@ -623,8 +646,8 @@ export class Ddc {
       uiParams,
     });
 
-    this.prevUi = options.ui;
-    this.prevEvent = context.event;
+    this.#prevUi = options.ui;
+    this.#prevEvent = context.event;
     this.#visibleUi = true;
   }
 
@@ -650,6 +673,8 @@ export class Ddc {
       uiParams,
     });
     this.#visibleUi = false;
+    this.#prevEvent = "";
+    this.#prevInput = "";
   }
 
   async visible(

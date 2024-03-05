@@ -272,21 +272,7 @@ export function main(denops: Denops) {
     const [skip, context, options] = await contextBuilder
       .createContext(denops, event);
 
-    const visible = await ddc.visible(denops, context, options);
-    if (
-      visible && ddc.prevUi !== "" &&
-      options.autoCompleteEvents.indexOf(event) > 0 &&
-      ddc.prevEvent === "Manual"
-    ) {
-      // NOTE: If UI is visible, use prevSources/prevUi/prevEvent to update
-      // current items
-
-      options.sources = ddc.prevSources;
-      options.ui = ddc.prevUi;
-
-      // Overwrite event if manual completion
-      context.event = ddc.prevEvent;
-    }
+    await ddc.checkManualCompletion(denops, context, options, event);
 
     await ddc.onEvent(
       denops,
