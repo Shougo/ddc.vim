@@ -84,10 +84,14 @@ export class Loader {
   ) {
     const runtimepath = await op.runtimepath.getGlobal(denops);
     if (runtimepath !== this.#prevRuntimepath) {
-      this.#cachedPaths = await globpath(
+      const cached = await globpath(
         denops,
         "denops/@ddc-*s",
       );
+      // NOTE: glob may be invalid.
+      if (Object.keys(cached).length > 0) {
+        this.#cachedPaths = cached;
+      }
       this.#prevRuntimepath = runtimepath;
     }
 
