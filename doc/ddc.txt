@@ -1422,6 +1422,7 @@ Q: I want to enable command line completion.
 A: You need to configure like this.
 
 NOTE: Both "pum.vim" and "ddc-ui-pum" are required.
+NOTE: It conficts with builtin 'wildmenu' feature.
 
 https://github.com/Shougo/pum.vim
 https://github.com/Shougo/ddc-ui-pum

@@ -675,7 +675,6 @@ export class Ddc {
     });
     this.#visibleUi = false;
     this.#prevEvent = "";
-    this.#prevInput = "";
   }
 
   async visible(
