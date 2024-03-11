@@ -282,16 +282,17 @@ export class Ddc {
         ? this.#prevResults[s.name]
         : null;
 
+      const checkCompleteStr = completeStr.length < o.minAutoCompleteLength ||
+        completeStr.length > o.maxAutoCompleteLength;
+
       const triggerForIncomplete = (checkPrevResult?.isIncomplete ?? false) &&
         context.lineNr === checkPrevResult?.lineNr &&
-        completePos === checkPrevResult?.completePos;
+        completePos === checkPrevResult?.completePos && !checkCompleteStr;
 
       if (
         completePos < 0 ||
-        (!forceCompletion && !triggerForIncomplete &&
-          (context.event !== "Manual" && context.event !== "Update") &&
-          (completeStr.length < o.minAutoCompleteLength ||
-            completeStr.length > o.maxAutoCompleteLength))
+        (!forceCompletion && !triggerForIncomplete && checkCompleteStr &&
+          (context.event !== "Manual" && context.event !== "Update"))
       ) {
         delete this.#prevResults[s.name];
         return;
