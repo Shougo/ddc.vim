@@ -309,7 +309,6 @@ export class Ddc {
         (o.isVolatile && context.event !== "Update")
       ) {
         // Not matched.
-
         const replacePattern = new RegExp(o.replaceSourceInputPattern);
 
         const result = await callSourceGather(
