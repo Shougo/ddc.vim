@@ -63,53 +63,53 @@ export function main(denops: Denops) {
       return Promise.resolve();
     },
     setGlobal(arg1: unknown): Promise<void> {
-      const options = ensure(arg1, is.Record);
+      const options = ensure(arg1, is.Record) as Partial<DdcOptions>;
       contextBuilder.setGlobal(options);
       return Promise.resolve();
     },
     setFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      const options = ensure(arg1, is.Record);
-      const filetype = ensure(arg2, is.String);
+      const options = ensure(arg1, is.Record) as Partial<DdcOptions>;
+      const filetype = ensure(arg2, is.String) as string;
       contextBuilder.setFiletype(filetype, options);
       return Promise.resolve();
     },
     setBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      const options = ensure(arg1, is.Record);
-      const bufnr = ensure(arg2, is.Number);
+      const options = ensure(arg1, is.Record) as Partial<DdcOptions>;
+      const bufnr = ensure(arg2, is.Number) as number;
       contextBuilder.setBuffer(bufnr, options);
       return Promise.resolve();
     },
     setContextGlobal(arg1: unknown): Promise<void> {
-      const callback = ensure(arg1, is.String);
+      const callback = ensure(arg1, is.String) as string;
       contextBuilder.setContextGlobal(callback);
       return Promise.resolve();
     },
     setContextFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      const callback = ensure(arg1, is.String);
-      const filetype = ensure(arg2, is.String);
+      const callback = ensure(arg1, is.String) as string;
+      const filetype = ensure(arg2, is.String) as string;
       contextBuilder.setContextFiletype(callback, filetype);
       return Promise.resolve();
     },
     setContextBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      const callback = ensure(arg1, is.String);
-      const bufnr = ensure(arg2, is.Number);
+      const callback = ensure(arg1, is.String) as string;
+      const bufnr = ensure(arg2, is.Number) as number;
       contextBuilder.setContextBuffer(callback, bufnr);
       return Promise.resolve();
     },
     patchGlobal(arg1: unknown): Promise<void> {
-      const options = ensure(arg1, is.Record);
+      const options = ensure(arg1, is.Record) as Partial<DdcOptions>;
       contextBuilder.patchGlobal(options);
       return Promise.resolve();
     },
     patchFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      const options = ensure(arg1, is.Record);
-      const filetype = ensure(arg2, is.String);
+      const options = ensure(arg1, is.Record) as Partial<DdcOptions>;
+      const filetype = ensure(arg2, is.String) as string;
       contextBuilder.patchFiletype(filetype, options);
       return Promise.resolve();
     },
     patchBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      const options = ensure(arg1, is.Record);
-      const bufnr = ensure(arg2, is.Number);
+      const options = ensure(arg1, is.Record) as Partial<DdcOptions>;
+      const bufnr = ensure(arg2, is.Number) as number;
       contextBuilder.patchBuffer(bufnr, options);
       return Promise.resolve();
     },
@@ -149,7 +149,7 @@ export function main(denops: Denops) {
     },
     async loadConfig(arg1: unknown): Promise<void> {
       await lock.lock(async () => {
-        const path = ensure(arg1, is.String);
+        const path = ensure(arg1, is.String) as string;
         // NOTE: Import module with fragment so that reload works properly.
         // https://github.com/vim-denops/denops.vim/issues/227
         const mod = await import(
@@ -180,7 +180,7 @@ export function main(denops: Denops) {
       await ddc.doCompletion(denops, context, cbContext, options);
     },
     async updateItems(arg1: unknown, arg2: unknown): Promise<void> {
-      const name = ensure(arg1, is.String);
+      const name = ensure(arg1, is.String) as string;
       const items = ensure(arg2, is.Array) as Item[];
 
       ddc.updateItems(name, items);
@@ -233,7 +233,7 @@ export function main(denops: Denops) {
       );
     },
     async show(arg1: unknown): Promise<void> {
-      const ui = ensure(arg1, is.String);
+      const ui = ensure(arg1, is.String) as string;
 
       const [_, context, options] = await contextBuilder.createContext(
         denops,
