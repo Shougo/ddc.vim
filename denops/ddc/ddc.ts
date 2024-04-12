@@ -1,57 +1,40 @@
 import {
-  BaseFilter,
-  BaseFilterParams,
-  BaseSource,
-  BaseSourceParams,
+  assertEquals,
+  autocmd,
+  batch,
+  Denops,
+  equal,
+  fn,
+  op,
+  vars,
+} from "./deps.ts";
+import {
   BaseUi,
   BaseUiParams,
   CallbackContext,
   Context,
   DdcEvent,
-  DdcGatherItems,
   DdcItem,
   DdcOptions,
-  DdcUserData,
-  FilterOptions,
   Item,
   OnCallback,
-  PreviewContext,
-  Previewer,
   SourceName,
-  SourceOptions,
   UiOptions,
-  UserFilter,
   UserSource,
 } from "./types.ts";
-import {
-  defaultDummy,
-  foldMerge,
-  mergeFilterOptions,
-  mergeFilterParams,
-  mergeSourceOptions,
-  mergeSourceParams,
-  mergeUiOptions,
-  mergeUiParams,
-} from "./context.ts";
+import { defaultDummy } from "./context.ts";
 import { Loader } from "./loader.ts";
 import { defaultUiOptions } from "./base/ui.ts";
 import { defaultSourceOptions } from "./base/source.ts";
-import { defaultFilterOptions } from "./base/filter.ts";
-import { isDdcCallbackCancelError } from "./callback.ts";
 import {
-  assertEquals,
-  autocmd,
-  batch,
-  deadline,
-  DeadlineError,
-  Denops,
-  equal,
-  fn,
-  op,
-  TimeoutError,
-  vars,
-} from "./deps.ts";
-import { errorException } from "./utils.ts";
+  callFilterFilter,
+  callSourceGather,
+  callSourceGetCompletePosition,
+  filterItems,
+  getFilter,
+  getSource,
+  getUi,
+} from "./ext.ts";
 
 type DdcResult = {
   items: Item[];
@@ -63,13 +46,14 @@ type DdcResult = {
 };
 
 export class Ddc {
+  currentUi: BaseUi<BaseUiParams> | undefined = undefined;
+  currentUiOptions: UiOptions = defaultUiOptions();
+  currentUiParams: BaseUiParams = defaultDummy();
+  visibleUi = false;
+
   #loader: Loader;
   #prevResults: Record<SourceName, DdcResult> = {};
   #events: DdcEvent[] = [];
-  #currentUi: BaseUi<BaseUiParams> | undefined = undefined;
-  #currentUiOptions: UiOptions = defaultUiOptions();
-  #currentUiParams: BaseUiParams = defaultDummy();
-  #visibleUi = false;
   #prevInput = "";
   #prevSources: UserSource[] = [];
   #prevUi = "";
@@ -123,114 +107,6 @@ export class Ddc {
     });
   }
 
-  async onEvent(
-    denops: Denops,
-    context: Context,
-    onCallback: OnCallback,
-    options: DdcOptions,
-  ): Promise<void> {
-    let filters: UserFilter[] = [];
-    for (let userSource of options.sources) {
-      if (typeof userSource === "string") {
-        userSource = {
-          name: userSource,
-        };
-      }
-      const o = foldMerge(
-        mergeSourceOptions,
-        defaultSourceOptions,
-        [
-          options.sourceOptions["_"],
-          options.sourceOptions[userSource.name],
-          userSource?.options,
-        ],
-      );
-
-      filters = filters.concat(
-        o.matchers,
-        o.sorters,
-        o.converters,
-      );
-    }
-
-    for (const userSource of options.sources) {
-      const [source, sourceOptions, sourceParams] = await this.getSource(
-        denops,
-        options,
-        userSource,
-      );
-      if (!source) {
-        return;
-      }
-
-      await callSourceOnEvent(
-        source,
-        denops,
-        context,
-        onCallback,
-        options,
-        sourceOptions,
-        sourceParams,
-        this.#loader,
-      );
-    }
-
-    // Uniq.
-    filters = [
-      ...new Set(filters.concat(options.postFilters)),
-    ];
-
-    for (const userFilter of filters) {
-      const [filter, filterOptions, filterParams] = await this.getFilter(
-        denops,
-        options,
-        userFilter,
-      );
-      if (!filter) {
-        continue;
-      }
-      await callFilterOnEvent(
-        filter,
-        denops,
-        context,
-        onCallback,
-        options,
-        filterOptions,
-        filterParams,
-      );
-    }
-  }
-
-  async onCompleteDone(
-    denops: Denops,
-    context: Context,
-    onCallback: OnCallback,
-    options: DdcOptions,
-    userSource: UserSource,
-    userData: DdcUserData,
-  ): Promise<void> {
-    const [source, sourceOptions, sourceParams] = await this.getSource(
-      denops,
-      options,
-      userSource,
-    );
-    if (!source || !source.onCompleteDone) {
-      return;
-    }
-
-    await callSourceOnCompleteDone(
-      source,
-      denops,
-      context,
-      onCallback,
-      options,
-      sourceOptions,
-      sourceParams,
-      this.#loader,
-      userData,
-    );
-  }
-
   async gatherResults(
     denops: Denops,
     context: Context,
@@ -240,8 +116,9 @@ export class Ddc {
     this.#prevSources = options.sources;
 
     const rs = await Promise.all(options.sources.map(async (userSource) => {
-      const [s, o, p] = await this.getSource(
+      const [s, o, p] = await getSource(
         denops,
+        this.#loader,
         options,
         userSource,
       );
@@ -357,8 +234,9 @@ export class Ddc {
       const prevResult = this.#prevResults[s.name];
 
       // NOTE: Use deepcopy.  Because of filters may break original items.
-      const fis = await this.#filterItems(
+      const fis = await filterItems(
         denops,
+        this.#loader,
         context,
         onCallback,
         options,
@@ -409,8 +287,9 @@ export class Ddc {
 
     // Post filters
     for (const userFilter of options.postFilters) {
-      const [filter, filterOptions, filterParams] = await this.getFilter(
+      const [filter, filterOptions, filterParams] = await getFilter(
         denops,
+        this.#loader,
         options,
         userFilter,
       );
@@ -529,8 +408,10 @@ export class Ddc {
       return true;
     }
 
-    const [ui, uiOptions, uiParams] = await this.#getUi(
+    const [ui, uiOptions, uiParams] = await getUi(
       denops,
+      this.#loader,
+      this,
       context,
       options,
     );
@@ -627,8 +508,10 @@ export class Ddc {
       return;
     }
 
-    const [ui, uiOptions, uiParams] = await this.#getUi(
+    const [ui, uiOptions, uiParams] = await getUi(
       denops,
+      this.#loader,
+      this,
       context,
       options,
     );
@@ -648,7 +531,7 @@ export class Ddc {
 
     this.#prevUi = options.ui;
     this.#prevEvent = context.event;
-    this.#visibleUi = true;
+    this.visibleUi = true;
   }
 
   async hide(
@@ -656,8 +539,10 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ) {
-    const [ui, uiOptions, uiParams] = await this.#getUi(
+    const [ui, uiOptions, uiParams] = await getUi(
       denops,
+      this.#loader,
+      this,
       context,
       options,
     );
@@ -672,7 +557,7 @@ export class Ddc {
       uiOptions,
       uiParams,
     });
-    this.#visibleUi = false;
+    this.visibleUi = false;
     this.#prevEvent = "";
   }
 
@@ -681,12 +566,14 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ): Promise<boolean> {
-    if (this.#visibleUi) {
+    if (this.visibleUi) {
       return true;
     }
 
-    const [ui, uiOptions, uiParams] = await this.#getUi(
+    const [ui, uiOptions, uiParams] = await getUi(
       denops,
+      this.#loader,
+      this,
       context,
       options,
     );
@@ -706,273 +593,6 @@ export class Ddc {
       })
       : true;
   }
-
-  async #filterItems(
-    denops: Denops,
-    context: Context,
-    onCallback: OnCallback,
-    options: DdcOptions,
-    sourceOptions: SourceOptions,
-    completeStr: string,
-    cdd: Item[],
-  ): Promise<Item[]> {
-    async function callFilters(
-      ddc: Ddc,
-      userFilters: UserFilter[],
-    ): Promise<Item[]> {
-      for (const userFilter of userFilters) {
-        const [filter, filterOptions, filterParams] = await ddc.getFilter(
-          denops,
-          options,
-          userFilter,
-        );
-        if (!filter) {
-          continue;
-        }
-        cdd = await callFilterFilter(
-          filter,
-          denops,
-          context,
-          onCallback,
-          options,
-          sourceOptions,
-          filterOptions,
-          filterParams,
-          completeStr,
-          cdd,
-        );
-      }
-
-      return cdd;
-    }
-
-    if (sourceOptions.maxKeywordLength > 0) {
-      cdd = cdd.filter((item: Item) =>
-        item.word.length <= sourceOptions.maxKeywordLength
-      );
-    }
-
-    if (sourceOptions.minKeywordLength > 0) {
-      cdd = cdd.filter((item: Item) =>
-        item.word.length >= sourceOptions.minKeywordLength
-      );
-    }
-
-    if (sourceOptions.matcherKey !== "") {
-      cdd = cdd.map((c) => (
-        {
-          ...c,
-          // @ts-ignore: Convert matcherKey
-          word: c[sourceOptions.matcherKey],
-          __word: c.word,
-        }
-      ));
-    }
-
-    cdd = await callFilters(this, sourceOptions.matchers);
-
-    if (sourceOptions.matcherKey !== "") {
-      cdd = cdd.map((c) => (
-        {
-          ...c,
-          // @ts-ignore: Restore matcherKey
-          word: c.__word,
-        }
-      ));
-    }
-
-    cdd = await callFilters(this, sourceOptions.sorters);
-
-    // Filter by maxItems
-    cdd = cdd.slice(0, sourceOptions.maxItems);
-
-    cdd = await callFilters(this, sourceOptions.converters);
-
-    return cdd;
-  }
-
-  async #getUi(
-    denops: Denops,
-    context: Context,
-    options: DdcOptions,
-  ): Promise<
-    [
-      BaseUi<BaseUiParams> | undefined,
-      UiOptions,
-      BaseUiParams,
-    ]
-  > {
-    if (options.ui.length === 0) {
-      return [
-        undefined,
-        defaultUiOptions(),
-        defaultDummy(),
-      ];
-    }
-
-    if (!this.#loader.getUi(options.ui)) {
-      await this.#loader.autoload(denops, "ui", options.ui);
-    }
-    const ui = this.#loader.getUi(options.ui);
-    if (!ui) {
-      await denops.call(
-        "ddc#util#print_error",
-        `Not found ui: "${options.ui}"`,
-      );
-      return [
-        undefined,
-        defaultUiOptions(),
-        defaultDummy(),
-      ];
-    }
-
-    const [uiOptions, uiParams] = uiArgs(options, ui);
-
-    if (ui !== this.#currentUi) {
-      // UI is changed
-
-      if (this.#currentUi) {
-        // Hide current UI
-        await this.#currentUi.hide({
-          denops,
-          context,
-          options,
-          uiOptions: this.#currentUiOptions,
-          uiParams: this.#currentUiParams,
-        });
-
-        this.#visibleUi = false;
-      }
-
-      this.#currentUi = ui;
-      this.#currentUiOptions = uiOptions;
-      this.#currentUiParams = uiParams;
-    }
-
-    await checkUiOnInit(ui, denops, uiOptions, uiParams);
-
-    return [ui, uiOptions, uiParams];
-  }
-
-  async getSource(
-    denops: Denops,
-    options: DdcOptions,
-    userSource: UserSource,
-  ): Promise<
-    [
-      BaseSource<BaseSourceParams> | undefined,
-      SourceOptions,
-      BaseSourceParams,
-    ]
-  > {
-    const name = source2Name(userSource);
-    if (!this.#loader.getSource(name)) {
-      await this.#loader.autoload(denops, "source", name);
-    }
-
-    const source = this.#loader.getSource(name);
-    if (!source) {
-      await denops.call(
-        "ddc#util#print_error",
-        `Not found source: ${name}`,
-      );
-      return [
-        undefined,
-        defaultSourceOptions(),
-        defaultDummy(),
-      ];
-    }
-
-    const [sourceOptions, sourceParams] = sourceArgs(
-      source,
-      options,
-      userSource,
-    );
-
-    await checkSourceOnInit(
-      source,
-      denops,
-      sourceOptions,
-      sourceParams,
-      this.#loader,
-    );
-
-    return [source, sourceOptions, sourceParams];
-  }
-
-  async getFilter(
-    denops: Denops,
-    options: DdcOptions,
-    userFilter: UserFilter,
-  ): Promise<
-    [
-      BaseFilter<BaseFilterParams> | undefined,
-      FilterOptions,
-      BaseFilterParams,
-    ]
-  > {
-    const name = filter2Name(userFilter);
-    if (!this.#loader.getFilter(name)) {
-      await this.#loader.autoload(denops, "filter", name);
-    }
-
-    const filter = this.#loader.getFilter(name);
-    if (!filter) {
-      await denops.call(
-        "ddc#util#print_error",
-        `Not found filter: ${name}`,
-      );
-      return [
-        undefined,
-        defaultFilterOptions(),
-        defaultDummy(),
-      ];
-    }
-
-    const [filterOptions, filterParams] = filterArgs(
-      filter,
-      options,
-      userFilter,
-    );
-    await checkFilterOnInit(filter, denops, filterOptions, filterParams);
-
-    return [filter, filterOptions, filterParams];
-  }
-
-  async getPreviewer(
-    denops: Denops,
-    context: Context,
-    options: DdcOptions,
-    item: DdcItem,
-    sourceName: SourceName,
-    previewContext: PreviewContext,
-  ): Promise<Previewer> {
-    if (sourceName.length === 0) {
-      return { kind: "empty" };
-    }
-
-    const [source, sourceOptions, sourceParams] = await this.getSource(
-      denops,
-      options,
-      sourceName,
-    );
-    if (!source || !source.getPreviewer) {
-      return { kind: "empty" };
-    }
-
-    const previewer = await source.getPreviewer({
-      denops,
-      context,
-      options,
-      sourceOptions,
-      sourceParams,
-      loader: this.#loader,
-      item,
-      previewContext,
-    });
-
-    return previewer;
-  }
 }
 
 function formatAbbr(word: string, abbr: string | undefined): string {
@@ -991,447 +611,6 @@ function byteposToCharpos(input: string, pos: number): number {
 
 function charposToBytepos(input: string, pos: number): number {
   return (new TextEncoder()).encode(input.slice(0, pos)).length;
-}
-
-// isinstanceof may be failed
-// https://zenn.dev/luma/articles/2e891a24fe099c
-function isTimeoutError(e: unknown): e is TimeoutError {
-  return (e as TimeoutError).name === "TimeoutError";
-}
-
-function uiArgs<Params extends BaseUiParams>(
-  options: DdcOptions,
-  ui: BaseUi<Params>,
-): [UiOptions, BaseUiParams] {
-  const o = foldMerge(
-    mergeUiOptions,
-    defaultUiOptions,
-    [options.uiOptions["_"], options.uiOptions[ui.name]],
-  );
-  const p = foldMerge(mergeUiParams, defaultDummy, [
-    ui.params ? ui.params() : null,
-    options.uiParams[ui.name],
-  ]);
-  return [o, p];
-}
-
-function sourceArgs<
-  Params extends BaseSourceParams,
-  UserData extends unknown,
->(
-  source: BaseSource<Params, UserData> | null,
-  options: DdcOptions,
-  userSource: UserSource | null,
-): [SourceOptions, BaseSourceParams] {
-  // Convert type
-  if (typeof userSource === "string") {
-    userSource = {
-      name: userSource,
-    };
-  }
-
-  const o = foldMerge(
-    mergeSourceOptions,
-    defaultSourceOptions,
-    [
-      options.sourceOptions["_"],
-      source ? options.sourceOptions[source.name] : {},
-      userSource?.options,
-    ],
-  );
-  const p = foldMerge(
-    mergeSourceParams,
-    defaultDummy,
-    [
-      source?.params(),
-      options.sourceParams["_"],
-      source ? options.sourceParams[source.name] : {},
-      userSource?.params,
-    ],
-  );
-  return [o, p];
-}
-
-function filterArgs<
-  Params extends BaseFilterParams,
->(
-  filter: BaseFilter<Params>,
-  options: DdcOptions,
-  userFilter: UserFilter,
-): [FilterOptions, BaseFilterParams] {
-  // Convert type
-  if (typeof userFilter === "string") {
-    userFilter = {
-      name: userFilter,
-    };
-  }
-
-  const o = foldMerge(
-    mergeFilterOptions,
-    defaultFilterOptions,
-    [
-      options.filterOptions["_"],
-      options.filterOptions[filter.name],
-      userFilter?.options,
-    ],
-  );
-  const p = foldMerge(
-    mergeFilterParams,
-    defaultDummy,
-    [
-      filter?.params(),
-      options.filterParams["_"],
-      options.filterParams[filter.name],
-      userFilter?.params,
-    ],
-  );
-  return [o, p];
-}
-
-async function checkUiOnInit(
-  ui: BaseUi<BaseUiParams>,
-  denops: Denops,
-  uiOptions: UiOptions,
-  uiParams: BaseUiParams,
-) {
-  if (ui.isInitialized) {
-    return;
-  }
-
-  try {
-    await ui.onInit({
-      denops,
-      uiOptions,
-      uiParams,
-    });
-
-    ui.isInitialized = true;
-  } catch (e: unknown) {
-    if (isTimeoutError(e)) {
-      // Ignore timeout error
-    } else {
-      await errorException(
-        denops,
-        e,
-        `ui: ${ui.name} "onInit()" failed`,
-      );
-    }
-  }
-}
-
-async function checkSourceOnInit(
-  source: BaseSource<BaseSourceParams>,
-  denops: Denops,
-  sourceOptions: SourceOptions,
-  sourceParams: BaseSourceParams,
-  loader: Loader,
-) {
-  if (source.isInitialized) {
-    return;
-  }
-
-  try {
-    await source.onInit({
-      denops,
-      sourceOptions,
-      sourceParams,
-      loader,
-    });
-
-    source.isInitialized = true;
-
-    if (source.apiVersion < 5) {
-      // API version check
-      await denops.call(
-        "ddc#util#print_error",
-        `source is too old: "${source.name}"`,
-      );
-    }
-  } catch (e: unknown) {
-    if (isTimeoutError(e)) {
-      // Ignore timeout error
-    } else {
-      await errorException(
-        denops,
-        e,
-        `source: ${source.name} "onInit()" failed`,
-      );
-    }
-  }
-}
-
-async function checkFilterOnInit(
-  filter: BaseFilter<BaseFilterParams>,
-  denops: Denops,
-  filterOptions: FilterOptions,
-  filterParams: BaseFilterParams,
-) {
-  if (filter.isInitialized) {
-    return;
-  }
-
-  try {
-    await filter.onInit({
-      denops,
-      filterOptions,
-      filterParams,
-    });
-
-    filter.isInitialized = true;
-  } catch (e: unknown) {
-    if (isTimeoutError(e)) {
-      // Ignore timeout error
-    } else {
-      await errorException(
-        denops,
-        e,
-        `filter: ${filter.name} "onInit()" failed`,
-      );
-    }
-  }
-}
-
-async function callSourceOnEvent(
-  source: BaseSource<BaseSourceParams>,
-  denops: Denops,
-  context: Context,
-  onCallback: OnCallback,
-  options: DdcOptions,
-  sourceOptions: SourceOptions,
-  sourceParams: BaseSourceParams,
-  loader: Loader,
-) {
-  if (!source.events?.includes(context.event)) {
-    return;
-  }
-
-  try {
-    await source.onEvent({
-      denops,
-      context,
-      onCallback,
-      options,
-      sourceOptions,
-      sourceParams,
-      loader,
-    });
-  } catch (e: unknown) {
-    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
-      // Ignore timeout error
-    } else {
-      await errorException(
-        denops,
-        e,
-        `source: ${source.name} "onEvent()" failed`,
-      );
-    }
-  }
-}
-
-async function callSourceOnCompleteDone<
-  Params extends BaseSourceParams,
-  UserData extends unknown,
->(
-  source: BaseSource<Params, UserData>,
-  denops: Denops,
-  context: Context,
-  onCallback: OnCallback,
-  options: DdcOptions,
-  sourceOptions: SourceOptions,
-  sourceParams: Params,
-  loader: Loader,
-  userData: UserData,
-) {
-  try {
-    await source.onCompleteDone({
-      denops,
-      context,
-      onCallback,
-      options,
-      sourceOptions,
-      sourceParams,
-      loader,
-      // This is preventing users from accessing the internal properties.
-      // deno-lint-ignore no-explicit-any
-      userData: userData as any,
-    });
-  } catch (e: unknown) {
-    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
-      // Ignore timeout error
-    } else {
-      await errorException(
-        denops,
-        e,
-        `source: ${source.name} "onCompleteDone()" failed`,
-      );
-    }
-  }
-}
-
-async function callSourceGetCompletePosition(
-  source: BaseSource<BaseSourceParams>,
-  denops: Denops,
-  context: Context,
-  onCallback: OnCallback,
-  loader: Loader,
-  options: DdcOptions,
-  sourceOptions: SourceOptions,
-  sourceParams: BaseSourceParams,
-): Promise<number> {
-  try {
-    return await source.getCompletePosition({
-      denops,
-      context,
-      onCallback,
-      loader,
-      options,
-      sourceOptions,
-      sourceParams,
-    });
-  } catch (e: unknown) {
-    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
-      // Ignore timeout error
-    } else {
-      await errorException(
-        denops,
-        e,
-        `source: ${source.name} "getCompletePosition()" failed`,
-      );
-    }
-
-    return -1;
-  }
-}
-
-async function callSourceGather<
-  Params extends BaseSourceParams,
-  UserData extends unknown,
->(
-  source: BaseSource<Params, UserData>,
-  denops: Denops,
-  context: Context,
-  onCallback: OnCallback,
-  options: DdcOptions,
-  sourceOptions: SourceOptions,
-  sourceParams: Params,
-  loader: Loader,
-  completePos: number,
-  completeStr: string,
-  isIncomplete: boolean,
-): Promise<DdcGatherItems<UserData>> {
-  try {
-    const args = {
-      denops,
-      context,
-      onCallback,
-      options,
-      sourceOptions,
-      sourceParams,
-      loader,
-      completePos,
-      completeStr,
-      isIncomplete,
-    };
-
-    return await deadline(source.gather(args), sourceOptions.timeout);
-  } catch (e: unknown) {
-    if (
-      isTimeoutError(e) || isDdcCallbackCancelError(e) ||
-      e instanceof DeadlineError
-    ) {
-      // Ignore timeout error
-    } else {
-      await errorException(
-        denops,
-        e,
-        `source: ${source.name} "gather()" failed`,
-      );
-    }
-
-    return [];
-  }
-}
-
-async function callFilterOnEvent(
-  filter: BaseFilter<BaseFilterParams>,
-  denops: Denops,
-  context: Context,
-  onCallback: OnCallback,
-  options: DdcOptions,
-  filterOptions: FilterOptions,
-  filterParams: BaseFilterParams,
-) {
-  if (!filter.events?.includes(context.event)) {
-    return;
-  }
-
-  try {
-    await filter.onEvent({
-      denops,
-      context,
-      onCallback,
-      options,
-      filterOptions,
-      filterParams,
-    });
-  } catch (e: unknown) {
-    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
-      // Ignore timeout error
-    } else {
-      await errorException(
-        denops,
-        e,
-        `filter: ${filter.name} "onEvent()" failed`,
-      );
-    }
-  }
-}
-
-async function callFilterFilter(
-  filter: BaseFilter<BaseFilterParams>,
-  denops: Denops,
-  context: Context,
-  onCallback: OnCallback,
-  options: DdcOptions,
-  sourceOptions: SourceOptions,
-  filterOptions: FilterOptions,
-  filterParams: BaseFilterParams,
-  completeStr: string,
-  items: Item[],
-): Promise<Item[]> {
-  try {
-    return await filter.filter({
-      denops,
-      context,
-      onCallback,
-      options,
-      sourceOptions,
-      filterOptions,
-      filterParams,
-      completeStr,
-      items,
-    });
-  } catch (e: unknown) {
-    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
-      // Ignore timeout error
-    } else {
-      await errorException(
-        denops,
-        e,
-        `filter: ${filter.name} "filter()" failed`,
-      );
-    }
-
-    return [];
-  }
-}
-
-function source2Name(s: UserSource) {
-  return typeof s === "string" ? s : s.name;
-}
-
-function filter2Name(f: UserFilter) {
-  return typeof f === "string" ? f : f.name;
 }
 
 Deno.test("byteposToCharpos", () => {

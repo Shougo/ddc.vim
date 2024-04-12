@@ -13,6 +13,7 @@ import {
 import { Denops, ensure, is, Lock, toFileUrl, vars } from "./deps.ts";
 import { Loader } from "./loader.ts";
 import { createCallbackContext } from "./callback.ts";
+import { getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
 
 export function main(denops: Denops) {
   const loader = new Loader();
@@ -138,8 +139,9 @@ export function main(denops: Denops) {
       const item = ensure(arg1, is.Record) as DdcItem;
       const sourceName = await sourceNameFromItem(item);
       const previewContext = ensure(arg2, is.Record) as PreviewContext;
-      return await ddc.getPreviewer(
+      return await getPreviewer(
         denops,
+        loader,
         context,
         options,
         item,
@@ -223,8 +225,9 @@ export function main(denops: Denops) {
         ) ?? sourceName;
 
       cbContext.revoke();
-      await ddc.onCompleteDone(
+      await onCompleteDone(
         denops,
+        loader,
         context,
         cbContext.createOnCallback(),
         options,
@@ -274,8 +277,9 @@ export function main(denops: Denops) {
 
     await ddc.checkManualCompletion(denops, context, options, event);
 
-    await ddc.onEvent(
+    await onEvent(
       denops,
+      loader,
       context,
       cbContext.createOnCallback(),
       options,
