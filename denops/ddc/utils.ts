@@ -55,33 +55,21 @@ function vimoption2ts(option: string): string {
   return patterns.join("");
 }
 
-export async function errorException(
+export async function printError(
   denops: Denops,
-  e: unknown,
-  message: string,
+  ...messages: unknown[]
 ) {
-  await denops.call(
-    "ddc#util#print_error",
-    message,
-  );
-  if (e instanceof Error) {
-    await denops.call(
-      "ddc#util#print_error",
-      e.message,
-    );
-    if (e.stack) {
-      await denops.call(
-        "ddc#util#print_error",
-        e.stack,
-      );
+  const message = messages.map((v) => {
+    if (v instanceof Error) {
+      // NOTE: In Deno, Prefer `Error.stack` because it contains `Error.message`.
+      return `${v.stack ?? v}`;
+    } else if (typeof v === "object") {
+      return JSON.stringify(v);
+    } else {
+      return `${v}`;
     }
-  } else {
-    await denops.call(
-      "ddc#util#print_error",
-      "unknown error object",
-    );
-    console.error(e);
-  }
+  }).join("\n");
+  await denops.call("ddc#util#print_error", message);
 }
 
 export async function safeStat(path: string): Promise<Deno.FileInfo | null> {

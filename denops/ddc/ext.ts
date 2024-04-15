@@ -38,7 +38,7 @@ import { isDdcCallbackCancelError } from "./callback.ts";
 import { defaultUiOptions } from "./base/ui.ts";
 import { defaultSourceOptions } from "./base/source.ts";
 import { defaultFilterOptions } from "./base/filter.ts";
-import { errorException } from "./utils.ts";
+import { printError } from "./utils.ts";
 
 export async function getUi(
   denops: Denops,
@@ -66,8 +66,8 @@ export async function getUi(
   }
   const ui = loader.getUi(options.ui);
   if (!ui) {
-    await denops.call(
-      "ddc#util#print_error",
+    await printError(
+      denops,
       `Not found ui: "${options.ui}"`,
     );
     return [
@@ -124,8 +124,8 @@ export async function getSource(
 
   const source = loader.getSource(name);
   if (!source) {
-    await denops.call(
-      "ddc#util#print_error",
+    await printError(
+      denops,
       `Not found source: ${name}`,
     );
     return [
@@ -171,8 +171,8 @@ export async function getFilter(
 
   const filter = loader.getFilter(name);
   if (!filter) {
-    await denops.call(
-      "ddc#util#print_error",
+    await printError(
+      denops,
       `Not found filter: ${name}`,
     );
     return [
@@ -539,7 +539,7 @@ async function checkUiOnInit(
     if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
-      await errorException(
+      await printError(
         denops,
         e,
         `ui: ${ui.name} "onInit()" failed`,
@@ -571,8 +571,8 @@ async function checkSourceOnInit(
 
     if (source.apiVersion < 5) {
       // API version check
-      await denops.call(
-        "ddc#util#print_error",
+      await printError(
+        denops,
         `source is too old: "${source.name}"`,
       );
     }
@@ -580,7 +580,7 @@ async function checkSourceOnInit(
     if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
-      await errorException(
+      await printError(
         denops,
         e,
         `source: ${source.name} "onInit()" failed`,
@@ -611,7 +611,7 @@ async function checkFilterOnInit(
     if (isTimeoutError(e)) {
       // Ignore timeout error
     } else {
-      await errorException(
+      await printError(
         denops,
         e,
         `filter: ${filter.name} "onInit()" failed`,
@@ -648,7 +648,7 @@ async function callSourceOnEvent(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      await errorException(
+      await printError(
         denops,
         e,
         `source: ${source.name} "onEvent()" failed`,
@@ -688,7 +688,7 @@ async function callSourceOnCompleteDone<
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      await errorException(
+      await printError(
         denops,
         e,
         `source: ${source.name} "onCompleteDone()" failed`,
@@ -721,7 +721,7 @@ export async function callSourceGetCompletePosition(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      await errorException(
+      await printError(
         denops,
         e,
         `source: ${source.name} "getCompletePosition()" failed`,
@@ -770,7 +770,7 @@ export async function callSourceGather<
     ) {
       // Ignore timeout error
     } else {
-      await errorException(
+      await printError(
         denops,
         e,
         `source: ${source.name} "gather()" failed`,
@@ -807,7 +807,7 @@ async function callFilterOnEvent(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      await errorException(
+      await printError(
         denops,
         e,
         `filter: ${filter.name} "onEvent()" failed`,
@@ -844,7 +844,7 @@ export async function callFilterFilter(
     if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
-      await errorException(
+      await printError(
         denops,
         e,
         `filter: ${filter.name} "filter()" failed`,

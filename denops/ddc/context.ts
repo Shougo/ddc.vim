@@ -22,6 +22,7 @@ import {
   UserOptions,
 } from "./types.ts";
 import { defaultSourceOptions } from "./base/source.ts";
+import { printError } from "./utils.ts";
 
 // where
 // T: Object
@@ -528,8 +529,8 @@ export class ContextBuilder {
   ) {
     for (const key in options) {
       if (!(key in defaults)) {
-        await denops.call(
-          "ddc#util#print_error",
+        await printError(
+          denops,
           `Invalid ${name}: "${key}"`,
         );
       }
