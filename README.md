@@ -58,7 +58,7 @@ whether you have this.
 
 ### Requirements
 
-Ddc.vim requires both Deno and denops.vim.
+Ddc.vim requires both Deno 1.42+ and denops.vim.
 
 - <https://deno.land/>
 - <https://github.com/vim-denops/denops.vim>
