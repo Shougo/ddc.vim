@@ -5,6 +5,6 @@
     "lint": "deno lint denops",
     "fmt": "deno fmt denops",
     "test": "deno test -A --doc --parallel --shuffle denops/**/*.ts",
-    "upgrade": "deno run -A https://deno.land/x/udd/main.ts denops/**/*.ts"
+    "upgrade": "deno run -A jsr:@molt/cli **/*.ts --no-resolve --write"
   }
 }
