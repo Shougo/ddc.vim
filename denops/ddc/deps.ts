@@ -21,4 +21,4 @@ export { deadline, DeadlineError } from "jsr:@std/async@0.224.0";
 export { TimeoutError } from "https://deno.land/x/msgpack_rpc@v4.0.1/response_waiter.ts";
 export { spy } from "https://deno.land/x/mock@0.15.2/mock.ts";
 export { ensure, is } from "https://deno.land/x/unknownutil@v3.18.0/mod.ts";
-export { Lock } from "https://deno.land/x/async@v2.1.0/mod.ts";
+export { Lock } from "jsr:@lambdalisue/async@2.1.1";
