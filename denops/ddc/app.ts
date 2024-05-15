@@ -10,12 +10,20 @@ import {
   Previewer,
   UserOptions,
 } from "./types.ts";
-import { Denops, ensure, is, Lock, toFileUrl, vars } from "./deps.ts";
+import {
+  Denops,
+  ensure,
+  Entrypoint,
+  is,
+  Lock,
+  toFileUrl,
+  vars,
+} from "./deps.ts";
 import { Loader } from "./loader.ts";
 import { createCallbackContext } from "./callback.ts";
 import { getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
 
-export function main(denops: Denops) {
+export const main: Entrypoint = (denops: Denops) => {
   const loader = new Loader();
   const ddc = new Ddc(loader);
   const contextBuilder = new ContextBuilder();
@@ -315,4 +323,4 @@ export function main(denops: Denops) {
   }
 
   ddc.initialize(denops);
-}
+};

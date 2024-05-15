@@ -1,17 +1,20 @@
-export type { Denops } from "https://deno.land/x/denops_std@v6.4.2/mod.ts";
+export type {
+  Denops,
+  Entrypoint,
+} from "https://deno.land/x/denops_std@v6.5.0/mod.ts";
 export {
   echo,
   execute,
-} from "https://deno.land/x/denops_std@v6.4.2/helper/mod.ts";
+} from "https://deno.land/x/denops_std@v6.5.0/helper/mod.ts";
 export {
   batch,
   collect,
-} from "https://deno.land/x/denops_std@v6.4.2/batch/mod.ts";
-export * as op from "https://deno.land/x/denops_std@v6.4.2/option/mod.ts";
-export * as vimOp from "https://deno.land/x/denops_std@v6.4.2/option/vim/mod.ts";
-export * as fn from "https://deno.land/x/denops_std@v6.4.2/function/mod.ts";
-export * as vars from "https://deno.land/x/denops_std@v6.4.2/variable/mod.ts";
-export * as autocmd from "https://deno.land/x/denops_std@v6.4.2/autocmd/mod.ts";
+} from "https://deno.land/x/denops_std@v6.5.0/batch/mod.ts";
+export * as op from "https://deno.land/x/denops_std@v6.5.0/option/mod.ts";
+export * as vimOp from "https://deno.land/x/denops_std@v6.5.0/option/vim/mod.ts";
+export * as fn from "https://deno.land/x/denops_std@v6.5.0/function/mod.ts";
+export * as vars from "https://deno.land/x/denops_std@v6.5.0/variable/mod.ts";
+export * as autocmd from "https://deno.land/x/denops_std@v6.5.0/autocmd/mod.ts";
 
 export * from "jsr:@std/encoding@0.224.0/base64";
 export { assertEquals, equal } from "jsr:@std/assert@0.225.1";
