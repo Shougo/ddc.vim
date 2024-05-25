@@ -68,13 +68,12 @@ function ddc#update_items(name, items) abort
   call ddc#denops#_notify('updateItems', [a:name, a:items])
 endfunction
 
-const s:root_dir = '<sfile>'->expand()->fnamemodify(':h:h')
 function ddc#set_static_import_path() abort
   " Clear current import path.
   call writefile([
         \   '// NOTE: It is dummy module.',
         \   'export const mods = {};',
-        \ ], s:root_dir .. '/denops/ddc/_mods.js')
+        \ ], ddc#denops#_mods())
 
   call ddc#denops#_notify('setStaticImportPath', [])
 endfunction

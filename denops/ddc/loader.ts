@@ -72,7 +72,7 @@ export class Loader {
     }
     staticLines.push("};");
     await Deno.writeTextFile(
-      await vars.g.get(denops, "ddc#_mods"),
+      await denops.call("ddc#denops#_mods") as string,
       staticLines.join("\n"),
     );
   }

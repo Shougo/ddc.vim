@@ -65,11 +65,10 @@ endfunction
 
 const s:root_dir = '<sfile>'->expand()->fnamemodify(':h:h:h')
 const s:sep = has('win32') ? '\' : '/'
+function ddc#denops#_mods() abort
+  return [s:root_dir, 'denops', 'ddc', '_mods.js']->join(s:sep)
+endfunction
 function s:register() abort
-  if !'g:ddc#_mods'->exists()
-    const g:ddc#_mods = [s:root_dir, 'denops', 'ddc', '_mods.js']->join(s:sep)
-  endif
-
   call ddc#denops#_load(
         \ 'ddc',
         \ [s:root_dir, 'denops', 'ddc', 'app.ts']->join(s:sep))
