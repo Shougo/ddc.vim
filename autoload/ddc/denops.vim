@@ -11,7 +11,7 @@ function ddc#denops#_init(opts = {}) abort
 
   augroup ddc
     autocmd!
-    autocmd InsertLeave * call ddc#hide('InsertLeave')
+    autocmd InsertLeave * ++nested call ddc#hide('InsertLeave')
   augroup END
 
   let context_filetype = a:opts->get('context_filetype', 'none')
@@ -30,7 +30,7 @@ function ddc#denops#_init(opts = {}) abort
         \  denops#server#status() ==# 'running')
     call s:register()
   else
-    autocmd ddc User DenopsReady call s:register()
+    autocmd ddc User DenopsReady ++nested call s:register()
   endif
 endfunction
 
@@ -73,7 +73,7 @@ function s:register() abort
         \ 'ddc',
         \ [s:root_dir, 'denops', 'ddc', 'app.ts']->join(s:sep))
 
-  autocmd ddc User DenopsClosed call s:stopped()
+  autocmd ddc User DenopsClosed ++nested call s:stopped()
 endfunction
 
 function s:stopped() abort

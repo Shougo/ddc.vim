@@ -73,13 +73,13 @@ function ddc#map#insert_item(number) abort
 
   " Call CompleteDone later.
   if mode ==# 'i'
-    autocmd ddc TextChangedI * ++once
+    autocmd ddc TextChangedI * ++once ++nested
           \ : doautocmd <nomodeline> CompleteDone
           \ | if '#User#PumCompleteDonePre'->exists()
           \ |   doautocmd <nomodeline> User PumCompleteDonePre
           \ | endif
   elseif mode ==# 'c'
-    autocmd ddc CmdlineChanged * ++once
+    autocmd ddc CmdlineChanged * ++once ++nested
           \ : if '#User#PumCompleteDonePre'->exists()
           \ |   doautocmd <nomodeline> User PumCompleteDonePre
           \ | endif

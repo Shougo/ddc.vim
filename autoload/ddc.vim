@@ -7,13 +7,13 @@ function ddc#enable_cmdline_completion() abort
 
   augroup ddc-cmdline
     autocmd!
-    autocmd CmdlineLeave * call ddc#hide('CmdlineLeave')
-    autocmd CmdlineEnter * call ddc#on_event('CmdlineEnter')
-    autocmd CmdlineChanged *
+    autocmd CmdlineLeave * ++nested call ddc#hide('CmdlineLeave')
+    autocmd CmdlineEnter * ++nested call ddc#on_event('CmdlineEnter')
+    autocmd CmdlineChanged * ++nested
           \ : if getcmdtype() !=# '=' && getcmdtype() !=# '@'
           \ |   call ddc#on_event('CmdlineChanged')
           \ | endif
-    autocmd ModeChanged c:n call s:disable_cmdline_completion()
+    autocmd ModeChanged c:n ++nested call s:disable_cmdline_completion()
   augroup END
 
   let b:ddc_cmdline_completion = v:true
@@ -35,7 +35,7 @@ function ddc#enable_terminal_completion() abort
 
   augroup ddc-terminal
     autocmd!
-    autocmd TextChangedT * call ddc#on_event('TextChangedT')
+    autocmd TextChangedT * ++nested call ddc#on_event('TextChangedT')
   augroup END
 endfunction
 
