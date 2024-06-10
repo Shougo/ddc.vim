@@ -17,10 +17,10 @@ export * as vars from "https://deno.land/x/denops_std@v6.5.0/variable/mod.ts";
 export * as autocmd from "https://deno.land/x/denops_std@v6.5.0/autocmd/mod.ts";
 
 export * from "jsr:@std/encoding@0.224.3/base64";
-export { assertEquals, equal } from "jsr:@std/assert@0.225.3";
-export { basename, parse, toFileUrl } from "jsr:@std/path@0.225.1";
-export { deadline, DeadlineError } from "jsr:@std/async@0.224.1";
-export { spy } from "jsr:@std/testing@0.224.0/mock";
+export { assertEquals, equal } from "jsr:@std/assert@0.226.0";
+export { basename, parse, toFileUrl } from "jsr:@std/path@0.225.2";
+export { deadline, DeadlineError } from "jsr:@std/async@0.224.2";
+export { spy } from "jsr:@std/testing@0.225.1/mock";
 
 export { TimeoutError } from "https://deno.land/x/msgpack_rpc@v4.0.1/response_waiter.ts";
 export { ensure, is } from "jsr:@core/unknownutil@3.18.1";
