@@ -25,13 +25,25 @@ function ddc#denops#_init(opts = {}) abort
   let g:ddc#_skip_next_complete = 0
 
   " NOTE: ddc.vim must be registered manually.
-  if 'g:loaded_denops'->exists() &&
-        \ ('<amatch>'->expand() ==# 'DenopsReady' ||
-        \  denops#server#status() ==# 'running')
-    call s:register()
-  else
-    autocmd ddc User DenopsReady ++nested call s:register()
+
+  " NOTE: denops load may be started
+  if 'g:loaded_denops'->exists()
+    if denops#server#status() ==# 'running'
+      call s:register()
+      return
+    endif
+
+    try
+      if '<amatch>'->expand() ==# 'DenopsReady'
+        call s:register()
+        return
+      endif
+    catch /^Vim\%((\a\+)\)\=:E497:/
+      " NOTE: E497 is occured when it is not in autocmd.
+    endtry
   endif
+
+  autocmd ddc User DenopsReady ++nested call s:register()
 endfunction
 
 function ddc#denops#_load(name, path) abort
