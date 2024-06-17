@@ -46,15 +46,6 @@ function ddc#denops#_init(opts = {}) abort
   autocmd ddc User DenopsReady ++nested call s:register()
 endfunction
 
-function ddc#denops#_load(name, path) abort
-  try
-    call denops#plugin#load(a:name, a:path)
-  catch /^Vim\%((\a\+)\)\=:E117:/
-    " Fallback to `register` for backward compatibility
-    call denops#plugin#register(a:name, a:path, #{ mode: 'skip' })
-  endtry
-endfunction
-
 function ddc#denops#_running() abort
   return 'g:loaded_denops'->exists()
         \ && denops#server#status() ==# 'running'
@@ -81,7 +72,7 @@ function ddc#denops#_mods() abort
   return [s:root_dir, 'denops', 'ddc', '_mods.js']->join(s:sep)
 endfunction
 function s:register() abort
-  call ddc#denops#_load(
+  call denops#plugin#load(
         \ 'ddc',
         \ [s:root_dir, 'denops', 'ddc', 'app.ts']->join(s:sep))
 
