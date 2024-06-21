@@ -211,7 +211,7 @@ export async function getPreviewer(
     options,
     sourceName,
   );
-  if (!source || !source.getPreviewer) {
+  if (!source || !source.getPreviewer || !sourceOptions.preview) {
     return { kind: "empty" };
   }
 

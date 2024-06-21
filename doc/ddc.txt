@@ -810,6 +810,12 @@ minKeywordLength	(number)
 
 		Default: 0
 
+                                                   *ddc-source-option-preview*
+preview		(boolean)
+		If it is False, ddc disables preview feature.
+
+		Default: v:true
+
                                  *ddc-source-option-replaceSourceInputPattern*
 replaceSourceInputPattern
 		It defines the regexp pattern to remove a match in the source

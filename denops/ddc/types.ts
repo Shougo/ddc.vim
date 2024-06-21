@@ -89,6 +89,7 @@ export type SourceOptions = {
   maxKeywordLength: number;
   minAutoCompleteLength: number;
   minKeywordLength: number;
+  preview: boolean;
   sorters: UserFilter[];
   timeout: number;
   replaceSourceInputPattern: string;
