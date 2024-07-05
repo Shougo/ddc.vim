@@ -754,20 +754,6 @@ mark			(string)
 
 		Default: ""
 
-                                     *ddc-source-option-maxAutoCompleteLength*
-maxAutoCompleteLength	(number)
-		Ignored length of keyword for auto completion.
-		It is useful to edit BASE64 files.
-
-		Default: 80
-
-                                                  *ddc-source-option-maxItems*
-maxItems		(number)
-		If there are more items than this value, ddc will ignore the
-		filtering.
-
-		Default: 500
-
                                                 *ddc-source-option-matcherKey*
 matcherKey		(string)
 		Matcher compare key instead of "word".
@@ -792,10 +778,11 @@ matchers		(string[])
 
                                      *ddc-source-option-maxAutoCompleteLength*
 maxAutoCompleteLength	(number)
-		The mamimum length of keyword required for auto completion.
+		Ignored length of keyword for auto completion.
+		It is useful to edit BASE64 files.
 		NOTE: It does not work for manual completion.
 
-		Default: 2
+		Default: 80
 
                                           *ddc-source-option-maxKeywordLength*
 maxKeywordLength	(number)
@@ -804,12 +791,31 @@ maxKeywordLength	(number)
 
 		Default: 0
 
+                                                  *ddc-source-option-maxItems*
+maxItems		(number)
+		If there are more items than this value, ddc will ignore the
+		filtering.
+
+		Default: 500
+
+                                   *ddc-source-option-maxManualCompleteLength*
+maxManualCompleteLength	(number)
+		The mamimum length of keyword required for manual completion.
+
+		Default: 80
+
                                      *ddc-source-option-minAutoCompleteLength*
 minAutoCompleteLength	(number)
 		The minimum length of keyword required for auto completion.
 		NOTE: It does not work for manual completion.
 
 		Default: 2
+
+                                   *ddc-source-option-minManualCompleteLength*
+minManualCompleteLength	(number)
+		The minimum length of keyword required for manual completion.
+
+		Default: 1
 
                                           *ddc-source-option-minKeywordLength*
 minKeywordLength	(number)

@@ -159,9 +159,11 @@ export class Ddc {
         ? this.#prevResults[s.name]
         : null;
 
-      const invalidCompleteLength =
-        completeStr.length < o.minAutoCompleteLength ||
-        completeStr.length > o.maxAutoCompleteLength;
+      const invalidCompleteLength = context.event === "Manual"
+        ? (completeStr.length < o.minManualCompleteLength ||
+          completeStr.length > o.maxManualCompleteLength)
+        : (completeStr.length < o.minAutoCompleteLength ||
+          completeStr.length > o.maxAutoCompleteLength);
 
       const triggerForIncomplete = (checkPrevResult?.isIncomplete ?? false) &&
         context.lineNr === checkPrevResult?.lineNr &&
