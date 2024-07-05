@@ -159,16 +159,17 @@ export class Ddc {
         ? this.#prevResults[s.name]
         : null;
 
-      const checkCompleteStr = completeStr.length < o.minAutoCompleteLength ||
+      const invalidCompleteLength =
+        completeStr.length < o.minAutoCompleteLength ||
         completeStr.length > o.maxAutoCompleteLength;
 
       const triggerForIncomplete = (checkPrevResult?.isIncomplete ?? false) &&
         context.lineNr === checkPrevResult?.lineNr &&
-        completePos === checkPrevResult?.completePos && !checkCompleteStr;
+        completePos === checkPrevResult?.completePos && !invalidCompleteLength;
 
       if (
         completePos < 0 ||
-        (!forceCompletion && !triggerForIncomplete && checkCompleteStr &&
+        (!forceCompletion && !triggerForIncomplete && invalidCompleteLength &&
           (context.event !== "Manual" && context.event !== "Update"))
       ) {
         delete this.#prevResults[s.name];

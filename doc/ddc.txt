@@ -790,6 +790,13 @@ matchers		(string[])
 
 		Default: []
 
+                                     *ddc-source-option-maxAutoCompleteLength*
+maxAutoCompleteLength	(number)
+		The mamimum length of keyword required for auto completion.
+		NOTE: It does not work for manual completion.
+
+		Default: 2
+
                                           *ddc-source-option-maxKeywordLength*
 maxKeywordLength	(number)
 		The maximum word of length for items.
@@ -799,7 +806,8 @@ maxKeywordLength	(number)
 
                                      *ddc-source-option-minAutoCompleteLength*
 minAutoCompleteLength	(number)
-		Length of keyword required for auto completion.
+		The minimum length of keyword required for auto completion.
+		NOTE: It does not work for manual completion.
 
 		Default: 2
 
