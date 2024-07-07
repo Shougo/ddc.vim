@@ -1,20 +1,15 @@
-export type {
-  Denops,
-  Entrypoint,
-} from "https://deno.land/x/denops_std@v6.5.0/mod.ts";
-export {
-  echo,
-  execute,
-} from "https://deno.land/x/denops_std@v6.5.0/helper/mod.ts";
+export type { Denops, Entrypoint } from "jsr:@denops/std@7.0.0-pre1";
+export { echo } from "jsr:@denops/std@7.0.0-pre1/helper/echo";
+export { execute } from "jsr:@denops/std@7.0.0-pre1/helper/execute";
 export {
   batch,
   collect,
-} from "https://deno.land/x/denops_std@v6.5.0/batch/mod.ts";
-export * as op from "https://deno.land/x/denops_std@v6.5.0/option/mod.ts";
-export * as vimOp from "https://deno.land/x/denops_std@v6.5.0/option/vim/mod.ts";
-export * as fn from "https://deno.land/x/denops_std@v6.5.0/function/mod.ts";
-export * as vars from "https://deno.land/x/denops_std@v6.5.0/variable/mod.ts";
-export * as autocmd from "https://deno.land/x/denops_std@v6.5.0/autocmd/mod.ts";
+} from "jsr:@denops/std@7.0.0-pre1/batch";
+export * as op from "jsr:@denops/std@7.0.0-pre1/option";
+export * as vimOp from "jsr:@denops/std@7.0.0-pre1/option/vim";
+export * as fn from "jsr:@denops/std@7.0.0-pre1/function";
+export * as vars from "jsr:@denops/std@7.0.0-pre1/variable";
+export * as autocmd from "jsr:@denops/std@7.0.0-pre1/autocmd";
 
 export * from "jsr:@std/encoding@1.0.0/base64";
 export { assertEquals, equal } from "jsr:@std/assert@0.226.0";
