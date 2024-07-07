@@ -1,10 +1,7 @@
 export type { Denops, Entrypoint } from "jsr:@denops/std@7.0.0-pre1";
 export { echo } from "jsr:@denops/std@7.0.0-pre1/helper/echo";
 export { execute } from "jsr:@denops/std@7.0.0-pre1/helper/execute";
-export {
-  batch,
-  collect,
-} from "jsr:@denops/std@7.0.0-pre1/batch";
+export { batch, collect } from "jsr:@denops/std@7.0.0-pre1/batch";
 export * as op from "jsr:@denops/std@7.0.0-pre1/option";
 export * as vimOp from "jsr:@denops/std@7.0.0-pre1/option/vim";
 export * as fn from "jsr:@denops/std@7.0.0-pre1/function";
