@@ -22,6 +22,5 @@ export { basename, parse, toFileUrl } from "jsr:@std/path@0.225.2";
 export { deadline, DeadlineError } from "jsr:@std/async@0.224.2";
 export { spy } from "jsr:@std/testing@0.225.3/mock";
 
-export { TimeoutError } from "https://deno.land/x/msgpack_rpc@v4.0.1/response_waiter.ts";
 export { ensure, is } from "jsr:@core/unknownutil@3.18.1";
 export { Lock } from "jsr:@lambdalisue/async@2.1.1";

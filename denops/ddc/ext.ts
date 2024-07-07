@@ -1,4 +1,4 @@
-import { deadline, DeadlineError, Denops, TimeoutError } from "./deps.ts";
+import { deadline, DeadlineError, Denops } from "./deps.ts";
 import {
   BaseFilter,
   BaseFilterParams,
@@ -536,15 +536,11 @@ async function checkUiOnInit(
 
     ui.isInitialized = true;
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
-      // Ignore timeout error
-    } else {
-      await printError(
-        denops,
-        e,
-        `ui: ${ui.name} "onInit()" failed`,
-      );
-    }
+    await printError(
+      denops,
+      e,
+      `ui: ${ui.name} "onInit()" failed`,
+    );
   }
 }
 
@@ -577,15 +573,11 @@ async function checkSourceOnInit(
       );
     }
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
-      // Ignore timeout error
-    } else {
-      await printError(
-        denops,
-        e,
-        `source: ${source.name} "onInit()" failed`,
-      );
-    }
+    await printError(
+      denops,
+      e,
+      `source: ${source.name} "onInit()" failed`,
+    );
   }
 }
 
@@ -608,15 +600,11 @@ async function checkFilterOnInit(
 
     filter.isInitialized = true;
   } catch (e: unknown) {
-    if (isTimeoutError(e)) {
-      // Ignore timeout error
-    } else {
-      await printError(
-        denops,
-        e,
-        `filter: ${filter.name} "onInit()" failed`,
-      );
-    }
+    await printError(
+      denops,
+      e,
+      `filter: ${filter.name} "onInit()" failed`,
+    );
   }
 }
 
@@ -645,7 +633,7 @@ async function callSourceOnEvent(
       loader,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
+    if (isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       await printError(
@@ -685,7 +673,7 @@ async function callSourceOnCompleteDone<
       userData: userData as any,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
+    if (isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       await printError(
@@ -718,7 +706,7 @@ export async function callSourceGetCompletePosition(
       sourceParams,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
+    if (isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       await printError(
@@ -765,7 +753,7 @@ export async function callSourceGather<
     return await deadline(source.gather(args), sourceOptions.timeout);
   } catch (e: unknown) {
     if (
-      isTimeoutError(e) || isDdcCallbackCancelError(e) ||
+      isDdcCallbackCancelError(e) ||
       e instanceof DeadlineError
     ) {
       // Ignore timeout error
@@ -804,7 +792,7 @@ async function callFilterOnEvent(
       filterParams,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
+    if (isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       await printError(
@@ -841,7 +829,7 @@ export async function callFilterFilter(
       items,
     });
   } catch (e: unknown) {
-    if (isTimeoutError(e) || isDdcCallbackCancelError(e)) {
+    if (isDdcCallbackCancelError(e)) {
       // Ignore timeout error
     } else {
       await printError(
@@ -853,12 +841,6 @@ export async function callFilterFilter(
 
     return [];
   }
-}
-
-// isinstanceof may be failed
-// https://zenn.dev/luma/articles/2e891a24fe099c
-function isTimeoutError(e: unknown): e is TimeoutError {
-  return (e as TimeoutError).name === "TimeoutError";
 }
 
 function source2Name(s: UserSource) {
