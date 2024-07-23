@@ -18,8 +18,8 @@ export * as autocmd from "https://deno.land/x/denops_std@v6.5.1/autocmd/mod.ts";
 
 export * from "jsr:@std/encoding@1.0.1/base64";
 export { assertEquals, equal } from "jsr:@std/assert@1.0.0";
-export { basename, parse, toFileUrl } from "jsr:@std/path@0.225.2";
-export { deadline, DeadlineError } from "jsr:@std/async@0.224.2";
+export { basename, parse, toFileUrl } from "jsr:@std/path@1.0.1";
+export { deadline } from "jsr:@std/async@1.0.0";
 export { spy } from "jsr:@std/testing@0.225.3/mock";
 
 export { ensure, is } from "jsr:@core/unknownutil@3.18.1";
