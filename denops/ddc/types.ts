@@ -10,6 +10,7 @@ export { BaseSource } from "./base/source.ts";
 export type { BaseSourceParams } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
 export type { BaseFilterParams } from "./base/filter.ts";
+export type { Denops } from "./deps.ts";
 
 export { ContextBuilder } from "./context.ts";
 
