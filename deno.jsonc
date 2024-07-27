@@ -13,7 +13,7 @@
   "publish": {
     "include": [
       "denops/ddc/**/*.ts",
-      "denops/ddu/**/*.js"
+      "denops/ddc/**/*.js"
     ]
   },
   "imports": {
