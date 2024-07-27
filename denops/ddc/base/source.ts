@@ -1,4 +1,4 @@
-import {
+import type {
   Context,
   DdcEvent,
   DdcGatherItems,
@@ -9,9 +9,9 @@ import {
   Previewer,
   SourceOptions,
 } from "../types.ts";
-import { Denops } from "../deps.ts";
+import type { Denops } from "../deps.ts";
 import { convertKeywordPattern } from "../utils.ts";
-import { Loader } from "../loader.ts";
+import type { Loader } from "../loader.ts";
 
 export type BaseSourceParams = Record<string, unknown>;
 

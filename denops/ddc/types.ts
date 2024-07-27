@@ -1,7 +1,7 @@
-import { autocmd } from "./deps.ts";
-import { BaseUiParams } from "./base/ui.ts";
-import { BaseSourceParams } from "./base/source.ts";
-import { BaseFilterParams } from "./base/filter.ts";
+import type { autocmd } from "./deps.ts";
+import type { BaseUiParams } from "./base/ui.ts";
+import type { BaseSourceParams } from "./base/source.ts";
+import type { BaseFilterParams } from "./base/filter.ts";
 
 export { BaseConfig } from "./base/config.ts";
 export { BaseUi } from "./base/ui.ts";

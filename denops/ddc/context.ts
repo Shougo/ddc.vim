@@ -1,7 +1,7 @@
 import {
   assertEquals,
   collect,
-  Denops,
+  type Denops,
   ensure,
   fn,
   is,
@@ -9,7 +9,7 @@ import {
   vars,
   vimOp,
 } from "./deps.ts";
-import {
+import type {
   BaseFilterParams,
   BaseSourceParams,
   BaseUiParams,

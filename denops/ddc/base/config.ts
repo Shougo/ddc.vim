@@ -1,6 +1,6 @@
-import { ContextBuilder } from "../context.ts";
-import { DdcExtType } from "../types.ts";
-import { Denops } from "../deps.ts";
+import type { ContextBuilder } from "../context.ts";
+import type { DdcExtType } from "../types.ts";
+import type { Denops } from "../deps.ts";
 
 export type ConfigArguments = {
   denops: Denops;

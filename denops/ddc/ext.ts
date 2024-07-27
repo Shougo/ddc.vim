@@ -1,5 +1,5 @@
-import { deadline, Denops } from "./deps.ts";
-import {
+import { deadline, type Denops } from "./deps.ts";
+import type {
   BaseFilter,
   BaseFilterParams,
   BaseSource,
@@ -32,8 +32,8 @@ import {
   mergeUiOptions,
   mergeUiParams,
 } from "./context.ts";
-import { Loader } from "./loader.ts";
-import { Ddc } from "./ddc.ts";
+import type { Loader } from "./loader.ts";
+import type { Ddc } from "./ddc.ts";
 import { isDdcCallbackCancelError } from "./callback.ts";
 import { defaultUiOptions } from "./base/ui.ts";
 import { defaultSourceOptions } from "./base/source.ts";

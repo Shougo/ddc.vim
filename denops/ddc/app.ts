@@ -1,6 +1,6 @@
 import { Ddc } from "./ddc.ts";
-import { ContextBuilder, ContextCallbacks } from "./context.ts";
-import {
+import { ContextBuilder, type ContextCallbacks } from "./context.ts";
+import type {
   DdcEvent,
   DdcExtType,
   DdcItem,
@@ -11,9 +11,9 @@ import {
   UserOptions,
 } from "./types.ts";
 import {
-  Denops,
+  type Denops,
   ensure,
-  Entrypoint,
+  type Entrypoint,
   is,
   Lock,
   toFileUrl,
