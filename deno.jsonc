@@ -1,4 +1,22 @@
 {
+  "name": "@shougo/ddc-vim",
+  "version": "0.0.0",
+  "exports": {
+    ".": "./denops/ddc/deps.ts",
+    "./config": "./denops/ddc/base/config.ts",
+    "./filter": "./denops/ddc/base/filter.ts",
+    "./source": "./denops/ddc/base/source.ts",
+    "./types": "./denops/ddc/types.ts",
+    "./ui": "./denops/ddc/base/ui.ts",
+    "./utils": "./denops/ddc/utils.ts"
+  },
+  "publish": {
+    "include": [
+      "denops/ddc/**/*.ts",
+    ],
+  },
+  "imports": {
+  },
   "lock": false,
   "tasks": {
     "check": "deno check denops/**/*.ts",
