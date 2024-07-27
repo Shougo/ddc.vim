@@ -1,4 +1,4 @@
-import { deadline, DeadlineError, Denops } from "./deps.ts";
+import { deadline, Denops } from "./deps.ts";
 import {
   BaseFilter,
   BaseFilterParams,
@@ -754,7 +754,7 @@ export async function callSourceGather<
   } catch (e: unknown) {
     if (
       isDdcCallbackCancelError(e) ||
-      e instanceof DeadlineError
+      e instanceof DOMException
     ) {
       // Ignore timeout error
     } else {
