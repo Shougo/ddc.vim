@@ -1,11 +1,11 @@
-export type { Denops, Entrypoint } from "jsr:@denops/std@7.0.0-pre2";
-export { echo, execute } from "jsr:@denops/std@7.0.0-pre2/helper";
-export { batch, collect } from "jsr:@denops/std@7.0.0-pre2/batch";
-export * as op from "jsr:@denops/std@7.0.0-pre2/option";
-export * as vimOp from "jsr:@denops/std@7.0.0-pre2/option/vim";
-export * as fn from "jsr:@denops/std@7.0.0-pre2/function";
-export * as vars from "jsr:@denops/std@7.0.0-pre2/variable";
-export * as autocmd from "jsr:@denops/std@7.0.0-pre2/autocmd";
+export type { Denops, Entrypoint } from "jsr:@denops/std@7.0.0";
+export { echo, execute } from "jsr:@denops/std@7.0.0/helper";
+export { batch, collect } from "jsr:@denops/std@7.0.0/batch";
+export * as op from "jsr:@denops/std@7.0.0/option";
+export * as vimOp from "jsr:@denops/std@7.0.0/option/vim";
+export * as fn from "jsr:@denops/std@7.0.0/function";
+export * as vars from "jsr:@denops/std@7.0.0/variable";
+export * as autocmd from "jsr:@denops/std@7.0.0/autocmd";
 
 export * from "jsr:@std/encoding@1.0.1/base64";
 export { assertEquals, equal } from "jsr:@std/assert@1.0.1";
