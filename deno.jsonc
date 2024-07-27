@@ -12,7 +12,8 @@
   },
   "publish": {
     "include": [
-      "denops/ddc/**/*.ts"
+      "denops/ddc/**/*.ts",
+      "denops/ddu/**/*.js"
     ]
   },
   "imports": {
