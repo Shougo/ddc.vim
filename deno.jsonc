@@ -4,6 +4,7 @@
   "exports": {
     ".": "./denops/ddc/deps.ts",
     "./config": "./denops/ddc/base/config.ts",
+    "./deps": "./denops/ddc/deps.ts",
     "./filter": "./denops/ddc/base/filter.ts",
     "./source": "./denops/ddc/base/source.ts",
     "./types": "./denops/ddc/types.ts",
