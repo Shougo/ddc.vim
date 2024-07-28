@@ -1,4 +1,4 @@
-import {
+import type {
   Context,
   DdcEvent,
   DdcOptions,
@@ -7,7 +7,7 @@ import {
   OnCallback,
   SourceOptions,
 } from "../types.ts";
-import { Denops } from "../deps.ts";
+import type { Denops } from "../deps.ts";
 
 export type BaseFilterParams = Record<string, unknown>;
 

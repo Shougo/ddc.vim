@@ -1,4 +1,4 @@
-import { assertEquals, Denops, op } from "./deps.ts";
+import { assertEquals, type Denops, op } from "./deps.ts";
 
 export async function convertKeywordPattern(
   denops: Denops,

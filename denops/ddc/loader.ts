@@ -1,4 +1,4 @@
-import {
+import type {
   BaseFilter,
   BaseFilterParams,
   BaseSource,
@@ -12,7 +12,7 @@ import {
 } from "./types.ts";
 import {
   basename,
-  Denops,
+  type Denops,
   fn,
   is,
   Lock,
@@ -113,19 +113,19 @@ export class Loader {
     });
   }
 
-  getAliasNames(type: DdcExtType) {
+  getAliasNames(type: DdcExtType): string[] {
     return Object.keys(this.#aliases[type]);
   }
-  getAlias(type: DdcExtType, name: string) {
+  getAlias(type: DdcExtType, name: string): string {
     return this.#aliases[type][name];
   }
-  getUi(name: UiName) {
+  getUi(name: UiName): BaseUi<BaseUiParams> {
     return this.#uis[name];
   }
-  getSource(name: SourceName) {
+  getSource(name: SourceName): BaseSource<BaseSourceParams> {
     return this.#sources[name];
   }
-  getFilter(name: FilterName) {
+  getFilter(name: FilterName): BaseFilter<BaseUiParams> {
     return this.#filters[name];
   }
 

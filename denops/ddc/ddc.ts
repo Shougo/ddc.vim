@@ -2,13 +2,13 @@ import {
   assertEquals,
   autocmd,
   batch,
-  Denops,
+  type Denops,
   equal,
   fn,
   op,
   vars,
 } from "./deps.ts";
-import {
+import type {
   BaseUi,
   BaseUiParams,
   CallbackContext,
@@ -23,7 +23,7 @@ import {
   UserSource,
 } from "./types.ts";
 import { defaultDummy } from "./context.ts";
-import { Loader } from "./loader.ts";
+import type { Loader } from "./loader.ts";
 import { defaultUiOptions } from "./base/ui.ts";
 import { defaultSourceOptions } from "./base/source.ts";
 import {

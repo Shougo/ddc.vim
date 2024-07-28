@@ -1,8 +1,27 @@
 {
+  "name": "@shougo/ddc-vim",
+  "version": "0.0.0",
+  "exports": {
+    "./config": "./denops/ddc/base/config.ts",
+    "./filter": "./denops/ddc/base/filter.ts",
+    "./source": "./denops/ddc/base/source.ts",
+    "./types": "./denops/ddc/types.ts",
+    "./ui": "./denops/ddc/base/ui.ts",
+    "./utils": "./denops/ddc/utils.ts"
+  },
+  "publish": {
+    "include": [
+      "denops/ddc/**/*.ts",
+      "denops/ddc/**/*.js"
+    ]
+  },
+  "imports": {
+  },
   "lock": false,
   "tasks": {
     "check": "deno check denops/**/*.ts",
     "lint": "deno lint denops",
+    "lint-fix": "deno lint --fix denops",
     "fmt": "deno fmt denops",
     "test": "deno test -A --doc --parallel --shuffle denops/**/*.ts",
     "upgrade": "deno run -A jsr:@molt/cli **/*.ts --no-resolve --write"

@@ -1,5 +1,5 @@
-import { Context, DdcItem, DdcOptions, UiOptions } from "../types.ts";
-import { Denops } from "../deps.ts";
+import type { Context, DdcItem, DdcOptions, UiOptions } from "../types.ts";
+import type { Denops } from "../deps.ts";
 
 export type BaseUiParams = Record<string, unknown>;
 

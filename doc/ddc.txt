@@ -53,7 +53,7 @@ INSTALL                                                          *ddc-install*
 NOTE: Ddc.vim requires Neovim (0.8.0+) or Vim 9.0.1276+ (latest is
 recommended).
 
-Please install both Deno 1.42+ and "denops.vim".
+Please install both Deno 1.45+ and "denops.vim" v7.0+.
 
 https://deno.land/
 https://github.com/vim-denops/denops.vim
@@ -907,7 +907,7 @@ TYPES                                                              *ddc-types*
 
 Please see the TypeScript definition.
 
-https://deno.land/x/ddc_vim/types.ts?doc
+https://jsr.io/@shougo/ddc-vim@6.0.0-pre6/doc
 
 
 ==============================================================================
