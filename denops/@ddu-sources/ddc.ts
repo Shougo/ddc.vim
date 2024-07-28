@@ -2,8 +2,8 @@ import type {
   Context,
   Denops,
   Item,
-} from "jsr:@shougo/ddu-vim@5.0.0-pre8/types";
-import { BaseSource } from "jsr:@shougo/ddu-vim@5.0.0-pre8/source";
+} from "jsr:@shougo/ddu-vim@5.0.0/types";
+import { BaseSource } from "jsr:@shougo/ddu-vim@5.0.0/source";
 import type { DdcItem } from "../ddc/types.ts";
 import { vars } from "../ddc/deps.ts";
 

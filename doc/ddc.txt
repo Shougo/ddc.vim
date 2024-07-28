@@ -907,7 +907,7 @@ TYPES                                                              *ddc-types*
 
 Please see the TypeScript definition.
 
-https://jsr.io/@shougo/ddc-vim@6.0.0-pre6/doc
+https://jsr.io/@shougo/ddc-vim@6.0.0/doc
 
 
 ==============================================================================
