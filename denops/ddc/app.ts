@@ -244,7 +244,9 @@ export const main: Entrypoint = (denops: Denops) => {
       // Convert to UserSource
       const userSource =
         options.sources.find((source) =>
-          (is.Record(source) ? source.name : source) === sourceName
+          (typeof source === "object" && "name" in source
+            ? source.name
+            : source) === sourceName
         ) ?? sourceName;
 
       cbContext.revoke();
