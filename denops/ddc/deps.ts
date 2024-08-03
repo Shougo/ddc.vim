@@ -11,7 +11,7 @@ export * from "jsr:@std/encoding@~1.0.1/base64";
 export { assertEquals, equal } from "jsr:@std/assert@~1.0.1";
 export { basename, parse, toFileUrl } from "jsr:@std/path@~1.0.2";
 export { deadline } from "jsr:@std/async@~1.0.1";
-export { spy } from "jsr:@std/testing@~0.225.3/mock";
+export { spy } from "jsr:@std/testing@~1.0.0/mock";
 
 export { ensure, is } from "jsr:@core/unknownutil@~4.0.0";
 export { Lock } from "jsr:@lambdalisue/async@~2.1.1";
