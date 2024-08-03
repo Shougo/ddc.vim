@@ -20,6 +20,7 @@ import {
   vars,
 } from "./deps.ts";
 import { Loader } from "./loader.ts";
+import { isDenoCacheIssueError } from "./utils.ts";
 import { createCallbackContext } from "./callback.ts";
 import { getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
 
@@ -160,13 +161,27 @@ export const main: Entrypoint = (denops: Denops) => {
     async loadConfig(arg1: unknown): Promise<void> {
       await lock.lock(async () => {
         const path = ensure(arg1, is.String) as string;
-        // NOTE: Import module with fragment so that reload works properly.
-        // https://github.com/vim-denops/denops.vim/issues/227
-        const mod = await import(
-          `${toFileUrl(path).href}#${performance.now()}`
-        );
-        const obj = new mod.Config();
-        await obj.config({ denops, contextBuilder, setAlias });
+        try {
+          // NOTE: Import module with fragment so that reload works properly.
+          // https://github.com/vim-denops/denops.vim/issues/227
+          const mod = await import(
+            `${toFileUrl(path).href}#${performance.now()}`
+          );
+          const obj = new mod.Config();
+          await obj.config({ denops, contextBuilder, setAlias });
+        } catch (e) {
+          if (isDenoCacheIssueError(e)) {
+            console.warn("*".repeat(80));
+            console.warn(`Deno module cache issue is detected.`);
+            console.warn(
+              `Execute '!deno cache --reload "${path}"' and restart Vim/Neovim.`,
+            );
+            console.warn("*".repeat(80));
+          }
+
+          console.error(`Failed to load file '${path}': ${e}`);
+          throw e;
+        }
       });
       return Promise.resolve();
     },
