@@ -1007,6 +1007,9 @@ getPreviewer		(function)			(Optional)
 onCompleteDone		(function)			(Optional)
 		Called after the completion text is inserted.
 		It is useful to substitute text after completion.
+		NOTE: It is executed asynchronously to optimize the
+		performance.  If you need to execute it synchronously, you
+		should use |CompleteDone| autocmd instead.
 		NOTE: |ddc-item-attribute-user_data| must be "UserData" to use
 		the feature.
 		NOTE: If it changes the text, it should call
@@ -1683,6 +1686,9 @@ https://github.com/Shougo/ddc-ui-pum
 
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
+
+2024.08.16
+* "onCompleteDone" is executed asynchronously.
 
 2023.12.06
 * Change "ddc#set_static_import_path()" spec.

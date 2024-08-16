@@ -53,7 +53,7 @@ function ddc#on_complete_done(completed_item) abort
     return
   endif
 
-  call ddc#denops#_request('onCompleteDone', [a:completed_item])
+  call ddc#denops#_notify('onCompleteDone', [a:completed_item])
 endfunction
 
 function ddc#syntax_in(groups) abort
