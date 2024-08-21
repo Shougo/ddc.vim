@@ -1281,6 +1281,9 @@ FAQ 26:                                                           |ddc-faq-26|
 FAQ 27:                                                           |ddc-faq-27|
 	The popup menu is flickerd when update input.
 
+FAQ 28:                                                           |ddc-faq-28|
+	The |:normal| command is slow from command line.
+
 
 ------------------------------------------------------------------------------
                                                                    *ddc-faq-1*
@@ -1683,6 +1686,13 @@ You can use "ddc-ui-pum" for it instead.
 
 https://github.com/Shougo/ddc-ui-pum
 
+                                                                  *ddc-faq-28*
+Q: The |:normal| command is slow from command line.
+
+A: Many |InsertEnter|, |InsertLeave| and |ModeChanged| autocmds are fired.
+Unfortunately, ddc.vim cannot detect that it is executed from command line.
+You should use |:noautocmd| like this. >
+	:noautocmd %normal Itest
 
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
