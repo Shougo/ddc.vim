@@ -9,9 +9,10 @@ import type {
   Previewer,
   SourceOptions,
 } from "../types.ts";
-import type { Denops } from "../deps.ts";
 import { convertKeywordPattern } from "../utils.ts";
 import type { Loader } from "../loader.ts";
+
+import type { Denops } from "jsr:@denops/std@~7.1.0";
 
 export type BaseSourceParams = Record<string, unknown>;
 

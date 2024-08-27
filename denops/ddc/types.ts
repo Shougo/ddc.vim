@@ -1,4 +1,4 @@
-import type { autocmd } from "./deps.ts";
+import type { AutocmdEvent } from "jsr:@denops/std@~7.1.0/autocmd";
 import type { BaseUiParams } from "./base/ui.ts";
 import type { BaseSourceParams } from "./base/source.ts";
 import type { BaseFilterParams } from "./base/filter.ts";
@@ -10,14 +10,14 @@ export { BaseSource } from "./base/source.ts";
 export type { BaseSourceParams } from "./base/source.ts";
 export { BaseFilter } from "./base/filter.ts";
 export type { BaseFilterParams } from "./base/filter.ts";
-export type { Denops } from "./deps.ts";
+export type { Denops } from "jsr:@denops/std@~7.1.0";
 
 export { ContextBuilder } from "./context.ts";
 
 export type DdcExtType = "ui" | "source" | "filter";
 
 export type DdcEvent =
-  | autocmd.AutocmdEvent
+  | AutocmdEvent
   | "Initialize"
   | "Manual"
   | "Update";

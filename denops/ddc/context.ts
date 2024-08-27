@@ -1,14 +1,3 @@
-import {
-  assertEquals,
-  collect,
-  type Denops,
-  ensure,
-  fn,
-  is,
-  op,
-  vars,
-  vimOp,
-} from "./deps.ts";
 import type {
   BaseFilterParams,
   BaseSourceParams,
@@ -23,6 +12,17 @@ import type {
 } from "./types.ts";
 import { defaultSourceOptions } from "./base/source.ts";
 import { printError } from "./utils.ts";
+
+import type { Denops } from "jsr:@denops/std@~7.1.0";
+import * as op from "jsr:@denops/std@~7.1.0/option";
+import * as vimOp from "jsr:@denops/std@~7.1.0/option/vim";
+import * as fn from "jsr:@denops/std@~7.1.0/function";
+import * as vars from "jsr:@denops/std@~7.1.0/variable";
+import { collect } from "jsr:@denops/std@~7.1.0/batch";
+import { ensure } from "jsr:@core/unknownutil@~4.3.0/ensure";
+import { is } from "jsr:@core/unknownutil@~4.3.0/is";
+
+import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
 
 // where
 // T: Object

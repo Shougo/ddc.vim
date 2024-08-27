@@ -1,4 +1,3 @@
-import { deadline, type Denops } from "./deps.ts";
 import type {
   BaseFilter,
   BaseFilterParams,
@@ -39,6 +38,10 @@ import { defaultUiOptions } from "./base/ui.ts";
 import { defaultSourceOptions } from "./base/source.ts";
 import { defaultFilterOptions } from "./base/filter.ts";
 import { printError } from "./utils.ts";
+
+import type { Denops } from "jsr:@denops/std@~7.1.0";
+
+import { deadline } from "jsr:@std/async@~1.0.1/deadline";
 
 export async function getUi(
   denops: Denops,
