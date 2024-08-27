@@ -1,7 +1,5 @@
 import type {
-  BaseFilterParams,
-  BaseSourceParams,
-  BaseUiParams,
+  BaseParams,
   Context,
   DdcEvent,
   DdcOptions,
@@ -42,9 +40,9 @@ function overwrite<T>(a: T, b: Partial<T>): T {
 export const mergeUiOptions: Merge<UiOptions> = overwrite;
 export const mergeSourceOptions: Merge<SourceOptions> = overwrite;
 export const mergeFilterOptions: Merge<FilterOptions> = overwrite;
-export const mergeUiParams: Merge<BaseUiParams> = overwrite;
-export const mergeSourceParams: Merge<BaseSourceParams> = overwrite;
-export const mergeFilterParams: Merge<BaseFilterParams> = overwrite;
+export const mergeUiParams: Merge<BaseParams> = overwrite;
+export const mergeSourceParams: Merge<BaseParams> = overwrite;
+export const mergeFilterParams: Merge<BaseParams> = overwrite;
 
 export type ContextCallback =
   | string

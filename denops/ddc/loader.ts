@@ -1,15 +1,13 @@
 import type {
-  BaseFilter,
-  BaseFilterParams,
-  BaseSource,
-  BaseSourceParams,
-  BaseUi,
-  BaseUiParams,
+  BaseParams,
   DdcExtType,
   FilterName,
   SourceName,
   UiName,
 } from "./types.ts";
+import type { BaseSource } from "./base/source.ts";
+import type { BaseFilter } from "./base/filter.ts";
+import type { BaseUi } from "./base/ui.ts";
 import { isDenoCacheIssueError } from "./utils.ts";
 import { mods } from "./_mods.js";
 
@@ -24,9 +22,9 @@ import { Lock } from "jsr:@core/asyncutil@~1.1.1/lock";
 import { toFileUrl } from "jsr:@std/path@~1.0.2/to-file-url";
 
 export class Loader {
-  #uis: Record<UiName, BaseUi<BaseUiParams>> = {};
-  #sources: Record<SourceName, BaseSource<BaseSourceParams>> = {};
-  #filters: Record<FilterName, BaseFilter<BaseFilterParams>> = {};
+  #uis: Record<UiName, BaseUi<BaseParams>> = {};
+  #sources: Record<SourceName, BaseSource<BaseParams>> = {};
+  #filters: Record<FilterName, BaseFilter<BaseParams>> = {};
   #aliases: Record<DdcExtType, Record<string, string>> = {
     ui: {},
     source: {},
@@ -134,13 +132,13 @@ export class Loader {
   getAlias(type: DdcExtType, name: string): string {
     return this.#aliases[type][name];
   }
-  getUi(name: UiName): BaseUi<BaseUiParams> {
+  getUi(name: UiName): BaseUi<BaseParams> {
     return this.#uis[name];
   }
-  getSource(name: SourceName): BaseSource<BaseSourceParams> {
+  getSource(name: SourceName): BaseSource<BaseParams> {
     return this.#sources[name];
   }
-  getFilter(name: FilterName): BaseFilter<BaseUiParams> {
+  getFilter(name: FilterName): BaseFilter<BaseParams> {
     return this.#filters[name];
   }
 

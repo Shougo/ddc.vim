@@ -1,4 +1,5 @@
 import type {
+  BaseParams,
   Context,
   DdcEvent,
   DdcOptions,
@@ -10,15 +11,13 @@ import type {
 
 import type { Denops } from "jsr:@denops/std@~7.1.0";
 
-export type BaseFilterParams = Record<string, unknown>;
-
-export type OnInitArguments<Params extends BaseFilterParams> = {
+export type OnInitArguments<Params extends BaseParams> = {
   denops: Denops;
   filterOptions: FilterOptions;
   filterParams: Params;
 };
 
-export type OnEventArguments<Params extends BaseFilterParams> = {
+export type OnEventArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
   onCallback: OnCallback;
@@ -27,7 +26,7 @@ export type OnEventArguments<Params extends BaseFilterParams> = {
   filterParams: Params;
 };
 
-export type FilterArguments<Params extends BaseFilterParams> = {
+export type FilterArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
   onCallback: OnCallback;
@@ -39,7 +38,7 @@ export type FilterArguments<Params extends BaseFilterParams> = {
   items: Item[];
 };
 
-export abstract class BaseFilter<Params extends BaseFilterParams> {
+export abstract class BaseFilter<Params extends BaseParams> {
   name = "";
   isInitialized = false;
   apiVersion = 4;

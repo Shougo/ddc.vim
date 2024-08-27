@@ -1,6 +1,5 @@
 import type {
-  BaseUi,
-  BaseUiParams,
+  BaseParams,
   CallbackContext,
   Context,
   DdcEvent,
@@ -14,7 +13,7 @@ import type {
 } from "./types.ts";
 import { defaultDummy } from "./context.ts";
 import type { Loader } from "./loader.ts";
-import { defaultUiOptions } from "./base/ui.ts";
+import { type BaseUi, defaultUiOptions } from "./base/ui.ts";
 import { defaultSourceOptions } from "./base/source.ts";
 import {
   callFilterFilter,
@@ -46,9 +45,9 @@ type DdcResult = {
 };
 
 export class Ddc {
-  currentUi: BaseUi<BaseUiParams> | undefined = undefined;
+  currentUi: BaseUi<BaseParams> | undefined = undefined;
   currentUiOptions: UiOptions = defaultUiOptions();
-  currentUiParams: BaseUiParams = defaultDummy();
+  currentUiParams: BaseParams = defaultDummy();
   visibleUi = false;
 
   #loader: Loader;
@@ -134,7 +133,6 @@ export class Ddc {
         denops,
         context,
         onCallback,
-        this.#loader,
         options,
         o,
         p,

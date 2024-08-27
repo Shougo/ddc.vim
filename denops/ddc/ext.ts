@@ -1,10 +1,5 @@
 import type {
-  BaseFilter,
-  BaseFilterParams,
-  BaseSource,
-  BaseSourceParams,
-  BaseUi,
-  BaseUiParams,
+  BaseParams,
   Context,
   DdcGatherItems,
   DdcItem,
@@ -34,9 +29,9 @@ import {
 import type { Loader } from "./loader.ts";
 import type { Ddc } from "./ddc.ts";
 import { isDdcCallbackCancelError } from "./callback.ts";
-import { defaultUiOptions } from "./base/ui.ts";
-import { defaultSourceOptions } from "./base/source.ts";
-import { defaultFilterOptions } from "./base/filter.ts";
+import { type BaseUi, defaultUiOptions } from "./base/ui.ts";
+import { type BaseSource, defaultSourceOptions } from "./base/source.ts";
+import { type BaseFilter, defaultFilterOptions } from "./base/filter.ts";
 import { printError } from "./utils.ts";
 
 import type { Denops } from "jsr:@denops/std@~7.1.0";
@@ -51,9 +46,9 @@ export async function getUi(
   options: DdcOptions,
 ): Promise<
   [
-    BaseUi<BaseUiParams> | undefined,
+    BaseUi<BaseParams> | undefined,
     UiOptions,
-    BaseUiParams,
+    BaseParams,
   ]
 > {
   if (options.ui.length === 0) {
@@ -115,9 +110,9 @@ export async function getSource(
   userSource: UserSource,
 ): Promise<
   [
-    BaseSource<BaseSourceParams> | undefined,
+    BaseSource<BaseParams> | undefined,
     SourceOptions,
-    BaseSourceParams,
+    BaseParams,
   ]
 > {
   const name = source2Name(userSource);
@@ -149,7 +144,6 @@ export async function getSource(
     denops,
     sourceOptions,
     sourceParams,
-    loader,
   );
 
   return [source, sourceOptions, sourceParams];
@@ -162,9 +156,9 @@ export async function getFilter(
   userFilter: UserFilter,
 ): Promise<
   [
-    BaseFilter<BaseFilterParams> | undefined,
+    BaseFilter<BaseParams> | undefined,
     FilterOptions,
-    BaseFilterParams,
+    BaseParams,
   ]
 > {
   const name = filter2Name(userFilter);
@@ -224,7 +218,6 @@ export async function getPreviewer(
     options,
     sourceOptions,
     sourceParams,
-    loader,
     item,
     previewContext,
   });
@@ -363,7 +356,6 @@ export async function onEvent(
     await callSourceOnEvent(
       source,
       denops,
-      loader,
       context,
       onCallback,
       options,
@@ -421,7 +413,6 @@ export async function onCompleteDone(
   await callSourceOnCompleteDone(
     source,
     denops,
-    loader,
     context,
     onCallback,
     options,
@@ -431,10 +422,10 @@ export async function onCompleteDone(
   );
 }
 
-function uiArgs<Params extends BaseUiParams>(
+function uiArgs<Params extends BaseParams>(
   options: DdcOptions,
   ui: BaseUi<Params>,
-): [UiOptions, BaseUiParams] {
+): [UiOptions, BaseParams] {
   const o = foldMerge(
     mergeUiOptions,
     defaultUiOptions,
@@ -448,13 +439,13 @@ function uiArgs<Params extends BaseUiParams>(
 }
 
 function sourceArgs<
-  Params extends BaseSourceParams,
+  Params extends BaseParams,
   UserData extends unknown,
 >(
   source: BaseSource<Params, UserData> | null,
   options: DdcOptions,
   userSource: UserSource | null,
-): [SourceOptions, BaseSourceParams] {
+): [SourceOptions, BaseParams] {
   // Convert type
   if (typeof userSource === "string") {
     userSource = {
@@ -485,12 +476,12 @@ function sourceArgs<
 }
 
 function filterArgs<
-  Params extends BaseFilterParams,
+  Params extends BaseParams,
 >(
   filter: BaseFilter<Params>,
   options: DdcOptions,
   userFilter: UserFilter,
-): [FilterOptions, BaseFilterParams] {
+): [FilterOptions, BaseParams] {
   // Convert type
   if (typeof userFilter === "string") {
     userFilter = {
@@ -521,10 +512,10 @@ function filterArgs<
 }
 
 async function checkUiOnInit(
-  ui: BaseUi<BaseUiParams>,
+  ui: BaseUi<BaseParams>,
   denops: Denops,
   uiOptions: UiOptions,
-  uiParams: BaseUiParams,
+  uiParams: BaseParams,
 ) {
   if (ui.isInitialized) {
     return;
@@ -548,11 +539,10 @@ async function checkUiOnInit(
 }
 
 async function checkSourceOnInit(
-  source: BaseSource<BaseSourceParams>,
+  source: BaseSource<BaseParams>,
   denops: Denops,
   sourceOptions: SourceOptions,
-  sourceParams: BaseSourceParams,
-  loader: Loader,
+  sourceParams: BaseParams,
 ) {
   if (source.isInitialized) {
     return;
@@ -563,7 +553,6 @@ async function checkSourceOnInit(
       denops,
       sourceOptions,
       sourceParams,
-      loader,
     });
 
     source.isInitialized = true;
@@ -585,10 +574,10 @@ async function checkSourceOnInit(
 }
 
 async function checkFilterOnInit(
-  filter: BaseFilter<BaseFilterParams>,
+  filter: BaseFilter<BaseParams>,
   denops: Denops,
   filterOptions: FilterOptions,
-  filterParams: BaseFilterParams,
+  filterParams: BaseParams,
 ) {
   if (filter.isInitialized) {
     return;
@@ -612,14 +601,13 @@ async function checkFilterOnInit(
 }
 
 async function callSourceOnEvent(
-  source: BaseSource<BaseSourceParams>,
+  source: BaseSource<BaseParams>,
   denops: Denops,
-  loader: Loader,
   context: Context,
   onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
-  sourceParams: BaseSourceParams,
+  sourceParams: BaseParams,
 ) {
   if (!source.events?.includes(context.event)) {
     return;
@@ -633,7 +621,6 @@ async function callSourceOnEvent(
       options,
       sourceOptions,
       sourceParams,
-      loader,
     });
   } catch (e: unknown) {
     if (isDdcCallbackCancelError(e)) {
@@ -649,12 +636,11 @@ async function callSourceOnEvent(
 }
 
 async function callSourceOnCompleteDone<
-  Params extends BaseSourceParams,
+  Params extends BaseParams,
   UserData extends unknown,
 >(
   source: BaseSource<Params, UserData>,
   denops: Denops,
-  loader: Loader,
   context: Context,
   onCallback: OnCallback,
   options: DdcOptions,
@@ -670,7 +656,6 @@ async function callSourceOnCompleteDone<
       options,
       sourceOptions,
       sourceParams,
-      loader,
       // This is preventing users from accessing the internal properties.
       // deno-lint-ignore no-explicit-any
       userData: userData as any,
@@ -689,21 +674,19 @@ async function callSourceOnCompleteDone<
 }
 
 export async function callSourceGetCompletePosition(
-  source: BaseSource<BaseSourceParams>,
+  source: BaseSource<BaseParams>,
   denops: Denops,
   context: Context,
   onCallback: OnCallback,
-  loader: Loader,
   options: DdcOptions,
   sourceOptions: SourceOptions,
-  sourceParams: BaseSourceParams,
+  sourceParams: BaseParams,
 ): Promise<number> {
   try {
     return await source.getCompletePosition({
       denops,
       context,
       onCallback,
-      loader,
       options,
       sourceOptions,
       sourceParams,
@@ -724,7 +707,7 @@ export async function callSourceGetCompletePosition(
 }
 
 export async function callSourceGather<
-  Params extends BaseSourceParams,
+  Params extends BaseParams,
   UserData extends unknown,
 >(
   source: BaseSource<Params, UserData>,
@@ -773,13 +756,13 @@ export async function callSourceGather<
 }
 
 async function callFilterOnEvent(
-  filter: BaseFilter<BaseFilterParams>,
+  filter: BaseFilter<BaseParams>,
   denops: Denops,
   context: Context,
   onCallback: OnCallback,
   options: DdcOptions,
   filterOptions: FilterOptions,
-  filterParams: BaseFilterParams,
+  filterParams: BaseParams,
 ) {
   if (!filter.events?.includes(context.event)) {
     return;
@@ -808,14 +791,14 @@ async function callFilterOnEvent(
 }
 
 export async function callFilterFilter(
-  filter: BaseFilter<BaseFilterParams>,
+  filter: BaseFilter<BaseParams>,
   denops: Denops,
   context: Context,
   onCallback: OnCallback,
   options: DdcOptions,
   sourceOptions: SourceOptions,
   filterOptions: FilterOptions,
-  filterParams: BaseFilterParams,
+  filterParams: BaseParams,
   completeStr: string,
   items: Item[],
 ): Promise<Item[]> {
