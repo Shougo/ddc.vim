@@ -27,7 +27,6 @@ import {
   mergeUiParams,
 } from "./context.ts";
 import type { Loader } from "./loader.ts";
-import type { Ddc } from "./ddc.ts";
 import { isDdcCallbackCancelError } from "./callback.ts";
 import { type BaseUi, defaultUiOptions } from "./base/ui.ts";
 import { type BaseSource, defaultSourceOptions } from "./base/source.ts";
@@ -41,16 +40,12 @@ import { deadline } from "jsr:@std/async@~1.0.1/deadline";
 export async function getUi(
   denops: Denops,
   loader: Loader,
-  ddu: Ddc,
-  context: Context,
   options: DdcOptions,
-): Promise<
-  [
-    BaseUi<BaseParams> | undefined,
-    UiOptions,
-    BaseParams,
-  ]
-> {
+): Promise<[
+  BaseUi<BaseParams> | undefined,
+  UiOptions,
+  BaseParams,
+]> {
   if (options.ui.length === 0) {
     return [
       undefined,
@@ -76,27 +71,6 @@ export async function getUi(
   }
 
   const [uiOptions, uiParams] = uiArgs(options, ui);
-
-  if (ui !== ddu.currentUi) {
-    // UI is changed
-
-    if (ddu.currentUi) {
-      // Hide current UI
-      await ddu.currentUi.hide({
-        denops,
-        context,
-        options,
-        uiOptions: ddu.currentUiOptions,
-        uiParams: ddu.currentUiParams,
-      });
-
-      ddu.visibleUi = false;
-    }
-
-    ddu.currentUi = ui;
-    ddu.currentUiOptions = uiOptions;
-    ddu.currentUiParams = uiParams;
-  }
 
   await checkUiOnInit(ui, denops, uiOptions, uiParams);
 
