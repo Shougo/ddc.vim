@@ -1,3 +1,4 @@
+import type { Denops } from "jsr:@denops/std@~7.1.0";
 import type { AutocmdEvent } from "jsr:@denops/std@~7.1.0/autocmd";
 
 export type BaseParams = Record<string, unknown>;
@@ -24,6 +25,33 @@ export type Context = {
   mode: string;
   nextInput: string;
 };
+
+export type ContextCallback =
+  | string
+  | ((denops: Denops) => Promise<Partial<DdcOptions>>);
+
+export type ContextCallbacks = {
+  global: ContextCallback;
+  filetype: Record<string, ContextCallback>;
+  buffer: Record<number, ContextCallback>;
+};
+
+export interface ContextBuilder {
+  getGlobal(): Partial<DdcOptions>;
+  getFiletype(): Record<string, Partial<DdcOptions>>;
+  getContext(): ContextCallbacks;
+  getBuffer(): Record<number, Partial<DdcOptions>>;
+  getCurrent(denops: Denops): Promise<Partial<DdcOptions>>;
+  setGlobal(options: Partial<DdcOptions>): void;
+  setFiletype(ft: string, options: Partial<DdcOptions>): void;
+  setBuffer(bufnr: number, options: Partial<DdcOptions>): void;
+  setContextGlobal(callback: ContextCallback): void;
+  setContextFiletype(callback: ContextCallback, ft: string): void;
+  setContextBuffer(callback: ContextCallback, bufnr: number): void;
+  patchGlobal(options: Partial<DdcOptions>): void;
+  patchFiletype(ft: string, options: Partial<DdcOptions>): void;
+  patchBuffer(bufnr: number, options: Partial<DdcOptions>): void;
+}
 
 export type UserSource = SourceName | {
   name: SourceName;

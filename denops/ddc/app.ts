@@ -1,6 +1,7 @@
 import { Ddc } from "./ddc.ts";
-import { ContextBuilder, type ContextCallbacks } from "./context.ts";
+import { ContextBuilderImpl } from "./context.ts";
 import type {
+  ContextCallbacks,
   DdcEvent,
   DdcExtType,
   DdcItem,
@@ -26,7 +27,7 @@ import { toFileUrl } from "jsr:@std/path@~1.0.2/to-file-url";
 export const main: Entrypoint = (denops: Denops) => {
   const loader = new Loader();
   const ddc = new Ddc(loader);
-  const contextBuilder = new ContextBuilder();
+  const contextBuilder = new ContextBuilderImpl();
   const cbContext = createCallbackContext();
   const lock = new Lock(0);
   let queuedEvent: DdcEvent | null = null;
