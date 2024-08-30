@@ -1,6 +1,5 @@
 import type {
-  BaseUi,
-  BaseUiParams,
+  BaseParams,
   CallbackContext,
   Context,
   DdcEvent,
@@ -14,7 +13,7 @@ import type {
 } from "./types.ts";
 import { defaultDummy } from "./context.ts";
 import type { Loader } from "./loader.ts";
-import { defaultUiOptions } from "./base/ui.ts";
+import { type BaseUi, defaultUiOptions } from "./base/ui.ts";
 import { defaultSourceOptions } from "./base/source.ts";
 import {
   callFilterFilter,
@@ -46,9 +45,9 @@ type DdcResult = {
 };
 
 export class Ddc {
-  currentUi: BaseUi<BaseUiParams> | undefined = undefined;
+  currentUi: BaseUi<BaseParams> | undefined = undefined;
   currentUiOptions: UiOptions = defaultUiOptions();
-  currentUiParams: BaseUiParams = defaultDummy();
+  currentUiParams: BaseParams = defaultDummy();
   visibleUi = false;
 
   #loader: Loader;
@@ -134,7 +133,6 @@ export class Ddc {
         denops,
         context,
         onCallback,
-        this.#loader,
         options,
         o,
         p,
@@ -411,10 +409,8 @@ export class Ddc {
       return true;
     }
 
-    const [ui, uiOptions, uiParams] = await getUi(
+    const [ui, uiOptions, uiParams] = await this.#getUi(
       denops,
-      this.#loader,
-      this,
       context,
       options,
     );
@@ -511,10 +507,8 @@ export class Ddc {
       return;
     }
 
-    const [ui, uiOptions, uiParams] = await getUi(
+    const [ui, uiOptions, uiParams] = await this.#getUi(
       denops,
-      this.#loader,
-      this,
       context,
       options,
     );
@@ -542,10 +536,8 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ) {
-    const [ui, uiOptions, uiParams] = await getUi(
+    const [ui, uiOptions, uiParams] = await this.#getUi(
       denops,
-      this.#loader,
-      this,
       context,
       options,
     );
@@ -573,10 +565,8 @@ export class Ddc {
       return true;
     }
 
-    const [ui, uiOptions, uiParams] = await getUi(
+    const [ui, uiOptions, uiParams] = await this.#getUi(
       denops,
-      this.#loader,
-      this,
       context,
       options,
     );
@@ -595,6 +585,35 @@ export class Ddc {
         uiParams,
       })
       : true;
+  }
+
+  async #getUi(
+    denops: Denops,
+    context: Context,
+    options: DdcOptions,
+  ): Promise<[BaseUi<BaseParams> | undefined, UiOptions, BaseParams]> {
+    const [ui, uiOptions, uiParams] = await getUi(
+      denops,
+      this.#loader,
+      options,
+    );
+    if (ui !== this.currentUi) {
+      // UI is changed
+      if (this.currentUi) {
+        await this.currentUi.hide({
+          denops,
+          context,
+          options,
+          uiOptions: this.currentUiOptions,
+          uiParams: this.currentUiParams,
+        });
+      }
+
+      this.currentUi = ui;
+      this.currentUiOptions = uiOptions;
+      this.currentUiParams = uiParams;
+    }
+    return [ui, uiOptions, uiParams];
   }
 }
 

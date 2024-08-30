@@ -1,4 +1,5 @@
 import type {
+  BaseParams,
   Context,
   DdcEvent,
   DdcGatherItems,
@@ -10,31 +11,26 @@ import type {
   SourceOptions,
 } from "../types.ts";
 import { convertKeywordPattern } from "../utils.ts";
-import type { Loader } from "../loader.ts";
 
 import type { Denops } from "jsr:@denops/std@~7.1.0";
 
-export type BaseSourceParams = Record<string, unknown>;
-
-export type OnInitArguments<Params extends BaseSourceParams> = {
+export type OnInitArguments<Params extends BaseParams> = {
   denops: Denops;
   sourceOptions: SourceOptions;
   sourceParams: Params;
-  loader: Loader;
 };
 
-export type OnEventArguments<Params extends BaseSourceParams> = {
+export type OnEventArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
   onCallback: OnCallback;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
-  loader: Loader;
 };
 
 export type OnCompleteDoneArguments<
-  Params extends BaseSourceParams,
+  Params extends BaseParams,
   UserData extends unknown = unknown,
 > = {
   denops: Denops;
@@ -43,13 +39,12 @@ export type OnCompleteDoneArguments<
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
-  loader: Loader;
   // To prevent users from accessing internal variables.
   userData: UserData;
 };
 
 export type GetPreviewerArguments<
-  Params extends BaseSourceParams,
+  Params extends BaseParams,
   UserData extends unknown = unknown,
 > = {
   denops: Denops;
@@ -59,34 +54,31 @@ export type GetPreviewerArguments<
   sourceParams: Params;
   item: Item<UserData>;
   previewContext: PreviewContext;
-  loader: Loader;
 };
 
-export type GetCompletePositionArguments<Params extends BaseSourceParams> = {
+export type GetCompletePositionArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
   onCallback: OnCallback;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
-  loader: Loader;
 };
 
-export type GatherArguments<Params extends BaseSourceParams> = {
+export type GatherArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
   onCallback: OnCallback;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
-  loader: Loader;
   completePos: number;
   completeStr: string;
   isIncomplete?: boolean;
 };
 
 export abstract class BaseSource<
-  Params extends BaseSourceParams,
+  Params extends BaseParams,
   UserData extends unknown = unknown,
 > {
   name = "";

@@ -1,16 +1,20 @@
-import type { Context, DdcItem, DdcOptions, UiOptions } from "../types.ts";
+import type {
+  BaseParams,
+  Context,
+  DdcItem,
+  DdcOptions,
+  UiOptions,
+} from "../types.ts";
 
 import type { Denops } from "jsr:@denops/std@~7.1.0";
 
-export type BaseUiParams = Record<string, unknown>;
-
-export type OnInitArguments<Params extends BaseUiParams> = {
+export type OnInitArguments<Params extends BaseParams> = {
   denops: Denops;
   uiOptions: UiOptions;
   uiParams: Params;
 };
 
-export type SkipCompletionArguments<Params extends BaseUiParams> = {
+export type SkipCompletionArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -18,7 +22,7 @@ export type SkipCompletionArguments<Params extends BaseUiParams> = {
   uiParams: Params;
 };
 
-export type ShowArguments<Params extends BaseUiParams> = {
+export type ShowArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -28,7 +32,7 @@ export type ShowArguments<Params extends BaseUiParams> = {
   uiParams: Params;
 };
 
-export type HideArguments<Params extends BaseUiParams> = {
+export type HideArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -36,7 +40,7 @@ export type HideArguments<Params extends BaseUiParams> = {
   uiParams: Params;
 };
 
-export type VisibleArguments<Params extends BaseUiParams> = {
+export type VisibleArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -44,7 +48,7 @@ export type VisibleArguments<Params extends BaseUiParams> = {
   uiParams: Params;
 };
 
-export abstract class BaseUi<Params extends BaseUiParams> {
+export abstract class BaseUi<Params extends BaseParams> {
   name = "";
   isInitialized = false;
   apiVersion = 2;

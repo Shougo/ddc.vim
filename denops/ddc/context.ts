@@ -1,8 +1,9 @@
 import type {
-  BaseFilterParams,
-  BaseSourceParams,
-  BaseUiParams,
+  BaseParams,
   Context,
+  ContextBuilder,
+  ContextCallback,
+  ContextCallbacks,
   DdcEvent,
   DdcOptions,
   FilterOptions,
@@ -42,19 +43,9 @@ function overwrite<T>(a: T, b: Partial<T>): T {
 export const mergeUiOptions: Merge<UiOptions> = overwrite;
 export const mergeSourceOptions: Merge<SourceOptions> = overwrite;
 export const mergeFilterOptions: Merge<FilterOptions> = overwrite;
-export const mergeUiParams: Merge<BaseUiParams> = overwrite;
-export const mergeSourceParams: Merge<BaseSourceParams> = overwrite;
-export const mergeFilterParams: Merge<BaseFilterParams> = overwrite;
-
-export type ContextCallback =
-  | string
-  | ((denops: Denops) => Promise<Partial<DdcOptions>>);
-
-export type ContextCallbacks = {
-  global: ContextCallback;
-  filetype: Record<string, ContextCallback>;
-  buffer: Record<number, ContextCallback>;
-};
+export const mergeUiParams: Merge<BaseParams> = overwrite;
+export const mergeSourceParams: Merge<BaseParams> = overwrite;
+export const mergeFilterParams: Merge<BaseParams> = overwrite;
 
 export function foldMerge<T>(
   merge: Merge<T>,
@@ -416,21 +407,16 @@ function isNegligible(older: World, newer: World): boolean {
     older.event === newer.event;
 }
 
-export class ContextBuilder {
+export class ContextBuilderImpl implements ContextBuilder {
   #lastWorld: World = initialWorld();
   #custom: Custom = new Custom();
-
-  // Re-export for denops.dispatcher
-  async _cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
-    return await cacheWorld(denops, event);
-  }
 
   async createContext(
     denops: Denops,
     event: DdcEvent,
     options: UserOptions = {},
   ): Promise<[boolean, Context, DdcOptions]> {
-    const world = await this._cacheWorld(denops, event);
+    const world = await cacheWorld(denops, event);
     const old = this.#lastWorld;
     this.#lastWorld = world;
     let skip = false;
@@ -458,9 +444,9 @@ export class ContextBuilder {
 
     const userOptions = await this.#getUserOptions(denops, world, options);
 
-    await this.validate(denops, "options", userOptions, defaultDdcOptions());
+    await this.#validate(denops, "options", userOptions, defaultDdcOptions());
     for (const key in userOptions.sourceOptions) {
-      await this.validate(
+      await this.#validate(
         denops,
         "sourceOptions",
         userOptions.sourceOptions[key],
@@ -513,11 +499,11 @@ export class ContextBuilder {
     return this.#custom.buffer;
   }
   async getCurrent(denops: Denops): Promise<DdcOptions> {
-    const world = await this._cacheWorld(denops, "Manual");
+    const world = await cacheWorld(denops, "Manual");
     return this.#getUserOptions(denops, world);
   }
 
-  async validate(
+  async #validate(
     denops: Denops,
     name: string,
     options: Record<string, unknown>,
