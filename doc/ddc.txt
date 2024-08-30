@@ -1697,6 +1697,9 @@ You should use |:noautocmd| like this. >
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
 
+2024.08.30
+* Refactor types.ts.
+
 2024.08.16
 * "onCompleteDone" is executed asynchronously.
 
