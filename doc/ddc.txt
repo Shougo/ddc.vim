@@ -84,7 +84,6 @@ For example:
     \       keywordPattern: '[a-zA-Z_]\w*',
     \     },
     \   },
-    \   smartCase: v:true,
     \ })
 
     call ddc#custom#patch_filetype(['c', 'cpp'], 'sources', ['around'])
