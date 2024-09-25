@@ -50,6 +50,7 @@ export type VisibleArguments<Params extends BaseParams> = {
 
 export abstract class BaseUi<Params extends BaseParams> {
   name = "";
+  path = "";
   isInitialized = false;
   apiVersion = 2;
 

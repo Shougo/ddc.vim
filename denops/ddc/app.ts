@@ -1,11 +1,13 @@
 import { Ddc } from "./ddc.ts";
 import { ContextBuilderImpl } from "./context.ts";
 import type {
+  BaseParams,
   ContextCallbacks,
   DdcEvent,
   DdcExtType,
   DdcItem,
   DdcOptions,
+  FilterOptions,
   Item,
   PreviewContext,
   Previewer,
@@ -14,7 +16,7 @@ import type {
 import { Loader } from "./loader.ts";
 import { isDenoCacheIssueError } from "./utils.ts";
 import { createCallbackContext } from "./callback.ts";
-import { getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
+import { getFilter, getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
 
 import type { Denops, Entrypoint } from "jsr:@denops/std@~7.1.0";
 import * as vars from "jsr:@denops/std@~7.1.0/variable";
@@ -293,6 +295,26 @@ export const main: Entrypoint = (denops: Denops) => {
         "Manual",
       );
       return await ddc.visible(denops, context, options);
+    },
+    async getFilter(arg1: unknown): Promise<
+      [
+        string,
+        FilterOptions,
+        BaseParams,
+      ]
+    > {
+      const filterName = ensure(arg1, is.String) as string;
+      const [_, _context, options] = await contextBuilder.createContext(
+        denops,
+        "Manual",
+      );
+      const [filter, filterOptions, filterParams] = await getFilter(
+        denops,
+        loader,
+        options,
+        filterName,
+      );
+      return [filter?.path ?? "", filterOptions, filterParams];
     },
   };
 

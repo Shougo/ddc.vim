@@ -158,6 +158,7 @@ export class Loader {
         add = (name: string) => {
           const ui = new mod.Ui();
           ui.name = name;
+          ui.path = path;
           this.#uis[ui.name] = ui;
         };
         break;
@@ -165,6 +166,7 @@ export class Loader {
         add = (name: string) => {
           const source = new mod.Source();
           source.name = name;
+          source.path = path;
           this.#sources[source.name] = source;
         };
         break;
@@ -172,6 +174,7 @@ export class Loader {
         add = (name: string) => {
           const filter = new mod.Filter();
           filter.name = name;
+          filter.path = path;
           this.#filters[filter.name] = filter;
         };
         break;

@@ -82,6 +82,7 @@ export abstract class BaseSource<
   UserData extends unknown = unknown,
 > {
   name = "";
+  path = "";
   isInitialized = false;
   apiVersion = 6;
 

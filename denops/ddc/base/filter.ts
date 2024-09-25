@@ -40,6 +40,7 @@ export type FilterArguments<Params extends BaseParams> = {
 
 export abstract class BaseFilter<Params extends BaseParams> {
   name = "";
+  path = "";
   isInitialized = false;
   apiVersion = 4;
 
