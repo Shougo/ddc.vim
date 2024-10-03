@@ -1,5 +1,5 @@
-import type { Denops } from "jsr:@denops/std@~7.1.0";
-import * as op from "jsr:@denops/std@~7.1.0/option";
+import type { Denops } from "jsr:@denops/std@~7.2.0";
+import * as op from "jsr:@denops/std@~7.2.0/option";
 
 import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
 

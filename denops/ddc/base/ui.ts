@@ -6,7 +6,7 @@ import type {
   UiOptions,
 } from "../types.ts";
 
-import type { Denops } from "jsr:@denops/std@~7.1.0";
+import type { Denops } from "jsr:@denops/std@~7.2.0";
 
 export type OnInitArguments<Params extends BaseParams> = {
   denops: Denops;

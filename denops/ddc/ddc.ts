@@ -25,12 +25,12 @@ import {
   getUi,
 } from "./ext.ts";
 
-import type { Denops } from "jsr:@denops/std@~7.1.0";
-import * as autocmd from "jsr:@denops/std@~7.1.0/autocmd";
-import * as op from "jsr:@denops/std@~7.1.0/option";
-import * as fn from "jsr:@denops/std@~7.1.0/function";
-import * as vars from "jsr:@denops/std@~7.1.0/variable";
-import { batch } from "jsr:@denops/std@~7.1.0/batch";
+import type { Denops } from "jsr:@denops/std@~7.2.0";
+import * as autocmd from "jsr:@denops/std@~7.2.0/autocmd";
+import * as op from "jsr:@denops/std@~7.2.0/option";
+import * as fn from "jsr:@denops/std@~7.2.0/function";
+import * as vars from "jsr:@denops/std@~7.2.0/variable";
+import { batch } from "jsr:@denops/std@~7.2.0/batch";
 
 import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
 import { equal } from "jsr:@std/assert@~1.0.2/equal";
