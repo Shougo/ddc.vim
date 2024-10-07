@@ -54,15 +54,17 @@ export async function getUi(
     ];
   }
 
-  if (!loader.getUi(options.ui)) {
-    await loader.autoload(denops, "ui", options.ui);
-  }
   const ui = loader.getUi(options.ui);
   if (!ui) {
-    await printError(
-      denops,
-      `Not found ui: "${options.ui}"`,
-    );
+    if (await loader.exists(denops, "ui", options.ui)) {
+      await loader.autoload(denops, "ui", options.ui);
+    } else {
+      await printError(
+        denops,
+        `Not found ui: "${options.ui}"`,
+      );
+    }
+
     return [
       undefined,
       defaultUiOptions(),
