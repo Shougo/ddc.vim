@@ -100,7 +100,7 @@ export class Loader {
 
     const key = `@ddc-${type}s/${this.getAlias(type, name) ?? name}`;
 
-    return this.#cachedPaths[key] !== undefined;
+    return this.#prevRuntimepath !== "" && this.#cachedPaths[key] !== undefined;
   }
 
   registerAlias(type: DdcExtType, alias: string, base: string) {

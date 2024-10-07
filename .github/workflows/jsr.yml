@@ -25,4 +25,3 @@ jobs:
       - name: Publish
         run: |
           deno run -A jsr:@david/publish-on-tag@0.1.3
-
