@@ -79,28 +79,30 @@ export class Loader {
     denops: Denops,
     type: DdcExtType,
     name: string,
-  ) {
-    await this.#cachePaths(denops);
+  ): Promise<boolean> {
+    const runtimepath = await op.runtimepath.getGlobal(denops);
+    if (runtimepath !== this.#prevRuntimepath) {
+      const cached = await globpath(
+        denops,
+        "denops/@ddc-*s",
+      );
+      // NOTE: glob may be invalid.
+      if (Object.keys(cached).length > 0) {
+        this.#cachedPaths = cached;
+      }
+      this.#prevRuntimepath = runtimepath;
+    }
 
     const key = `@ddc-${type}s/${this.getAlias(type, name) ?? name}`;
 
     if (!this.#cachedPaths[key]) {
-      return;
+      return this.#prevRuntimepath === "";
     }
 
     await this.registerPath(type, this.#cachedPaths[key]);
-  }
-
-  async exists(
-    denops: Denops,
-    type: DdcExtType,
-    name: string,
-  ): Promise<boolean> {
-    await this.#cachePaths(denops);
-
-    const key = `@ddc-${type}s/${this.getAlias(type, name) ?? name}`;
 
     // NOTE: this.#prevRuntimepath may be true if initialized.
+    // NOTE: If not found, it returns false, .
     return this.#prevRuntimepath === "" || this.#cachedPaths[key] !== undefined;
   }
 
@@ -193,21 +195,6 @@ export class Loader {
     }
 
     this.#checkPaths[path] = true;
-  }
-
-  async #cachePaths(denops: Denops) {
-    const runtimepath = await op.runtimepath.getGlobal(denops);
-    if (runtimepath !== this.#prevRuntimepath) {
-      const cached = await globpath(
-        denops,
-        "denops/@ddc-*s",
-      );
-      // NOTE: glob may be invalid.
-      if (Object.keys(cached).length > 0) {
-        this.#cachedPaths = cached;
-      }
-      this.#prevRuntimepath = runtimepath;
-    }
   }
 }
 

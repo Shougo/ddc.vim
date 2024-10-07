@@ -56,9 +56,7 @@ export async function getUi(
 
   const ui = loader.getUi(options.ui);
   if (!ui) {
-    if (await loader.exists(denops, "ui", options.ui)) {
-      await loader.autoload(denops, "ui", options.ui);
-    } else {
+    if (!await loader.autoload(denops, "ui", options.ui)) {
       await printError(
         denops,
         `Not found ui: "${options.ui}"`,
@@ -92,16 +90,14 @@ export async function getSource(
   ]
 > {
   const name = source2Name(userSource);
-  if (!loader.getSource(name)) {
-    await loader.autoload(denops, "source", name);
-  }
-
   const source = loader.getSource(name);
   if (!source) {
-    await printError(
-      denops,
-      `Not found source: ${name}`,
-    );
+    if (!await loader.autoload(denops, "source", name)) {
+      await printError(
+        denops,
+        `Not found source: ${name}`,
+      );
+    }
     return [
       undefined,
       defaultSourceOptions(),
@@ -138,16 +134,14 @@ export async function getFilter(
   ]
 > {
   const name = filter2Name(userFilter);
-  if (!loader.getFilter(name)) {
-    await loader.autoload(denops, "filter", name);
-  }
-
   const filter = loader.getFilter(name);
   if (!filter) {
-    await printError(
-      denops,
-      `Not found filter: ${name}`,
-    );
+    if (!await loader.autoload(denops, "filter", name)) {
+      await printError(
+        denops,
+        `Not found filter: ${name}`,
+      );
+    }
     return [
       undefined,
       defaultFilterOptions(),
