@@ -1203,7 +1203,7 @@ FAQ 2:                                                             |ddc-faq-2|
 	UIs/sources/matchers/sorters/converters?
 
 FAQ 3:                                                             |ddc-faq-3|
-	Why do sources have no default options?
+	Why do the sources have no default options?
 
 FAQ 4:                                                             |ddc-faq-4|
 	I want to use inline suggestion like fish shell.
@@ -1304,7 +1304,7 @@ You must define your defaults by configuration.
 ddc.vim does not conflict with your defaults.
 
                                                                    *ddc-faq-3*
-Q: Why do sources have no default options?
+Q: Why do the sources have no default options?
 
 A: Because users can customize sources perfectly.  If a source has the
 default, users have to check them.  It increases configuration cost.
