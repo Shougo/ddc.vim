@@ -1,4 +1,4 @@
-*ddc.txt*	Dark deno-powered completion framework for neovim/Vim
+*ddc.txt*	Dark deno-powered completion framework for NeoVim/Vim
 
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
@@ -50,7 +50,7 @@ It does not work with zero configuration.  You can use other plugins.
 ==============================================================================
 INSTALL                                                          *ddc-install*
 
-NOTE: Ddc.vim requires Neovim (0.8.0+) or Vim 9.0.1276+ (latest is
+NOTE: Ddc.vim requires NeoVim (0.8.0+) or Vim 9.0.1276+ (latest is
 recommended).
 
 Please install both Deno 1.45+ and "denops.vim" v7.0+.
@@ -298,7 +298,7 @@ ddc#enable([{opts}])
 		"context_filetype": Use context based filetype.
 
 			"context_filetype": Use "context_filetype.vim" plugin.
-			"treesitter": Use |treesitter| feature in neovim.
+			"treesitter": Use |treesitter| feature in NeoVim.
 			"none": Use current buffer 'filetype'.
 
 			Default: "none"
@@ -323,7 +323,7 @@ ddc#enable_terminal_completion()
 		Enable ddc.vim terminal completion feature.
 		NOTE: "ddc-ui-pum" is required for the feature.
 		https://github.com/Shougo/ddc-ui-pum
-		NOTE: It is experimental feature in Vim.  neovim is
+		NOTE: It is experimental feature in Vim.  NeoVim is
 		recommended.
 
                                                          *ddc#get_previewer()*
@@ -1051,7 +1051,7 @@ highlights		(object[])			(Optional)
 
 		name			(string)
 		The highlight name. It is used for |prop_type_add()| in Vim.
-		It is not used in Neovim.
+		It is not used in NeoVim.
 		NOTE: Each name must be unique for the highlight group.
 		Because of possible interference with other plugins, a naming
 		convention like `ddc-{type}-{name}-{group}` is recommended.
@@ -1248,7 +1248,7 @@ FAQ 16:                                                           |ddc-faq-16|
 	I want to enable |i_CTRL-R_=|(the expression register) completion.
 
 FAQ 17:                                                           |ddc-faq-17|
-	Terminal title flickers when completion menu opens in neovim.
+	Terminal title flickers when completion menu opens in NeoVim.
 
 FAQ 18:                                                           |ddc-faq-18|
 	I want to enable auto completion in fine-cmdline.nvim
@@ -1288,7 +1288,7 @@ FAQ 28:                                                           |ddc-faq-28|
                                                                    *ddc-faq-1*
 Q: How to donate money to you?
 
-A: I have started github sponsorship to spend more time for Vim/neovim
+A: I have started github sponsorship to spend more time for Vim/NeoVim
 plugins.  You can donate money to help me!
 
    https://github.com/sponsors/Shougo
@@ -1509,7 +1509,7 @@ https://github.com/Shougo/ddc-source-input
 	\ })
 <
                                                                   *ddc-faq-17*
-Q: Terminal title flickers when completion menu opens in neovim.
+Q: Terminal title flickers when completion menu opens in NeoVim.
 
 A: It is the problem of |nvim_win_set_option()|.  To avoid the problem, you
 need to use the function.
@@ -1678,7 +1678,7 @@ https://github.com/Shougo/ddc-source-zsh
                                                                   *ddc-faq-27*
 Q: The popup menu is flickerd when update input.
 
-A: It is Vim/neovim's native completion feature.
+A: It is Vim/NeoVim's native completion feature.
 The popup menu must be closed when completion is update.
 
 You can use "ddc-ui-pum" for it instead.
@@ -1712,14 +1712,14 @@ COMPATIBILITY                                              *ddc-compatibility*
 * Remove keywordPattern backward compatibility.
 
 2023.07.08
-* Vim 9.0.1276+ or neovim 0.8+ is required to support the latest MacVim.
+* Vim 9.0.1276+ or NeoVim 0.8+ is required to support the latest MacVim.
 
 2023.07.07
 * {cancel-key} is removed from |ddc#map#insert_item()|.
-* Vim 9.0.1499+ or neovim 0.8+ is required.
+* Vim 9.0.1499+ or NeoVim 0.8+ is required.
 
 2023.06.25
-* Vim 9.0+ or neovim 0.8+ is required.
+* Vim 9.0+ or NeoVim 0.8+ is required.
 
 2023.06.25
 * "keywordPattern" option is deprecated.  Please use
@@ -1743,7 +1743,7 @@ COMPATIBILITY                                              *ddc-compatibility*
 * UI must call "ddc#on_complete_done()".
 
 2022.11.18
-* neovim 0.8 is required.
+* NeoVim 0.8 is required.
 
 2022.11.12
 * Rename "ddc#custom#set_context()" to "ddc#custom#set_context_filetype()".
@@ -1793,7 +1793,7 @@ COMPATIBILITY                                              *ddc-compatibility*
 * Deprecate gatherCandidates attribute.
 
 2022.02.04
-* neovim 0.6 is required.
+* NeoVim 0.6 is required.
 
 2021.12.10
 * "denops/ddc-sources" and "denops/ddc-filters" files are not loaded.

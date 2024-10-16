@@ -1,6 +1,6 @@
 # ddc.vim
 
-> Dark deno-powered completion framework for neovim/Vim
+> Dark deno-powered completion framework for NeoVim/Vim
 
 If you don't want to configure plugins, you don't have to use the plugin. It
 does not work with zero configuration. You can use other plugins.
@@ -10,7 +10,7 @@ does not work with zero configuration. You can use other plugins.
 Please read [help](doc/ddc.txt) for details.
 
 Ddc is the abbreviation of "dark deno-powered completion". It provides an
-extensible and asynchronous completion framework for neovim/Vim.
+extensible and asynchronous completion framework for NeoVim/Vim.
 
 NOTE: I have created
 [Japanese article](https://zenn.dev/shougo/articles/ddc-vim-beta) for ddc.vim.
@@ -32,12 +32,12 @@ The development is supported by
 ## Introduction
 
 I have chosen denops.vim framework to create new plugin. Because denops.vim is
-better than neovim Python interface.
+better than NeoVim Python interface.
 
 - Easy to setup
 - Minimal dependency
 - Stability
-- neovim/Vim compatibility
+- NeoVim/Vim compatibility
 - Speed
 - Library
 - Easy to hack
@@ -52,7 +52,7 @@ Please see: https://github.com/Shougo/ddc.vim/issues/32
 
 ## Install
 
-**NOTE:** Ddc.vim requires Neovim (0.8.0+ and of course, **latest** is
+**NOTE:** Ddc.vim requires NeoVim (0.8.0+ and of course, **latest** is
 recommended) or Vim 9.0+. See [requirements](#requirements) if you aren't sure
 whether you have this.
 
