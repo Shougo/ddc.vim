@@ -217,7 +217,7 @@ export async function filterItems(
         userFilter,
       );
       if (!filter) {
-        continue;
+        return [];
       }
       cdd = await callFilterFilter(
         filter,
