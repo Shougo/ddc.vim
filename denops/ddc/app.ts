@@ -18,8 +18,8 @@ import { isDenoCacheIssueError } from "./utils.ts";
 import { createCallbackContext } from "./callback.ts";
 import { getFilter, getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
 
-import type { Denops, Entrypoint } from "jsr:@denops/std@~7.2.0";
-import * as vars from "jsr:@denops/std@~7.2.0/variable";
+import type { Denops, Entrypoint } from "jsr:@denops/std@~7.3.0";
+import * as vars from "jsr:@denops/std@~7.3.0/variable";
 
 import { ensure } from "jsr:@core/unknownutil@~4.3.0/ensure";
 import { is } from "jsr:@core/unknownutil@~4.3.0/is";

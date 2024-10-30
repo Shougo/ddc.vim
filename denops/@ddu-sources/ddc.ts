@@ -2,8 +2,8 @@ import type { Context, Item } from "jsr:@shougo/ddu-vim@6.2.0/types";
 import { BaseSource } from "jsr:@shougo/ddu-vim@6.2.0/source";
 import type { DdcItem } from "../ddc/types.ts";
 
-import type { Denops } from "jsr:@denops/std@~7.2.0";
-import * as vars from "jsr:@denops/std@~7.2.0/variable";
+import type { Denops } from "jsr:@denops/std@~7.3.0";
+import * as vars from "jsr:@denops/std@~7.3.0/variable";
 
 type Params = Record<string, never>;
 

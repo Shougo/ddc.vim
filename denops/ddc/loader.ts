@@ -11,9 +11,9 @@ import type { BaseUi } from "./base/ui.ts";
 import { isDenoCacheIssueError } from "./utils.ts";
 import { mods } from "./_mods.js";
 
-import type { Denops } from "jsr:@denops/std@~7.2.0";
-import * as op from "jsr:@denops/std@~7.2.0/option";
-import * as fn from "jsr:@denops/std@~7.2.0/function";
+import type { Denops } from "jsr:@denops/std@~7.3.0";
+import * as op from "jsr:@denops/std@~7.3.0/option";
+import * as fn from "jsr:@denops/std@~7.3.0/function";
 
 import { basename } from "jsr:@std/path@~1.0.2/basename";
 import { parse } from "jsr:@std/path@~1.0.2/parse";
