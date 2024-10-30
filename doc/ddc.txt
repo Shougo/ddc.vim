@@ -1005,7 +1005,8 @@ getPreviewer		(function)			(Optional)
                                          *ddc-source-attribute-onCompleteDone*
 onCompleteDone		(function)			(Optional)
 		Called after the completion text is inserted.
-		It is useful to substitute text after completion.
+		It is useful to substitute text after completion like
+		multilines text.
 		NOTE: It is executed asynchronously to optimize the
 		performance.  If you need to execute it synchronously, you
 		should use |CompleteDone| autocmd instead.
@@ -1282,6 +1283,9 @@ FAQ 27:                                                           |ddc-faq-27|
 
 FAQ 28:                                                           |ddc-faq-28|
 	The |:normal| command is slow from command line.
+
+FAQ 29:                                                           |ddc-faq-29|
+	ddc.vim supports multilines text?
 
 
 ------------------------------------------------------------------------------
@@ -1692,6 +1696,12 @@ A: Many |InsertEnter|, |InsertLeave| and |ModeChanged| autocmds are fired.
 Unfortunately, ddc.vim cannot detect that it is executed from command line.
 You should use |:noautocmd| like this. >
 	:noautocmd %normal Itest
+<
+                                                                  *ddc-faq-29*
+Q: ddc.vim supports multilines text?
+
+A: No.  It does not support multilines text.  But source can expand multilines
+text by |ddc-source-attribute-onCompleteDone|.
 
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
