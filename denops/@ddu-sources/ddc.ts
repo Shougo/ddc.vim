@@ -1,5 +1,5 @@
-import type { Context, Item } from "jsr:@shougo/ddu-vim@6.2.0/types";
-import { BaseSource } from "jsr:@shougo/ddu-vim@6.2.0/source";
+import type { Context, Item } from "jsr:@shougo/ddu-vim@6.4.0/types";
+import { BaseSource } from "jsr:@shougo/ddu-vim@6.4.0/source";
 import type { DdcItem } from "../ddc/types.ts";
 
 import type { Denops } from "jsr:@denops/std@~7.3.0";
