@@ -143,6 +143,16 @@ cmdlineSources
 		    \ '=': ['input'],
 		    \ })
 <
+                                                        *ddc-option-dynamicUi*
+dynamicUi
+		It is the function which overwrites |ddc-option-ui| after
+		gather items.
+		The function returns new ui name.
+		NOTE: {func} is evaluated after user input and it affects
+		completion performance.
+
+		Default: ""
+
                                                     *ddc-option-filterOptions*
 filterOptions
 		It is a dictionary that maps filter names to its options.
@@ -1709,6 +1719,9 @@ https://github.com/Milly/ddc-unprintable
 
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
+
+2024.11.04
+* Change callback function type.
 
 2024.08.30
 * Refactor types.ts.

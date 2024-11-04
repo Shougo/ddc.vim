@@ -1,6 +1,9 @@
+import type { Callback } from "./types.ts";
+
 import type { Denops } from "jsr:@denops/std@~7.3.0";
 import * as op from "jsr:@denops/std@~7.3.0/option";
 
+import { is } from "jsr:@core/unknownutil@~4.3.0/is";
 import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
 
 export async function convertKeywordPattern(
@@ -105,6 +108,30 @@ export async function safeStat(path: string): Promise<Deno.FileInfo | null> {
     // Ignore stat exception
   }
   return null;
+}
+
+export async function callCallback(
+  denops: Denops | null,
+  callback: Callback,
+  args: Record<string, unknown>,
+): Promise<unknown | null> {
+  if (!denops || !callback) {
+    return null;
+  }
+
+  if (is.String(callback)) {
+    if (callback === "") {
+      return null;
+    }
+
+    return await denops.call(
+      "denops#callback#call",
+      callback,
+      args,
+    );
+  } else {
+    return await callback(denops, args);
+  }
 }
 
 Deno.test("vimoption2ts", () => {

@@ -24,6 +24,7 @@ import {
   getSource,
   getUi,
 } from "./ext.ts";
+import { callCallback } from "./utils.ts";
 
 import type { Denops } from "jsr:@denops/std@~7.3.0";
 import * as autocmd from "jsr:@denops/std@~7.3.0/autocmd";
@@ -474,6 +475,14 @@ export class Ddc {
     ) {
       // Input is changed.  Skip invalid completion.
       return;
+    }
+
+    const dynamicUi = await callCallback(denops, options.dynamicUi, {
+      completePos,
+      items,
+    }) as string | null;
+    if (dynamicUi) {
+      options.ui = dynamicUi;
     }
 
     await (async function write(ddc: Ddc) {

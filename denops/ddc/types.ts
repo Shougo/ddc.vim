@@ -26,14 +26,14 @@ export type Context = {
   nextInput: string;
 };
 
-export type ContextCallback =
+export type Callback =
   | string
-  | ((denops: Denops) => Promise<Partial<DdcOptions>>);
+  | ((denops: Denops, args: Record<string, unknown>) => Promise<unknown>);
 
 export type ContextCallbacks = {
-  global: ContextCallback;
-  filetype: Record<string, ContextCallback>;
-  buffer: Record<number, ContextCallback>;
+  global: Callback;
+  filetype: Record<string, Callback>;
+  buffer: Record<number, Callback>;
 };
 
 export interface ContextBuilder {
@@ -45,9 +45,9 @@ export interface ContextBuilder {
   setGlobal(options: Partial<DdcOptions>): void;
   setFiletype(ft: string, options: Partial<DdcOptions>): void;
   setBuffer(bufnr: number, options: Partial<DdcOptions>): void;
-  setContextGlobal(callback: ContextCallback): void;
-  setContextFiletype(callback: ContextCallback, ft: string): void;
-  setContextBuffer(callback: ContextCallback, bufnr: number): void;
+  setContextGlobal(callback: Callback): void;
+  setContextFiletype(callback: Callback, ft: string): void;
+  setContextBuffer(callback: Callback, bufnr: number): void;
   patchGlobal(options: Partial<DdcOptions>): void;
   patchFiletype(ft: string, options: Partial<DdcOptions>): void;
   patchBuffer(bufnr: number, options: Partial<DdcOptions>): void;
@@ -70,6 +70,7 @@ export type DdcOptions = {
   autoCompleteEvents: DdcEvent[];
   backspaceCompletion: boolean;
   cmdlineSources: UserSource[] | Record<string, UserSource[]>;
+  dynamicUi: Callback;
   filterOptions: Record<FilterName, Partial<FilterOptions>>;
   filterParams: Record<FilterName, Partial<BaseParams>>;
   hideOnEvents: boolean;

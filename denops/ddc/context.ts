@@ -1,8 +1,8 @@
 import type {
   BaseParams,
+  Callback,
   Context,
   ContextBuilder,
-  ContextCallback,
   ContextCallbacks,
   DdcEvent,
   DdcOptions,
@@ -12,7 +12,7 @@ import type {
   UserOptions,
 } from "./types.ts";
 import { defaultSourceOptions } from "./base/source.ts";
-import { printError } from "./utils.ts";
+import { callCallback, printError } from "./utils.ts";
 
 import type { Denops } from "jsr:@denops/std@~7.3.0";
 import * as op from "jsr:@denops/std@~7.3.0/option";
@@ -65,6 +65,7 @@ export function defaultDdcOptions(): DdcOptions {
     ],
     backspaceCompletion: false,
     cmdlineSources: [],
+    dynamicUi: "",
     filterOptions: {},
     filterParams: {},
     hideOnEvents: false,
@@ -204,32 +205,23 @@ class Custom {
     bufnr: number,
     options: UserOptions,
   ): Promise<DdcOptions> {
-    const callContextCallback = async (callback: ContextCallback) => {
-      if (!denops || !callback) {
-        return {};
-      }
-
-      if (is.String(callback)) {
-        if (callback === "") {
-          return {};
-        }
-
-        return await denops.call(
-          "denops#callback#call",
-          callback,
-        ) as Partial<DdcOptions>;
-      } else {
-        return await callback(denops);
-      }
-    };
-
-    const contextGlobal = await callContextCallback(this.context.global);
+    const contextGlobal = await callCallback(
+      denops,
+      this.context.global,
+      {},
+    ) as Partial<DdcOptions | null>;
     const filetype = this.filetype[ft] || {};
-    const contextFiletype = await callContextCallback(
+    const contextFiletype = await callCallback(
+      denops,
       this.context.filetype[ft],
-    );
+      {},
+    ) as Partial<DdcOptions | null>;
     const buffer = this.buffer[bufnr] || {};
-    const contextBuffer = await callContextCallback(this.context.buffer[bufnr]);
+    const contextBuffer = await callCallback(
+      denops,
+      this.context.buffer[bufnr],
+      {},
+    ) as Partial<DdcOptions | null>;
 
     return foldMerge(mergeDdcOptions, defaultDdcOptions, [
       this.global,
@@ -254,15 +246,15 @@ class Custom {
     this.buffer[bufnr] = options;
     return this;
   }
-  setContextGlobal(callback: ContextCallback): Custom {
+  setContextGlobal(callback: Callback): Custom {
     this.context.global = callback;
     return this;
   }
-  setContextFiletype(callback: ContextCallback, ft: string): Custom {
+  setContextFiletype(callback: Callback, ft: string): Custom {
     this.context.filetype[ft] = callback;
     return this;
   }
-  setContextBuffer(callback: ContextCallback, bufnr: number): Custom {
+  setContextBuffer(callback: Callback, bufnr: number): Custom {
     this.context.buffer[bufnr] = callback;
     return this;
   }
@@ -528,13 +520,13 @@ export class ContextBuilderImpl implements ContextBuilder {
   setBuffer(bufnr: number, options: Partial<DdcOptions>) {
     this.#custom.setBuffer(bufnr, options);
   }
-  setContextGlobal(callback: ContextCallback) {
+  setContextGlobal(callback: Callback) {
     this.#custom.setContextGlobal(callback);
   }
-  setContextFiletype(callback: ContextCallback, ft: string) {
+  setContextFiletype(callback: Callback, ft: string) {
     this.#custom.setContextFiletype(callback, ft);
   }
-  setContextBuffer(callback: ContextCallback, bufnr: number) {
+  setContextBuffer(callback: Callback, bufnr: number) {
     this.#custom.setContextBuffer(callback, bufnr);
   }
 
