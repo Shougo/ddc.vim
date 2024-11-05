@@ -1297,6 +1297,9 @@ FAQ 28:                                                           |ddc-faq-28|
 FAQ 29:                                                           |ddc-faq-29|
 	ddc.vim supports multilines text?
 
+FAQ 30:                                                           |ddc-faq-30|
+	I want to use inline UI when there's single item.
+
 
 ------------------------------------------------------------------------------
                                                                    *ddc-faq-1*
@@ -1716,6 +1719,20 @@ text by |ddc-source-attribute-onCompleteDone|.
 You can use the library to implement the feature.
 
 https://github.com/Milly/ddc-unprintable
+
+                                                                  *ddc-faq-30*
+Q: I want to use "inline" UI when there's single item.
+
+A: You can use |ddc-option-dynamicUi| for it. >
+	args.contextBuilder.patchGlobal({
+	  dynamicUi: (_denops: Denops, args: Record<string, unknown>) => {
+	    const uiArgs = args as {
+	      items: DdcItem[],
+	    };
+	    return Promise.resolve(uiArgs.items.length == 1 ? "inline" : "pum");
+	  },
+	});
+<
 
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
