@@ -187,33 +187,40 @@ export type PreviewContext = {
   split?: "horizontal" | "vertical" | "no";
 };
 
+type PreviewerCommon = {
+  /**
+   * Line number of preview buffer to be made center and highlighted
+   */
+  lineNr?: number;
+};
+
 type EmptyPreviewer = {
   kind: "empty";
-};
+} & PreviewerCommon;
 
 export type CommandPreviewer = {
   kind: "command";
 
   command: string;
-};
+} & PreviewerCommon;
 
 export type HelpPreviewer = {
   kind: "help";
 
   tag: string;
-};
+} & PreviewerCommon;
 
 type MarkdownPreviewer = {
   kind: "markdown";
 
   contents: string[];
-};
+} & PreviewerCommon;
 
 type TextPreviewer = {
   kind: "text";
 
   contents: string[];
-};
+} & PreviewerCommon;
 
 /**
  *  Previewer defines how the preview is rendered
