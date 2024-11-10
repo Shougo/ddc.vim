@@ -410,6 +410,13 @@ export class Ddc {
       return true;
     }
 
+    const skip = await denops.call(
+      "ddc#util#check_skip_complete",
+    );
+    if (skip) {
+      return true;
+    }
+
     const [ui, uiOptions, uiParams] = await this.#getUi(
       denops,
       context,
@@ -493,7 +500,7 @@ export class Ddc {
         await vars.g.set(denops, "ddc#_sources", options.sources);
       });
 
-      if (items.length === 0) {
+      if (completePos < 0 || items.length === 0) {
         await ddc.hide(denops, context, options);
       } else {
         await ddc.show(denops, context, options, completePos, items);
@@ -508,14 +515,6 @@ export class Ddc {
     completePos: number,
     items: DdcItem[],
   ) {
-    const skip = await denops.call(
-      "ddc#util#check_skip",
-      completePos,
-    );
-    if (skip) {
-      return;
-    }
-
     const [ui, uiOptions, uiParams] = await this.#getUi(
       denops,
       context,

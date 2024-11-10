@@ -45,11 +45,7 @@ function ddc#util#benchmark(msg = '') abort
         \ msg, '<sfile>'->expand(), diff))
 endfunction
 
-function ddc#util#check_skip(pos) abort
-  if a:pos < 0 || g:ddc#_changedtick != b:changedtick
-    return v:true
-  endif
-
+function ddc#util#check_skip_complete() abort
   if g:ddc#_skip_next_complete > 0
     let g:ddc#_skip_next_complete -= 1
     return v:true
