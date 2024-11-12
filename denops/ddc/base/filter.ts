@@ -17,26 +17,28 @@ export type OnInitArguments<Params extends BaseParams> = {
   filterParams: Params;
 };
 
-export type OnEventArguments<Params extends BaseParams> = {
+type BaseFilterArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
-  onCallback: OnCallback;
   options: DdcOptions;
   filterOptions: FilterOptions;
   filterParams: Params;
 };
 
-export type FilterArguments<Params extends BaseParams> = {
-  denops: Denops;
-  context: Context;
-  onCallback: OnCallback;
-  options: DdcOptions;
-  sourceOptions: SourceOptions;
-  filterOptions: FilterOptions;
-  filterParams: Params;
-  completeStr: string;
-  items: Item[];
-};
+export type OnEventArguments<Params extends BaseParams> =
+  & BaseFilterArguments<Params>
+  & {
+    onCallback: OnCallback;
+  };
+
+export type FilterArguments<Params extends BaseParams> =
+  & BaseFilterArguments<Params>
+  & {
+    onCallback: OnCallback;
+    sourceOptions: SourceOptions;
+    completeStr: string;
+    items: Item[];
+  };
 
 export abstract class BaseFilter<Params extends BaseParams> {
   name = "";

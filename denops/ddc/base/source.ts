@@ -20,25 +20,25 @@ export type OnInitArguments<Params extends BaseParams> = {
   sourceParams: Params;
 };
 
-export type OnEventArguments<Params extends BaseParams> = {
+type BaseSourceArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
-  onCallback: OnCallback;
   options: DdcOptions;
   sourceOptions: SourceOptions;
   sourceParams: Params;
 };
 
+export type OnEventArguments<Params extends BaseParams> =
+  & BaseSourceArguments<Params>
+  & {
+    onCallback: OnCallback;
+  };
+
 export type OnCompleteDoneArguments<
   Params extends BaseParams,
   UserData extends unknown = unknown,
-> = {
-  denops: Denops;
-  context: Context;
+> = BaseSourceArguments<Params> & {
   onCallback: OnCallback;
-  options: DdcOptions;
-  sourceOptions: SourceOptions;
-  sourceParams: Params;
   // To prevent users from accessing internal variables.
   userData: UserData;
 };
@@ -46,36 +46,25 @@ export type OnCompleteDoneArguments<
 export type GetPreviewerArguments<
   Params extends BaseParams,
   UserData extends unknown = unknown,
-> = {
-  denops: Denops;
-  context: Context;
-  options: DdcOptions;
-  sourceOptions: SourceOptions;
-  sourceParams: Params;
+> = BaseSourceArguments<Params> & {
   item: Item<UserData>;
   previewContext: PreviewContext;
 };
 
-export type GetCompletePositionArguments<Params extends BaseParams> = {
-  denops: Denops;
-  context: Context;
-  onCallback: OnCallback;
-  options: DdcOptions;
-  sourceOptions: SourceOptions;
-  sourceParams: Params;
-};
+export type GetCompletePositionArguments<Params extends BaseParams> =
+  & BaseSourceArguments<Params>
+  & {
+    onCallback: OnCallback;
+  };
 
-export type GatherArguments<Params extends BaseParams> = {
-  denops: Denops;
-  context: Context;
-  onCallback: OnCallback;
-  options: DdcOptions;
-  sourceOptions: SourceOptions;
-  sourceParams: Params;
-  completePos: number;
-  completeStr: string;
-  isIncomplete?: boolean;
-};
+export type GatherArguments<Params extends BaseParams> =
+  & BaseSourceArguments<Params>
+  & {
+    onCallback: OnCallback;
+    completePos: number;
+    completeStr: string;
+    isIncomplete?: boolean;
+  };
 
 export abstract class BaseSource<
   Params extends BaseParams,

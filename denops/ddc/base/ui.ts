@@ -14,7 +14,7 @@ export type OnInitArguments<Params extends BaseParams> = {
   uiParams: Params;
 };
 
-export type SkipCompletionArguments<Params extends BaseParams> = {
+type BaseUiArguments<Params extends BaseParams> = {
   denops: Denops;
   context: Context;
   options: DdcOptions;
@@ -22,31 +22,21 @@ export type SkipCompletionArguments<Params extends BaseParams> = {
   uiParams: Params;
 };
 
-export type ShowArguments<Params extends BaseParams> = {
-  denops: Denops;
-  context: Context;
-  options: DdcOptions;
-  completePos: number;
-  items: DdcItem[];
-  uiOptions: UiOptions;
-  uiParams: Params;
-};
+export type SkipCompletionArguments<Params extends BaseParams> =
+  BaseUiArguments<Params>;
 
-export type HideArguments<Params extends BaseParams> = {
-  denops: Denops;
-  context: Context;
-  options: DdcOptions;
-  uiOptions: UiOptions;
-  uiParams: Params;
-};
+export type ShowArguments<Params extends BaseParams> =
+  & BaseUiArguments<Params>
+  & {
+    completePos: number;
+    items: DdcItem[];
+  };
 
-export type VisibleArguments<Params extends BaseParams> = {
-  denops: Denops;
-  context: Context;
-  options: DdcOptions;
-  uiOptions: UiOptions;
-  uiParams: Params;
-};
+export type HideArguments<Params extends BaseParams> = BaseUiArguments<Params>;
+
+export type VisibleArguments<Params extends BaseParams> = BaseUiArguments<
+  Params
+>;
 
 export abstract class BaseUi<Params extends BaseParams> {
   name = "";
