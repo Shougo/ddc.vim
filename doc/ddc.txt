@@ -1,4 +1,4 @@
-*ddc.txt*	Dark deno-powered completion framework for Neovim/Vim
+*ddc.txt*	Dark deno-powered completion framework for Vim/Neovim
 
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
