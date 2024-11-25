@@ -53,9 +53,8 @@ completion](https://user-images.githubusercontent.com/41495/135711007-8c24c606-2
 
 ## Install
 
-**NOTE:** Ddc.vim requires Neovim (0.10.0+ and of course, **latest** is
-recommended) or Vim 9.1.0448+. See [requirements](#requirements) if you aren't
-sure whether you have this.
+**NOTE:** Ddc.vim requires Vim 9.1.0448+ or Neovim 0.10.0+. See
+[requirements](#requirements) if you aren't sure whether you have this.
 
 ### Requirements
 

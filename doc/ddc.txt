@@ -50,7 +50,7 @@ It does not work with zero configuration.  You can use other plugins.
 ==============================================================================
 INSTALL                                                          *ddc-install*
 
-NOTE: Ddc.vim requires Neovim (0.10.0+) or Vim 9.1.0448+ (latest is
+NOTE: Ddc.vim requires Vim 9.1.0448+ or Neovim 0.10.0+ (latest is
 recommended).
 
 Please install both Deno 1.45+ and "denops.vim" v7.0+.
@@ -1736,6 +1736,9 @@ A: You can use |ddc-option-dynamicUi| for it. >
 
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
+
+2024.11.25
+* Vim 9.1.0448+ or Neovim 0.10.0+ is required.
 
 2024.11.04
 * Change callback function type.
