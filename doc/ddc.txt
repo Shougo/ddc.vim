@@ -50,7 +50,7 @@ It does not work with zero configuration.  You can use other plugins.
 ==============================================================================
 INSTALL                                                          *ddc-install*
 
-NOTE: Ddc.vim requires Neovim (0.8.0+) or Vim 9.0.1276+ (latest is
+NOTE: Ddc.vim requires Neovim (0.10.0+) or Vim 9.1.0448+ (latest is
 recommended).
 
 Please install both Deno 1.45+ and "denops.vim" v7.0+.

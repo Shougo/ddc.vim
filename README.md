@@ -12,14 +12,14 @@ Please read [help](doc/ddc.txt) for details.
 Ddc is the abbreviation of "dark deno-powered completion". It provides an
 extensible and asynchronous completion framework for Vim/Neovim.
 
-NOTE: I have created
-[Japanese article](https://zenn.dev/shougo/articles/ddc-vim-beta) for ddc.vim.
-After that I have created the next article
-[Japanese article](https://zenn.dev/shougo/articles/ddc-vim-pum-vim) for both
-ddc.vim and pum.vim recently. You can read them by translation service.
+NOTE: I have created [Japanese
+article](https://zenn.dev/shougo/articles/ddc-vim-beta) for ddc.vim. After that
+I have created the next article [Japanese
+article](https://zenn.dev/shougo/articles/ddc-vim-pum-vim) for both ddc.vim and
+pum.vim recently. You can read them by translation service.
 
-The development is supported by
-[github sponsors](https://github.com/sponsors/Shougo/). Thank you!
+The development is supported by [github
+sponsors](https://github.com/sponsors/Shougo/). Thank you!
 
 <!-- vim-markdown-toc GFM -->
 
@@ -48,13 +48,14 @@ Please see: https://github.com/Shougo/ddc.vim/issues/32
 
 ![nvim-lsp](https://user-images.githubusercontent.com/41495/129931010-258d3917-7379-4b40-b3cc-2313c9fbe600.png)
 
-![command line completion](https://user-images.githubusercontent.com/41495/135711007-8c24c606-2c5d-41f5-a445-dce0127aa97a.png)
+![command line
+completion](https://user-images.githubusercontent.com/41495/135711007-8c24c606-2c5d-41f5-a445-dce0127aa97a.png)
 
 ## Install
 
-**NOTE:** Ddc.vim requires Neovim (0.8.0+ and of course, **latest** is
-recommended) or Vim 9.0+. See [requirements](#requirements) if you aren't sure
-whether you have this.
+**NOTE:** Ddc.vim requires Neovim (0.10.0+ and of course, **latest** is
+recommended) or Vim 9.1.0448+. See [requirements](#requirements) if you aren't
+sure whether you have this.
 
 ### Requirements
 
