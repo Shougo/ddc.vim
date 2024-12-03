@@ -26,12 +26,12 @@ import {
 } from "./ext.ts";
 import { callCallback } from "./utils.ts";
 
-import type { Denops } from "jsr:@denops/std@~7.3.0";
-import * as autocmd from "jsr:@denops/std@~7.3.0/autocmd";
-import * as op from "jsr:@denops/std@~7.3.0/option";
-import * as fn from "jsr:@denops/std@~7.3.0/function";
-import * as vars from "jsr:@denops/std@~7.3.0/variable";
-import { batch } from "jsr:@denops/std@~7.3.0/batch";
+import type { Denops } from "jsr:@denops/std@~7.4.0";
+import * as autocmd from "jsr:@denops/std@~7.4.0/autocmd";
+import * as op from "jsr:@denops/std@~7.4.0/option";
+import * as fn from "jsr:@denops/std@~7.4.0/function";
+import * as vars from "jsr:@denops/std@~7.4.0/variable";
+import { batch } from "jsr:@denops/std@~7.4.0/batch";
 
 import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
 import { equal } from "jsr:@std/assert@~1.0.2/equal";

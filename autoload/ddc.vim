@@ -105,7 +105,7 @@ function ddc#get_previewer(item, context={}) abort
 endfunction
 
 function ddc#register(type, path) abort
-  call ddc#denops#_notify('register', [a:type, a:path])
+  call ddc#denops#_notify('registerPath', [a:type, a:path])
 endfunction
 
 function ddc#complete_info() abort

@@ -13,13 +13,16 @@ import type {
   Previewer,
   UserOptions,
 } from "./types.ts";
-import { Loader } from "./loader.ts";
+import { initStaticImportPath, Loader } from "./loader.ts";
 import { isDenoCacheIssueError } from "./utils.ts";
 import { createCallbackContext } from "./callback.ts";
 import { getFilter, getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
+import { type BaseUi } from "./base/ui.ts";
+import { type BaseSource } from "./base/source.ts";
+import { type BaseFilter } from "./base/filter.ts";
 
-import type { Denops, Entrypoint } from "jsr:@denops/std@~7.3.0";
-import * as vars from "jsr:@denops/std@~7.3.0/variable";
+import type { Denops, Entrypoint } from "jsr:@denops/std@~7.4.0";
+import * as vars from "jsr:@denops/std@~7.4.0/variable";
 
 import { ensure } from "jsr:@core/unknownutil@~4.3.0/ensure";
 import { is } from "jsr:@core/unknownutil@~4.3.0/is";
@@ -67,11 +70,41 @@ export const main: Entrypoint = (denops: Denops) => {
       );
       return Promise.resolve();
     },
-    async register(arg1: unknown, arg2: unknown): Promise<void> {
+    async registerPath(arg1: unknown, arg2: unknown): Promise<void> {
       await loader.registerPath(
         ensure(arg1, is.String) as DdcExtType,
         ensure(arg2, is.String),
       );
+      return Promise.resolve();
+    },
+    registerExtension(
+      arg1: unknown,
+      arg2: unknown,
+      arg3: unknown,
+    ): Promise<void> {
+      const type = ensure(arg1, is.String);
+      const extName = ensure(arg2, is.String);
+
+      switch (type) {
+        case "ui":
+          loader.registerExtension(type, extName, arg3 as BaseUi<BaseParams>);
+          break;
+        case "source":
+          loader.registerExtension(
+            type,
+            extName,
+            arg3 as BaseSource<BaseParams>,
+          );
+          break;
+        case "filter":
+          loader.registerExtension(
+            type,
+            extName,
+            arg3 as BaseFilter<BaseParams>,
+          );
+          break;
+      }
+
       return Promise.resolve();
     },
     setGlobal(arg1: unknown): Promise<void> {
@@ -141,7 +174,7 @@ export const main: Entrypoint = (denops: Denops) => {
       return Promise.resolve(contextBuilder.getCurrent(denops));
     },
     async setStaticImportPath(): Promise<void> {
-      await loader.initStaticImportPath(denops);
+      await initStaticImportPath(denops);
       return Promise.resolve();
     },
     async getPreviewer(arg1: unknown, arg2: unknown): Promise<Previewer> {

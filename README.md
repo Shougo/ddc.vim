@@ -12,14 +12,14 @@ Please read [help](doc/ddc.txt) for details.
 Ddc is the abbreviation of "dark deno-powered completion". It provides an
 extensible and asynchronous completion framework for Vim/Neovim.
 
-NOTE: I have created [Japanese
-article](https://zenn.dev/shougo/articles/ddc-vim-beta) for ddc.vim. After that
-I have created the next article [Japanese
-article](https://zenn.dev/shougo/articles/ddc-vim-pum-vim) for both ddc.vim and
-pum.vim recently. You can read them by translation service.
+NOTE: I have created
+[Japanese article](https://zenn.dev/shougo/articles/ddc-vim-beta) for ddc.vim.
+After that I have created the next article
+[Japanese article](https://zenn.dev/shougo/articles/ddc-vim-pum-vim) for both
+ddc.vim and pum.vim recently. You can read them by translation service.
 
-The development is supported by [github
-sponsors](https://github.com/sponsors/Shougo/). Thank you!
+The development is supported by
+[github sponsors](https://github.com/sponsors/Shougo/). Thank you!
 
 <!-- vim-markdown-toc GFM -->
 
