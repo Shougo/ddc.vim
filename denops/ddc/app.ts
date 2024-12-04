@@ -17,9 +17,9 @@ import { initStaticImportPath, Loader } from "./loader.ts";
 import { isDenoCacheIssueError } from "./utils.ts";
 import { createCallbackContext } from "./callback.ts";
 import { getFilter, getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
-import { type BaseUi } from "./base/ui.ts";
-import { type BaseSource } from "./base/source.ts";
-import { type BaseFilter } from "./base/filter.ts";
+import type { BaseUi } from "./base/ui.ts";
+import type { BaseSource } from "./base/source.ts";
+import type { BaseFilter } from "./base/filter.ts";
 
 import type { Denops, Entrypoint } from "jsr:@denops/std@~7.4.0";
 import * as vars from "jsr:@denops/std@~7.4.0/variable";
