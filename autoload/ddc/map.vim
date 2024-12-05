@@ -40,6 +40,9 @@ function ddc#map#complete_common_string() abort
     return ''
   endif
 
+  " Create new undo point
+  let &undolevels = &undolevels
+
   let chars = ''
   " NOTE: Change backspace option to work <BS> correctly
   if mode() ==# 'i'
@@ -86,6 +89,9 @@ function ddc#map#insert_item(number) abort
           \ |   doautocmd <nomodeline> User PumCompleteDonePre
           \ | endif
   endif
+
+  " Create new undo point
+  let &undolevels = &undolevels
 
   let chars = ''
   " NOTE: Change backspace option to work <BS> correctly
