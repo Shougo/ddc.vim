@@ -73,7 +73,7 @@ OPTIONS                                                          *ddc-options*
 Options can be toggled through the use of |ddc#custom#patch_global()|.
 
 For example:
->
+>vim
     " Set a single option
     call ddc#custom#patch_global('ui', 'native')
 
@@ -131,7 +131,7 @@ cmdlineSources
 		https://github.com/Shougo/ddc-ui-pum
 
 		Default: []
->
+>vim
 		" e.g.
 		call ddc#custom#patch_global('cmdlineSources', {
 		    \ ':': ['cmdline-history', 'cmdline', 'around'],
@@ -159,7 +159,7 @@ filterOptions
 		See also |ddc-filter-options|.
 
 		Default: {}
->
+>vim
 		" e.g.
 		call ddc#custom#patch_global('filterOptions', #{
 		    \   matcher_head: {},
@@ -170,7 +170,7 @@ filterParams
 		It is a dictionary that maps filter names to its parameters.
 
 		Default: {}
->
+>vim
 		" e.g.
 		call ddc#custom#patch_global('filterParams', #{
 		    \   matcher_head: {},
@@ -201,7 +201,7 @@ postFilters
                                                           *ddc-option-sources*
 sources
 		It is a list of elements which are formatted as:
->
+>vim
 		#{
 		    name: {source-name},
 		    options: {source-options},
@@ -213,7 +213,7 @@ sources
 		indexes.
 
 		Default: []
->
+>vim
 		" e.g.
 		call ddc#custom#patch_global('sources', ['around'])
 <
@@ -225,7 +225,7 @@ sourceOptions
 		See also |ddc-source-options|.
 
 		Default: {}
->
+>vim
 		" e.g.
 		call ddc#custom#patch_global('sourceOptions', #{
 		    \   _: #{ matchers: ['matcher_head'] },
@@ -238,7 +238,7 @@ sourceParams
 		See also |ddc-source-params|.
 
 		Default: {}
->
+>vim
 		" e.g.
 		call ddc#custom#patch_global('sourceParams', #{
 		    \   around: #{ max: 8 },
@@ -350,7 +350,7 @@ ddc#hide([{event}])
 		"Initialize" or "Update".
 		NOTE: It is used to cancel the completion.
 		NOTE: It does not restore inserted text.
->
+>vim
 		inoremap <C-e>   <Cmd>call ddc#hide()<CR>
 <
                                                       *ddc#on_complete_done()*
@@ -414,7 +414,7 @@ ddc#custom#alias({type}, {alias-name}, {base-name})
 		Define {alias-name} alias based on {base-name}.
 		{type} must be "source" or "filter".
 		NOTE: It must be called before sources/filters initialization.
->
+>vim
 		call ddc#custom#alias('source', 'foo', 'around')
 		call ddc#custom#patch_global('sources', ['foo'])
 		call ddc#custom#patch_global('sourceOptions', #{
@@ -511,7 +511,7 @@ ddc#custom#set_context_filetype({filetype}, {func})
 		dictionary.
 		NOTE: {func} is evaluated after user input and it affects
 		completion performance.
->
+>vim
 		call ddc#custom#set_context_filetype('go', { ->
 		    \ ddc#syntax#in('TSComment') ? {
 		    \   'sources': ['nextword', 'around'],
@@ -596,7 +596,7 @@ NOTE: You can call events manually by |ddc#on_event()|.
 
 ==============================================================================
 EXAMPLES                                                        *ddc-examples*
->
+>vim
 	" Customize global settings
 
 	" You must set the default ui.
@@ -1333,7 +1333,7 @@ Q: I want to use inline suggestion like fish shell.
 A: NOTE: "ddc-ui-inline" is required.
 
 https://github.com/Shougo/ddc-ui-inline
->
+>vim
 	inoremap <expr> <C-t>       ddc#map#insert_item(0)
 	call ddc#custom#patch_global('ui', 'inline')
 <
@@ -1341,7 +1341,7 @@ https://github.com/Shougo/ddc-ui-inline
 Q: The Linked/chained completion exists like vim-mucomplete?
 
 A: It is not implemented, but you can emulate the behavior by
-   |ddc#map#manual_complete()| like this. >
+   |ddc#map#manual_complete()| like this. >vim
 
 	let g:chains = ['around', 'zsh', 'deoppet']
 	function MyChainCompletion() abort
@@ -1356,14 +1356,14 @@ Q: I want to silence the |ins-completion-menu| messages in the command line
 such as "-- XXX completion (YYY)", "match 1 of 2", "The only match", "Pattern
 not found", "Back at original", etc.
 
-A: You can disable the messages through the 'shortmess' option. >
+A: You can disable the messages through the 'shortmess' option. >vim
 
 	set shortmess+=c
 <
                                                                    *ddc-faq-7*
 Q: I want to use the auto select feature.
 
-A: You can use it by the 'completeopt' option. >
+A: You can use it by the 'completeopt' option. >vim
 
 	set completeopt+=noinsert
 <
@@ -1375,11 +1375,11 @@ A: Please press <C-y> on the item.
                                                                    *ddc-faq-9*
 Q: I want to close the preview window after completion is done.
 
-A: >
+A: >vim
 	autocmd CompleteDone * silent! pclose!
 <
 Or
->
+>vim
 	autocmd InsertLeave * silent! pclose!
 <
    NOTE: It conflicts with delimitMate.
@@ -1388,7 +1388,7 @@ Or
                                                                   *ddc-faq-10*
 Q: I want to disable the preview window feature.
 
-A: >
+A: >vim
 	set completeopt-=preview
 <
                                                                   *ddc-faq-11*
@@ -1445,7 +1445,7 @@ https://github.com/LumaKernel/ddc-source-file
                                                                   *ddc-faq-14*
 Q: I want to enable "skkeleton" source when "skkeleton" is enabled only.
 
-A: >
+A: >vim
 	autocmd User skkeleton-enable-pre call s:skkeleton_pre()
 	function s:skkeleton_pre() abort
 	  " Overwrite sources
@@ -1470,7 +1470,7 @@ https://github.com/Shougo/pum.vim
 https://github.com/Shougo/ddc-ui-pum
 https://github.com/Shougo/ddc-source-cmdline
 https://github.com/Shougo/ddc-source-cmdline-history
->
+>vim
 	call ddc#custom#patch_global(#{
 	\   ui: 'pum',
 	\   autoCompleteEvents: [
@@ -1514,7 +1514,7 @@ NOTE: Both "pum.vim" and "ddc-ui-pum" are required.
 https://github.com/Shougo/pum.vim
 https://github.com/Shougo/ddc-ui-pum
 https://github.com/Shougo/ddc-source-input
->
+>vim
 	call ddc#custom#patch_global(#{
 	\   ui: 'pum',
 	\   autoCompleteEvents: [
@@ -1536,7 +1536,7 @@ https://github.com/hrsh7th/nvim-cmp/issues/309#issuecomment-940740456
 Q: I want to enable auto completion in fine-cmdline.nvim
 https://github.com/VonHeikemen/fine-cmdline.nvim
 
-A: NOTE: Experimental >
+A: NOTE: Experimental >vim
 
 	lua <<EOF
 	require('fine-cmdline').setup({
@@ -1583,7 +1583,7 @@ Q: I want to disable ddc auto completion.
 A: You need to set ui manually.
 https://github.com/Shougo/ddc-ui-none
 https://github.com/Shougo/ddc-ui-native
->
+>vim
 	call ddc#custom#patch_global('ui', 'none')
 	inoremap <expr> <TAB>  ddc#map#complete('native')
 
@@ -1591,7 +1591,7 @@ If you want to use "pum.vim".
 https://github.com/Shougo/ddc-ui-none
 https://github.com/Shougo/ddc-ui-pum
 https://github.com/Shougo/pum.vim
->
+>vim
 	call ddc#custom#patch_global('ui', 'none')
 	inoremap <expr> <TAB>  ddc#map#complete('pum')
 	call ddc#custom#patch_global('uiParams', #{
@@ -1625,7 +1625,7 @@ If you really want to need the completion, please enable
                                                                   *ddc-faq-23*
 Q: "copilot.vim" does not work when ddc.vim popup is visible.
 
-A: "copilot.vim" checks |pumvisible()|.  You should disable it. >
+A: "copilot.vim" checks |pumvisible()|.  You should disable it. >vim
 
 	let g:copilot_hide_during_completion = 0
 <
@@ -1639,7 +1639,7 @@ You need to enable |ddc-option-specialBufferCompletion| for it.
 Q: I want to narrow current items without auto completion.
 
 A: You can narrow current items by "ddu.vim" like this.
->
+>vim
   inoremap <C-l> <Cmd>call ddu#start(#{
   \   name: 'ddc',
   \   ui: 'ff',
@@ -1670,7 +1670,7 @@ NOTE: Use "deol.nvim" and "ddc-source-zsh" is recommend.
 https://github.com/Shougo/deol.nvim
 https://github.com/Shougo/ddc-source-zsh
 
->
+>vim
 	call ddc#custom#patch_global('autoCompleteEvents', [
 	      \ 'InsertEnter', 'TextChangedI', 'TextChangedP',
 	      \ 'CmdlineEnter', 'CmdlineChanged', 'TextChangedT',
@@ -1707,7 +1707,7 @@ Q: The |:normal| command is slow from command line.
 
 A: Many |InsertEnter|, |InsertLeave| and |ModeChanged| autocmds are fired.
 Unfortunately, ddc.vim cannot detect that it is executed from command line.
-You should use |:noautocmd| like this. >
+You should use |:noautocmd| like this. >vim
 	:noautocmd %normal Itest
 <
                                                                   *ddc-faq-29*
@@ -1723,13 +1723,15 @@ https://github.com/Milly/ddc-unprintable
                                                                   *ddc-faq-30*
 Q: I want to use "inline" UI when there's single item.
 
-A: You can use |ddc-option-dynamicUi| for it. >
+A: You can use |ddc-option-dynamicUi| for it. >vim
 	args.contextBuilder.patchGlobal({
 	  dynamicUi: (_denops: Denops, args: Record<string, unknown>) => {
 	    const uiArgs = args as {
 	      items: DdcItem[],
 	    };
-	    return Promise.resolve(uiArgs.items.length == 1 ? "inline" : "pum");
+	    return Promise.resolve(
+	      uiArgs.items.length == 1 ? "inline" : "pum"
+	    );
 	  },
 	});
 <
