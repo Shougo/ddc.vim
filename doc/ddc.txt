@@ -1640,21 +1640,21 @@ Q: I want to narrow current items without auto completion.
 
 A: You can narrow current items by "ddu.vim" like this.
 >vim
-  inoremap <C-l> <Cmd>call ddu#start(#{
-  \   name: 'ddc',
-  \   ui: 'ff',
-  \   sync: v:true,
-  \   input: matchstr(getline('.')[: col('.') - 1], '\k*$'),
-  \   sources: [
-  \     #{ name: 'ddc', options: #{ defaultAction: 'complete' } },
-  \   ],
-  \   uiParams: #{
-  \     ff: #{
-  \       startFilter: v:true,
-  \       replaceCol: match(getline('.')[: col('.') - 1], '\k*$') + 1,
-  \     },
-  \   },
-  \ })<CR>
+	inoremap <C-l> <Cmd>call ddu#start(#{
+	\   name: 'ddc',
+	\   ui: 'ff',
+	\   sync: v:true,
+	\   input: matchstr(getline('.')[: col('.') - 1], '\k*$'),
+	\   sources: [
+	\     #{ name: 'ddc', options: #{ defaultAction: 'complete' } },
+	\   ],
+	\   uiParams: #{
+	\     ff: #{
+	\       startFilter: v:true,
+	\       replaceCol: match(getline('.')[: col('.') - 1], '\k*$') + 1,
+	\     },
+	\   },
+	\ })<CR>
 <
 NOTE: "ddu.vim" configuration is required.
 
@@ -1672,8 +1672,8 @@ https://github.com/Shougo/ddc-source-zsh
 
 >vim
 	call ddc#custom#patch_global('autoCompleteEvents', [
-	      \ 'InsertEnter', 'TextChangedI', 'TextChangedP',
-	      \ 'CmdlineEnter', 'CmdlineChanged', 'TextChangedT',
+	      \   'InsertEnter', 'TextChangedI', 'TextChangedP',
+	      \   'TextChangedT',
 	      \ ])
 	call ddc#custom#patch_global('ui', 'pum')
 	call ddc#enable_terminal_completion()
