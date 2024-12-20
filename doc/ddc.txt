@@ -1474,7 +1474,8 @@ https://github.com/Shougo/ddc-source-cmdline-history
 	call ddc#custom#patch_global(#{
 	\   ui: 'pum',
 	\   autoCompleteEvents: [
-	\     'InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged',
+	\     'InsertEnter', 'TextChangedI', 'TextChangedP',
+	\     'CmdlineEnter', 'CmdlineChanged',
 	\   ],
 	\   cmdlineSources: {
 	\     ':': ['cmdline', 'cmdline-history', 'around'],
@@ -1518,7 +1519,8 @@ https://github.com/Shougo/ddc-source-input
 	call ddc#custom#patch_global(#{
 	\   ui: 'pum',
 	\   autoCompleteEvents: [
-	\     'InsertEnter', 'TextChangedI', 'TextChangedP', 'CmdlineChanged',
+	\     'InsertEnter', 'TextChangedI', 'TextChangedP',
+	\     'CmdlineEnter', 'CmdlineChanged',
 	\   ],
 	\   cmdlineSources: {
 	\     '=': ['input'],
