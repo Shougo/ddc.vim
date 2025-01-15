@@ -1668,9 +1668,11 @@ And you need to use "ddc-ui-pum".
 
 https://github.com/Shougo/ddc-ui-pum
 
-NOTE: Use "deol.nvim" and "ddc-source-zsh" is recommend.
-https://github.com/Shougo/deol.nvim
-https://github.com/Shougo/ddc-source-zsh
+NOTE: Use "ddt.vim" and "ddt-ui-terminal" and "ddc-source-shell-native" is
+recommend.
+https://github.com/Shougo/ddt.vim
+https://github.com/Shougo/ddt-ui-terminal
+https://github.com/Shougo/ddc-source-shell-native
 
 >vim
 	call ddc#custom#patch_global('autoCompleteEvents', [
@@ -1680,18 +1682,15 @@ https://github.com/Shougo/ddc-source-zsh
 	call ddc#custom#patch_global('ui', 'pum')
 	call ddc#enable_terminal_completion()
 
-	" For deol buffer.
-	call ddc#custom#patch_filetype(['deol'], #{
+	call ddc#custom#patch_filetype(['ddt-terminal'], #{
 	\   specialBufferCompletion: v:true,
-	\   sources: ['zsh', 'shell-history', 'around'],
+	\   sources: ['shell-native', 'around'],
 	\   sourceOptions: #{
 	\     _: #{
 	\       keywordPattern: '[0-9a-zA-Z_./#:-]*',
 	\     },
 	\   },
 	\ })
-	" Should set g:deol#prompt_pattern.
-	let g:deol#prompt_pattern = has('win32') ? '\f\+>' : '\w*% \?'
 <
 
                                                                   *ddc-faq-27*
