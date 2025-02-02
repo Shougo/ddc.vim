@@ -170,8 +170,8 @@ export class Ddc {
 
       if (
         completePos < 0 ||
-        (!forceCompletion && !triggerForIncomplete && invalidCompleteLength &&
-          (context.event !== "Manual" && context.event !== "Update"))
+        (invalidCompleteLength && !forceCompletion && !triggerForIncomplete &&
+          context.event !== "Manual")
       ) {
         delete this.#prevResults[s.name];
         return;
