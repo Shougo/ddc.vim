@@ -498,9 +498,11 @@ export class Ddc {
     })(this);
 
     const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
+    const mode = fn.mode(denops);
     const cursor = fn.getcurpos(denops);
     if (
       context.changedTick !== await changedTick ||
+      context.mode !== await mode ||
       !equal(context.cursor, await cursor)
     ) {
       // Input is changed.  Skip invalid completion.
