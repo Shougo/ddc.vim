@@ -474,16 +474,6 @@ export class Ddc {
 
     this.#prevInput = context.input;
 
-    const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
-    const cursor = fn.getcurpos(denops);
-    if (
-      context.changedTick !== await changedTick ||
-      !equal(context.cursor, await cursor)
-    ) {
-      // Input is changed.  Skip invalid completion.
-      return;
-    }
-
     const dynamicUi = await callCallback(denops, options.dynamicUi, {
       completePos,
       items,
@@ -506,6 +496,17 @@ export class Ddc {
         await ddc.show(denops, context, options, completePos, items);
       }
     })(this);
+
+    const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
+    const cursor = fn.getcurpos(denops);
+    if (
+      context.changedTick !== await changedTick ||
+      !equal(context.cursor, await cursor)
+    ) {
+      // Input is changed.  Skip invalid completion.
+      await this.hide(denops, context, options);
+      return;
+    }
   }
 
   async show(
