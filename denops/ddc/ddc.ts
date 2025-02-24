@@ -434,21 +434,16 @@ export class Ddc {
       return true;
     }
 
-    const [ui, uiOptions, uiParams] = await this.#getUi(
-      denops,
-      context,
-      options,
-    );
-    if (!ui) {
-      return true;
+    if (!this.currentUi) {
+      return false;
     }
 
-    return await ui.skipCompletion({
+    return await this.currentUi.skipCompletion({
       denops,
       context,
       options,
-      uiOptions,
-      uiParams,
+      uiOptions: this.currentUiOptions,
+      uiParams: this.currentUiParams,
     });
   }
 
@@ -499,6 +494,29 @@ export class Ddc {
       options.ui = dynamicUi;
     }
 
+    const [ui, uiOptions, uiParams] = await getUi(
+      denops,
+      this.#loader,
+      options,
+    );
+
+    if (ui !== this.currentUi) {
+      // UI is changed
+      if (this.currentUi) {
+        await this.currentUi.hide({
+          denops,
+          context,
+          options,
+          uiOptions: this.currentUiOptions,
+          uiParams: this.currentUiParams,
+        });
+      }
+
+      this.currentUi = ui;
+      this.currentUiOptions = uiOptions;
+      this.currentUiParams = uiParams;
+    }
+
     await (async function write(ddc: Ddc) {
       await batch(denops, async (denops: Denops) => {
         await vars.g.set(denops, "ddc#_changedtick", context.changedTick);
@@ -535,23 +553,18 @@ export class Ddc {
     completePos: number,
     items: DdcItem[],
   ) {
-    const [ui, uiOptions, uiParams] = await this.#getUi(
-      denops,
-      context,
-      options,
-    );
-    if (!ui) {
+    if (!this.currentUi) {
       return;
     }
 
-    await ui.show({
+    await this.currentUi.show({
       denops,
       context,
       options,
       completePos,
       items,
-      uiOptions,
-      uiParams,
+      uiOptions: this.currentUiOptions,
+      uiParams: this.currentUiParams,
     });
 
     this.#prevUi = options.ui;
@@ -564,22 +577,18 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ) {
-    const [ui, uiOptions, uiParams] = await this.#getUi(
-      denops,
-      context,
-      options,
-    );
-    if (!ui) {
+    if (!this.currentUi) {
       return;
     }
 
-    await ui.hide({
+    await this.currentUi.hide({
       denops,
       context,
       options,
-      uiOptions,
-      uiParams,
+      uiOptions: this.currentUiOptions,
+      uiParams: this.currentUiParams,
     });
+
     this.visibleUi = false;
     this.#prevEvent = "";
   }
@@ -593,55 +602,21 @@ export class Ddc {
       return true;
     }
 
-    const [ui, uiOptions, uiParams] = await this.#getUi(
-      denops,
-      context,
-      options,
-    );
-    if (!ui) {
+    if (!this.currentUi) {
       return false;
     }
 
     // Check UI is visible
     // NOTE: UI may be closed by users
-    return ui.visible
-      ? ui.visible({
+    return this.currentUi.visible
+      ? await this.currentUi.visible({
         denops,
         context,
         options,
-        uiOptions,
-        uiParams,
+        uiOptions: this.currentUiOptions,
+        uiParams: this.currentUiParams,
       })
       : true;
-  }
-
-  async #getUi(
-    denops: Denops,
-    context: Context,
-    options: DdcOptions,
-  ): Promise<[BaseUi<BaseParams> | undefined, UiOptions, BaseParams]> {
-    const [ui, uiOptions, uiParams] = await getUi(
-      denops,
-      this.#loader,
-      options,
-    );
-    if (ui !== this.currentUi) {
-      // UI is changed
-      if (this.currentUi) {
-        await this.currentUi.hide({
-          denops,
-          context,
-          options,
-          uiOptions: this.currentUiOptions,
-          uiParams: this.currentUiParams,
-        });
-      }
-
-      this.currentUi = ui;
-      this.currentUiOptions = uiOptions;
-      this.currentUiParams = uiParams;
-    }
-    return [ui, uiOptions, uiParams];
   }
 }
 
