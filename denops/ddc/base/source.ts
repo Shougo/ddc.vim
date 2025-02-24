@@ -125,6 +125,7 @@ export function defaultSourceOptions(): SourceOptions {
     dup: "ignore",
     enabledIf: "",
     forceCompletionPattern: "",
+    hideTimeout: 200,
     keywordPattern: "\\k*",
     ignoreCase: false,
     isVolatile: false,

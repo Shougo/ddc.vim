@@ -190,7 +190,7 @@ export class Ddc {
         // Not matched.
         const replacePattern = new RegExp(o.replaceSourceInputPattern);
 
-        const result = await callSourceGather(
+        const callSourceGatherPromise = callSourceGather(
           s,
           denops,
           {
@@ -210,6 +210,23 @@ export class Ddc {
             : completeStr,
           triggerForIncomplete,
         );
+
+        const timeoutPromise = new Promise(
+          (_, reject) =>
+            setTimeout(() => reject(new Error("Timeout")), o.hideTimeout),
+        );
+
+        try {
+          await Promise.race([callSourceGatherPromise, timeoutPromise]);
+        } catch (error: unknown) {
+          if ((error as Error).message === "Timeout") {
+            await this.hide(denops, context, options);
+          } else {
+            throw error;
+          }
+        }
+
+        const result = await callSourceGatherPromise;
 
         let items: Item[];
         let isIncomplete: boolean;

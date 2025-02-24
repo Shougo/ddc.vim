@@ -96,6 +96,7 @@ export type SourceOptions = {
   dup: "keep" | "force" | "ignore";
   enabledIf: string;
   forceCompletionPattern: string;
+  hideTimeout: number;
   ignoreCase: boolean;
   isVolatile: boolean;
   keywordPattern: string;

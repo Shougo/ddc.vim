@@ -386,7 +386,7 @@ export const main: Entrypoint = (denops: Denops) => {
       );
     }
 
-    if (options.hideOnEvents) {
+    if (options.hideOnEvents || event === "Update") {
       // Hide the current completion
       await ddc.hide(denops, context, options);
     }

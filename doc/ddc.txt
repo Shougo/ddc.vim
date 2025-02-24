@@ -733,6 +733,14 @@ forceCompletionPattern	(string)
 
 		Default: ''
 
+                                               *ddc-source-option-hideTimeout*
+hideTimeout			(number)
+		The |ddc-source-attribute-gather| timeout for ddc.vim which
+		will hide the UI if the gathering process takes longer than
+		the specified time.
+
+		Default: 200
+
                                             *ddc-source-option-keywordPattern*
 keywordPattern
 		It defines the keyword pattern for completion.
@@ -862,6 +870,8 @@ sorters			(string[])
                                                    *ddc-source-option-timeout*
 timeout			(number)
 		The |ddc-source-attribute-gather| timeout for completion.
+		If the gathering process takes longer than the specified time,
+		it will be aborted.
 
 		Default: 2000
 
