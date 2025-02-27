@@ -519,7 +519,6 @@ export class Ddc {
 
     await (async function write(ddc: Ddc) {
       await batch(denops, async (denops: Denops) => {
-        await vars.g.set(denops, "ddc#_changedtick", context.changedTick);
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
         await vars.g.set(denops, "ddc#_items", items);
         await vars.g.set(denops, "ddc#_sources", options.sources);
@@ -532,14 +531,9 @@ export class Ddc {
       }
     })(this);
 
-    const changedTick = vars.b.get(denops, "changedtick") as Promise<number>;
+    const input = denops.call("ddc#util#get_input", context.event);
     const mode = fn.mode(denops);
-    const cursor = fn.getcurpos(denops);
-    if (
-      context.changedTick !== await changedTick ||
-      context.mode !== await mode ||
-      !equal(context.cursor, await cursor)
-    ) {
+    if (context.input !== await input || context.mode !== await mode) {
       // Input is changed.  Skip invalid completion.
       await this.hide(denops, context, options);
       return;

@@ -16,7 +16,6 @@ export type SourceName = string;
 export type FilterName = string;
 
 export type Context = {
-  changedTick: number;
   cursor: (number | undefined)[];
   event: DdcEvent;
   filetype: string;

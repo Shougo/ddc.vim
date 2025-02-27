@@ -276,7 +276,6 @@ class Custom {
 type World = {
   bufnr: number;
   changedByCompletion: boolean;
-  changedTick: number;
   cursor: (number | undefined)[];
   event: DdcEvent;
   filetype: string;
@@ -293,7 +292,6 @@ function initialWorld(): World {
   return {
     bufnr: 0,
     changedByCompletion: false,
-    changedTick: 0,
     cursor: [],
     event: "Manual",
     filetype: "",
@@ -344,7 +342,6 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
 
   const [
     bufnr,
-    changedTick,
     cursor,
     iminsert,
     isPaste,
@@ -352,7 +349,6 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
     wildMenuMode,
   ] = await collect(denops, (denops) => [
     fn.bufnr(denops),
-    vars.b.get(denops, "changedtick") as Promise<number>,
     fn.getcurpos(denops),
     op.iminsert.getLocal(denops),
     // NOTE: op.paste is deprecated in neovim
@@ -377,7 +373,6 @@ async function cacheWorld(denops: Denops, event: DdcEvent): Promise<World> {
   return {
     bufnr,
     changedByCompletion,
-    changedTick,
     cursor,
     event,
     filetype,
@@ -424,7 +419,6 @@ export class ContextBuilderImpl implements ContextBuilder {
     }
 
     const context = {
-      changedTick: world.changedTick,
       cursor: world.cursor,
       event: event,
       filetype: world.filetype,
