@@ -34,7 +34,6 @@ import * as vars from "jsr:@denops/std@~7.4.0/variable";
 import { batch } from "jsr:@denops/std@~7.4.0/batch";
 
 import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
-import { equal } from "jsr:@std/assert@~1.0.2/equal";
 
 type DdcResult = {
   items: Item[];
