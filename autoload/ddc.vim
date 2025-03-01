@@ -68,16 +68,6 @@ function ddc#update_items(name, items) abort
   call ddc#denops#_notify('updateItems', [a:name, a:items])
 endfunction
 
-function ddc#set_static_import_path() abort
-  " Clear current import path.
-  call writefile([
-        \   '// NOTE: It is dummy module.',
-        \   'export const mods = {};',
-        \ ], ddc#denops#_mods())
-
-  call ddc#denops#_notify('setStaticImportPath', [])
-endfunction
-
 function ddc#on_event(event) abort
   " NOTE: If denops isn't running, stop
   if !ddc#denops#_running()

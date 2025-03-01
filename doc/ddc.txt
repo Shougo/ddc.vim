@@ -370,16 +370,6 @@ ddc#register({type}, {path})
 		{path} is ddc extension path.
 		NOTE: {path} must be full path.
 
-                                                *ddc#set_static_import_path()*
-ddc#set_static_import_path()
-		Make static import file to optimize load ddc extensions from
-		current 'runtimepath'.
-		NOTE: It should be called if you have updated plugins.
-		NOTE: It changes "denops/ddc/_mods.js" in the repository.
-		"--skip-worktree" is recommended if you use "git".
->
-		$ git update-index --skip-worktree denops/ddc/_mods.js
-<
                                                     *ddc#skip_next_complete()*
 ddc#skip_next_complete()
 		Skip the next auto completion.
@@ -1620,8 +1610,6 @@ feature.
 
 https://github.com/vim-denops/denops.vim#shared-server
 
-Or you can create static import file by |ddc#set_static_import_path()|.
-
 Or ignore deno cache directory "%LOCALAPPDATA%\deno" from anti virus scan.
 
                                                                   *ddc-faq-22*
@@ -1749,6 +1737,9 @@ A: You can use |ddc-option-dynamicUi| for it. >vim
 
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
+
+2025.03.01
+* Remove "ddc#set_static_import_path()".
 
 2024.11.25
 * Vim 9.1.0448+ or Neovim 0.10.0+ is required.

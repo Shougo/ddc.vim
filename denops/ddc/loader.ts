@@ -9,7 +9,6 @@ import type { BaseSource } from "./base/source.ts";
 import type { BaseFilter } from "./base/filter.ts";
 import type { BaseUi } from "./base/ui.ts";
 import { isDenoCacheIssueError } from "./utils.ts";
-import { mods } from "./_mods.js";
 
 import type { Denops } from "jsr:@denops/std@~7.4.0";
 import * as op from "jsr:@denops/std@~7.4.0/option";
@@ -144,8 +143,7 @@ export class Loader {
 
     const name = parse(path).name;
 
-    const mod = (mods as Record<string, unknown>)[toFileUrl(path).href] ??
-      await import(toFileUrl(path).href);
+    const mod = await import(toFileUrl(path).href);
 
     const typeExt = this.#exts[type];
     let add;
@@ -188,46 +186,6 @@ export class Loader {
 
     this.#checkPaths[path] = true;
   }
-}
-
-export async function initStaticImportPath(denops: Denops) {
-  // Generate _mods.ts
-  let mods: string[] = [];
-  const runtimepath = await op.runtimepath.getGlobal(denops);
-  for (
-    const glob of [
-      "denops/@ddc-filters/*.ts",
-      "denops/@ddc-sources/*.ts",
-      "denops/@ddc-uis/*.ts",
-    ]
-  ) {
-    mods = mods.concat(
-      await fn.globpath(
-        denops,
-        runtimepath,
-        glob,
-        1,
-        1,
-      ),
-    );
-  }
-
-  const staticLines = [];
-  for (const [index, path] of mods.entries()) {
-    staticLines.push(
-      `import * as mod${index} from "${toFileUrl(path).href}"`,
-    );
-  }
-  staticLines.push("export const mods = {");
-  for (const [index, path] of mods.entries()) {
-    staticLines.push(`  "${toFileUrl(path).href}":`);
-    staticLines.push(`    mod${index},`);
-  }
-  staticLines.push("};");
-  await Deno.writeTextFile(
-    await denops.call("ddc#denops#_mods") as string,
-    staticLines.join("\n"),
-  );
 }
 
 async function globpath(

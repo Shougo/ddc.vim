@@ -13,7 +13,7 @@ import type {
   Previewer,
   UserOptions,
 } from "./types.ts";
-import { initStaticImportPath, Loader } from "./loader.ts";
+import { Loader } from "./loader.ts";
 import { isDenoCacheIssueError } from "./utils.ts";
 import { createCallbackContext } from "./callback.ts";
 import { getFilter, getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
@@ -172,10 +172,6 @@ export const main: Entrypoint = (denops: Denops) => {
     },
     getCurrent(): Promise<DdcOptions> {
       return Promise.resolve(contextBuilder.getCurrent(denops));
-    },
-    async setStaticImportPath(): Promise<void> {
-      await initStaticImportPath(denops);
-      return Promise.resolve();
     },
     async getPreviewer(arg1: unknown, arg2: unknown): Promise<Previewer> {
       const [_skip, context, options] = await contextBuilder
