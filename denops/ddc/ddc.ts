@@ -516,6 +516,19 @@ export class Ddc {
       this.currentUiParams = uiParams;
     }
 
+    if (!ui) {
+      console.log(`${options.ui} not found`);
+      return;
+    }
+
+    const input = denops.call("ddc#util#get_input", context.event);
+    const mode = fn.mode(denops);
+    if (context.input !== await input || context.mode !== await mode) {
+      // Input is changed.  Skip invalid completion.
+      await this.hide(denops, context, options);
+      return;
+    }
+
     await (async function write(ddc: Ddc) {
       await batch(denops, async (denops: Denops) => {
         await vars.g.set(denops, "ddc#_complete_pos", completePos);
@@ -529,14 +542,6 @@ export class Ddc {
         await ddc.show(denops, context, options, completePos, items);
       }
     })(this);
-
-    const input = denops.call("ddc#util#get_input", context.event);
-    const mode = fn.mode(denops);
-    if (context.input !== await input || context.mode !== await mode) {
-      // Input is changed.  Skip invalid completion.
-      await this.hide(denops, context, options);
-      return;
-    }
   }
 
   async show(

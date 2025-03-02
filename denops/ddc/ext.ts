@@ -46,7 +46,9 @@ export async function getUi(
   UiOptions,
   BaseParams,
 ]> {
-  if (options.ui.length === 0) {
+  const name = options.ui;
+
+  if (name.length === 0) {
     return [
       undefined,
       defaultUiOptions(),
@@ -54,15 +56,21 @@ export async function getUi(
     ];
   }
 
-  const ui = loader.getUi(options.ui);
-  if (!ui) {
-    if (!await loader.autoload(denops, "ui", options.ui)) {
-      await printError(
-        denops,
-        `Not found ui: "${options.ui}"`,
-      );
-    }
+  if (!loader.getUi(name) && !await loader.autoload(denops, "ui", name)) {
+    await printError(
+      denops,
+      `Not found ui: "${options.ui}"`,
+    );
 
+    return [
+      undefined,
+      defaultUiOptions(),
+      defaultDummy(),
+    ];
+  }
+
+  const ui = loader.getUi(name);
+  if (!ui) {
     return [
       undefined,
       defaultUiOptions(),
@@ -90,14 +98,24 @@ export async function getSource(
   ]
 > {
   const name = source2Name(userSource);
+
+  if (
+    !loader.getSource(name) && !await loader.autoload(denops, "source", name)
+  ) {
+    await printError(
+      denops,
+      `Not found source: ${name}`,
+    );
+
+    return [
+      undefined,
+      defaultSourceOptions(),
+      defaultDummy(),
+    ];
+  }
+
   const source = loader.getSource(name);
   if (!source) {
-    if (!await loader.autoload(denops, "source", name)) {
-      await printError(
-        denops,
-        `Not found source: ${name}`,
-      );
-    }
     return [
       undefined,
       defaultSourceOptions(),
@@ -134,14 +152,15 @@ export async function getFilter(
   ]
 > {
   const name = filter2Name(userFilter);
-  const filter = loader.getFilter(name);
-  if (!filter) {
-    if (!await loader.autoload(denops, "filter", name)) {
-      await printError(
-        denops,
-        `Not found filter: ${name}`,
-      );
-    }
+
+  if (
+    !loader.getFilter(name) && !await loader.autoload(denops, "filter", name)
+  ) {
+    await printError(
+      denops,
+      `Not found filter: ${name}`,
+    );
+
     return [
       undefined,
       defaultFilterOptions(),
@@ -149,11 +168,14 @@ export async function getFilter(
     ];
   }
 
+  const filter = loader.getFilter(name);
+
   const [filterOptions, filterParams] = filterArgs(
     filter,
     options,
     userFilter,
   );
+
   await checkFilterOnInit(filter, denops, filterOptions, filterParams);
 
   return [filter, filterOptions, filterParams];
