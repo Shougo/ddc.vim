@@ -60,7 +60,7 @@ export async function getUi(
   if (!ui) {
     await printError(
       denops,
-      `Not found ui: "${options.ui}"`,
+      `Not found ui: "${name}"`,
     );
 
     return [
