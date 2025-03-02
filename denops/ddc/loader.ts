@@ -126,7 +126,10 @@ export class Loader {
   getAlias(type: DdcExtType, name: string): string {
     return this.#aliases[type][name];
   }
-  async getUi(denops: Denops, name: UiName): Promise<BaseUi<BaseParams>> {
+  async getUi(
+    denops: Denops,
+    name: UiName,
+  ): Promise<BaseUi<BaseParams> | null> {
     if (!this.#exts.ui[name]) {
       await this.autoload(denops, "ui", name);
     }
@@ -136,7 +139,7 @@ export class Loader {
   async getSource(
     denops: Denops,
     name: SourceName,
-  ): Promise<BaseSource<BaseParams>> {
+  ): Promise<BaseSource<BaseParams> | null> {
     if (!this.#exts.source[name]) {
       await this.autoload(denops, "source", name);
     }
@@ -146,7 +149,7 @@ export class Loader {
   async getFilter(
     denops: Denops,
     name: FilterName,
-  ): Promise<BaseFilter<BaseParams>> {
+  ): Promise<BaseFilter<BaseParams> | null> {
     if (!this.#exts.filter[name]) {
       await this.autoload(denops, "filter", name);
     }
