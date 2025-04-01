@@ -21,8 +21,8 @@ import type { BaseUi } from "./base/ui.ts";
 import type { BaseSource } from "./base/source.ts";
 import type { BaseFilter } from "./base/filter.ts";
 
-import type { Denops, Entrypoint } from "jsr:@denops/std@~7.4.0";
-import * as vars from "jsr:@denops/std@~7.4.0/variable";
+import type { Denops, Entrypoint } from "jsr:@denops/std@~7.5.0";
+import * as vars from "jsr:@denops/std@~7.5.0/variable";
 
 import { ensure } from "jsr:@core/unknownutil@~4.3.0/ensure";
 import { is } from "jsr:@core/unknownutil@~4.3.0/is";
