@@ -8,12 +8,12 @@ function ddc#util#print_error(string, name = 'ddc') abort
   echohl None
 endfunction
 
-function ddc#util#get_text(mode) abort
+function ddc#util#get_text(mode = mode()) abort
   return a:mode ==# 'c' ? getcmdline() :
         \ a:mode ==# 't' && !has('nvim') ? term_getline('', '.')
         \ : getline('.')
 endfunction
-function ddc#util#get_input(event) abort
+function ddc#util#get_input(event = '') abort
   const mode = a:event ==# 'InsertEnter' ? 'i' : mode()
   const is_insert = (mode ==# 'i') || (mode ==# 't')
   const text = mode->ddc#util#get_text()
