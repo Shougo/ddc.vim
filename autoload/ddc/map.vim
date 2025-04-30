@@ -21,7 +21,8 @@ function ddc#map#extend(confirm_key) abort
 endfunction
 
 function ddc#map#complete_common_string() abort
-  if g:ddc#_items->empty() || g:ddc#_complete_pos < 0
+  if g:->get('ddc#_items', [])->empty()
+        \ || g:->get('ddc#_complete_pos', -1) < 0
     return ''
   endif
 
@@ -57,7 +58,7 @@ function ddc#map#complete_common_string() abort
 endfunction
 
 function ddc#map#insert_item(number) abort
-  const word = g:ddc#_items->get(a:number, #{ word: '' }).word
+  const word = g:->get('ddc#_items', [])->get(a:number, #{ word: '' }).word
   if word ==# ''
     return ''
   endif
