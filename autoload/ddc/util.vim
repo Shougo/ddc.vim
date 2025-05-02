@@ -30,7 +30,7 @@ function ddc#util#get_input(event = '') abort
 
   return input
 endfunction
-function ddc#util#get_next_input(event) abort
+function ddc#util#get_next_input(event = '') abort
   const text = mode()->ddc#util#get_text()
   return text[a:event->ddc#util#get_input()->len() :]
 endfunction
