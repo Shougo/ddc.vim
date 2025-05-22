@@ -39,9 +39,9 @@ type DdcResult = {
   items: Item[];
   completePos: number;
   completeStr: string;
-  prevInput: string;
   lineNr: number;
   isIncomplete: boolean;
+  time: number;
 };
 
 export class Ddc {
@@ -152,16 +152,25 @@ export class Ddc {
         : pos;
       const completeStr = context.input.slice(completePos);
 
-      // Check previous result.
-      const checkPrevResult = s.name in this.#prevResults
-        ? this.#prevResults[s.name]
-        : null;
-
       const invalidCompleteLength = context.event === "Manual"
         ? (completeStr.length < o.minManualCompleteLength ||
           completeStr.length > o.maxManualCompleteLength)
         : (completeStr.length < o.minAutoCompleteLength ||
           completeStr.length > o.maxAutoCompleteLength);
+
+      // Check cache timeout.
+      const currentTime = new Date().getSeconds();
+      if (
+        o.cacheTimeout > 0 && this.#prevResults[s.name] &&
+        currentTime > this.#prevResults[s.name].time + o.cacheTimeout
+      ) {
+        delete this.#prevResults[s.name];
+      }
+
+      // Check previous result.
+      const checkPrevResult = s.name in this.#prevResults
+        ? this.#prevResults[s.name]
+        : null;
 
       const triggerForIncomplete = (checkPrevResult?.isIncomplete ?? false) &&
         context.lineNr === checkPrevResult?.lineNr &&
@@ -172,17 +181,17 @@ export class Ddc {
         (invalidCompleteLength && !forceCompletion && !triggerForIncomplete &&
           context.event !== "Manual")
       ) {
-        delete this.#prevResults[s.name];
+        // The cache is cleared when invalid input.
+        if (o.cacheTimeout <= 0 && checkPrevResult) {
+          delete this.#prevResults[s.name];
+        }
+
         return;
       }
 
-      const prevInput = context.input.slice(0, completePos);
-
       if (
-        !checkPrevResult || triggerForIncomplete ||
-        prevInput !== checkPrevResult.prevInput ||
-        !completeStr.startsWith(checkPrevResult.completeStr) ||
-        context.lineNr !== checkPrevResult.lineNr ||
+        !checkPrevResult ||
+        triggerForIncomplete ||
         context.event === "Manual" ||
         (o.isVolatile && context.event !== "Update")
       ) {
@@ -243,9 +252,9 @@ export class Ddc {
           items,
           completePos,
           completeStr,
-          prevInput,
           lineNr: context.lineNr,
           isIncomplete,
+          time: currentTime,
         };
       }
 

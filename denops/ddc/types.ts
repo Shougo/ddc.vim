@@ -91,6 +91,7 @@ export type UiOptions = {
 };
 
 export type SourceOptions = {
+  cacheTimeout: number;
   converters: UserFilter[];
   dup: "keep" | "force" | "ignore";
   enabledIf: string;

@@ -689,6 +689,15 @@ SOURCE OPTIONS                                            *ddc-source-options*
 NOTE: The sources cannot set default options.  If they need to specify the
 recommended configuration, you should write it in the documentation instead.
 
+                                              *ddc-source-option-cacheTimeout*
+cacheTimeout			(number)
+		The cached result timeout in seconds.
+		If it is positive number, the result is cached until timeout
+		or manual completion.
+		It is useful for slow sources.
+
+		Default: 0
+
                                                 *ddc-source-option-converters*
 converters		(string[])
 		It is a list of elements like |ddc-source-option-matchers|.
@@ -750,6 +759,8 @@ ignoreCase		(boolean)
                                                 *ddc-source-option-isVolatile*
 isVolatile		(boolean)
 		If it is True, ddc refresh items always.
+		NOTE: If the source depends user input, you must enable the
+		flag.
 
 		Default: v:false
 
@@ -859,7 +870,8 @@ sorters			(string[])
 
                                                    *ddc-source-option-timeout*
 timeout			(number)
-		The |ddc-source-attribute-gather| timeout for completion.
+		The |ddc-source-attribute-gather| timeout for completion in
+		milli seconds.
 		If the gathering process takes longer than the specified time,
 		it will be aborted.
 

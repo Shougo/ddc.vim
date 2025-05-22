@@ -121,6 +121,7 @@ export abstract class BaseSource<
 
 export function defaultSourceOptions(): SourceOptions {
   return {
+    cacheTimeout: 0,
     converters: [],
     dup: "ignore",
     enabledIf: "",
