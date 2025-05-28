@@ -14,10 +14,10 @@ import type { Denops } from "jsr:@denops/std@~7.5.0";
 import * as op from "jsr:@denops/std@~7.5.0/option";
 import * as fn from "jsr:@denops/std@~7.5.0/function";
 
-import { basename } from "jsr:@std/path@~1.0.2/basename";
-import { parse } from "jsr:@std/path@~1.0.2/parse";
+import { basename } from "jsr:@std/path@~1.1.0/basename";
+import { parse } from "jsr:@std/path@~1.1.0/parse";
 import { is } from "jsr:@core/unknownutil@~4.3.0/is";
-import { toFileUrl } from "jsr:@std/path@~1.0.2/to-file-url";
+import { toFileUrl } from "jsr:@std/path@~1.1.0/to-file-url";
 import { Lock } from "jsr:@core/asyncutil@~1.2.0/lock";
 
 type Ext = {

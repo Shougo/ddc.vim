@@ -27,7 +27,7 @@ import * as vars from "jsr:@denops/std@~7.5.0/variable";
 import { ensure } from "jsr:@core/unknownutil@~4.3.0/ensure";
 import { is } from "jsr:@core/unknownutil@~4.3.0/is";
 import { Lock } from "jsr:@core/asyncutil@~1.2.0/lock";
-import { toFileUrl } from "jsr:@std/path@~1.0.2/to-file-url";
+import { toFileUrl } from "jsr:@std/path@~1.1.0/to-file-url";
 
 export const main: Entrypoint = (denops: Denops) => {
   const loader = new Loader();
