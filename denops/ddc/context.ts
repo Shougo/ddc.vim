@@ -65,6 +65,7 @@ export function defaultDdcOptions(): DdcOptions {
     ],
     backspaceCompletion: false,
     cmdlineSources: [],
+    dynamicSources: "",
     dynamicUi: "",
     filterOptions: {},
     filterParams: {},
@@ -450,6 +451,15 @@ export class ContextBuilderImpl implements ContextBuilder {
           userOptions.sources = userOptions.cmdlineSources[cmdType];
         }
       }
+    }
+
+    const dynamicSources = await callCallback(
+      denops,
+      userOptions.dynamicSources,
+      {},
+    ) as string[] | null;
+    if (dynamicSources) {
+      userOptions.sources = dynamicSources;
     }
 
     return [

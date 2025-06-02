@@ -143,6 +143,16 @@ cmdlineSources
 		    \ '=': ['input'],
 		    \ })
 <
+                                                   *ddc-option-dynamicSources*
+dynamicSources
+		It is the function which overwrites |ddc-option-sources| after
+		gather items.
+		The function returns new source names.
+		NOTE: {func} is evaluated after user input and it affects
+		completion performance.
+
+		Default: ""
+
                                                         *ddc-option-dynamicUi*
 dynamicUi
 		It is the function which overwrites |ddc-option-ui| after

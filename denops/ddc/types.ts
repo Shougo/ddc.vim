@@ -69,6 +69,7 @@ export type DdcOptions = {
   autoCompleteEvents: DdcEvent[];
   backspaceCompletion: boolean;
   cmdlineSources: UserSource[] | Record<string, UserSource[]>;
+  dynamicSources: Callback;
   dynamicUi: Callback;
   filterOptions: Record<FilterName, Partial<FilterOptions>>;
   filterParams: Record<FilterName, Partial<BaseParams>>;
