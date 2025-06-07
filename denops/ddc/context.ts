@@ -456,7 +456,10 @@ export class ContextBuilderImpl implements ContextBuilder {
     const dynamicSources = await callCallback(
       denops,
       userOptions.dynamicSources,
-      { context },
+      {
+        context,
+        sources: userOptions.sources,
+      },
     ) as string[] | null;
     if (dynamicSources) {
       userOptions.sources = dynamicSources;

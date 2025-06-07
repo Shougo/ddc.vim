@@ -147,7 +147,7 @@ cmdlineSources
 dynamicSources
 		It is the function which overwrites |ddc-option-sources| after
 		gather items.
-		The function returns new source names.
+		The function returns new source names or |v:null|.
 		NOTE: {func} is evaluated after user input and it affects
 		completion performance.
 
