@@ -82,8 +82,8 @@ export const main: Entrypoint = (denops: Denops) => {
       arg2: unknown,
       arg3: unknown,
     ): Promise<void> {
-      const type = ensure(arg1, is.String);
-      const extName = ensure(arg2, is.String);
+      const type = ensure(arg1, is.String) as string;
+      const extName = ensure(arg2, is.String) as string;
 
       switch (type) {
         case "ui":
