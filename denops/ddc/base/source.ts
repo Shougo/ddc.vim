@@ -105,11 +105,10 @@ export abstract class BaseSource<
       args.sourceOptions.keywordPattern,
     );
 
-    const matchPos = args.context.input.search(
+    const completePos = args.context.input.search(
       new RegExp("(?:" + keywordPattern + ")$"),
     );
-    const completePos = matchPos !== null ? matchPos : -1;
-    return Promise.resolve(completePos);
+    return completePos;
   }
 
   abstract gather(
