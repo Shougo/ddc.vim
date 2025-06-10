@@ -1322,6 +1322,9 @@ FAQ 29:                                                           |ddc-faq-29|
 FAQ 30:                                                           |ddc-faq-30|
 	I want to use inline UI when there's single item.
 
+FAQ 31:                                                           |ddc-faq-31|
+	Source completion items are not refreshed.
+
 
 ------------------------------------------------------------------------------
                                                                    *ddc-faq-1*
@@ -1756,6 +1759,11 @@ A: You can use |ddc-option-dynamicUi| for it. >vim
 	  },
 	});
 <
+
+                                                                  *ddc-faq-31*
+Q: Source completion items are not refreshed.
+
+A: You need to set |ddc-source-option-isVolatile| to refresh source items.
 
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
