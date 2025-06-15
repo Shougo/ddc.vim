@@ -526,7 +526,7 @@ export class Ddc {
     }
 
     if (!ui) {
-      console.log(`${options.ui} not found`);
+      console.log(`Not found ui or "ui" option is not set.`);
       return;
     }
 
