@@ -1,7 +1,7 @@
 import type { Callback } from "./types.ts";
 
-import type { Denops } from "jsr:@denops/std@~7.5.0";
-import * as op from "jsr:@denops/std@~7.5.0/option";
+import type { Denops } from "jsr:@denops/std@~7.6.0";
+import * as op from "jsr:@denops/std@~7.6.0/option";
 
 import { is } from "jsr:@core/unknownutil@~4.3.0/is";
 import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
