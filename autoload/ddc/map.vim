@@ -42,7 +42,9 @@ function ddc#map#complete_common_string() abort
   endif
 
   " Create new undo point
-  let &l:undolevels = &l:undolevels
+  if &l:undolevels > 0
+    let &l:undolevels = &l:undolevels
+  endif
 
   let chars = ''
   " NOTE: Change backspace option to work <BS> correctly
@@ -92,7 +94,9 @@ function ddc#map#insert_item(number) abort
   endif
 
   " Create new undo point
-  let &l:undolevels = &l:undolevels
+  if &l:undolevels > 0
+    let &l:undolevels = &l:undolevels
+  endif
 
   let chars = ''
   " NOTE: Change backspace option to work <BS> correctly
