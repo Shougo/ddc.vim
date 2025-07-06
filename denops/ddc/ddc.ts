@@ -150,7 +150,9 @@ export class Ddc {
         : (s.isBytePos && pos >= 0)
         ? byteposToCharpos(context.input, pos)
         : pos;
-      const completeStr = context.input.slice(completePos);
+      const completeStr = completePos < 0
+        ? ""
+        : context.input.slice(completePos);
 
       const invalidCompleteLength = context.event === "Manual"
         ? (completeStr.length < o.minManualCompleteLength ||
