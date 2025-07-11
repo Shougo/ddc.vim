@@ -265,6 +265,9 @@ specialBufferCompletion
 ui
 		Specify UI name.
 		NOTE: You must set the option in the first.
+		NOTE: If you want to disable completion UI window, you must
+		install "ddc-ui-none".
+		https://github.com/Shougo/ddc-ui-none
 
 		Default: ""
 
