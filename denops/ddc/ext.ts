@@ -33,9 +33,9 @@ import { type BaseSource, defaultSourceOptions } from "./base/source.ts";
 import { type BaseFilter, defaultFilterOptions } from "./base/filter.ts";
 import { printError } from "./utils.ts";
 
-import type { Denops } from "jsr:@denops/std@~7.6.0";
+import type { Denops } from "@denops/std";
 
-import { deadline } from "jsr:@std/async@~1.0.1/deadline";
+import { deadline } from "@std/async/deadline";
 
 export async function getUi(
   denops: Denops,
