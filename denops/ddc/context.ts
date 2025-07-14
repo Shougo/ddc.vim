@@ -14,16 +14,16 @@ import type {
 import { defaultSourceOptions } from "./base/source.ts";
 import { callCallback, printError } from "./utils.ts";
 
-import type { Denops } from "jsr:@denops/std@~7.6.0";
-import * as op from "jsr:@denops/std@~7.6.0/option";
-import * as vimOp from "jsr:@denops/std@~7.6.0/option/vim";
-import * as fn from "jsr:@denops/std@~7.6.0/function";
-import * as vars from "jsr:@denops/std@~7.6.0/variable";
-import { collect } from "jsr:@denops/std@~7.6.0/batch";
+import type { Denops } from "@denops/std";
+import * as op from "@denops/std/option";
+import * as vimOp from "@denops/std/option/vim";
+import * as fn from "@denops/std/function";
+import * as vars from "@denops/std/variable";
+import { collect } from "@denops/std/batch";
 
-import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
-import { ensure } from "jsr:@core/unknownutil@~4.3.0/ensure";
-import { is } from "jsr:@core/unknownutil@~4.3.0/is";
+import { assertEquals } from "@std/assert/equals";
+import { ensure } from "@core/unknownutil/ensure";
+import { is } from "@core/unknownutil/is";
 
 // where
 // T: Object

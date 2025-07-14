@@ -21,13 +21,13 @@ import type { BaseUi } from "./base/ui.ts";
 import type { BaseSource } from "./base/source.ts";
 import type { BaseFilter } from "./base/filter.ts";
 
-import type { Denops, Entrypoint } from "jsr:@denops/std@~7.6.0";
-import * as vars from "jsr:@denops/std@~7.6.0/variable";
+import type { Denops, Entrypoint } from "@denops/std";
+import * as vars from "@denops/std/variable";
 
-import { ensure } from "jsr:@core/unknownutil@~4.3.0/ensure";
-import { is } from "jsr:@core/unknownutil@~4.3.0/is";
-import { Lock } from "jsr:@core/asyncutil@~1.2.0/lock";
-import { toFileUrl } from "jsr:@std/path@~1.1.0/to-file-url";
+import { ensure } from "@core/unknownutil/ensure";
+import { is } from "@core/unknownutil/is";
+import { Lock } from "@core/asyncutil/lock";
+import { toFileUrl } from "@std/path/to-file-url";
 
 export const main: Entrypoint = (denops: Denops) => {
   const loader = new Loader();
