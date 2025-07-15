@@ -1,10 +1,10 @@
 import type { Callback } from "./types.ts";
 
-import type { Denops } from "jsr:@denops/std@~7.6.0";
-import * as op from "jsr:@denops/std@~7.6.0/option";
+import type { Denops } from "@denops/std";
+import * as op from "@denops/std/option";
 
-import { is } from "jsr:@core/unknownutil@~4.3.0/is";
-import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
+import { is } from "@core/unknownutil/is";
+import { assertEquals } from "@std/assert/equals";
 
 export async function convertKeywordPattern(
   denops: Denops,
