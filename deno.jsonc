@@ -27,7 +27,6 @@
     "upgrade": "deno outdated --recursive --update"
   },
   "workspace": [
-    "./denops/ddc",
-    "./denops/@ddu-sources"
+    "./denops/ddc"
   ]
 }
