@@ -15,7 +15,6 @@
       "denops/ddc/**/*.js"
     ]
   },
-  "lock": false,
   "tasks": {
     "cache": "deno cache --reload denops/**/*.ts",
     "check": "deno check denops/**/*.ts",
