@@ -1,5 +1,8 @@
 import type { Callback } from "./types.ts";
 
+import type { Denops } from "@denops/std";
+import * as op from "@denops/std/option";
+
 import {
   type ImportMap,
   ImportMapImporter,
@@ -11,9 +14,6 @@ import { toFileUrl } from "@std/path/to-file-url";
 import { fromFileUrl } from "@std/path/from-file-url";
 import { join } from "@std/path/join";
 import { dirname } from "@std/path/dirname";
-
-import type { Denops } from "@denops/std";
-import * as op from "@denops/std/option";
 
 export async function convertKeywordPattern(
   denops: Denops,
