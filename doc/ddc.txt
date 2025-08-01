@@ -460,6 +460,8 @@ ddc#custom#load_config({path})
 		Load TypeScript configuration from {path} file.
 		NOTE: {path} must be full path.
 		NOTE: The loading is asynchronous.
+		NOTE: The "deno.json[c]" and "import_map.json[c]" files in the
+		same directory will also be loaded.
 
                                                    *ddc#custom#patch_buffer()*
 ddc#custom#patch_buffer({option-name}, {value})
