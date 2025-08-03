@@ -1,6 +1,7 @@
 {
   "name": "@shougo/ddc-vim",
   "version": "0.0.0",
+  "lock": false,
   "exports": {
     "./config": "./denops/ddc/base/config.ts",
     "./filter": "./denops/ddc/base/filter.ts",
