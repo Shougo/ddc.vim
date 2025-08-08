@@ -99,18 +99,26 @@ function ddc#map#insert_item(number) abort
   endif
 
   let chars = ''
-  " NOTE: Change backspace option to work <BS> correctly
-  if mode ==# 'i'
-    let chars .= "\<Cmd>set backspace=start\<CR>"
+
+  if word->stridx(complete_str) == 0
+    " Backspace is not needed.
+    let chars .= word[complete_str->len():]
+  else
+    " NOTE: Change backspace option to work <BS> correctly
+    if mode ==# 'i'
+      let chars .= "\<Cmd>set backspace=start\<CR>"
+    endif
+    let chars .= "\<BS>"->repeat(complete_str->strchars())
+    let chars .= word
+    if mode ==# 'i'
+      let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
+    endif
   endif
-  let chars .= "\<BS>"->repeat(complete_str->strchars())
-  let chars .= word
-  if mode ==# 'i'
-    let chars .= printf("\<Cmd>set backspace=%s\<CR>", &backspace)
-  endif
+
   " NOTE: Fire Source.onCompleteDone after insert the item.
   let chars .=
         \ "\<Cmd>call ddc#on_complete_done(v:completed_item)\<CR>"
+
   return chars
 endfunction
 
