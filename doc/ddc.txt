@@ -1410,7 +1410,7 @@ A: >vim
 <
 Or
 >vim
-	autocmd InsertLeave * silent! pclose!
+	autocmd ModeChanged * silent! pclose!
 <
    NOTE: It conflicts with delimitMate.
    https://github.com/Shougo/deoplete.nvim/issues/234
