@@ -26,14 +26,14 @@ import {
 } from "./ext.ts";
 import { callCallback } from "./utils.ts";
 
-import type { Denops } from "jsr:@denops/std@~7.6.0";
-import * as autocmd from "jsr:@denops/std@~7.6.0/autocmd";
-import * as op from "jsr:@denops/std@~7.6.0/option";
-import * as fn from "jsr:@denops/std@~7.6.0/function";
-import * as vars from "jsr:@denops/std@~7.6.0/variable";
-import { batch } from "jsr:@denops/std@~7.6.0/batch";
+import type { Denops } from "@denops/std";
+import * as autocmd from "@denops/std/autocmd";
+import * as op from "@denops/std/option";
+import * as fn from "@denops/std/function";
+import * as vars from "@denops/std/variable";
+import { batch } from "@denops/std/batch";
 
-import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
+import { assertEquals } from "@std/assert/equals";
 
 type DdcResult = {
   items: Item[];

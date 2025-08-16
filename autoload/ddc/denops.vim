@@ -11,7 +11,7 @@ function ddc#denops#_init(opts = {}) abort
 
   augroup ddc
     autocmd!
-    autocmd InsertLeave * ++nested call ddc#hide('InsertLeave')
+    autocmd ModeChanged * ++nested call ddc#hide('ModeChanged')
   augroup END
 
   let context_filetype = a:opts->get('context_filetype', 'none')
@@ -66,7 +66,7 @@ function ddc#denops#_request(method, args, default=v:null) abort
         \ denops#request('ddc', a:method, a:args) : a:default
 endfunction
 
-const s:root_dir = '<sfile>:h:h:h'->expand()
+const s:root_dir = '<script>:h:h:h'->expand()
 const s:sep = has('win32') ? '\' : '/'
 function ddc#denops#_mods() abort
   return [s:root_dir, 'denops', 'ddc', '_mods.js']->join(s:sep)
