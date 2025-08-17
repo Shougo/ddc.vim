@@ -11,7 +11,7 @@ function ddc#denops#_init(opts = {}) abort
 
   augroup ddc
     autocmd!
-    autocmd ModeChanged * ++nested call ddc#hide('ModeChanged')
+    autocmd ModeChanged *:n ++nested call ddc#hide('ModeChanged')
   augroup END
 
   let context_filetype = a:opts->get('context_filetype', 'none')
