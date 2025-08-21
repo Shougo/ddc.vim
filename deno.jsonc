@@ -1,26 +1,12 @@
 {
-  "name": "@shougo/ddc-vim",
-  "version": "0.0.0",
   "lock": false,
-  "exports": {
-    "./config": "./denops/ddc/base/config.ts",
-    "./filter": "./denops/ddc/base/filter.ts",
-    "./source": "./denops/ddc/base/source.ts",
-    "./types": "./denops/ddc/types.ts",
-    "./ui": "./denops/ddc/base/ui.ts",
-    "./utils": "./denops/ddc/utils.ts"
-  },
-  "publish": {
-    "include": [
-      "denops/ddc/**/*.ts"
-    ]
-  },
   "tasks": {
     "cache": "deno cache --reload denops/**/*.ts",
     "check": "deno check denops/**/*.ts",
+    "fmt": "deno fmt denops",
     "lint": "deno lint denops",
     "lint-fix": "deno lint --fix denops",
-    "fmt": "deno fmt denops",
+    "publish": "deno publish --dry-run --allow-dirty",
     "test": "deno test -A --doc --parallel --shuffle denops/**/*.ts",
     "update": "deno outdated --recursive",
     "upgrade": "deno outdated --recursive --update"

@@ -225,6 +225,8 @@ export async function tryLoadImportMap(
 }
 
 export async function importPlugin(path: string): Promise<unknown> {
+  // Import module with fragment so that reload works properly
+  // https://github.com/vim-denops/denops.vim/issues/227
   const suffix = performance.now();
   const url = toFileUrl(path).href;
   const importMap = await tryLoadImportMap(path);

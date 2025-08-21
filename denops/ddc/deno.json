@@ -1,4 +1,19 @@
 {
+  "name": "@shougo/ddc-vim",
+  "version": "0.0.0",
+  "exports": {
+    "./config": "./base/config.ts",
+    "./filter": "./base/filter.ts",
+    "./source": "./base/source.ts",
+    "./types": "./types.ts",
+    "./ui": "./base/ui.ts",
+    "./utils": "./utils.ts"
+  },
+  "publish": {
+    "include": [
+      "**/*.ts"
+    ]
+  },
   "imports": {
     "@core/asyncutil": "jsr:@core/asyncutil@~1.2.0",
     "@core/unknownutil": "jsr:@core/unknownutil@~4.3.0",
