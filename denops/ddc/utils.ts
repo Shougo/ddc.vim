@@ -33,44 +33,92 @@ export function isDenoCacheIssueError(e: unknown): boolean {
   return false;
 }
 
+function parseIskeywordPart(part: string, charCodes: Set<number>): void {
+  const getCharCode = (charOrCode: string): number => {
+    return /^\d+$/.test(charOrCode)
+      ? parseInt(charOrCode, 10)
+      : charOrCode.charCodeAt(0);
+  };
+
+  // literal "^"
+  if (part === "^") {
+    charCodes.add("^".charCodeAt(0));
+    return;
+  }
+
+  // exclusion mark
+  const isExclusion = part.startsWith("^");
+  const content = isExclusion ? part.substring(1) : part;
+
+  const action = isExclusion
+    ? (code: number) => charCodes.delete(code)
+    : (code: number) => charCodes.add(code);
+
+  // "@" -> a-zA-Z
+  if (content === "@") {
+    for (let i = "a".charCodeAt(0); i <= "z".charCodeAt(0); i++) action(i);
+    for (let i = "A".charCodeAt(0); i <= "Z".charCodeAt(0); i++) action(i);
+    return;
+  }
+
+  // "start-end" ranges
+  if (content.includes("-") && content.length > 1) {
+    const [startStr, endStr] = content.split("-", 2);
+    const start = getCharCode(startStr);
+    const end = getCharCode(endStr);
+    for (let i = start; i <= end; i++) {
+      action(i);
+    }
+    return;
+  }
+
+  // single char
+  action(getCharCode(content));
+}
+
+function buildRegexFromCharCodes(charCodes: Set<number>): string {
+  if (charCodes.size === 0) return "";
+
+  const codeToHexString = (code: number): string => {
+    return "\\x" + code.toString(16).padStart(2, "0");
+  };
+
+  const sortedCodes = Array.from(charCodes).sort((a, b) => a - b);
+  let content = "";
+
+  for (let i = 0; i < sortedCodes.length;) {
+    const startCode = sortedCodes[i];
+    let j = i;
+    while (
+      j + 1 < sortedCodes.length && sortedCodes[j + 1] === sortedCodes[j] + 1
+    ) {
+      j++;
+    }
+    const endCode = sortedCodes[j];
+
+    if (endCode > startCode) {
+      // "start-end" format
+      content += `${codeToHexString(startCode)}-${codeToHexString(endCode)}`;
+    } else {
+      // single char
+      content += codeToHexString(startCode);
+    }
+    i = j + 1;
+  }
+
+  return content;
+}
+
 function vimoption2ts(option: string): string {
-  let hasDash = false;
-  const patterns: string[] = [];
-  for (let pattern of option.split(",")) {
-    if (pattern.match(/\d+/)) {
-      pattern = pattern.replaceAll(/\d+/g, (s: string) => {
-        return String.fromCharCode(parseInt(s, 10));
-      });
-    }
-
-    switch (pattern) {
-      case "":
-        // ,
-        if (patterns.indexOf(",") < 0) {
-          patterns.push(",");
-        }
-        break;
-      case "@":
-        patterns.push("a-zA-Z");
-        break;
-      case "\\":
-        patterns.push("\\\\");
-        break;
-      case "-":
-        hasDash = true;
-        break;
-      default:
-        patterns.push(pattern);
-        break;
-    }
+  if (option === "") {
+    return "";
   }
-
-  // Dash must be last.
-  if (hasDash) {
-    patterns.push("-");
+  const charCodes = new Set<number>();
+  // Split by ",", unless it follows a "^" or is surrounded by ","
+  for (const part of option.split(/(?<![\^,]),|(?<!\^),(?!,)/)) {
+    parseIskeywordPart(part, charCodes);
   }
-
-  return patterns.join("");
+  return buildRegexFromCharCodes(charCodes);
 }
 
 export async function printError(
@@ -135,8 +183,32 @@ export async function callCallback(
 }
 
 Deno.test("vimoption2ts", () => {
-  assertEquals(vimoption2ts("@,48-57,_,\\"), "a-zA-Z0-9_\\\\");
-  assertEquals(vimoption2ts("@,-,48-57,_"), "a-zA-Z0-9_-");
-  assertEquals(vimoption2ts("@,,,48-57,_"), "a-zA-Z,0-9_");
-  assertEquals(vimoption2ts("@,48-57,_,-,+,\\,!~"), "a-zA-Z0-9_+\\\\!~-");
+  assertEquals(vimoption2ts(""), "");
+  assertEquals(
+    vimoption2ts("@,48-57,_,\\"),
+    "\\x30-\\x39\\x41-\\x5a\\x5c\\x5f\\x61-\\x7a", // "a-zA-Z0-9_\\\\"
+  );
+  assertEquals(
+    vimoption2ts("@,-,48-57,_"),
+    "\\x2d\\x30-\\x39\\x41-\\x5a\\x5f\\x61-\\x7a", // "a-zA-Z0-9_-"
+  );
+  assertEquals(
+    vimoption2ts("@,,,48-57,_"),
+    "\\x2c\\x30-\\x39\\x41-\\x5a\\x5f\\x61-\\x7a", // "a-zA-Z,0-9_"
+  );
+  assertEquals(
+    vimoption2ts("@,48-57,_,-,+,\\,!,~"),
+    "\\x21\\x2b\\x2d\\x30-\\x39\\x41-\\x5a\\x5c\\x5f\\x61-\\x7a\\x7e", // "a-zA-Z0-9_+\\\\!~-"
+  );
+
+  // Examples from Vim's help page
+  assertEquals(
+    vimoption2ts("_,-,128-140,#-43"),
+    "\\x23-\\x2b\\x2d\\x5f\\x80-\\x8c", // '#'-'+', '-', '_', 0x80-0x8c
+  );
+  assertEquals(vimoption2ts("^a-z,#,^"), "\\x23\\x5e"); // '#' , '^'
+  assertEquals(vimoption2ts("@,^a-z"), "\\x41-\\x5a"); // 'A'-'Z'
+  assertEquals(vimoption2ts("a-z,A-Z,@-@"), "\\x40-\\x5a\\x61-\\x7a"); // '@', 'A'-'Z', 'a'-'z'
+  assertEquals(vimoption2ts("48-57,,,_"), "\\x2c\\x30-\\x39\\x5f"); // ',', '0'-'9', '_'
+  assertEquals(vimoption2ts(" -~,^,,9"), "\\x09\\x20-\\x2b\\x2d-\\x7e"); // Tab, ' '-'+', '-'-'~'
 });
