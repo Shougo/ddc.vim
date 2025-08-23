@@ -1,13 +1,13 @@
 {
   "lock": false,
   "tasks": {
-    "cache": "deno cache --reload denops/**/*.ts",
+    "cache": "deno install --reload",
     "check": "deno check denops/**/*.ts",
     "fmt": "deno fmt denops",
     "lint": "deno lint denops",
     "lint-fix": "deno lint --fix denops",
-    "publish": "deno publish --dry-run --allow-dirty",
     "test": "deno test -A --doc --parallel --shuffle denops/**/*.ts",
+    "test:publish": "deno publish --dry-run --allow-dirty --set-version 0.0.0",
     "update": "deno outdated --recursive",
     "upgrade": "deno outdated --recursive --update"
   },
