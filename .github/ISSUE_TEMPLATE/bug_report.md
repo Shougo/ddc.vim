@@ -1,9 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
+title: ""
 labels: bug
-assignees: ''
+assignees: ""
 ---
 
 **Warning: I will close the issue without the minimal init.vim and the
