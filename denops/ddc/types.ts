@@ -1,5 +1,5 @@
-import type { Denops } from "jsr:@denops/std@~7.6.0";
-import type { AutocmdEvent } from "jsr:@denops/std@~7.6.0/autocmd";
+import type { Denops } from "@denops/std";
+import type { AutocmdEvent } from "@denops/std/autocmd";
 
 export type BaseParams = Record<string, unknown>;
 

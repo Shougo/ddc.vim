@@ -14,20 +14,19 @@ import type {
   UserOptions,
 } from "./types.ts";
 import { Loader } from "./loader.ts";
-import { isDenoCacheIssueError } from "./utils.ts";
+import { importPlugin, isDenoCacheIssueError } from "./utils.ts";
 import { createCallbackContext } from "./callback.ts";
 import { getFilter, getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
 import type { BaseUi } from "./base/ui.ts";
 import type { BaseSource } from "./base/source.ts";
 import type { BaseFilter } from "./base/filter.ts";
 
-import type { Denops, Entrypoint } from "jsr:@denops/std@~7.6.0";
-import * as vars from "jsr:@denops/std@~7.6.0/variable";
+import type { Denops, Entrypoint } from "@denops/std";
+import * as vars from "@denops/std/variable";
 
-import { ensure } from "jsr:@core/unknownutil@~4.3.0/ensure";
-import { is } from "jsr:@core/unknownutil@~4.3.0/is";
-import { Lock } from "jsr:@core/asyncutil@~1.2.0/lock";
-import { toFileUrl } from "jsr:@std/path@~1.1.0/to-file-url";
+import { ensure } from "@core/unknownutil/ensure";
+import { is } from "@core/unknownutil/is";
+import { Lock } from "@core/asyncutil/lock";
 
 export const main: Entrypoint = (denops: Denops) => {
   const loader = new Loader();
@@ -193,12 +192,9 @@ export const main: Entrypoint = (denops: Denops) => {
       await lock.lock(async () => {
         const path = ensure(arg1, is.String) as string;
         try {
-          // NOTE: Import module with fragment so that reload works properly.
-          // https://github.com/vim-denops/denops.vim/issues/227
-          const mod = await import(
-            `${toFileUrl(path).href}#${performance.now()}`
-          );
-          const obj = new mod.Config();
+          const mod = await importPlugin(path);
+          // deno-lint-ignore no-explicit-any
+          const obj = new (mod as any).Config();
           await obj.config({ denops, contextBuilder, setAlias });
         } catch (e) {
           if (isDenoCacheIssueError(e)) {

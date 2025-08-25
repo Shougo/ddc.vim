@@ -53,12 +53,12 @@ completion](https://user-images.githubusercontent.com/41495/135711007-8c24c606-2
 
 ## Install
 
-**NOTE:** Ddc.vim requires Vim 9.1.0448+ or Neovim 0.10.0+. See
+**NOTE:** It requires Vim 9.1.0448+ or Neovim 0.10.0+. See
 [requirements](#requirements) if you aren't sure whether you have this.
 
 ### Requirements
 
-Please install both Deno 1.45+ and "denops.vim" v7.0+.
+Please install both Deno 2.3.0+ and "denops.vim" v8.0+.
 
 - <https://deno.land/>
 - <https://github.com/vim-denops/denops.vim>

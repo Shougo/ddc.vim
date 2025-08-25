@@ -1,7 +1,7 @@
 import type { CallbackContext } from "./types.ts";
 
-import { assertEquals } from "jsr:@std/assert@~1.0.2/equals";
-import { spy } from "jsr:@std/testing@~1.0.0/mock";
+import { assertEquals } from "@std/assert/equals";
+import { spy } from "@std/testing/mock";
 
 class DdcCallbackCancelError extends Error {
   constructor(message?: string) {
