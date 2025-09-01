@@ -1772,6 +1772,10 @@ A: You need to set |ddc-source-option-isVolatile| to refresh source items.
 ==============================================================================
 COMPATIBILITY                                              *ddc-compatibility*
 
+2025.08.25
+* Vim 9.1.1646+ or Neovim (0.11.0+) is required.
+* Deno 2.3.0+ and "denops.vim" v8.0+ are required.
+
 2025.03.01
 * Remove "ddc#set_static_import_path()".
 
