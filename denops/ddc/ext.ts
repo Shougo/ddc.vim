@@ -31,7 +31,7 @@ import { isDdcCallbackCancelError } from "./callback.ts";
 import { type BaseUi, defaultUiOptions } from "./base/ui.ts";
 import { type BaseSource, defaultSourceOptions } from "./base/source.ts";
 import { type BaseFilter, defaultFilterOptions } from "./base/filter.ts";
-import { printError } from "./utils.ts";
+import { callCallback, printError } from "./utils.ts";
 
 import type { Denops } from "@denops/std";
 
@@ -260,7 +260,42 @@ export async function filterItems(
     ));
   }
 
-  cdd = await callFilters(loader, sourceOptions.matchers);
+  type Filters = {
+    matchers: UserFilter[];
+    sorters: UserFilter[];
+    converters: UserFilter[];
+  };
+
+  const filters: Filters = {
+    matchers: sourceOptions.matchers,
+    sorters: sourceOptions.sorters,
+    converters: sourceOptions.converters,
+  };
+
+  const dynamicFilters = await callCallback(
+    denops,
+    sourceOptions.dynamicFilters,
+    {
+      context,
+      options,
+      sourceOptions,
+      completeStr,
+      items: cdd,
+    },
+  ) as Filters | null;
+  if (dynamicFilters) {
+    if (dynamicFilters.matchers) {
+      filters.matchers = dynamicFilters.matchers;
+    }
+    if (dynamicFilters.sorters) {
+      filters.sorters = dynamicFilters.sorters;
+    }
+    if (dynamicFilters.converters) {
+      filters.converters = dynamicFilters.converters;
+    }
+  }
+
+  cdd = await callFilters(loader, filters.matchers);
 
   if (sourceOptions.matcherKey !== "") {
     cdd = cdd.map((c) => (
@@ -272,12 +307,12 @@ export async function filterItems(
     ));
   }
 
-  cdd = await callFilters(loader, sourceOptions.sorters);
+  cdd = await callFilters(loader, filters.sorters);
 
   // Filter by maxItems
   cdd = cdd.slice(0, sourceOptions.maxItems);
 
-  cdd = await callFilters(loader, sourceOptions.converters);
+  cdd = await callFilters(loader, filters.converters);
 
   return cdd;
 }

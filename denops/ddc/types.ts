@@ -95,6 +95,7 @@ export type SourceOptions = {
   cacheTimeout: number;
   converters: UserFilter[];
   dup: "keep" | "force" | "ignore";
+  dynamicFilters: Callback;
   enabledIf: string;
   forceCompletionPattern: string;
   hideTimeout: number;

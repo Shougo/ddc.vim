@@ -142,6 +142,17 @@ cmdlineSources
 		    \ '=': ['input'],
 		    \ })
 <
+                                                   *ddc-option-dynamicFilters*
+dynamicFilters
+		It is the function which overwrites
+		|ddc-source-option-matchers| and |ddc-source-option-sorters|
+		and |ddc-source-option-converters| after gather items.
+		The function returns new |ddc-source-options| or |v:null|.
+		NOTE: {func} is evaluated after user input and it affects
+		completion performance.
+
+		Default: ""
+
                                                    *ddc-option-dynamicSources*
 dynamicSources
 		It is the function which overwrites |ddc-option-sources| after

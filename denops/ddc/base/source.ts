@@ -123,6 +123,7 @@ export function defaultSourceOptions(): SourceOptions {
     cacheTimeout: 0,
     converters: [],
     dup: "ignore",
+    dynamicFilters: "",
     enabledIf: "",
     forceCompletionPattern: "",
     hideTimeout: 200,
