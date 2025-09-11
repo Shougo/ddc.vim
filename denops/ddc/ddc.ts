@@ -242,11 +242,11 @@ export class Ddc {
         let isIncomplete: boolean;
         if ("isIncomplete" in result) {
           // DdcGatherItems
-          items = result.items.concat();
+          items = [...result.items];
           isIncomplete = result.isIncomplete;
         } else {
           // Item[]
-          items = result.concat();
+          items = [...result];
           isIncomplete = false;
         }
 
