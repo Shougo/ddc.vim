@@ -341,11 +341,12 @@ export async function onEvent(
       ],
     );
 
-    filters = filters.concat(
-      o.matchers,
-      o.sorters,
-      o.converters,
-    );
+    filters = [
+      ...filters,
+      ...o.matchers,
+      ...o.sorters,
+      ...o.converters,
+    ];
   }
 
   for (const userSource of options.sources) {
@@ -372,7 +373,7 @@ export async function onEvent(
 
   // Uniq.
   filters = [
-    ...new Set(filters.concat(options.postFilters)),
+    ...new Set([...filters, ...options.postFilters]),
   ];
 
   for (const userFilter of filters) {
