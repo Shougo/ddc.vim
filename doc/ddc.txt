@@ -1628,7 +1628,7 @@ https://github.com/Shougo/ddc-ui-native
 >vim
 	call ddc#custom#patch_global('ui', 'none')
 	inoremap <expr> <TAB>  ddc#map#complete('native')
-
+<
 If you want to use "pum.vim".
 https://github.com/Shougo/ddc-ui-none
 https://github.com/Shougo/ddc-ui-pum
