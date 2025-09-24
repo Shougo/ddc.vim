@@ -20,11 +20,9 @@ import {
   defaultDummy,
   foldMerge,
   mergeFilterOptions,
-  mergeFilterParams,
+  mergeParams,
   mergeSourceOptions,
-  mergeSourceParams,
   mergeUiOptions,
-  mergeUiParams,
 } from "./context.ts";
 import type { Loader } from "./loader.ts";
 import { isDdcCallbackCancelError } from "./callback.ts";
@@ -438,7 +436,7 @@ function uiArgs<Params extends BaseParams>(
     defaultUiOptions,
     [options.uiOptions["_"], options.uiOptions[ui.name]],
   );
-  const p = foldMerge(mergeUiParams, defaultDummy, [
+  const p = foldMerge(mergeParams, defaultDummy, [
     ui.params ? ui.params() : null,
     options.uiParams[ui.name],
   ]);
@@ -470,7 +468,7 @@ function sourceArgs<
     ],
   );
   const p = foldMerge(
-    mergeSourceParams,
+    mergeParams,
     defaultDummy,
     [
       source?.params(),
@@ -506,7 +504,7 @@ function filterArgs<
     ],
   );
   const p = foldMerge(
-    mergeFilterParams,
+    mergeParams,
     defaultDummy,
     [
       filter?.params(),
