@@ -33,6 +33,7 @@ Create filter		|ddc-create-filter|
   filter attributes	  |ddc-filter-attributes|
 Previewer		|ddc-previewer|
   previewer attributes	  |ddc-previewer-attributes|
+Ddu sources		|ddc-ddu-sources|
 FAQ			|ddc-faq|
 Compatibility		|ddc-compatibility|
 
@@ -1237,6 +1238,13 @@ kind			(string)			(Required)
 tag			(string)			(Required)
 		Tag passed to |:help| to render the preview.
 		NOTE: It is only avaiable in |ddc-previewer-HelpPreviewer|.
+
+
+==============================================================================
+DDU SOURCES                                                  *ddc-ddu-sources*
+
+ddc                                                       *ddc-ddu-source-ddc*
+		Nominates ddc items.
 
 
 ==============================================================================
