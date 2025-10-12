@@ -81,8 +81,8 @@ export const main: Entrypoint = (denops: Denops) => {
       arg2: unknown,
       arg3: unknown,
     ): Promise<void> {
-      const type = ensure(arg1, is.String) as string;
-      const extName = ensure(arg2, is.String) as string;
+      const type = ensure(arg1, is.String);
+      const extName = ensure(arg2, is.String);
 
       switch (type) {
         case "ui":
@@ -113,30 +113,30 @@ export const main: Entrypoint = (denops: Denops) => {
     },
     setFiletype(arg1: unknown, arg2: unknown): Promise<void> {
       const options = ensure(arg1, is.Record) as Partial<DdcOptions>;
-      const filetype = ensure(arg2, is.String) as string;
+      const filetype = ensure(arg2, is.String);
       contextBuilder.setFiletype(filetype, options);
       return Promise.resolve();
     },
     setBuffer(arg1: unknown, arg2: unknown): Promise<void> {
       const options = ensure(arg1, is.Record) as Partial<DdcOptions>;
-      const bufnr = ensure(arg2, is.Number) as number;
+      const bufnr = ensure(arg2, is.Number);
       contextBuilder.setBuffer(bufnr, options);
       return Promise.resolve();
     },
     setContextGlobal(arg1: unknown): Promise<void> {
-      const callback = ensure(arg1, is.String) as string;
+      const callback = ensure(arg1, is.String);
       contextBuilder.setContextGlobal(callback);
       return Promise.resolve();
     },
     setContextFiletype(arg1: unknown, arg2: unknown): Promise<void> {
-      const callback = ensure(arg1, is.String) as string;
-      const filetype = ensure(arg2, is.String) as string;
+      const callback = ensure(arg1, is.String);
+      const filetype = ensure(arg2, is.String);
       contextBuilder.setContextFiletype(callback, filetype);
       return Promise.resolve();
     },
     setContextBuffer(arg1: unknown, arg2: unknown): Promise<void> {
-      const callback = ensure(arg1, is.String) as string;
-      const bufnr = ensure(arg2, is.Number) as number;
+      const callback = ensure(arg1, is.String);
+      const bufnr = ensure(arg2, is.Number);
       contextBuilder.setContextBuffer(callback, bufnr);
       return Promise.resolve();
     },
@@ -147,7 +147,7 @@ export const main: Entrypoint = (denops: Denops) => {
     },
     patchFiletype(arg1: unknown, arg2: unknown): Promise<void> {
       const options = ensure(arg1, is.Record) as Partial<DdcOptions>;
-      const filetype = ensure(arg2, is.String) as string;
+      const filetype = ensure(arg2, is.String);
       contextBuilder.patchFiletype(filetype, options);
       return Promise.resolve();
     },
@@ -190,7 +190,7 @@ export const main: Entrypoint = (denops: Denops) => {
     },
     async loadConfig(arg1: unknown): Promise<void> {
       await lock.lock(async () => {
-        const path = ensure(arg1, is.String) as string;
+        const path = ensure(arg1, is.String);
         try {
           const mod = await importPlugin(path);
           // deno-lint-ignore no-explicit-any
@@ -232,7 +232,7 @@ export const main: Entrypoint = (denops: Denops) => {
       await ddc.doCompletion(denops, context, cbContext, options);
     },
     async updateItems(arg1: unknown, arg2: unknown): Promise<void> {
-      const name = ensure(arg1, is.String) as string;
+      const name = ensure(arg1, is.String);
       const items = ensure(arg2, is.Array) as Item[];
 
       ddc.updateItems(name, items);
@@ -288,7 +288,7 @@ export const main: Entrypoint = (denops: Denops) => {
       );
     },
     async show(arg1: unknown): Promise<void> {
-      const ui = ensure(arg1, is.String) as string;
+      const ui = ensure(arg1, is.String);
 
       const [_, context, options] = await contextBuilder.createContext(
         denops,
@@ -328,7 +328,7 @@ export const main: Entrypoint = (denops: Denops) => {
         BaseParams,
       ]
     > {
-      const filterName = ensure(arg1, is.String) as string;
+      const filterName = ensure(arg1, is.String);
       const [_, _context, options] = await contextBuilder.createContext(
         denops,
         "Manual",
