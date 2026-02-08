@@ -194,11 +194,6 @@ hideOnEvents
 
 		Default: v:false
 
-                                                   *ddc-option-keywordPattern*
-keywordPattern
-		NOTE: The option is deprecated.
-		Please use |ddc-source-option-keywordPattern| instead.
-
                                                       *ddc-option-postFilters*
 postFilters
 		It is a list of elements like |ddc-source-option-matchers|.
@@ -902,6 +897,14 @@ timeout			(number)
 		it will be aborted.
 
 		Default: 2000
+
+                                           *ddc-source-option-volatilePattern*
+volatilePattern		(string)
+		If it don't match the input, ddc ignores
+		|ddc-source-option-isVolatile|.
+		NOTE: It is JavaScript regexp.
+
+		Default: ''
 
 ------------------------------------------------------------------------------
 SOURCE PARAMS                                              *ddc-source-params*

@@ -116,6 +116,7 @@ export type SourceOptions = {
   sorters: UserFilter[];
   timeout: number;
   replaceSourceInputPattern: string;
+  volatilePattern: string;
 };
 
 export type FilterOptions = {

@@ -144,5 +144,6 @@ export function defaultSourceOptions(): SourceOptions {
     replaceSourceInputPattern: "",
     sorters: [],
     timeout: 2000,
+    volatilePattern: "",
   };
 }

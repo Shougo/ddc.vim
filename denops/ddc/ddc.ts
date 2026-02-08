@@ -191,11 +191,17 @@ export class Ddc {
         return;
       }
 
+      const isVolatile = o.isVolatile &&
+        (o.volatilePattern == "" ||
+          context.input.search(
+              new RegExp("(?:" + o.volatilePattern + ")$"),
+            ) !== -1);
+
       if (
         !checkPrevResult ||
         triggerForIncomplete ||
         context.event === "Manual" ||
-        (o.isVolatile && context.event !== "Update")
+        (isVolatile && context.event !== "Update")
       ) {
         // Not matched.
         const replacePattern = new RegExp(o.replaceSourceInputPattern);
