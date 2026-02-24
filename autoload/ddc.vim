@@ -93,7 +93,5 @@ function ddc#complete_info() abort
 endfunction
 
 function ddc#skip_next_complete() abort
-  if 'g:ddc#_skip_next_complete'->exists()
-    let g:ddc#_skip_next_complete += 1
-  endif
+  call ddc#denops#_notify('skipNextComplete', [])
 endfunction

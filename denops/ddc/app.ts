@@ -17,6 +17,7 @@ import { Loader } from "./loader.ts";
 import { importPlugin, isDenoCacheIssueError } from "./utils.ts";
 import { createCallbackContext } from "./callback.ts";
 import { getFilter, getPreviewer, onCompleteDone, onEvent } from "./ext.ts";
+import { State } from "./state.ts";
 import type { BaseUi } from "./base/ui.ts";
 import type { BaseSource } from "./base/source.ts";
 import type { BaseFilter } from "./base/filter.ts";
@@ -35,6 +36,9 @@ export const main: Entrypoint = (denops: Denops) => {
   const cbContext = createCallbackContext();
   const lock = new Lock(0);
   let queuedEvent: DdcEvent | null = null;
+
+  const state = new State(denops);
+  void state.initFromVim();
 
   const setAlias = (extType: DdcExtType, alias: string, base: string) => {
     loader.registerAlias(extType, alias, base);
@@ -346,6 +350,9 @@ export const main: Entrypoint = (denops: Denops) => {
         filterName,
       );
       return [filter?.path ?? "", filterOptions, filterParams];
+    },
+    async skipNextComplete(): Promise<void> {
+      await state.incr("ddc#_skip_next_complete");
     },
   };
 
