@@ -69,6 +69,12 @@ export const main: Entrypoint = (denops: Denops) => {
       );
       return Promise.resolve();
     },
+    async registerCmdlineAutocmds(): Promise<void> {
+      await ddc.registerCmdlineAutocmds(denops);
+    },
+    async unregisterCmdlineAutocmds(): Promise<void> {
+      await ddc.unregisterCmdlineAutocmds(denops);
+    },
     async registerPath(arg1: unknown, arg2: unknown): Promise<void> {
       await loader.registerPath(
         ensure(arg1, is.String) as DdcExtType,

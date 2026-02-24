@@ -5,23 +5,12 @@ endfunction
 function ddc#enable_cmdline_completion() abort
   call ddc#enable()
 
-  augroup ddc-cmdline
-    autocmd!
-    autocmd CmdlineLeave * ++nested call ddc#hide('CmdlineLeave')
-    autocmd CmdlineEnter * ++nested call ddc#on_event('CmdlineEnter')
-    autocmd CmdlineChanged * ++nested
-          \ : if getcmdtype() !=# '=' && getcmdtype() !=# '@'
-          \ |   call ddc#on_event('CmdlineChanged')
-          \ | endif
-    autocmd ModeChanged c:n ++nested call s:disable_cmdline_completion()
-  augroup END
+  call ddc#denops#_notify('registerCmdlineAutocmds', [])
 
   let b:ddc_cmdline_completion = v:true
 endfunction
-function s:disable_cmdline_completion() abort
-  augroup ddc-cmdline
-    autocmd!
-  augroup END
+function ddc#disable_cmdline_completion() abort
+  call ddc#denops#_notify('unregisterCmdlineAutocmds', [])
 
   unlet! b:ddc_cmdline_completion
 
