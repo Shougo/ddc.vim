@@ -91,11 +91,58 @@ export class Ddc {
           "CmdlineChanged",
           "*",
           ": if getcmdtype() ==# '=' || getcmdtype() ==# '@'" +
-          "|   call ddc#on_event('CmdlineChanged')" +
-          "| endif",
+            "|   call ddc#on_event('CmdlineChanged')" +
+            "| endif",
         );
       });
     });
+  }
+
+  async registerCmdlineAutocmds(denops: Denops) {
+    await autocmd.group(
+      denops,
+      "ddc-cmdline",
+      (helper: autocmd.GroupHelper) => {
+        // Clear first for idempotency
+        helper.remove();
+
+        helper.define(
+          "CmdlineLeave",
+          "*",
+          `call ddc#hide('CmdlineLeave')`,
+          { nested: true },
+        );
+        helper.define(
+          "CmdlineEnter",
+          "*",
+          `call ddc#on_event('CmdlineEnter')`,
+          { nested: true },
+        );
+        helper.define(
+          "CmdlineChanged",
+          "*",
+          ": if getcmdtype() !=# '=' || getcmdtype() !=# '@'" +
+            "|   call ddc#on_event('CmdlineChanged')" +
+            "| endif",
+        );
+        helper.define(
+          "ModeChanged",
+          "c:n",
+          `call ddc#disable_cmdline_completion()`,
+          { nested: true },
+        );
+      },
+    );
+  }
+
+  async unregisterCmdlineAutocmds(denops: Denops) {
+    await autocmd.group(
+      denops,
+      "ddc-cmdline",
+      (helper: autocmd.GroupHelper) => {
+        helper.remove();
+      },
+    );
   }
 
   async registerAutocmd(denops: Denops, events: DdcEvent[]) {
