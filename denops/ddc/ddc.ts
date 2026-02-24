@@ -79,15 +79,22 @@ export class Ddc {
         "TextChangedI",
         "TextChangedP",
       ]);
-      await denops.cmd(
-        "autocmd ddc ModeChanged [vV\x16sn]:i call ddc#on_event('InsertEnter')",
-      );
-      await denops.cmd(
-        "autocmd ddc CmdlineChanged * " +
+
+      await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
+        helper.define(
+          "ModeChanged",
+          "[vV\x16sn]:i",
+          `call ddc#on_event("InsertEnter")`,
+        );
+
+        helper.define(
+          "CmdlineChanged",
+          "*",
           ": if getcmdtype() ==# '=' || getcmdtype() ==# '@'" +
           "|   call ddc#on_event('CmdlineChanged')" +
           "| endif",
-      );
+        );
+      });
     });
   }
 
