@@ -93,5 +93,5 @@ function ddc#complete_info() abort
 endfunction
 
 function ddc#skip_next_complete() abort
-  call ddc#denops#_notify('skipNextComplete', [])
+  call ddc#denops#_request('skipNextComplete', [])
 endfunction

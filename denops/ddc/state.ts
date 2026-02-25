@@ -5,20 +5,8 @@ type StateKey =
   | "ddc#_changedtick"
   | "ddc#_complete_pos"
   | "ddc#_items"
-  | "ddc#_sources"
-  | "ddc#_started"
-  | "ddc#_context_filetype"
-  | "ddc#_skip_next_complete";
-
-const STATE_KEYS: StateKey[] = [
-  "ddc#_changedtick",
-  "ddc#_complete_pos",
-  "ddc#_items",
-  "ddc#_sources",
-  "ddc#_started",
-  "ddc#_context_filetype",
-  "ddc#_skip_next_complete",
-];
+  | "ddc#_skip_next_complete"
+  | "ddc#_sources";
 
 export class State {
   #denops: Denops;
@@ -26,15 +14,6 @@ export class State {
 
   constructor(denops: Denops) {
     this.#denops = denops;
-  }
-
-  async initFromVim(): Promise<void> {
-    for (const key of STATE_KEYS) {
-      const val = await vars.g.get(this.#denops, key);
-      if (val !== undefined) {
-        this.#cache.set(key, val);
-      }
-    }
   }
 
   get(key: StateKey): unknown {
@@ -46,12 +25,19 @@ export class State {
     await vars.g.set(this.#denops, key, value);
   }
 
-  async incr(key: StateKey, delta = 1): Promise<void> {
-    let current = this.#cache.get(key);
-    // Fall back to Vim g: if not yet cached (e.g. before initFromVim completes)
-    if (current === undefined) {
-      current = await vars.g.get(this.#denops, key, 0);
+  async setFromVim(key: StateKey): Promise<void> {
+    const val = await vars.g.get(this.#denops, key);
+    if (val !== undefined) {
+      this.#cache.set(key, val);
     }
+  }
+
+  async inc(key: StateKey, delta = 1): Promise<void> {
+    const current = this.#cache.get(key);
+    if (current === undefined) {
+      return;
+    }
+
     const num = typeof current === "number" ? current : 0;
     await this.set(key, num + delta);
   }
