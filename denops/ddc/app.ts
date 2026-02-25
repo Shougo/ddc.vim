@@ -78,6 +78,9 @@ export const main: Entrypoint = (denops: Denops) => {
     async unregisterCmdlineAutocmds(): Promise<void> {
       await ddc.unregisterCmdlineAutocmds(denops);
     },
+    async registerTerminalAutocmds(): Promise<void> {
+      await ddc.registerTerminalAutocmds(denops);
+    },
     async registerPath(arg1: unknown, arg2: unknown): Promise<void> {
       await loader.registerPath(
         ensure(arg1, is.String) as DdcExtType,

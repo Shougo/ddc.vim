@@ -11,7 +11,6 @@ function ddc#denops#_init(opts = {}) abort
 
   augroup ddc
     autocmd!
-    autocmd ModeChanged *:n ++nested call ddc#hide('ModeChanged')
   augroup END
 
   let g:ddc#_started = reltime()

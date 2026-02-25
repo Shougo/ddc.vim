@@ -22,16 +22,14 @@ endfunction
 function ddc#enable_terminal_completion() abort
   call ddc#enable()
 
-  augroup ddc-terminal
-    autocmd!
-    autocmd TextChangedT * ++nested call ddc#on_event('TextChangedT')
-  augroup END
+  call ddc#denops#_notify('registerTerminalAutocmds', [])
 endfunction
 
 function ddc#disable() abort
   augroup ddc
     autocmd!
   augroup END
+
   call s:disable_cmdline_completion()
 endfunction
 

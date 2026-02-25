@@ -87,7 +87,12 @@ export class Ddc {
         helper.define(
           "ModeChanged",
           "[vV\x16sn]:i",
-          `call ddc#on_event("InsertEnter")`,
+          `call ddc#on_event('InsertEnter')`,
+        );
+        helper.define(
+          "ModeChanged",
+          "*:n",
+          `call ddc#hide('ModeChanged')`,
         );
 
         helper.define(
@@ -144,6 +149,24 @@ export class Ddc {
       "ddc-cmdline",
       (helper: autocmd.GroupHelper) => {
         helper.remove();
+      },
+    );
+  }
+
+  async registerTerminalAutocmds(denops: Denops) {
+    await autocmd.group(
+      denops,
+      "ddc-terminal",
+      (helper: autocmd.GroupHelper) => {
+        // Clear first for idempotency
+        helper.remove();
+
+        helper.define(
+          "TextChangedT",
+          "*",
+          `call ddc#on_event('TextChangedT')`,
+          { nested: true },
+        );
       },
     );
   }
