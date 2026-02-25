@@ -22,7 +22,6 @@ import type { BaseSource } from "./base/source.ts";
 import type { BaseFilter } from "./base/filter.ts";
 
 import type { Denops, Entrypoint } from "@denops/std";
-import * as vars from "@denops/std/variable";
 
 import { ensure } from "@core/unknownutil/ensure";
 import { is } from "@core/unknownutil/is";
@@ -46,7 +45,11 @@ export const main: Entrypoint = (denops: Denops) => {
     }
 
     // Get source name from previous items
-    const items = await vars.g.get(denops, "ddc#_items") as DdcItem[];
+    const state = ddc.getState();
+    if (!state) {
+      return "";
+    }
+    const items = await state.get("ddc#_items") as DdcItem[];
     const sourceItems = items.filter(
       (i) =>
         i.word === item.word && i.abbr === item.abbr && i.kind === item.kind &&
@@ -302,12 +305,12 @@ export const main: Entrypoint = (denops: Denops) => {
       );
       options.ui = ui;
 
-      const completePos = await vars.g.get(
-        denops,
-        "ddc#_complete_pos",
-        -1,
-      ) as number;
-      const items = await vars.g.get(denops, "ddc#_items", []) as DdcItem[];
+      const state = ddc.getState();
+      if (!state) {
+        return;
+      }
+      const completePos = await state.get("ddc#_complete_pos") as number;
+      const items = await state.get("ddc#_items") as DdcItem[];
 
       await ddc.show(denops, context, options, completePos, items);
     },
@@ -346,6 +349,12 @@ export const main: Entrypoint = (denops: Denops) => {
         filterName,
       );
       return [filter?.path ?? "", filterOptions, filterParams];
+    },
+    async skipNextComplete(): Promise<void> {
+      const state = ddc.getState();
+      if (state) {
+        await state.inc("ddc#_skip_next_complete");
+      }
     },
   };
 

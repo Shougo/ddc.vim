@@ -14,15 +14,8 @@ function ddc#denops#_init(opts = {}) abort
     autocmd ModeChanged *:n ++nested call ddc#hide('ModeChanged')
   augroup END
 
-  let context_filetype = a:opts->get('context_filetype', 'none')
-  if context_filetype ==# 'context_filetype'
-    " Force context_filetype call
-    silent! call context_filetype#get_filetype()
-  endif
-
   let g:ddc#_started = reltime()
-  let g:ddc#_context_filetype = context_filetype
-  let g:ddc#_skip_next_complete = 0
+  let g:ddc#_context_filetype = a:opts->get('context_filetype', 'none')
 
   " NOTE: ddc.vim must be registered manually.
 

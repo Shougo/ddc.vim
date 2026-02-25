@@ -25,12 +25,12 @@ import {
   getUi,
 } from "./ext.ts";
 import { callCallback } from "./utils.ts";
+import { State } from "./state.ts";
 
 import type { Denops } from "@denops/std";
 import * as autocmd from "@denops/std/autocmd";
 import * as op from "@denops/std/option";
 import * as fn from "@denops/std/function";
-import * as vars from "@denops/std/variable";
 import { batch } from "@denops/std/batch";
 
 import { assertEquals } from "@std/assert/equals";
@@ -57,18 +57,21 @@ export class Ddc {
   #prevSources: UserSource[] = [];
   #prevUi = "";
   #prevEvent = "";
+  #state: State | undefined;
 
   constructor(loader: Loader) {
     this.#loader = loader;
   }
 
   initialize(denops: Denops) {
-    batch(denops, async (denops: Denops) => {
-      await vars.g.set(denops, "ddc#_changedtick", 0);
-      await vars.g.set(denops, "ddc#_complete_pos", -1);
-      await vars.g.set(denops, "ddc#_items", []);
-      await vars.g.set(denops, "ddc#_sources", []);
+    this.#state = new State(denops);
+    this.#state.set("ddc#_changedtick", 0);
+    this.#state.set("ddc#_complete_pos", -1);
+    this.#state.set("ddc#_items", []);
+    this.#state.set("ddc#_skip_next_complete", 0);
+    this.#state.set("ddc#_sources", []);
 
+    batch(denops, async (denops: Denops) => {
       await denops.call("ddc#on_event", "Initialize");
 
       this.registerAutocmd(denops, [
@@ -450,11 +453,12 @@ export class Ddc {
     context: Context,
     options: DdcOptions,
   ) {
-    await batch(denops, async (denops: Denops) => {
-      await vars.g.set(denops, "ddc#_complete_pos", -1);
-      await vars.g.set(denops, "ddc#_items", []);
-      await this.hide(denops, context, options);
-    });
+    if (this.#state) {
+      this.#state.set("ddc#_complete_pos", -1);
+      this.#state.set("ddc#_items", []);
+    }
+
+    await this.hide(denops, context, options);
   }
 
   async checkSkipCompletion(
@@ -601,11 +605,12 @@ export class Ddc {
     }
 
     await (async function write(ddc: Ddc) {
-      await batch(denops, async (denops: Denops) => {
-        await vars.g.set(denops, "ddc#_complete_pos", completePos);
-        await vars.g.set(denops, "ddc#_items", items);
-        await vars.g.set(denops, "ddc#_sources", options.sources);
-      });
+      const state = ddc.getState();
+      if (state) {
+        state.set("ddc#_complete_pos", completePos);
+        state.set("ddc#_items", items);
+        state.set("ddc#_sources", options.sources);
+      }
 
       if (completePos < 0 || items.length === 0) {
         await ddc.hide(denops, context, options);
@@ -686,6 +691,10 @@ export class Ddc {
         uiParams: this.currentUiParams,
       })
       : true;
+  }
+
+  getState(): State | undefined {
+    return this.#state;
   }
 }
 
