@@ -478,7 +478,7 @@ export class Ddc {
   ) {
     if (this.#state) {
       this.#state.set("ddc#_complete_pos", -1);
-      this.#state.set("ddc#_items", []);
+      this.#state.scheduleItemsSync([]);
     }
 
     await this.hide(denops, context, options);
@@ -631,8 +631,8 @@ export class Ddc {
       const state = ddc.getState();
       if (state) {
         state.set("ddc#_complete_pos", completePos);
-        state.set("ddc#_items", items);
         state.set("ddc#_sources", options.sources);
+        state.scheduleItemsSync(items);
       }
 
       if (completePos < 0 || items.length === 0) {
