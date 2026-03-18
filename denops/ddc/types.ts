@@ -74,6 +74,7 @@ export type DdcOptions = {
   filterOptions: Record<FilterName, Partial<FilterOptions>>;
   filterParams: Record<FilterName, Partial<BaseParams>>;
   hideOnEvents: boolean;
+  matcherConcurrency: number;
   postFilters: UserFilter[];
   sourceOptions: Record<SourceName, Partial<SourceOptions>>;
   sourceParams: Record<SourceName, Partial<BaseParams>>;
@@ -120,8 +121,7 @@ export type SourceOptions = {
 };
 
 export type FilterOptions = {
-  // TODO: add options and remove placeholder
-  placeholder: void;
+  parallelSafe: boolean;
 };
 
 export type PumHighlight = {

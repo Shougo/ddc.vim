@@ -59,6 +59,6 @@ export abstract class BaseFilter<Params extends BaseParams> {
 
 export function defaultFilterOptions(): FilterOptions {
   return {
-    placeholder: undefined,
+    parallelSafe: false,
   };
 }
