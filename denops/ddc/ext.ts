@@ -204,9 +204,10 @@ export async function filterItems(
   completeStr: string,
   cdd: Item[],
 ): Promise<Item[]> {
+  // Run a list of filters sequentially on the given items array.
   async function callFilters(
-    loader: Loader,
     userFilters: UserFilter[],
+    items: Item[],
   ): Promise<Item[]> {
     for (const userFilter of userFilters) {
       const [filter, filterOptions, filterParams] = await getFilter(
@@ -218,7 +219,7 @@ export async function filterItems(
       if (!filter) {
         return [];
       }
-      cdd = await callFilterFilter(
+      items = await callFilterFilter(
         filter,
         denops,
         context,
@@ -228,11 +229,68 @@ export async function filterItems(
         filterOptions,
         filterParams,
         completeStr,
-        cdd,
+        items,
       );
     }
 
-    return cdd;
+    return items;
+  }
+
+  // Run matchers concurrently when all of them declare parallelSafe = true and
+  // matcherConcurrency > 1.  Falls back to sequential execution when any
+  // safety condition is not met or any chunk throws an exception.
+  async function runMatchersConcurrently(
+    matcherFilters: UserFilter[],
+    items: Item[],
+  ): Promise<Item[]> {
+    const concurrency = options.matcherConcurrency;
+
+    // Fast path: no matchers, or concurrency is 1 (sequential mode)
+    if (matcherFilters.length === 0 || concurrency <= 1) {
+      return callFilters(matcherFilters, items);
+    }
+
+    // Check whether every matcher has opted in to parallel execution
+    const resolvedFilters = await Promise.all(
+      matcherFilters.map((uf) => getFilter(denops, loader, options, uf)),
+    );
+    const allParallelSafe = resolvedFilters.every(
+      ([filter, filterOptions]) =>
+        filter !== undefined && filterOptions.parallelSafe,
+    );
+
+    if (!allParallelSafe) {
+      return callFilters(matcherFilters, items);
+    }
+
+    // Split items into (at most concurrency) equal-sized chunks
+    const chunkSize = Math.max(1, Math.ceil(items.length / concurrency));
+    const chunks: Item[][] = [];
+    for (let i = 0; i < items.length; i += chunkSize) {
+      chunks.push(items.slice(i, i + chunkSize));
+    }
+
+    let parallelResults: Item[][] | null = null;
+    try {
+      parallelResults = await Promise.all(
+        chunks.map((chunk) => callFilters(matcherFilters, chunk)),
+      );
+    } catch (_e) {
+      parallelResults = null;
+    }
+
+    // Safety check: each chunk result must have the same length as its input
+    // chunk.  If any filter removed or added items the chunks are no longer
+    // independent and we must fall back to a sequential run.
+    if (
+      parallelResults !== null &&
+      parallelResults.every((res, i) => res.length === chunks[i].length)
+    ) {
+      return parallelResults.flat();
+    }
+
+    // Fallback: sequential execution
+    return callFilters(matcherFilters, items);
   }
 
   if (sourceOptions.maxKeywordLength > 0) {
@@ -293,7 +351,7 @@ export async function filterItems(
     }
   }
 
-  cdd = await callFilters(loader, filters.matchers);
+  cdd = await runMatchersConcurrently(filters.matchers, cdd);
 
   if (sourceOptions.matcherKey !== "") {
     cdd = cdd.map((c) => (
@@ -305,12 +363,12 @@ export async function filterItems(
     ));
   }
 
-  cdd = await callFilters(loader, filters.sorters);
+  cdd = await callFilters(filters.sorters, cdd);
 
   // Filter by maxItems
   cdd = cdd.slice(0, sourceOptions.maxItems);
 
-  cdd = await callFilters(loader, filters.converters);
+  cdd = await callFilters(filters.converters, cdd);
 
   return cdd;
 }

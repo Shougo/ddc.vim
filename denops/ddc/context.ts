@@ -69,6 +69,7 @@ export function defaultDdcOptions(): DdcOptions {
     filterOptions: {},
     filterParams: {},
     hideOnEvents: false,
+    matcherConcurrency: 1,
     postFilters: [],
     sourceOptions: {},
     sourceParams: {},
@@ -712,4 +713,15 @@ Deno.test("mergeDdcOptions", async () => {
       },
     },
   });
+});
+
+Deno.test("defaultDdcOptions includes matcherConcurrency", () => {
+  const opts = defaultDdcOptions();
+  assertEquals(opts.matcherConcurrency, 1);
+});
+
+Deno.test("mergeDdcOptions preserves matcherConcurrency", async () => {
+  const custom = (new Custom()).setGlobal({ matcherConcurrency: 4 });
+  const merged = await custom.get(null, "typescript", 1, {});
+  assertEquals(merged.matcherConcurrency, 4);
 });
