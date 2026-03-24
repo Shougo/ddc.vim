@@ -535,7 +535,7 @@ export class Ddc {
       return false;
     }
 
-    return await this.currentUi.skipCompletion({
+    return this.currentUi.skipCompletion({
       denops,
       context,
       options,
