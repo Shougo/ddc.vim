@@ -190,7 +190,7 @@ export const main: Entrypoint = (denops: Denops) => {
       const item = ensure(arg1, is.Record) as DdcItem;
       const sourceName = await sourceNameFromItem(item);
       const previewContext = ensure(arg2, is.Record) as PreviewContext;
-      return await getPreviewer(
+      return getPreviewer(
         denops,
         loader,
         context,
@@ -331,7 +331,7 @@ export const main: Entrypoint = (denops: Denops) => {
         denops,
         "Manual",
       );
-      return await ddc.visible(denops, context, options);
+      return ddc.visible(denops, context, options);
     },
     async getFilter(arg1: unknown): Promise<
       [

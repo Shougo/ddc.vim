@@ -136,7 +136,8 @@ export async function printError(
 ) {
   const message = messages.map((v) => {
     if (v instanceof Error) {
-      // NOTE: In Deno, Prefer `Error.stack` because it contains `Error.message`.
+      // NOTE: In Deno, Prefer `Error.stack` because it contains
+      // `Error.message`.
       return `${v.stack ?? v}`;
     } else if (typeof v === "object") {
       return JSON.stringify(v);
@@ -191,6 +192,9 @@ export async function callCallback(
   }
 }
 
+const importMapCache = new Map<string, ImportMap | null>();
+const importerCache = new Map<string, ImportMapImporter>();
+
 export async function tryLoadImportMap(
   script: string,
 ): Promise<ImportMap | undefined> {
@@ -209,10 +213,17 @@ export async function tryLoadImportMap(
     ? fromFileUrl(new URL(script))
     : script;
   const parentDir = dirname(scriptPath);
+
+  if (importMapCache.has(parentDir)) {
+    return importMapCache.get(parentDir) ?? undefined;
+  }
+
   for (const pattern of PATTERNS) {
     const importMapPath = join(parentDir, pattern);
     try {
-      return await loadImportMap(importMapPath);
+      const importMap = await loadImportMap(importMapPath);
+      importMapCache.set(parentDir, importMap);
+      return importMap;
     } catch (err: unknown) {
       if (err instanceof Deno.errors.NotFound) {
         // Ignore NotFound errors and try the next pattern
@@ -221,6 +232,7 @@ export async function tryLoadImportMap(
       throw err; // Rethrow other errors
     }
   }
+  importMapCache.set(parentDir, null);
   return undefined;
 }
 
@@ -231,7 +243,12 @@ export async function importPlugin(path: string): Promise<unknown> {
   const url = toFileUrl(path).href;
   const importMap = await tryLoadImportMap(path);
   if (importMap) {
-    const importer = new ImportMapImporter(importMap);
+    const parentDir = dirname(path);
+    let importer = importerCache.get(parentDir);
+    if (!importer) {
+      importer = new ImportMapImporter(importMap);
+      importerCache.set(parentDir, importer);
+    }
     return await importer.import(`${url}#${suffix}`);
   } else {
     return await import(`${url}#${suffix}`);
