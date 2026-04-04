@@ -124,7 +124,9 @@ export class Loader {
       }
 
       const typeExt = this.#exts[type];
-      let add: (name: string) => void;
+      let add: (name: string) => void = (_name: string) => {
+        throw new Error(`Unknown extension type: ${type}`);
+      };
       switch (type) {
         case "ui":
           add = (name: string) => {
