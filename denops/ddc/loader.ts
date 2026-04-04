@@ -163,6 +163,8 @@ export class Loader {
       for (const alias of aliases) {
         add(alias);
       }
+
+      this.#checkPaths[path] = true;
     });
   }
 
