@@ -248,16 +248,14 @@ async function createPathCache(
   denops: Denops,
   runtimepath: string,
 ): Promise<Map<string, string>> {
-  const extFileGlob = await globpath(
-    denops,
-    runtimepath,
-    `${TYPE_DIR_PATTERN}/*.ts`,
-  );
-  const extDirEntryPointGlob = await globpath(
-    denops,
-    runtimepath,
-    `${TYPE_DIR_PATTERN}/*/${EXT_ENTRY_POINT_FILE}`,
-  );
+  const [extFileGlob, extDirEntryPointGlob] = await Promise.all([
+    globpath(denops, runtimepath, `${TYPE_DIR_PATTERN}/*.ts`),
+    globpath(
+      denops,
+      runtimepath,
+      `${TYPE_DIR_PATTERN}/*/${EXT_ENTRY_POINT_FILE}`,
+    ),
+  ]);
 
   // Create key paths for both single-file and directory entry points.
   // Prioritize the first occurrence key in keyPaths.
