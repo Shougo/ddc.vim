@@ -34,6 +34,7 @@ export const main: Entrypoint = (denops: Denops) => {
   const cbContext = createCallbackContext();
   const lock = new Lock(0);
   let queuedEvent: DdcEvent | null = null;
+  const autoCompleteTimers = new Map<number, number>();
 
   const setAlias = (extType: DdcExtType, alias: string, base: string) => {
     loader.registerAlias(extType, alias, base);
@@ -260,6 +261,11 @@ export const main: Entrypoint = (denops: Denops) => {
     async onEvent(arg1: unknown): Promise<void> {
       queuedEvent = ensure(arg1, is.String) as DdcEvent;
 
+      // Revoke immediately to cancel any pending callback waits from the
+      // previous event processing, allowing it to fail fast and release the
+      // lock sooner.
+      cbContext.revoke();
+
       // NOTE: must be locked
       await lock.lock(async () => {
         while (queuedEvent !== null) {
@@ -385,15 +391,30 @@ export const main: Entrypoint = (denops: Denops) => {
 
     // Check auto complete delay.
     if (options.autoCompleteDelay > 0) {
-      // Cancel previous completion
-      await ddc.cancelCompletion(denops, context, options);
+      // Cancel previous timer for this buffer (debounce)
+      const prevTimer = autoCompleteTimers.get(context.bufNr);
+      if (prevTimer !== undefined) {
+        clearTimeout(prevTimer);
+      }
 
-      await new Promise((resolve) =>
-        setTimeout(
-          resolve,
-          options.autoCompleteDelay,
-        )
-      );
+      // Set a new per-buffer debounce timer.  When it fires, cancel the
+      // previous completion once and then run doCompletion, avoiding
+      // repeated cancelCompletion/hide calls during rapid input.
+      const timerId = setTimeout(async () => {
+        autoCompleteTimers.delete(context.bufNr);
+
+        await ddc.cancelCompletion(denops, context, options);
+
+        if (options.hideOnEvents || event === "Update") {
+          // Hide the current completion
+          await ddc.hide(denops, context, options);
+        }
+
+        await ddc.doCompletion(denops, context, cbContext, options);
+      }, options.autoCompleteDelay);
+
+      autoCompleteTimers.set(context.bufNr, timerId);
+      return;
     }
 
     if (options.hideOnEvents || event === "Update") {

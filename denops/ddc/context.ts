@@ -420,6 +420,7 @@ export class ContextBuilderImpl implements ContextBuilder {
     }
 
     const context = {
+      bufNr: world.bufnr,
       cursor: world.cursor,
       event: event,
       filetype: world.filetype,
