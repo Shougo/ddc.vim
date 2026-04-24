@@ -392,25 +392,24 @@ export const main: Entrypoint = (denops: Denops) => {
     // Check auto complete delay.
     if (options.autoCompleteDelay > 0) {
       // Cancel previous timer for this buffer (debounce)
-      const prevTimer = autoCompleteTimers.get(context.bufNr);
-      if (prevTimer !== undefined) {
-        clearTimeout(prevTimer);
-      }
+      clearTimeout(autoCompleteTimers.get(context.bufNr));
 
       // Set a new per-buffer debounce timer.  When it fires, cancel the
       // previous completion once and then run doCompletion, avoiding
       // repeated cancelCompletion/hide calls during rapid input.
-      const timerId = setTimeout(async () => {
+      const timerId = setTimeout(() => {
         autoCompleteTimers.delete(context.bufNr);
 
-        await ddc.cancelCompletion(denops, context, options);
+        lock.lock(async () => {
+          await ddc.cancelCompletion(denops, context, options);
 
-        if (options.hideOnEvents || event === "Update") {
-          // Hide the current completion
-          await ddc.hide(denops, context, options);
-        }
+          if (options.hideOnEvents || event === "Update") {
+            // Hide the current completion
+            await ddc.hide(denops, context, options);
+          }
 
-        await ddc.doCompletion(denops, context, cbContext, options);
+          await ddc.doCompletion(denops, context, cbContext, options);
+        });
       }, options.autoCompleteDelay);
 
       autoCompleteTimers.set(context.bufNr, timerId);
