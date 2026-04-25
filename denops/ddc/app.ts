@@ -367,6 +367,10 @@ export const main: Entrypoint = (denops: Denops) => {
 
     await ddc.checkManualCompletion(denops, context, options, event);
 
+    if (skip) return;
+
+    cbContext.revoke();
+
     await onEvent(
       denops,
       loader,
@@ -374,10 +378,6 @@ export const main: Entrypoint = (denops: Denops) => {
       cbContext.createOnCallback(),
       options,
     );
-
-    if (skip) return;
-
-    cbContext.revoke();
 
     if (await ddc.checkSkipCompletion(denops, context, options)) {
       return;
