@@ -280,12 +280,13 @@ export async function filterItems(
 
     // If any filter could not be resolved, treat the same as callFilters does:
     // return an empty array.
-    if (resolvedFilters.some(([f]) => f === undefined)) {
+    const validResolved = resolvedFilters.filter(
+      (r): r is [BaseFilter<BaseParams>, FilterOptions, BaseParams] =>
+        r[0] !== undefined,
+    );
+    if (validResolved.length !== resolvedFilters.length) {
       return [];
     }
-    const validResolved = resolvedFilters.map(([f, o, p]) =>
-      [f!, o, p] as ResolvedFilter
-    );
 
     if (!allParallelSafe) {
       return callResolvedFilters(validResolved, items);

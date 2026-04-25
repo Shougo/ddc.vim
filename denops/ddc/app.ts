@@ -369,6 +369,8 @@ export const main: Entrypoint = (denops: Denops) => {
 
     if (skip) return;
 
+    // Revoke any pending callbacks from the previous completion cycle before
+    // starting a new one.
     cbContext.revoke();
 
     await onEvent(
