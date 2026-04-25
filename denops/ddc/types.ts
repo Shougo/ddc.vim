@@ -16,6 +16,7 @@ export type SourceName = string;
 export type FilterName = string;
 
 export type Context = {
+  bufNr: number;
   cursor: (number | undefined)[];
   event: DdcEvent;
   filetype: string;
