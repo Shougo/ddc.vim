@@ -623,6 +623,7 @@ export class Ddc {
     }
 
     const [currentInput, currentMode] = await collect(denops, (denops) => [
+      // ddc#util#get_input always returns a string; cast for type inference.
       denops.call("ddc#util#get_input", context.event) as Promise<string>,
       fn.mode(denops),
     ]);

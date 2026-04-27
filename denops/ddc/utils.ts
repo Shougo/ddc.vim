@@ -15,6 +15,9 @@ import { fromFileUrl } from "@std/path/from-file-url";
 import { join } from "@std/path/join";
 import { dirname } from "@std/path/dirname";
 
+// Cache size limit: in practice only a handful of distinct keywordPattern /
+// iskeyword combinations appear, so 64 entries is more than enough.
+const KEYWORD_CACHE_MAX = 64;
 const convertKeywordPatternCache = new Map<string, string>();
 const keywordRegExpCache = new Map<string, RegExp>();
 
@@ -26,6 +29,8 @@ export async function convertKeywordPattern(
   const iskeyword = bufnr === undefined
     ? await op.iskeyword.getLocal(denops)
     : await op.iskeyword.getBuffer(denops, bufnr);
+  // Neither iskeyword nor keywordPattern contain NUL bytes, so this
+  // composite key is unambiguous.
   const cacheKey = keywordPattern + "\0" + iskeyword;
   const cached = convertKeywordPatternCache.get(cacheKey);
   if (cached !== undefined) {
@@ -35,6 +40,9 @@ export async function convertKeywordPattern(
   const replaced = keywordPattern
     .replaceAll("\\k", "[" + keyword + "]")
     .replaceAll("[:keyword:]", keyword);
+  if (convertKeywordPatternCache.size >= KEYWORD_CACHE_MAX) {
+    convertKeywordPatternCache.clear();
+  }
   convertKeywordPatternCache.set(cacheKey, replaced);
   return replaced;
 }
@@ -45,6 +53,9 @@ export function getKeywordRegExp(expandedPattern: string): RegExp {
     return cached;
   }
   const re = new RegExp(expandedPattern);
+  if (keywordRegExpCache.size >= KEYWORD_CACHE_MAX) {
+    keywordRegExpCache.clear();
+  }
   keywordRegExpCache.set(expandedPattern, re);
   return re;
 }
