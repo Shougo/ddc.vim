@@ -31,7 +31,7 @@ import type { Denops } from "@denops/std";
 import * as autocmd from "@denops/std/autocmd";
 import * as op from "@denops/std/option";
 import * as fn from "@denops/std/function";
-import { batch } from "@denops/std/batch";
+import { batch, collect } from "@denops/std/batch";
 
 import { assertEquals } from "@std/assert/equals";
 
@@ -622,9 +622,11 @@ export class Ddc {
       return;
     }
 
-    const input = denops.call("ddc#util#get_input", context.event);
-    const mode = fn.mode(denops);
-    if (context.input !== await input || context.mode !== await mode) {
+    const [currentInput, currentMode] = await collect(denops, (denops) => [
+      denops.call("ddc#util#get_input", context.event) as Promise<string>,
+      fn.mode(denops),
+    ]);
+    if (context.input !== currentInput || context.mode !== currentMode) {
       // Input is changed.  Skip invalid completion.
       await this.hide(denops, context, options);
       return;

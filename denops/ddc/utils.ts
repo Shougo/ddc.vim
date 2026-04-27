@@ -15,6 +15,9 @@ import { fromFileUrl } from "@std/path/from-file-url";
 import { join } from "@std/path/join";
 import { dirname } from "@std/path/dirname";
 
+const convertKeywordPatternCache = new Map<string, string>();
+const keywordRegExpCache = new Map<string, RegExp>();
+
 export async function convertKeywordPattern(
   denops: Denops,
   keywordPattern: string,
@@ -23,11 +26,27 @@ export async function convertKeywordPattern(
   const iskeyword = bufnr === undefined
     ? await op.iskeyword.getLocal(denops)
     : await op.iskeyword.getBuffer(denops, bufnr);
+  const cacheKey = keywordPattern + "\0" + iskeyword;
+  const cached = convertKeywordPatternCache.get(cacheKey);
+  if (cached !== undefined) {
+    return cached;
+  }
   const keyword = vimoption2ts(iskeyword);
   const replaced = keywordPattern
     .replaceAll("\\k", "[" + keyword + "]")
     .replaceAll("[:keyword:]", keyword);
+  convertKeywordPatternCache.set(cacheKey, replaced);
   return replaced;
+}
+
+export function getKeywordRegExp(expandedPattern: string): RegExp {
+  const cached = keywordRegExpCache.get(expandedPattern);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const re = new RegExp(expandedPattern);
+  keywordRegExpCache.set(expandedPattern, re);
+  return re;
 }
 
 // See https://github.com/vim-denops/denops.vim/issues/358 for details
