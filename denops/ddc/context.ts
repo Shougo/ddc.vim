@@ -398,6 +398,8 @@ function isNegligible(older: World, newer: World): boolean {
 export class ContextBuilderImpl implements ContextBuilder {
   #lastWorld: World = initialWorld();
   #custom: Custom = new Custom();
+  // Set to true whenever options are mutated; cleared after first validation.
+  #needsValidation = true;
 
   async createContext(
     denops: Denops,
@@ -432,14 +434,17 @@ export class ContextBuilderImpl implements ContextBuilder {
 
     const userOptions = await this.#getUserOptions(denops, world, options);
 
-    await this.#validate(denops, "options", userOptions, defaultDdcOptions());
-    for (const key in userOptions.sourceOptions) {
-      await this.#validate(
-        denops,
-        "sourceOptions",
-        userOptions.sourceOptions[key],
-        defaultSourceOptions(),
-      );
+    if (this.#needsValidation) {
+      this.#needsValidation = false;
+      await this.#validate(denops, "options", userOptions, defaultDdcOptions());
+      for (const key in userOptions.sourceOptions) {
+        await this.#validate(
+          denops,
+          "sourceOptions",
+          userOptions.sourceOptions[key],
+          defaultSourceOptions(),
+        );
+      }
     }
 
     if (context.mode === "c") {
@@ -521,31 +526,40 @@ export class ContextBuilderImpl implements ContextBuilder {
 
   setGlobal(options: Partial<DdcOptions>) {
     this.#custom.setGlobal(options);
+    this.#needsValidation = true;
   }
   setFiletype(ft: string, options: Partial<DdcOptions>) {
     this.#custom.setFiletype(ft, options);
+    this.#needsValidation = true;
   }
   setBuffer(bufnr: number, options: Partial<DdcOptions>) {
     this.#custom.setBuffer(bufnr, options);
+    this.#needsValidation = true;
   }
   setContextGlobal(callback: Callback) {
     this.#custom.setContextGlobal(callback);
+    this.#needsValidation = true;
   }
   setContextFiletype(callback: Callback, ft: string) {
     this.#custom.setContextFiletype(callback, ft);
+    this.#needsValidation = true;
   }
   setContextBuffer(callback: Callback, bufnr: number) {
     this.#custom.setContextBuffer(callback, bufnr);
+    this.#needsValidation = true;
   }
 
   patchGlobal(options: Partial<DdcOptions>) {
     this.#custom.patchGlobal(options);
+    this.#needsValidation = true;
   }
   patchFiletype(ft: string, options: Partial<DdcOptions>) {
     this.#custom.patchFiletype(ft, options);
+    this.#needsValidation = true;
   }
   patchBuffer(bufnr: number, options: Partial<DdcOptions>) {
     this.#custom.patchBuffer(bufnr, options);
+    this.#needsValidation = true;
   }
 }
 

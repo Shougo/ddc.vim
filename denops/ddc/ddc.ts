@@ -35,6 +35,9 @@ import { batch } from "@denops/std/batch";
 
 import { assertEquals } from "@std/assert/equals";
 
+const _encoder = new TextEncoder();
+const _decoder = new TextDecoder();
+
 type DdcResult = {
   items: Item[];
   completePos: number;
@@ -241,7 +244,7 @@ export class Ddc {
           completeStr.length > o.maxAutoCompleteLength);
 
       // Check cache timeout.
-      const currentTime = new Date().getSeconds();
+      const currentTime = Math.floor(Date.now() / 1000);
       if (
         o.cacheTimeout > 0 && this.#prevResults[s.name] &&
         currentTime > this.#prevResults[s.name].time + o.cacheTimeout
@@ -342,7 +345,7 @@ export class Ddc {
           completeStr,
           lineNr: context.lineNr,
           isIncomplete,
-          time: currentTime,
+          time: Math.floor(Date.now() / 1000),
         };
       }
 
@@ -731,12 +734,12 @@ function formatMenu(prefix: string, menu: string | undefined): string {
 }
 
 function byteposToCharpos(input: string, pos: number): number {
-  const bytes = (new TextEncoder()).encode(input);
-  return (new TextDecoder()).decode(bytes.slice(0, pos)).length;
+  const bytes = _encoder.encode(input);
+  return _decoder.decode(bytes.slice(0, pos)).length;
 }
 
 function charposToBytepos(input: string, pos: number): number {
-  return (new TextEncoder()).encode(input.slice(0, pos)).length;
+  return _encoder.encode(input.slice(0, pos)).length;
 }
 
 Deno.test("byteposToCharpos", () => {

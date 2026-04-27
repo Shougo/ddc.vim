@@ -204,21 +204,18 @@ export async function filterItems(
   completeStr: string,
   cdd: Item[],
 ): Promise<Item[]> {
-  // Run a list of filters sequentially on the given items array.
-  async function callFilters(
-    userFilters: UserFilter[],
+  type ResolvedFilter = [
+    BaseFilter<BaseParams>,
+    FilterOptions,
+    BaseParams,
+  ];
+
+  // Run a list of pre-resolved filters sequentially on the given items array.
+  async function callResolvedFilters(
+    resolved: ResolvedFilter[],
     items: Item[],
   ): Promise<Item[]> {
-    for (const userFilter of userFilters) {
-      const [filter, filterOptions, filterParams] = await getFilter(
-        denops,
-        loader,
-        options,
-        userFilter,
-      );
-      if (!filter) {
-        return [];
-      }
+    for (const [filter, filterOptions, filterParams] of resolved) {
       items = await callFilterFilter(
         filter,
         denops,
@@ -232,8 +229,28 @@ export async function filterItems(
         items,
       );
     }
-
     return items;
+  }
+
+  // Run a list of filters sequentially on the given items array.
+  async function callFilters(
+    userFilters: UserFilter[],
+    items: Item[],
+  ): Promise<Item[]> {
+    const resolved: ResolvedFilter[] = [];
+    for (const userFilter of userFilters) {
+      const [filter, filterOptions, filterParams] = await getFilter(
+        denops,
+        loader,
+        options,
+        userFilter,
+      );
+      if (!filter) {
+        return [];
+      }
+      resolved.push([filter, filterOptions, filterParams]);
+    }
+    return callResolvedFilters(resolved, items);
   }
 
   // Run matchers concurrently when all of them declare parallelSafe = true and
@@ -250,17 +267,29 @@ export async function filterItems(
       return callFilters(matcherFilters, items);
     }
 
-    // Check whether every matcher has opted in to parallel execution
+    // Resolve filters once and reuse across all branches/chunks.
     const resolvedFilters = await Promise.all(
       matcherFilters.map((uf) => getFilter(denops, loader, options, uf)),
     );
+
+    // Check whether every matcher has opted in to parallel execution
     const allParallelSafe = resolvedFilters.every(
       ([filter, filterOptions]) =>
         filter !== undefined && filterOptions.parallelSafe,
     );
 
+    // If any filter could not be resolved, treat the same as callFilters does:
+    // return an empty array.
+    const validResolved = resolvedFilters.filter(
+      (r): r is [BaseFilter<BaseParams>, FilterOptions, BaseParams] =>
+        r[0] !== undefined,
+    );
+    if (validResolved.length !== resolvedFilters.length) {
+      return [];
+    }
+
     if (!allParallelSafe) {
-      return callFilters(matcherFilters, items);
+      return callResolvedFilters(validResolved, items);
     }
 
     // Split items into (at most concurrency) equal-sized chunks
@@ -273,7 +302,7 @@ export async function filterItems(
     let parallelResults: Item[][] | null = null;
     try {
       parallelResults = await Promise.all(
-        chunks.map((chunk) => callFilters(matcherFilters, chunk)),
+        chunks.map((chunk) => callResolvedFilters(validResolved, chunk)),
       );
     } catch (_e) {
       parallelResults = null;
@@ -290,7 +319,7 @@ export async function filterItems(
     }
 
     // Fallback: sequential execution
-    return callFilters(matcherFilters, items);
+    return callResolvedFilters(validResolved, items);
   }
 
   if (sourceOptions.maxKeywordLength > 0) {
