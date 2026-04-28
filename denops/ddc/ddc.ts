@@ -61,9 +61,19 @@ export class Ddc {
   #prevUi = "";
   #prevEvent = "";
   #state: State | undefined;
+  #currentGatherController: AbortController | undefined = undefined;
 
   constructor(loader: Loader) {
     this.#loader = loader;
+  }
+
+  /**
+   * Abort any in-flight gather started by the most recent doCompletion call.
+   * Called alongside cbContext.revoke() so that a new input event cancels
+   * the previous gather immediately.
+   */
+  abortCurrentGather(): void {
+    this.#currentGatherController?.abort();
   }
 
   initialize(denops: Denops) {
@@ -194,6 +204,7 @@ export class Ddc {
     context: Context,
     onCallback: OnCallback,
     options: DdcOptions,
+    signal?: AbortSignal,
   ): Promise<[number, DdcItem[]]> {
     this.#prevSources = options.sources;
 
@@ -308,6 +319,7 @@ export class Ddc {
             ? completeStr.replace(replacePattern, "")
             : completeStr,
           triggerForIncomplete,
+          signal,
         );
 
         const timeoutPromise = new Promise(
@@ -577,11 +589,17 @@ export class Ddc {
     cbContext: CallbackContext,
     options: DdcOptions,
   ) {
+    // Cancel the previous in-flight gather and start a fresh one.
+    this.#currentGatherController?.abort();
+    const controller = new AbortController();
+    this.#currentGatherController = controller;
+
     const [completePos, items] = await this.gatherResults(
       denops,
       context,
       cbContext.createOnCallback(),
       options,
+      controller.signal,
     );
 
     this.#prevInput = context.input;

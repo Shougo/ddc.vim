@@ -810,6 +810,7 @@ export async function callSourceGather<
   completePos: number,
   completeStr: string,
   isIncomplete: boolean,
+  signal?: AbortSignal,
 ): Promise<DdcGatherItems<UserData>> {
   try {
     const args = {
@@ -823,15 +824,43 @@ export async function callSourceGather<
       completePos,
       completeStr,
       isIncomplete,
+      signal,
     };
 
-    return await deadline(source.gather(args), sourceOptions.timeout);
+    const gatherPromise = deadline(source.gather(args), sourceOptions.timeout);
+
+    if (!signal) {
+      return await gatherPromise;
+    }
+
+    // Race the gather against an abort promise so that when the signal fires
+    // the gather is abandoned immediately (even if the source does not check
+    // the signal itself).
+    const abortPromise = new Promise<never>((_res, rej) => {
+      if (signal.aborted) {
+        const e = new Error("gather aborted");
+        (e as { name: string }).name = "DdcCallbackCancelError";
+        rej(e);
+        return;
+      }
+      signal.addEventListener(
+        "abort",
+        () => {
+          const e = new Error("gather aborted");
+          (e as { name: string }).name = "DdcCallbackCancelError";
+          rej(e);
+        },
+        { once: true },
+      );
+    });
+
+    return await Promise.race([gatherPromise, abortPromise]);
   } catch (e: unknown) {
     if (
       isDdcCallbackCancelError(e) ||
       e instanceof DOMException
     ) {
-      // Ignore timeout error
+      // Ignore abort/timeout error
     } else {
       await printError(
         denops,
