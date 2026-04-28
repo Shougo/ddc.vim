@@ -7,30 +7,7 @@
 
 import { assertEquals } from "@std/assert/equals";
 import { isDdcCallbackCancelError } from "../callback.ts";
-
-// ---------------------------------------------------------------------------
-// Helper: re-creates the abort-promise logic from callSourceGather so that we
-// can test it in isolation.
-// ---------------------------------------------------------------------------
-function createAbortPromise(signal: AbortSignal): Promise<never> {
-  return new Promise<never>((_res, rej) => {
-    if (signal.aborted) {
-      const e = new Error("gather aborted");
-      (e as { name: string }).name = "DdcCallbackCancelError";
-      rej(e);
-      return;
-    }
-    signal.addEventListener(
-      "abort",
-      () => {
-        const e = new Error("gather aborted");
-        (e as { name: string }).name = "DdcCallbackCancelError";
-        rej(e);
-      },
-      { once: true },
-    );
-  });
-}
+import { createAbortPromise } from "../ext.ts";
 
 // ---------------------------------------------------------------------------
 // Test: an already-aborted signal causes immediate rejection with the right

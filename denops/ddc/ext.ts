@@ -795,6 +795,35 @@ export async function callSourceGetCompletePosition(
   }
 }
 
+/**
+ * Build an Error that is recognised by isDdcCallbackCancelError.
+ * Used when an AbortSignal fires so the existing error-guard in
+ * callSourceGather silently discards the abort rather than logging it.
+ */
+export function createGatherAbortError(): Error {
+  const e = new Error("gather aborted");
+  (e as { name: string }).name = "DdcCallbackCancelError";
+  return e;
+}
+
+/**
+ * Returns a Promise that rejects with a DdcCallbackCancelError-named error
+ * as soon as the given AbortSignal is (or becomes) aborted.
+ */
+export function createAbortPromise(signal: AbortSignal): Promise<never> {
+  return new Promise<never>((_res, rej) => {
+    if (signal.aborted) {
+      rej(createGatherAbortError());
+      return;
+    }
+    signal.addEventListener(
+      "abort",
+      () => rej(createGatherAbortError()),
+      { once: true },
+    );
+  });
+}
+
 export async function callSourceGather<
   Params extends BaseParams,
   UserData extends unknown,
@@ -836,25 +865,7 @@ export async function callSourceGather<
     // Race the gather against an abort promise so that when the signal fires
     // the gather is abandoned immediately (even if the source does not check
     // the signal itself).
-    const abortPromise = new Promise<never>((_res, rej) => {
-      if (signal.aborted) {
-        const e = new Error("gather aborted");
-        (e as { name: string }).name = "DdcCallbackCancelError";
-        rej(e);
-        return;
-      }
-      signal.addEventListener(
-        "abort",
-        () => {
-          const e = new Error("gather aborted");
-          (e as { name: string }).name = "DdcCallbackCancelError";
-          rej(e);
-        },
-        { once: true },
-      );
-    });
-
-    return await Promise.race([gatherPromise, abortPromise]);
+    return await Promise.race([gatherPromise, createAbortPromise(signal)]);
   } catch (e: unknown) {
     if (
       isDdcCallbackCancelError(e) ||
