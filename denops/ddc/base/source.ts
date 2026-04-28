@@ -10,7 +10,7 @@ import type {
   Previewer,
   SourceOptions,
 } from "../types.ts";
-import { convertKeywordPattern } from "../utils.ts";
+import { convertKeywordPattern, getKeywordRegExp } from "../utils.ts";
 
 import type { Denops } from "@denops/std";
 
@@ -106,7 +106,7 @@ export abstract class BaseSource<
     );
 
     const completePos = args.context.input.search(
-      new RegExp("(?:" + keywordPattern + ")$"),
+      getKeywordRegExp("(?:" + keywordPattern + ")$"),
     );
     return completePos;
   }

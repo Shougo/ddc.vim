@@ -237,14 +237,11 @@ export async function filterItems(
     userFilters: UserFilter[],
     items: Item[],
   ): Promise<Item[]> {
+    const resolvedList = await Promise.all(
+      userFilters.map((uf) => getFilter(denops, loader, options, uf)),
+    );
     const resolved: ResolvedFilter[] = [];
-    for (const userFilter of userFilters) {
-      const [filter, filterOptions, filterParams] = await getFilter(
-        denops,
-        loader,
-        options,
-        userFilter,
-      );
+    for (const [filter, filterOptions, filterParams] of resolvedList) {
       if (!filter) {
         return [];
       }
