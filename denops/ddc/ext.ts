@@ -811,7 +811,7 @@ export function createGatherAbortError(): Error {
  * as soon as the given AbortSignal is (or becomes) aborted.
  */
 export function createAbortPromise(signal: AbortSignal): Promise<never> {
-  return new Promise<never>((_res, rej) => {
+  return new Promise<never>((_, rej) => {
     if (signal.aborted) {
       rej(createGatherAbortError());
       return;

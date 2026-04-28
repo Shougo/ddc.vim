@@ -40,7 +40,7 @@ Deno.test("gather cancel: aborting mid-flight cancels the gather via Promise.rac
   const controller = new AbortController();
 
   // Simulate a slow gather that never completes on its own.
-  const slowGather = new Promise<string[]>((_resolve) => {
+  const slowGather = new Promise<string[]>(() => {
     // intentionally never resolves
   });
 
