@@ -795,6 +795,35 @@ export async function callSourceGetCompletePosition(
   }
 }
 
+/**
+ * Build an Error that is recognised by isDdcCallbackCancelError.
+ * Used when an AbortSignal fires so the existing error-guard in
+ * callSourceGather silently discards the abort rather than logging it.
+ */
+export function createGatherAbortError(): Error {
+  const e = new Error("gather aborted");
+  (e as { name: string }).name = "DdcCallbackCancelError";
+  return e;
+}
+
+/**
+ * Returns a Promise that rejects with a DdcCallbackCancelError-named error
+ * as soon as the given AbortSignal is (or becomes) aborted.
+ */
+export function createAbortPromise(signal: AbortSignal): Promise<never> {
+  return new Promise<never>((_, rej) => {
+    if (signal.aborted) {
+      rej(createGatherAbortError());
+      return;
+    }
+    signal.addEventListener(
+      "abort",
+      () => rej(createGatherAbortError()),
+      { once: true },
+    );
+  });
+}
+
 export async function callSourceGather<
   Params extends BaseParams,
   UserData extends unknown,
@@ -810,6 +839,7 @@ export async function callSourceGather<
   completePos: number,
   completeStr: string,
   isIncomplete: boolean,
+  signal?: AbortSignal,
 ): Promise<DdcGatherItems<UserData>> {
   try {
     const args = {
@@ -823,15 +853,25 @@ export async function callSourceGather<
       completePos,
       completeStr,
       isIncomplete,
+      signal,
     };
 
-    return await deadline(source.gather(args), sourceOptions.timeout);
+    const gatherPromise = deadline(source.gather(args), sourceOptions.timeout);
+
+    if (!signal) {
+      return await gatherPromise;
+    }
+
+    // Race the gather against an abort promise so that when the signal fires
+    // the gather is abandoned immediately (even if the source does not check
+    // the signal itself).
+    return await Promise.race([gatherPromise, createAbortPromise(signal)]);
   } catch (e: unknown) {
     if (
       isDdcCallbackCancelError(e) ||
       e instanceof DOMException
     ) {
-      // Ignore timeout error
+      // Ignore abort/timeout error
     } else {
       await printError(
         denops,

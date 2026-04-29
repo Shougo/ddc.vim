@@ -378,6 +378,8 @@ export const main: Entrypoint = (denops: Denops) => {
     // Revoke any pending callbacks from the previous completion cycle before
     // starting a new one.
     cbContext.revoke();
+    // Abort any in-flight gather from the previous completion cycle.
+    ddc.abortCurrentGather();
 
     await onEvent(
       denops,

@@ -64,6 +64,7 @@ export type GatherArguments<Params extends BaseParams> =
     completePos: number;
     completeStr: string;
     isIncomplete?: boolean;
+    signal?: AbortSignal;
   };
 
 export abstract class BaseSource<
