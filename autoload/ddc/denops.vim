@@ -75,9 +75,7 @@ function s:stopped() abort
   unlet! g:ddc#_initialized
 
   " Restore custom config
-  if 'g:ddc#_customs'->exists()
-    for custom in g:ddc#_customs
-      call ddc#denops#_notify(custom.method, custom.args)
-    endfor
-  endif
+  for custom in g:->get('ddc#_notifies', [])
+    call ddc#denops#_notify(custom.method, custom.args)
+  endfor
 endfunction

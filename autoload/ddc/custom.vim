@@ -76,11 +76,10 @@ endfunction
 
 function s:notify(method, args) abort
   " Save notify args
-  if !'g:ddc#_customs'->exists()
-    let g:ddc#_customs = []
+  if !'g:ddc#_notifies'->exists()
+    let g:ddc#_notifies = []
   endif
-
-  call add(g:ddc#_customs, #{ method: a:method, args: a:args })
+  call add(g:ddc#_notifies, #{ method: a:method, args: a:args })
 
   return ddc#denops#_notify(a:method, a:args)
 endfunction
