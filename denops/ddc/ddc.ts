@@ -254,13 +254,21 @@ export class Ddc {
         : (completeStr.length < o.minAutoCompleteLength ||
           completeStr.length > o.maxAutoCompleteLength);
 
-      // Check cache timeout.
-      const currentTime = Math.floor(Date.now() / 1000);
-      if (
-        o.cacheTimeout > 0 && this.#prevResults[s.name] &&
-        currentTime > this.#prevResults[s.name].time + o.cacheTimeout
-      ) {
-        delete this.#prevResults[s.name];
+      if (s.name in this.#prevResults) {
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        // Check cache timeout.
+        const checkTimeout = o.cacheTimeout > 0 && this.#prevResults[s.name] &&
+          currentTime > this.#prevResults[s.name].time + o.cacheTimeout;
+
+        // Check complete position.
+        const checkCompletePos =
+          context.lineNr !== this.#prevResults[s.name].lineNr ||
+          completePos !== this.#prevResults[s.name].completePos;
+
+        if (checkTimeout || checkCompletePos) {
+          delete this.#prevResults[s.name];
+        }
       }
 
       // Check previous result.
@@ -269,8 +277,7 @@ export class Ddc {
         : null;
 
       const triggerForIncomplete = (checkPrevResult?.isIncomplete ?? false) &&
-        context.lineNr === checkPrevResult?.lineNr &&
-        completePos === checkPrevResult?.completePos && !invalidCompleteLength;
+        !invalidCompleteLength;
 
       if (
         completePos < 0 ||
@@ -291,12 +298,12 @@ export class Ddc {
               new RegExp("(?:" + o.volatilePattern + ")$"),
             ) !== -1);
 
-      if (
-        !checkPrevResult ||
+      const shouldGather = !checkPrevResult ||
         triggerForIncomplete ||
         context.event === "Manual" ||
-        (isVolatile && context.event !== "Update")
-      ) {
+        (isVolatile && context.event !== "Update");
+
+      if (shouldGather) {
         // Not matched.
         const replacePattern = new RegExp(o.replaceSourceInputPattern);
 
