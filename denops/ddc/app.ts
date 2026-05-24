@@ -34,10 +34,7 @@ export const main: Entrypoint = (denops: Denops) => {
   const cbContext = createCallbackContext();
   const lock = new Lock(0);
   let queuedEvent: DdcEvent | null = null;
-  const autoCompleteTimers = new Map<
-    ReturnType<typeof setTimeout>,
-    ReturnType<typeof setTimeout>
-  >();
+  const autoCompleteTimers = new Map<number, ReturnType<typeof setTimeout>>();
 
   const setAlias = (extType: DdcExtType, alias: string, base: string) => {
     loader.registerAlias(extType, alias, base);
