@@ -92,7 +92,11 @@ function s:normalize_key_or_dict(key_or_dict, value) abort
     let base[a:key_or_dict] = a:value
     return base
   endif
-  return {}
+
+  throw printf(
+        \   'ddc#custom: "key_or_dict" must be Dict or String, got %s',
+        \   type(a:key_or_dict)
+        \ )
 endfunction
 
 function s:normalize_string_or_list(string_or_list) abort
@@ -101,5 +105,9 @@ function s:normalize_string_or_list(string_or_list) abort
   elseif a:string_or_list->type() == v:t_string
     return [a:string_or_list]
   endif
-  return []
+
+  throw printf(
+        \   'ddc#custom: "string_or_list" must be String or List, got %s',
+        \   type(a:string_or_list)
+        \ )
 endfunction
