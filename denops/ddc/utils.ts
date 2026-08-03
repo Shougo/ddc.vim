@@ -169,12 +169,19 @@ export async function printError(
       // NOTE: In Deno, Prefer `Error.stack` because it contains
       // `Error.message`.
       return `${v.stack ?? v}`;
-    } else if (typeof v === "object") {
-      return JSON.stringify(v);
-    } else {
-      return `${v}`;
     }
+
+    if (typeof v === "object" && v !== null) {
+      try {
+        return JSON.stringify(v);
+      } catch (_e: unknown) {
+        return String(v);
+      }
+    }
+
+    return String(v);
   }).join("\n");
+
   await denops.call("ddc#util#print_error", message);
 }
 
