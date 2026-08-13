@@ -54,7 +54,7 @@ function ddc#custom#load_config(path) abort
 endfunction
 
 function ddc#custom#alias(type, alias, base) abort
-  call ddc#denops#_notify('alias', [a:type, a:alias, a:base])
+  call s:notify('alias', [a:type, a:alias, a:base])
 endfunction
 
 " This should be called manually, so wait until DenopsPluginPost:ddc by the
@@ -105,7 +105,7 @@ function s:normalize_string_or_list(string_or_list) abort
   if a:string_or_list->type() == v:t_list
     return a:string_or_list
   elseif a:string_or_list->type() == v:t_string
-    return [a:string_or_list]
+    return a:string_or_list ==# '' ? [] : [a:string_or_list]
   endif
 
   throw printf(
