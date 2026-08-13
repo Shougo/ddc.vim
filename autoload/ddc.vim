@@ -30,7 +30,7 @@ function ddc#disable() abort
     autocmd!
   augroup END
 
-  call s:disable_cmdline_completion()
+  call ddc#disable_cmdline_completion()
 endfunction
 
 function ddc#on_complete_done(completed_item) abort
