@@ -184,6 +184,16 @@ export class Ddc {
     );
   }
 
+  async unregisterTerminalAutocmds(denops: Denops) {
+    await autocmd.group(
+      denops,
+      "ddc-terminal",
+      (helper: autocmd.GroupHelper) => {
+        helper.remove();
+      },
+    );
+  }
+
   async registerAutocmd(denops: Denops, events: DdcEvent[]) {
     await autocmd.group(denops, "ddc", (helper: autocmd.GroupHelper) => {
       for (const event of events) {

@@ -2,6 +2,15 @@ function ddc#enable(opts = {}) abort
   call ddc#denops#_init(a:opts)
 endfunction
 
+function ddc#disable() abort
+  augroup ddc
+    autocmd!
+  augroup END
+
+  call ddc#disable_cmdline_completion()
+  call ddc#disable_terminal_completion()
+endfunction
+
 function ddc#enable_cmdline_completion() abort
   call ddc#enable()
 
@@ -24,13 +33,8 @@ function ddc#enable_terminal_completion() abort
 
   call ddc#denops#_notify('registerTerminalAutocmds', [])
 endfunction
-
-function ddc#disable() abort
-  augroup ddc
-    autocmd!
-  augroup END
-
-  call ddc#disable_cmdline_completion()
+function ddc#disable_terminal_completion() abort
+  call ddc#denops#_notify('unregisterTerminalAutocmds', [])
 endfunction
 
 function ddc#on_complete_done(completed_item) abort
