@@ -9,19 +9,27 @@ function ddc#syntax#in(checks) abort
 endfunction
 
 function ddc#syntax#get() abort
-  let curpos = getcurpos()[1:2]
-  if mode() ==# 'i'
-    let curpos[1] -= 1
+  const curpos = s:get_syntax_pos()
+
+  if &l:syntax !=# ''
+    return s:get_syn_names(curpos)
   endif
-  return &l:syntax !=# '' ? s:get_syn_names(curpos)
-        \ : has('nvim') ?
-        \   v:lua.vim.treesitter.get_captures_at_pos(0,
-        \     curpos[0] - 1, curpos[1] - 1)->map('v:val.capture')
-        \ : []
+
+  if !has('nvim')
+    return []
+  endif
+
+  try
+    return v:lua.vim.treesitter.get_captures_at_pos(
+          \   0, curpos[0] - 1, curpos[1] - 1,
+          \ )->map('v:val.capture')
+  catch
+    return []
+  endtry
 endfunction
 
 function ddc#syntax#lang() abort
-  const curpos = getcurpos()[1:2]
+  const curpos = s:get_syntax_pos()
 
   try
     " NOTE: vim.treesitter.get_parser() may fail
@@ -33,6 +41,16 @@ function ddc#syntax#lang() abort
   endtry
 
   return ''
+endfunction
+
+function s:get_syntax_pos() abort
+  let curpos = getcurpos()[1:2]
+
+  if mode() ==# 'i'
+    let curpos[1] = [1, curpos[1] - 1]->max()
+  endif
+
+  return curpos
 endfunction
 
 function s:get_syn_names(curpos) abort
