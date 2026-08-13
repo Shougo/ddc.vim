@@ -12,6 +12,10 @@ function ddc#disable() abort
 endfunction
 
 function ddc#enable_cmdline_completion() abort
+  if 'b:ddc_cmdline_completion'->exists()
+    return
+  endif
+
   call ddc#enable()
 
   call ddc#denops#_notify('registerCmdlineAutocmds', [])
