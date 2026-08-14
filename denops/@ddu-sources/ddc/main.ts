@@ -31,7 +31,7 @@ export class Source extends BaseSource<Params> {
         const items: Item<ActionData>[] = ddcItems
           .map((item) => ({
             word: item.word,
-            display: item.abbr,
+            display: item.abbr ?? item.word,
             action: {
               text: item.word,
               item,
