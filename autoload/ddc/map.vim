@@ -66,12 +66,17 @@ function ddc#map#insert_item(number) abort
     return ''
   endif
 
-  call ddc#hide('CompleteDone')
-
   " Get cursor word.
   const input = ddc#util#get_input('')
-  const complete_str = input[g:ddc#_complete_pos : s:col() - 1]
+  const complete_pos = g:->get('ddc#_complete_pos', -1)
+  if complete_pos < 0
+    return ''
+  endif
+
+  const complete_str = input[complete_pos : s:col() - 1]
   let v:completed_item = g:ddc#_items[a:number]
+
+  call ddc#hide('CompleteDone')
 
   " Skip next complete after insertion
   let g:ddc#_skip_next_complete += 1
