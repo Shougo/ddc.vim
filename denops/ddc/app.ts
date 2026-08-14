@@ -115,6 +115,8 @@ export const main: Entrypoint = (denops: Denops) => {
             arg3 as BaseFilter<BaseParams>,
           );
           break;
+        default:
+          throw new Error(`Invalid extension type: ${type}`);
       }
 
       return Promise.resolve();
@@ -404,15 +406,16 @@ export const main: Entrypoint = (denops: Denops) => {
       const timerId = setTimeout(() => {
         autoCompleteTimers.delete(context.bufNr);
 
-        lock.lock(async () => {
+        void lock.lock(async () => {
           await ddc.cancelCompletion(denops, context, options);
 
           if (options.hideOnEvents || event === "Update") {
-            // Hide the current completion
             await ddc.hide(denops, context, options);
           }
 
           await ddc.doCompletion(denops, context, cbContext, options);
+        }).catch((e: unknown) => {
+          console.error("Automatic completion failed:", e);
         });
       }, options.autoCompleteDelay);
 
