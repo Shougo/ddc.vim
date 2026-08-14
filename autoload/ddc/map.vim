@@ -33,7 +33,8 @@ function ddc#map#complete_common_string() abort
   let common_str = g:ddc#_items[0].word
   for item in g:ddc#_items[1:]
     while item.word->tolower()->stridx(common_str->tolower()) != 0
-      let common_str = common_str[: -2]
+      let common_str = common_str->strcharpart(
+            \ 0, common_str->strchars() - 1)
     endwhile
   endfor
 
@@ -125,7 +126,6 @@ endfunction
 function s:col() abort
   const col = mode() ==# 't' && !has('nvim') ?
         \ term_getcursor(bufnr('%'))[1] :
-        \ mode() ==# 'c' ? getcmdpos() :
-        \ mode() ==# 't' ? '.'->col() : '.'->col()
+        \ mode() ==# 'c' ? getcmdpos() : '.'->col()
   return col
 endfunction
