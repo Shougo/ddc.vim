@@ -17,9 +17,9 @@ function ddc#util#get_input(event = '') abort
   const mode = a:event ==# 'InsertEnter' ? 'i' : mode()
   const is_insert = (mode ==# 'i') || (mode ==# 't')
   const text = mode->ddc#util#get_text()
-  const col = mode() ==# 't' && !has('nvim') ?
+  const col = mode ==# 't' && !has('nvim') ?
         \ term_getcursor('%'->bufnr())[1] :
-        \ mode() ==# 'c' ? getcmdpos() : col('.')
+        \ mode ==# 'c' ? getcmdpos() : col('.')
   const pos = mode ==# 'c' ? col - 1 :
         \ is_insert ? col - 1 : col
   const input = pos >= text->len() ?
@@ -31,8 +31,10 @@ function ddc#util#get_input(event = '') abort
   return input
 endfunction
 function ddc#util#get_next_input(event = '') abort
-  const text = mode()->ddc#util#get_text()
-  return text[a:event->ddc#util#get_input()->len() :]
+  const input = a:event->ddc#util#get_input()
+  const mode = a:event ==# 'InsertEnter' ? 'i' : mode()
+  const text = mode->ddc#util#get_text()
+  return text[input->len() :]
 endfunction
 
 function ddc#util#benchmark(msg = '') abort
@@ -46,8 +48,9 @@ function ddc#util#benchmark(msg = '') abort
 endfunction
 
 function ddc#util#check_skip_complete() abort
-  if g:ddc#_skip_next_complete > 0
-    let g:ddc#_skip_next_complete -= 1
+  const count = g:->get('ddc#_skip_next_complete', 0)
+  if count > 0
+    let g:ddc#_skip_next_complete = count - 1
     return v:true
   endif
 
