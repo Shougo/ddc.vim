@@ -12,6 +12,8 @@ import type {
   UserOptions,
 } from "./types.ts";
 import { defaultSourceOptions } from "./base/source.ts";
+import { defaultUiOptions } from "./base/ui.ts";
+import { defaultFilterOptions } from "./base/filter.ts";
 import { callCallback, printError } from "./utils.ts";
 
 import type { Denops } from "@denops/std";
@@ -392,7 +394,18 @@ function isNegligible(older: World, newer: World): boolean {
   return older.bufnr === newer.bufnr &&
     older.filetype === newer.filetype &&
     older.input === newer.input &&
+    older.nextInput === newer.nextInput &&
+    older.mode === newer.mode &&
+    older.lineNr === newer.lineNr &&
+    equalsCursor(older.cursor, newer.cursor) &&
     older.event === newer.event;
+}
+function equalsCursor(
+  a: (number | undefined)[],
+  b: (number | undefined)[],
+): boolean {
+  return a.length === b.length &&
+    a.every((value, index) => value === b[index]);
 }
 
 export class ContextBuilderImpl implements ContextBuilder {
@@ -435,7 +448,6 @@ export class ContextBuilderImpl implements ContextBuilder {
     const userOptions = await this.#getUserOptions(denops, world, options);
 
     if (this.#needsValidation) {
-      this.#needsValidation = false;
       await this.#validate(denops, "options", userOptions, defaultDdcOptions());
       for (const key in userOptions.sourceOptions) {
         await this.#validate(
@@ -445,6 +457,26 @@ export class ContextBuilderImpl implements ContextBuilder {
           defaultSourceOptions(),
         );
       }
+
+      for (const key in userOptions.uiOptions) {
+        await this.#validate(
+          denops,
+          "uiOptions",
+          userOptions.uiOptions[key],
+          defaultUiOptions(),
+        );
+      }
+
+      for (const key in userOptions.filterOptions) {
+        await this.#validate(
+          denops,
+          "filterOptions",
+          userOptions.filterOptions[key],
+          defaultFilterOptions(),
+        );
+      }
+
+      this.#needsValidation = false;
     }
 
     if (context.mode === "c") {
@@ -466,9 +498,17 @@ export class ContextBuilderImpl implements ContextBuilder {
         context,
         sources: userOptions.sources,
       },
-    ) as string[] | null;
-    if (dynamicSources) {
-      userOptions.sources = dynamicSources;
+    );
+
+    if (dynamicSources !== null && dynamicSources !== undefined) {
+      if (!Array.isArray(dynamicSources)) {
+        await printError(
+          denops,
+          '"dynamicSources" callback must return an Array.',
+        );
+      } else {
+        userOptions.sources = dynamicSources as string[];
+      }
     }
 
     return [
