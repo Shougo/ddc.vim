@@ -34,9 +34,8 @@ export type ShowArguments<Params extends BaseParams> =
 
 export type HideArguments<Params extends BaseParams> = BaseUiArguments<Params>;
 
-export type VisibleArguments<Params extends BaseParams> = BaseUiArguments<
-  Params
->;
+export type VisibleArguments<Params extends BaseParams> =
+  BaseUiArguments<Params>;
 
 export abstract class BaseUi<Params extends BaseParams> {
   name = "";
@@ -57,7 +56,7 @@ export abstract class BaseUi<Params extends BaseParams> {
   hide(_args: HideArguments<Params>): void | Promise<void> {}
 
   visible(_args: VisibleArguments<Params>): boolean | Promise<boolean> {
-    return true;
+    return false;
   }
 
   abstract params(): Params;
