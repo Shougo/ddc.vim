@@ -182,3 +182,28 @@ Deno.test("multiple onCallback and multiple emit", async () => {
   assertEquals(ok2.calls[0].args, ["payload1"]);
   assertEquals(ok3.calls[0].args, ["payload3"]);
 });
+
+Deno.test("emit then revoke does not cancel resolved callback", async () => {
+  const ctx = createCallbackContext();
+  const onCallback = ctx.createOnCallback();
+
+  const promise = onCallback("1");
+  ctx.emit("1", "payload");
+  ctx.revoke();
+
+  assertEquals(await promise, "payload");
+});
+
+Deno.test("old callback is cancelled immediately", async () => {
+  const ctx = createCallbackContext();
+  const onCallback = ctx.createOnCallback();
+
+  ctx.revoke();
+
+  try {
+    await onCallback("1");
+    throw new Error("Expected callback cancellation");
+  } catch (e) {
+    assertEquals(isDdcCallbackCancelError(e), true);
+  }
+});
