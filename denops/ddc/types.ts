@@ -28,7 +28,10 @@ export type Context = {
 
 export type Callback =
   | string
-  | ((denops: Denops, args: Record<string, unknown>) => Promise<unknown>);
+  | ((
+    denops: Denops,
+    args: Record<string, unknown>,
+  ) => unknown | Promise<unknown>);
 
 export type ContextCallbacks = {
   global: Callback;
