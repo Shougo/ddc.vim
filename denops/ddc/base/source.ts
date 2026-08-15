@@ -88,14 +88,10 @@ export abstract class BaseSource<
   ): void | Promise<void> {}
 
   getPreviewer(
-    _args: GetPreviewerArguments<Params>,
+    _args: GetPreviewerArguments<Params, UserData>,
   ): Previewer | Promise<Previewer> {
     return { kind: "empty" };
   }
-
-  getCompletePosition(
-    args: GetCompletePositionArguments<Params>,
-  ): number | Promise<number>;
 
   async getCompletePosition(
     args: GetCompletePositionArguments<Params>,
@@ -113,7 +109,7 @@ export abstract class BaseSource<
   }
 
   abstract gather(
-    {}: GatherArguments<Params>,
+    _args: GatherArguments<Params>,
   ): Promise<DdcGatherItems<UserData>>;
 
   abstract params(): Params;
