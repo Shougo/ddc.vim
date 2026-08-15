@@ -90,7 +90,7 @@ export type UserOptions = Record<string, unknown>;
 
 export type UiOptions = {
   // TODO: add options and remove placeholder
-  placeholder: void;
+  placeholder?: void;
 };
 
 export type SourceOptions = {
