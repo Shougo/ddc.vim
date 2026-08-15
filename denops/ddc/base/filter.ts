@@ -52,7 +52,9 @@ export abstract class BaseFilter<Params extends BaseParams> {
 
   onEvent(_args: OnEventArguments<Params>): void | Promise<void> {}
 
-  abstract filter({}: FilterArguments<Params>): Item[] | Promise<Item[]>;
+  abstract filter(
+    _args: FilterArguments<Params>,
+  ): Item[] | Promise<Item[]>;
 
   abstract params(): Params;
 }
