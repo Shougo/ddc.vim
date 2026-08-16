@@ -73,11 +73,21 @@ export function isDenoCacheIssueError(e: unknown): boolean {
 }
 
 function parseIskeywordPart(part: string, charCodes: Set<number>): void {
-  const getCharCode = (charOrCode: string): number => {
-    return /^\d+$/.test(charOrCode)
-      ? parseInt(charOrCode, 10)
-      : charOrCode.charCodeAt(0);
-  };
+  function getCharCode(charOrCode: string): number {
+    if (/^\d+$/.test(charOrCode)) {
+      const code = Number(charOrCode);
+      if (code < 0 || code > 255) {
+        throw new Error(`Invalid character code: ${charOrCode}`);
+      }
+      return code;
+    }
+
+    if ([...charOrCode].length !== 1) {
+      throw new Error(`Invalid iskeyword character: ${charOrCode}`);
+    }
+
+    return charOrCode.charCodeAt(0);
+  }
 
   // literal "^"
   if (part === "^") {
