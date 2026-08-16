@@ -19,16 +19,22 @@ export class State {
   #denops: Denops;
   #cache: Map<StateKey, unknown> = new Map();
 
-  // items debounce / sync support
+  // Items debounce / sync support
   #pendingItems: DdcItem[] | null = null;
-  #itemsTimer: number | null = null;
+  #itemsTimer: ReturnType<typeof setTimeout> | null = null;
+  #itemsGeneration = 0;
   #debounceMs: number;
   #syncFn: SyncFn;
+  #syncQueue: Promise<void> = Promise.resolve();
 
-  constructor(denops: Denops, opts?: { debounceMs?: number; syncFn?: SyncFn }) {
+  constructor(
+    denops: Denops,
+    opts?: { debounceMs?: number; syncFn?: SyncFn },
+  ) {
     this.#denops = denops;
     this.#debounceMs = opts?.debounceMs ?? 50;
-    // default sync uses vars.g.set
+
+    // Default sync uses vars.g.set.
     this.#syncFn = opts?.syncFn ?? (async (d, k, v) => {
       await vars.g.set(d, k, v);
     });
@@ -38,9 +44,20 @@ export class State {
     return this.#cache.get(key);
   }
 
+  #enqueueSync(key: StateKey, value: unknown): Promise<void> {
+    const sync = this.#syncQueue.then(() =>
+      this.#syncFn(this.#denops, key, value)
+    );
+
+    // Keep the queue usable even if one synchronization fails.
+    this.#syncQueue = sync.catch(() => {});
+
+    return sync;
+  }
+
   async set(key: StateKey, value: unknown): Promise<void> {
     this.#cache.set(key, value);
-    await this.#syncFn(this.#denops, key, value);
+    await this.#enqueueSync(key, value);
   }
 
   async setFromVim(key: StateKey): Promise<void> {
@@ -60,52 +77,83 @@ export class State {
     await this.set(key, num + delta);
   }
 
-  // Immediate set with diff check (no-op if identical)
-  async setItems(items: DdcItem[]): Promise<void> {
+  #cancelPendingItems(): void {
+    this.#itemsGeneration++;
+
+    if (this.#itemsTimer !== null) {
+      clearTimeout(this.#itemsTimer);
+      this.#itemsTimer = null;
+    }
+
+    this.#pendingItems = null;
+  }
+
+  async #syncItems(items: DdcItem[]): Promise<void> {
     const prev = (this.#cache.get("ddc#_items") as DdcItem[]) ?? [];
+
     if (State.itemsEqual(prev, items)) {
       return;
     }
+
     this.#cache.set("ddc#_items", items);
-    await this.#syncFn(this.#denops, "ddc#_items", items);
+    await this.#enqueueSync("ddc#_items", items);
   }
 
-  // Debounced scheduling: multiple calls within debounce window result in one
-  // sync.
+  // Immediate set with diff check.
+  async setItems(items: DdcItem[]): Promise<void> {
+    this.#cancelPendingItems();
+    await this.#syncItems([...items]);
+  }
+
+  // Debounced scheduling: multiple calls within the debounce window result in
+  // one synchronization.
   scheduleItemsSync(items: DdcItem[]): void {
-    this.#pendingItems = items;
+    const generation = ++this.#itemsGeneration;
+    this.#pendingItems = [...items];
+
     if (this.#itemsTimer !== null) {
       clearTimeout(this.#itemsTimer);
     }
-    // setTimeout returns number in Deno
+
     this.#itemsTimer = setTimeout(async () => {
-      const p = this.#pendingItems ?? [];
+      if (generation !== this.#itemsGeneration) {
+        return;
+      }
+
+      const pendingItems = this.#pendingItems ?? [];
       this.#pendingItems = null;
       this.#itemsTimer = null;
+
       try {
-        await this.setItems(p);
+        await this.#syncItems(pendingItems);
       } catch (e) {
         console.error("ddc: failed to sync items:", e);
       }
-    }, this.#debounceMs) as unknown as number;
+    }, this.#debounceMs);
   }
 
-  // Force immediate flush of pending items
+  // Force immediate flush of pending items.
   async flushItemsSync(): Promise<void> {
+    this.#itemsGeneration++;
+
     if (this.#itemsTimer !== null) {
       clearTimeout(this.#itemsTimer);
       this.#itemsTimer = null;
     }
+
     if (this.#pendingItems !== null) {
-      const p = this.#pendingItems;
+      const pendingItems = this.#pendingItems;
       this.#pendingItems = null;
-      await this.setItems(p);
+      await this.#syncItems(pendingItems);
     }
   }
 
-  // Simple equality check: length + JSON.stringify (safe fallback)
+  // Simple equality check: length + JSON.stringify.
   private static itemsEqual(a: DdcItem[], b: DdcItem[]): boolean {
-    if (a.length !== b.length) return false;
+    if (a.length !== b.length) {
+      return false;
+    }
+
     try {
       return JSON.stringify(a) === JSON.stringify(b);
     } catch {
