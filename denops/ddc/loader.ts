@@ -59,11 +59,8 @@ export class Loader {
     if (runtimepath !== this.#prevRuntimepath) {
       const cachedPaths = await createPathCache(denops, runtimepath);
 
-      // NOTE: glob may be invalid.
-      if (cachedPaths.size > 0) {
-        this.#cachedPaths = cachedPaths;
-        this.#prevRuntimepath = runtimepath;
-      }
+      this.#cachedPaths = cachedPaths;
+      this.#prevRuntimepath = runtimepath;
     }
 
     const key = `${PLUGIN_PREFIX}-${type}s/${
