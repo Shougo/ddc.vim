@@ -34,8 +34,9 @@ export type ShowArguments<Params extends BaseParams> =
 
 export type HideArguments<Params extends BaseParams> = BaseUiArguments<Params>;
 
-export type VisibleArguments<Params extends BaseParams> =
-  BaseUiArguments<Params>;
+export type VisibleArguments<Params extends BaseParams> = BaseUiArguments<
+  Params
+>;
 
 export abstract class BaseUi<Params extends BaseParams> {
   name = "";
