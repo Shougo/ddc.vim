@@ -78,6 +78,11 @@ export class Loader {
 
   registerAlias(type: DdcExtType, alias: string, base: string) {
     this.#aliases[type][alias] = base;
+
+    const ext = this.#exts[type][base];
+    if (ext) {
+      this.#exts[type][alias] = ext;
+    }
   }
 
   async registerPath(type: DdcExtType, path: string): Promise<void> {
