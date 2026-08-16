@@ -439,7 +439,7 @@ Deno.test("vimoption2ts", () => {
   assertEquals(digits.test("5"), true);
   assertEquals(digits.test("a"), false);
 
-  const empty = new RegExp(vimoption2ts(""), "u");
+  const empty = new RegExp(`^(?:${vimoption2ts("")})$`, "u");
 
   assertEquals(empty.test(""), false);
   assertEquals(empty.test("a"), false);
