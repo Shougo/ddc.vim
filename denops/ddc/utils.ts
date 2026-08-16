@@ -406,7 +406,7 @@ export async function importPlugin(path: string): Promise<unknown> {
 }
 
 Deno.test("vimoption2ts", () => {
-  const ascii = new RegExp(vimoption2ts("@,48-57,_"), "u");
+  const ascii = new RegExp(`^(?:${vimoption2ts("@,48-57,_")})$`, "u");
 
   assertEquals(ascii.test("a"), true);
   assertEquals(ascii.test("Z"), true);
@@ -414,27 +414,48 @@ Deno.test("vimoption2ts", () => {
   assertEquals(ascii.test("_"), true);
   assertEquals(ascii.test("-"), false);
 
-  const unicode = new RegExp(vimoption2ts("@"), "u");
+  const unicode = new RegExp(`^(?:${vimoption2ts("@")})$`, "u");
 
-  assertEquals(unicode.test("日本語"), true);
+  assertEquals(unicode.test("日"), true);
   assertEquals(unicode.test("é"), true);
   assertEquals(unicode.test("Ж"), true);
   assertEquals(unicode.test("1"), false);
 
-  const excluded = new RegExp(vimoption2ts("@,^a-z"), "u");
+  const excluded = new RegExp(`^(?:${vimoption2ts("@,^a-z")})$`, "u");
 
   assertEquals(excluded.test("A"), true);
   assertEquals(excluded.test("Z"), true);
   assertEquals(excluded.test("a"), false);
   assertEquals(excluded.test("z"), false);
+  assertEquals(excluded.test("日"), true);
 
-  const explicitUnicode = new RegExp(vimoption2ts("あ"), "u");
+  const explicitUnicode = new RegExp(`^(?:${vimoption2ts("あ")})$`, "u");
 
   assertEquals(explicitUnicode.test("あ"), true);
   assertEquals(explicitUnicode.test("い"), false);
 
-  const digits = new RegExp(vimoption2ts("48-57"), "u");
+  const digits = new RegExp(`^(?:${vimoption2ts("48-57")})$`, "u");
 
   assertEquals(digits.test("5"), true);
   assertEquals(digits.test("a"), false);
+
+  const empty = new RegExp(`^(?:${vimoption2ts("")})$`, "u");
+
+  assertEquals(empty.test(""), false);
+  assertEquals(empty.test("a"), false);
+});
+
+Deno.test("getKeywordRegExp", () => {
+  const keyword = vimoption2ts("@,48-57,_");
+  const slashK = getKeywordRegExp(
+    `^(?:${"\\k".replaceAll("\\k", keyword)})+$`,
+  );
+  const keywordClass = getKeywordRegExp(
+    `^(?:${"[:keyword:]".replaceAll("[:keyword:]", keyword)})+$`,
+  );
+
+  for (const regexp of [slashK, keywordClass]) {
+    assertEquals(regexp.test("abc_日本語123"), true);
+    assertEquals(regexp.test("abc-日本語123"), false);
+  }
 });
