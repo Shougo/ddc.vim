@@ -77,6 +77,15 @@ export class Loader {
   }
 
   registerAlias(type: DdcExtType, alias: string, base: string) {
+    if (alias === base) {
+      throw new Error(`Alias cannot refer to itself: ${type}/${alias}`);
+    }
+    if (alias in this.#exts[type] && alias !== base) {
+      throw new Error(
+        `Alias conflicts with registered extension: ${type}/${alias}`,
+      );
+    }
+
     this.#aliases[type][alias] = base;
 
     const ext = this.#exts[type][base];
@@ -206,12 +215,18 @@ export class Loader {
   ) {
     ext.name = name;
     this.#exts[type][name] = ext;
+
+    for (const alias of this.getAliasNames(type)) {
+      if (this.getAlias(type, alias) === name) {
+        this.#exts[type][alias] = ext;
+      }
+    }
   }
 
   getAliasNames(type: DdcExtType): string[] {
     return Object.keys(this.#aliases[type]);
   }
-  getAlias(type: DdcExtType, name: string): string {
+  getAlias(type: DdcExtType, name: string): string | undefined {
     return this.#aliases[type][name];
   }
   async getUi(
