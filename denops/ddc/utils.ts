@@ -29,6 +29,7 @@ export async function convertKeywordPattern(
   const iskeyword = bufnr === undefined
     ? await op.iskeyword.getLocal(denops)
     : await op.iskeyword.getBuffer(denops, bufnr);
+
   // Neither iskeyword nor keywordPattern contain NUL bytes, so this
   // composite key is unambiguous.
   const cacheKey = keywordPattern + "\0" + iskeyword;
@@ -36,14 +37,17 @@ export async function convertKeywordPattern(
   if (cached !== undefined) {
     return cached;
   }
+
   const keyword = vimoption2ts(iskeyword);
   const replaced = keywordPattern
-    .replaceAll("\\k", "[" + keyword + "]")
+    .replaceAll("\\k", keyword)
     .replaceAll("[:keyword:]", keyword);
+
   if (convertKeywordPatternCache.size >= KEYWORD_CACHE_MAX) {
     convertKeywordPatternCache.clear();
   }
   convertKeywordPatternCache.set(cacheKey, replaced);
+
   return replaced;
 }
 
@@ -52,11 +56,14 @@ export function getKeywordRegExp(expandedPattern: string): RegExp {
   if (cached !== undefined) {
     return cached;
   }
-  const re = new RegExp(expandedPattern);
+
+  const re = new RegExp(expandedPattern, "u");
+
   if (keywordRegExpCache.size >= KEYWORD_CACHE_MAX) {
     keywordRegExpCache.clear();
   }
   keywordRegExpCache.set(expandedPattern, re);
+
   return re;
 }
 
@@ -66,71 +73,130 @@ export function isDenoCacheIssueError(e: unknown): boolean {
     "Could not find constraint in the list of versions: ", // Deno 1.40?
     "Could not find version of ", // Deno 1.38
   ] as const;
+
   if (e instanceof TypeError) {
     return expects.some((expect) => e.message.startsWith(expect));
   }
+
   return false;
 }
 
-function parseIskeywordPart(part: string, charCodes: Set<number>): void {
-  function getCharCode(charOrCode: string): number {
-    if (/^\d+$/.test(charOrCode)) {
-      const code = Number(charOrCode);
-      if (code < 0 || code > 255) {
-        throw new Error(`Invalid character code: ${charOrCode}`);
+type KeywordChars = {
+  alphabetic: boolean;
+  included: Set<number>;
+  excluded: Set<number>;
+};
+
+function getIskeywordCharCode(charOrCode: string): number {
+  if (/^\d+$/.test(charOrCode)) {
+    const code = Number.parseInt(charOrCode, 10);
+
+    if (code < 0 || code > 0xff) {
+      throw new Error(
+        `iskeyword character code must be between 0 and 255: ${charOrCode}`,
+      );
+    }
+
+    return code;
+  }
+
+  const codePoints = [...charOrCode];
+  if (codePoints.length !== 1) {
+    throw new Error(`Invalid iskeyword character: ${charOrCode}`);
+  }
+
+  return codePoints[0].codePointAt(0)!;
+}
+
+function parseKeywordChars(option: string): KeywordChars {
+  const chars: KeywordChars = {
+    alphabetic: false,
+    included: new Set<number>(),
+    excluded: new Set<number>(),
+  };
+
+  const add = (code: number): void => {
+    chars.included.add(code);
+    chars.excluded.delete(code);
+  };
+
+  const remove = (code: number): void => {
+    chars.included.delete(code);
+    chars.excluded.add(code);
+  };
+
+  const applyCode = (code: number, exclusion: boolean): void => {
+    if (exclusion) {
+      remove(code);
+    } else {
+      add(code);
+    }
+  };
+
+  const applyPart = (part: string): void => {
+    if (part === "") {
+      return;
+    }
+
+    // A bare "^" means the literal caret character.
+    if (part === "^") {
+      add("^".codePointAt(0)!);
+      return;
+    }
+
+    const exclusion = part.startsWith("^");
+    const content = exclusion ? part.substring(1) : part;
+
+    // "@" means alphabetic characters. JavaScript's Unicode property escape
+    // is the closest equivalent to Vim's Unicode-aware alphabetic class.
+    if (content === "@") {
+      chars.alphabetic = !exclusion;
+      return;
+    }
+
+    // Handle ranges such as "a-z", "48-57", and "@-@".
+    if (content.includes("-") && content.length > 1) {
+      const [startStr, endStr] = content.split("-", 2);
+      const start = getIskeywordCharCode(startStr);
+      const end = getIskeywordCharCode(endStr);
+
+      if (start > end) {
+        throw new Error(`Invalid iskeyword range: ${content}`);
       }
-      return code;
+
+      for (let code = start; code <= end; code++) {
+        applyCode(code, exclusion);
+      }
+      return;
     }
 
-    if ([...charOrCode].length !== 1) {
-      throw new Error(`Invalid iskeyword character: ${charOrCode}`);
-    }
+    applyCode(getIskeywordCharCode(content), exclusion);
+  };
 
-    return charOrCode.charCodeAt(0);
+  // Split by commas, preserving escaped/special comma forms used by Vim.
+  for (const part of option.split(/(?<![\^,]),|(?<!\^),(?!,)/)) {
+    applyPart(part);
   }
 
-  // literal "^"
-  if (part === "^") {
-    charCodes.add("^".charCodeAt(0));
-    return;
+  return chars;
+}
+
+function codeToRegex(code: number): string {
+  if (code < 0 || code > 0x10ffff) {
+    throw new Error(`Invalid Unicode code point: ${code}`);
   }
 
-  // exclusion mark
-  const isExclusion = part.startsWith("^");
-  const content = isExclusion ? part.substring(1) : part;
-
-  const action = isExclusion
-    ? (code: number) => charCodes.delete(code)
-    : (code: number) => charCodes.add(code);
-
-  // "@" -> a-zA-Z
-  if (content === "@") {
-    for (let i = "a".charCodeAt(0); i <= "z".charCodeAt(0); i++) action(i);
-    for (let i = "A".charCodeAt(0); i <= "Z".charCodeAt(0); i++) action(i);
-    return;
+  if (code <= 0xff) {
+    return "\\x" + code.toString(16).padStart(2, "0");
   }
 
-  // "start-end" ranges
-  if (content.includes("-") && content.length > 1) {
-    const [startStr, endStr] = content.split("-", 2);
-    const start = getCharCode(startStr);
-    const end = getCharCode(endStr);
-    for (let i = start; i <= end; i++) {
-      action(i);
-    }
-    return;
-  }
-
-  // single char
-  action(getCharCode(content));
+  return "\\u{" + code.toString(16) + "}";
 }
 
 function buildRegexFromCharCodes(charCodes: Set<number>): string {
-  if (charCodes.size === 0) return "";
-
-  const codeToHexString = (code: number): string => {
-    return "\\x" + code.toString(16).padStart(2, "0");
-  };
+  if (charCodes.size === 0) {
+    return "";
+  }
 
   const sortedCodes = Array.from(charCodes).sort((a, b) => a - b);
   let content = "";
@@ -138,36 +204,61 @@ function buildRegexFromCharCodes(charCodes: Set<number>): string {
   for (let i = 0; i < sortedCodes.length;) {
     const startCode = sortedCodes[i];
     let j = i;
+
     while (
-      j + 1 < sortedCodes.length && sortedCodes[j + 1] === sortedCodes[j] + 1
+      j + 1 < sortedCodes.length &&
+      sortedCodes[j + 1] === sortedCodes[j] + 1
     ) {
       j++;
     }
+
     const endCode = sortedCodes[j];
 
     if (endCode > startCode) {
-      // "start-end" format
-      content += `${codeToHexString(startCode)}-${codeToHexString(endCode)}`;
+      content += `${codeToRegex(startCode)}-${codeToRegex(endCode)}`;
     } else {
-      // single char
-      content += codeToHexString(startCode);
+      content += codeToRegex(startCode);
     }
+
     i = j + 1;
   }
 
   return content;
 }
 
+function buildKeywordRegExp(chars: KeywordChars): string {
+  const patterns: string[] = [];
+
+  if (chars.alphabetic) {
+    const excluded = buildRegexFromCharCodes(chars.excluded);
+
+    patterns.push(
+      excluded === ""
+        ? "\\p{L}"
+        : `(?:(?![${excluded}])\\p{L})`,
+    );
+  }
+
+  if (chars.included.size > 0) {
+    patterns.push(`[${buildRegexFromCharCodes(chars.included)}]`);
+  }
+
+  // Match nothing if iskeyword contains no characters.
+  if (patterns.length === 0) {
+    return "(?!)";
+  }
+
+  return patterns.length === 1
+    ? patterns[0]
+    : `(?:${patterns.join("|")})`;
+}
+
 function vimoption2ts(option: string): string {
   if (option === "") {
-    return "";
+    return "(?!)";
   }
-  const charCodes = new Set<number>();
-  // Split by ",", unless it follows a "^" or is surrounded by ","
-  for (const part of option.split(/(?<![\^,]),|(?<!\^),(?!,)/)) {
-    parseIskeywordPart(part, charCodes);
-  }
-  return buildRegexFromCharCodes(charCodes);
+
+  return buildKeywordRegExp(parseKeywordChars(option));
 }
 
 export async function printError(
@@ -183,7 +274,8 @@ export async function printError(
 
     if (typeof v === "object" && v !== null) {
       try {
-        return JSON.stringify(v);
+        const json = JSON.stringify(v);
+        return json === undefined ? String(v) : json;
       } catch (_e: unknown) {
         return String(v);
       }
@@ -199,6 +291,7 @@ export async function safeStat(path: string): Promise<Deno.FileInfo | null> {
   // NOTE: Deno.stat() may be failed
   try {
     const stat = await Deno.lstat(path);
+
     if (stat.isSymlink) {
       try {
         const stat = await Deno.stat(path);
@@ -208,10 +301,12 @@ export async function safeStat(path: string): Promise<Deno.FileInfo | null> {
         // Ignore stat exception
       }
     }
+
     return stat;
   } catch (_: unknown) {
     // Ignore stat exception
   }
+
   return null;
 }
 
@@ -234,9 +329,9 @@ export async function callCallback(
       callback,
       args,
     );
-  } else {
-    return await callback(denops, args);
   }
+
+  return await callback(denops, args);
 }
 
 const importMapCache = new Map<string, ImportMap | null>();
@@ -249,12 +344,14 @@ export async function tryLoadImportMap(
     // We cannot load import maps for remote scripts
     return undefined;
   }
+
   const PATTERNS = [
     "deno.json",
     "deno.jsonc",
     "import_map.json",
     "import_map.jsonc",
   ];
+
   // Convert file URL to path for file operations
   const scriptPath = script.startsWith("file://")
     ? fromFileUrl(new URL(script))
@@ -267,6 +364,7 @@ export async function tryLoadImportMap(
 
   for (const pattern of PATTERNS) {
     const importMapPath = join(parentDir, pattern);
+
     try {
       const importMap = await loadImportMap(importMapPath);
       importMapCache.set(parentDir, importMap);
@@ -276,9 +374,11 @@ export async function tryLoadImportMap(
         // Ignore NotFound errors and try the next pattern
         continue;
       }
-      throw err; // Rethrow other errors
+
+      throw err;
     }
   }
+
   importMapCache.set(parentDir, null);
   return undefined;
 }
@@ -289,46 +389,52 @@ export async function importPlugin(path: string): Promise<unknown> {
   const suffix = performance.now();
   const url = toFileUrl(path).href;
   const importMap = await tryLoadImportMap(path);
+
   if (importMap) {
     const parentDir = dirname(path);
     let importer = importerCache.get(parentDir);
+
     if (!importer) {
       importer = new ImportMapImporter(importMap);
       importerCache.set(parentDir, importer);
     }
+
     return await importer.import(`${url}#${suffix}`);
-  } else {
-    return await import(`${url}#${suffix}`);
   }
+
+  return await import(`${url}#${suffix}`);
 }
 
 Deno.test("vimoption2ts", () => {
-  assertEquals(vimoption2ts(""), "");
-  assertEquals(
-    vimoption2ts("@,48-57,_,\\"),
-    "\\x30-\\x39\\x41-\\x5a\\x5c\\x5f\\x61-\\x7a", // "a-zA-Z0-9_\\\\"
-  );
-  assertEquals(
-    vimoption2ts("@,-,48-57,_"),
-    "\\x2d\\x30-\\x39\\x41-\\x5a\\x5f\\x61-\\x7a", // "a-zA-Z0-9_-"
-  );
-  assertEquals(
-    vimoption2ts("@,,,48-57,_"),
-    "\\x2c\\x30-\\x39\\x41-\\x5a\\x5f\\x61-\\x7a", // "a-zA-Z,0-9_"
-  );
-  assertEquals(
-    vimoption2ts("@,48-57,_,-,+,\\,!,~"),
-    "\\x21\\x2b\\x2d\\x30-\\x39\\x41-\\x5a\\x5c\\x5f\\x61-\\x7a\\x7e", // "a-zA-Z0-9_+\\\\!~-"
-  );
+  const ascii = new RegExp(vimoption2ts("@,48-57,_"), "u");
 
-  // Examples from Vim's help page
-  assertEquals(
-    vimoption2ts("_,-,128-140,#-43"),
-    "\\x23-\\x2b\\x2d\\x5f\\x80-\\x8c", // '#'-'+', '-', '_', 0x80-0x8c
-  );
-  assertEquals(vimoption2ts("^a-z,#,^"), "\\x23\\x5e"); // '#' , '^'
-  assertEquals(vimoption2ts("@,^a-z"), "\\x41-\\x5a"); // 'A'-'Z'
-  assertEquals(vimoption2ts("a-z,A-Z,@-@"), "\\x40-\\x5a\\x61-\\x7a"); // '@', 'A'-'Z', 'a'-'z'
-  assertEquals(vimoption2ts("48-57,,,_"), "\\x2c\\x30-\\x39\\x5f"); // ',', '0'-'9', '_'
-  assertEquals(vimoption2ts(" -~,^,,9"), "\\x09\\x20-\\x2b\\x2d-\\x7e"); // Tab, ' '-'+', '-'-'~'
+  assertEquals(ascii.test("a"), true);
+  assertEquals(ascii.test("Z"), true);
+  assertEquals(ascii.test("9"), true);
+  assertEquals(ascii.test("_"), true);
+  assertEquals(ascii.test("-"), false);
+
+  const unicode = new RegExp(vimoption2ts("@"), "u");
+
+  assertEquals(unicode.test("日本語"), true);
+  assertEquals(unicode.test("é"), true);
+  assertEquals(unicode.test("Ж"), true);
+  assertEquals(unicode.test("1"), false);
+
+  const excluded = new RegExp(vimoption2ts("@,^a-z"), "u");
+
+  assertEquals(excluded.test("A"), true);
+  assertEquals(excluded.test("Z"), true);
+  assertEquals(excluded.test("a"), false);
+  assertEquals(excluded.test("z"), false);
+
+  const explicitUnicode = new RegExp(vimoption2ts("あ"), "u");
+
+  assertEquals(explicitUnicode.test("あ"), true);
+  assertEquals(explicitUnicode.test("い"), false);
+
+  const digits = new RegExp(vimoption2ts("48-57"), "u");
+
+  assertEquals(digits.test("5"), true);
+  assertEquals(digits.test("a"), false);
 });
