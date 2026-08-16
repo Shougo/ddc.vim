@@ -48,9 +48,9 @@ function ddc#util#benchmark(msg = '') abort
 endfunction
 
 function ddc#util#check_skip_complete() abort
-  const count = g:->get('ddc#_skip_next_complete', 0)
-  if count > 0
-    let g:ddc#_skip_next_complete = count - 1
+  const skip = g:->get('ddc#_skip_next_complete', 0)
+  if skip > 0
+    let g:ddc#_skip_next_complete = skip - 1
     return v:true
   endif
 
