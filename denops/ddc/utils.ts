@@ -233,9 +233,7 @@ function buildKeywordRegExp(chars: KeywordChars): string {
     const excluded = buildRegexFromCharCodes(chars.excluded);
 
     patterns.push(
-      excluded === ""
-        ? "\\p{L}"
-        : `(?:(?![${excluded}])\\p{L})`,
+      excluded === "" ? "\\p{L}" : `(?:(?![${excluded}])\\p{L})`,
     );
   }
 
@@ -248,9 +246,7 @@ function buildKeywordRegExp(chars: KeywordChars): string {
     return "(?!)";
   }
 
-  return patterns.length === 1
-    ? patterns[0]
-    : `(?:${patterns.join("|")})`;
+  return patterns.length === 1 ? patterns[0] : `(?:${patterns.join("|")})`;
 }
 
 function vimoption2ts(option: string): string {
