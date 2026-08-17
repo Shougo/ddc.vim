@@ -76,15 +76,17 @@ export class Ddc {
     this.#currentGatherController?.abort();
   }
 
-  initialize(denops: Denops) {
+  async initialize(denops: Denops) {
     this.#state = new State(denops);
-    this.#state.set("ddc#_changedtick", 0);
-    this.#state.set("ddc#_complete_pos", -1);
-    this.#state.set("ddc#_items", []);
-    this.#state.set("ddc#_skip_next_complete", 0);
-    this.#state.set("ddc#_sources", []);
+    await Promise.all([
+      this.#state.set("ddc#_changedtick", 0),
+      this.#state.set("ddc#_complete_pos", -1),
+      this.#state.set("ddc#_items", []),
+      this.#state.set("ddc#_skip_next_complete", 0),
+      this.#state.set("ddc#_sources", []),
+    ]);
 
-    batch(denops, async (denops: Denops) => {
+    await batch(denops, async (denops: Denops) => {
       await denops.call("ddc#on_event", "Initialize");
 
       this.registerAutocmd(denops, [
