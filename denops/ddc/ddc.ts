@@ -24,7 +24,8 @@ import {
   getSource,
   getUi,
 } from "./ext.ts";
-import { callCallback } from "./utils.ts";
+import { callCallback, printError } from "./utils.ts";
+import { isDdcCallbackCancelError } from "./callback.ts";
 import { State } from "./state.ts";
 
 import type { Denops } from "@denops/std";
@@ -62,6 +63,9 @@ export class Ddc {
   #prevEvent = "";
   #state: State | undefined;
   #currentGatherController: AbortController | undefined = undefined;
+  // Monotonically increasing counter; each doCompletion() captures its own
+  // value and checks it before mutating shared state.
+  #completionGeneration = 0;
 
   constructor(loader: Loader) {
     this.#loader = loader;
@@ -221,195 +225,233 @@ export class Ddc {
     this.#prevSources = options.sources;
 
     const rs = await Promise.all(options.sources.map(async (userSource) => {
-      const [s, o, p] = await getSource(
-        denops,
-        this.#loader,
-        options,
-        userSource,
-      );
-      // Check enabled
-      if (
-        !s || (o.enabledIf !== "" && !(await denops.call("eval", o.enabledIf)))
-      ) {
-        return;
-      }
-
-      const pos = await callSourceGetCompletePosition(
-        s,
-        denops,
-        context,
-        onCallback,
-        options,
-        o,
-        p,
-      );
-
-      const forceCompletion = o.forceCompletionPattern.length !== 0 &&
-        context.input.search(
-            new RegExp("(?:" + o.forceCompletionPattern + ")$"),
-          ) !== -1;
-
-      // NOTE: If forceCompletion and not matched getCompletePosition(),
-      // Use cursor position instead.
-      const completePos = (pos < 0 && forceCompletion)
-        ? context.input.length
-        : (s.isBytePos && pos >= 0)
-        ? byteposToCharpos(context.input, pos)
-        : pos;
-      const completeStr = completePos < 0
-        ? ""
-        : context.input.slice(completePos);
-
-      const invalidCompleteLength = context.event === "Manual"
-        ? (completeStr.length < o.minManualCompleteLength ||
-          completeStr.length > o.maxManualCompleteLength)
-        : (completeStr.length < o.minAutoCompleteLength ||
-          completeStr.length > o.maxAutoCompleteLength);
-
-      if (s.name in this.#prevResults) {
-        const currentTime = Math.floor(Date.now() / 1000);
-
-        // Check cache timeout.
-        const checkTimeout = o.cacheTimeout > 0 && this.#prevResults[s.name] &&
-          currentTime > this.#prevResults[s.name].time + o.cacheTimeout;
-
-        // Check complete position.
-        const checkCompletePos =
-          context.lineNr !== this.#prevResults[s.name].lineNr ||
-          completePos !== this.#prevResults[s.name].completePos;
-
-        if (checkTimeout || checkCompletePos) {
-          delete this.#prevResults[s.name];
-        }
-      }
-
-      // Check previous result.
-      const checkPrevResult = s.name in this.#prevResults
-        ? this.#prevResults[s.name]
-        : null;
-
-      const triggerForIncomplete = (checkPrevResult?.isIncomplete ?? false) &&
-        !invalidCompleteLength;
-
-      if (
-        completePos < 0 ||
-        (invalidCompleteLength && !forceCompletion && !triggerForIncomplete &&
-          context.event !== "Manual")
-      ) {
-        // The cache is cleared when invalid input.
-        if (o.cacheTimeout <= 0 && checkPrevResult) {
-          delete this.#prevResults[s.name];
+      // Isolate per-source failures so one source error does not lose results
+      // from other sources.
+      try {
+        const [s, o, p] = await getSource(
+          denops,
+          this.#loader,
+          options,
+          userSource,
+        );
+        // Check enabled
+        if (
+          !s ||
+          (o.enabledIf !== "" && !(await denops.call("eval", o.enabledIf)))
+        ) {
+          return;
         }
 
-        return;
-      }
-
-      const isVolatile = o.isVolatile &&
-        (o.volatilePattern == "" ||
-          context.input.search(
-              new RegExp("(?:" + o.volatilePattern + ")$"),
-            ) !== -1);
-
-      const shouldGather = !checkPrevResult ||
-        triggerForIncomplete ||
-        context.event === "Manual" ||
-        (isVolatile && context.event !== "Update");
-
-      if (shouldGather) {
-        // Not matched.
-        const replacePattern = new RegExp(o.replaceSourceInputPattern);
-
-        const callSourceGatherPromise = callSourceGather(
+        const pos = await callSourceGetCompletePosition(
           s,
           denops,
-          {
-            ...context,
-            input: o.replaceSourceInputPattern.length !== 0
-              ? context.input.replace(replacePattern, "")
-              : context.input,
-          },
+          context,
           onCallback,
           options,
           o,
           p,
-          this.#loader,
-          completePos,
-          o.replaceSourceInputPattern.length !== 0
-            ? completeStr.replace(replacePattern, "")
-            : completeStr,
-          triggerForIncomplete,
-          signal,
         );
 
-        const timeoutPromise = new Promise(
-          (_, reject) =>
-            setTimeout(() => reject(new Error("Timeout")), o.hideTimeout),
-        );
+        const forceCompletion = o.forceCompletionPattern.length !== 0 &&
+          context.input.search(
+              new RegExp("(?:" + o.forceCompletionPattern + ")$"),
+            ) !== -1;
 
-        try {
-          await Promise.race([callSourceGatherPromise, timeoutPromise]);
-        } catch (error: unknown) {
-          if ((error as Error).message === "Timeout") {
-            await this.hide(denops, context, options);
-          } else {
-            throw error;
+        // NOTE: If forceCompletion and not matched getCompletePosition(),
+        // Use cursor position instead.
+        const completePos = (pos < 0 && forceCompletion)
+          ? context.input.length
+          : (s.isBytePos && pos >= 0)
+          ? byteposToCharpos(context.input, pos)
+          : pos;
+        const completeStr = completePos < 0
+          ? ""
+          : context.input.slice(completePos);
+
+        const invalidCompleteLength = context.event === "Manual"
+          ? (completeStr.length < o.minManualCompleteLength ||
+            completeStr.length > o.maxManualCompleteLength)
+          : (completeStr.length < o.minAutoCompleteLength ||
+            completeStr.length > o.maxAutoCompleteLength);
+
+        if (s.name in this.#prevResults) {
+          const currentTime = Math.floor(Date.now() / 1000);
+
+          // Check cache timeout.
+          const checkTimeout = o.cacheTimeout > 0 &&
+            this.#prevResults[s.name] &&
+            currentTime > this.#prevResults[s.name].time + o.cacheTimeout;
+
+          // Check complete position.
+          const checkCompletePos =
+            context.lineNr !== this.#prevResults[s.name].lineNr ||
+            completePos !== this.#prevResults[s.name].completePos;
+
+          if (checkTimeout || checkCompletePos) {
+            delete this.#prevResults[s.name];
           }
         }
 
-        const result = await callSourceGatherPromise;
+        // Check previous result.
+        const checkPrevResult = s.name in this.#prevResults
+          ? this.#prevResults[s.name]
+          : null;
 
-        let items: Item[];
-        let isIncomplete: boolean;
-        if ("isIncomplete" in result) {
-          // DdcGatherItems
-          items = [...result.items];
-          isIncomplete = result.isIncomplete;
-        } else {
-          // Item[]
-          items = [...result];
-          isIncomplete = false;
+        const triggerForIncomplete = (checkPrevResult?.isIncomplete ?? false) &&
+          !invalidCompleteLength;
+
+        if (
+          completePos < 0 ||
+          (invalidCompleteLength && !forceCompletion && !triggerForIncomplete &&
+            context.event !== "Manual")
+        ) {
+          // The cache is cleared when invalid input.
+          if (o.cacheTimeout <= 0 && checkPrevResult) {
+            delete this.#prevResults[s.name];
+          }
+
+          return;
         }
 
-        this.#prevResults[s.name] = {
-          items,
-          completePos,
+        const isVolatile = o.isVolatile &&
+          (o.volatilePattern == "" ||
+            context.input.search(
+                new RegExp("(?:" + o.volatilePattern + ")$"),
+              ) !== -1);
+
+        const shouldGather = !checkPrevResult ||
+          triggerForIncomplete ||
+          context.event === "Manual" ||
+          (isVolatile && context.event !== "Update");
+
+        if (shouldGather) {
+          // Not matched.
+          const replacePattern = new RegExp(o.replaceSourceInputPattern);
+
+          const callSourceGatherPromise = callSourceGather(
+            s,
+            denops,
+            {
+              ...context,
+              input: o.replaceSourceInputPattern.length !== 0
+                ? context.input.replace(replacePattern, "")
+                : context.input,
+            },
+            onCallback,
+            options,
+            o,
+            p,
+            this.#loader,
+            completePos,
+            o.replaceSourceInputPattern.length !== 0
+              ? completeStr.replace(replacePattern, "")
+              : completeStr,
+            triggerForIncomplete,
+            signal,
+          );
+
+          // Race the gather against a hideTimeout timer.  On timeout, hide the
+          // UI and skip this source (do NOT await the original gather again).
+          let timeoutId: ReturnType<typeof setTimeout> | undefined;
+          const timeoutPromise = new Promise<"timeout">(
+            (resolve) => {
+              timeoutId = setTimeout(
+                () => resolve("timeout"),
+                o.hideTimeout,
+              );
+            },
+          );
+
+          let gatherResult: Awaited<typeof callSourceGatherPromise> | undefined;
+          const raceResult = await Promise.race([
+            callSourceGatherPromise.then((r) => {
+              gatherResult = r;
+              return "done" as const;
+            }),
+            timeoutPromise,
+          ]);
+
+          // Always clear the timeout timer to avoid later spurious fires.
+          clearTimeout(timeoutId);
+
+          if (raceResult === "timeout") {
+            // This source timed out: hide UI and skip it.  The original
+            // gather promise is intentionally abandoned (not awaited further).
+            await this.hide(denops, context, options);
+            return;
+          }
+
+          const result = gatherResult!;
+
+          let items: Item[];
+          let isIncomplete: boolean;
+          if ("isIncomplete" in result) {
+            // DdcGatherItems
+            items = [...result.items];
+            isIncomplete = result.isIncomplete;
+          } else {
+            // Item[]
+            items = [...result];
+            isIncomplete = false;
+          }
+
+          this.#prevResults[s.name] = {
+            items,
+            completePos,
+            completeStr,
+            lineNr: context.lineNr,
+            isIncomplete,
+            time: Math.floor(Date.now() / 1000),
+          };
+        }
+
+        const prevResult = this.#prevResults[s.name];
+
+        // NOTE: Use deepcopy.  Because of filters may break original items.
+        const fis = await filterItems(
+          denops,
+          this.#loader,
+          context,
+          onCallback,
+          options,
+          o,
           completeStr,
-          lineNr: context.lineNr,
-          isIncomplete,
-          time: Math.floor(Date.now() / 1000),
-        };
-      }
+          structuredClone(prevResult.items),
+        );
 
-      const prevResult = this.#prevResults[s.name];
-
-      // NOTE: Use deepcopy.  Because of filters may break original items.
-      const fis = await filterItems(
-        denops,
-        this.#loader,
-        context,
-        onCallback,
-        options,
-        o,
-        completeStr,
-        structuredClone(prevResult.items),
-      );
-
-      const items = fis.map((c) => (
-        {
-          ...c,
-          __sourceName: s.name,
-          __dup: o.dup,
-          abbr: formatAbbr(c.word, c.abbr),
-          kind: c.kind ? c.kind : "",
-          info: c.info ? c.info : "",
-          menu: formatMenu(o.mark, c.menu),
+        const items = fis.map((c) => (
+          {
+            ...c,
+            __sourceName: s.name,
+            __dup: o.dup,
+            abbr: formatAbbr(c.word, c.abbr),
+            kind: c.kind ? c.kind : "",
+            info: c.info ? c.info : "",
+            menu: formatMenu(o.mark, c.menu),
+          }
+        ));
+        if (!items.length) {
+          return;
         }
-      ));
-      if (!items.length) {
-        return;
-      }
 
-      return [completePos, items] as const;
+        return [completePos, items] as const;
+      } catch (e: unknown) {
+        // If the outer completion was cancelled (abort signal), propagate so
+        // the caller can skip state updates silently.
+        if (
+          isDdcCallbackCancelError(e) ||
+          (e instanceof DOMException && e.name === "AbortError")
+        ) {
+          throw e;
+        }
+        // Other per-source errors are isolated: log and treat as no results.
+        await printError(
+          denops,
+          e,
+          `source gather failed`,
+        );
+        return undefined;
+      }
     }));
 
     // Remove invalid source
@@ -613,77 +655,104 @@ export class Ddc {
     const controller = new AbortController();
     this.#currentGatherController = controller;
 
-    const [completePos, items] = await this.gatherResults(
-      denops,
-      context,
-      cbContext.createOnCallback(),
-      options,
-      controller.signal,
-    );
+    // Capture the current generation so that any async step below can verify
+    // it has not been superseded by a newer doCompletion() call.
+    const generation = ++this.#completionGeneration;
 
-    this.#prevInput = context.input;
+    try {
+      const [completePos, items] = await this.gatherResults(
+        denops,
+        context,
+        cbContext.createOnCallback(),
+        options,
+        controller.signal,
+      );
 
-    const dynamicUi = await callCallback(denops, options.dynamicUi, {
-      completePos,
-      items,
-    }) as string | null;
-    if (dynamicUi) {
-      options.ui = dynamicUi;
-    }
-
-    const [ui, uiOptions, uiParams] = await getUi(
-      denops,
-      this.#loader,
-      options,
-    );
-
-    if (ui !== this.currentUi) {
-      // UI is changed
-      if (this.currentUi) {
-        await this.currentUi.hide({
-          denops,
-          context,
-          options,
-          uiOptions: this.currentUiOptions,
-          uiParams: this.currentUiParams,
-        });
+      // Stale check after the first major async boundary.
+      if (generation !== this.#completionGeneration) {
+        return;
       }
 
-      this.currentUi = ui;
-      this.currentUiOptions = uiOptions;
-      this.currentUiParams = uiParams;
-    }
+      this.#prevInput = context.input;
 
-    if (!ui) {
-      console.log(`Not found ui or "ui" option is not set.`);
-      return;
-    }
-
-    const [currentInput, currentMode] = await collect(denops, (denops) => [
-      // ddc#util#get_input always returns a string; cast for type inference.
-      denops.call("ddc#util#get_input", context.event) as Promise<string>,
-      fn.mode(denops),
-    ]);
-    if (context.input !== currentInput || context.mode !== currentMode) {
-      // Input is changed.  Skip invalid completion.
-      await this.hide(denops, context, options);
-      return;
-    }
-
-    await (async function write(ddc: Ddc) {
-      const state = ddc.getState();
-      if (state) {
-        state.set("ddc#_complete_pos", completePos);
-        state.set("ddc#_sources", options.sources);
-        state.scheduleItemsSync(items);
+      const dynamicUi = await callCallback(denops, options.dynamicUi, {
+        completePos,
+        items,
+      }) as string | null;
+      if (dynamicUi) {
+        options.ui = dynamicUi;
       }
 
-      if (completePos < 0 || items.length === 0) {
-        await ddc.hide(denops, context, options);
-      } else {
-        await ddc.show(denops, context, options, completePos, items);
+      // Stale check after dynamicUi resolution.
+      if (generation !== this.#completionGeneration) {
+        return;
       }
-    })(this);
+
+      const [ui, uiOptions, uiParams] = await getUi(
+        denops,
+        this.#loader,
+        options,
+      );
+
+      if (ui !== this.currentUi) {
+        // UI is changed
+        if (this.currentUi) {
+          await this.currentUi.hide({
+            denops,
+            context,
+            options,
+            uiOptions: this.currentUiOptions,
+            uiParams: this.currentUiParams,
+          });
+        }
+
+        this.currentUi = ui;
+        this.currentUiOptions = uiOptions;
+        this.currentUiParams = uiParams;
+      }
+
+      if (!ui) {
+        console.log(`Not found ui or "ui" option is not set.`);
+        return;
+      }
+
+      const [currentInput, currentMode] = await collect(denops, (denops) => [
+        // ddc#util#get_input always returns a string; cast for type inference.
+        denops.call("ddc#util#get_input", context.event) as Promise<string>,
+        fn.mode(denops),
+      ]);
+      if (context.input !== currentInput || context.mode !== currentMode) {
+        // Input is changed.  Skip invalid completion.
+        await this.hide(denops, context, options);
+        return;
+      }
+
+      // Final stale check immediately before mutating state / UI.
+      if (generation !== this.#completionGeneration) {
+        return;
+      }
+
+      await (async function write(ddc: Ddc) {
+        const state = ddc.getState();
+        if (state) {
+          state.set("ddc#_complete_pos", completePos);
+          state.set("ddc#_sources", options.sources);
+          state.scheduleItemsSync(items);
+        }
+
+        if (completePos < 0 || items.length === 0) {
+          await ddc.hide(denops, context, options);
+        } else {
+          await ddc.show(denops, context, options, completePos, items);
+        }
+      })(this);
+    } finally {
+      // Only clear the controller reference if it still belongs to this
+      // invocation; a newer doCompletion() may have already replaced it.
+      if (this.#currentGatherController === controller) {
+        this.#currentGatherController = undefined;
+      }
+    }
   }
 
   async show(
