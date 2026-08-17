@@ -583,7 +583,7 @@ export class Ddc {
     event: string,
   ) {
     // NOTE: Continue manual completion if narrowing words
-    const check = options.autoCompleteEvents.indexOf(event) > 0 &&
+    const check = options.autoCompleteEvents.includes(event) &&
       this.#prevEvent === "Manual" &&
       context.input.startsWith(this.#prevInput) &&
       context.input.replace(/\S+$/, "") ===
