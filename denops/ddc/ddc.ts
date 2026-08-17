@@ -142,7 +142,7 @@ export class Ddc {
         helper.define(
           "CmdlineChanged",
           "*",
-          ": if getcmdtype() !=# '=' || getcmdtype() !=# '@'" +
+          ": if getcmdtype() !=# '=' && getcmdtype() !=# '@'" +
             "|   call ddc#on_event('CmdlineChanged')" +
             "| endif",
         );
