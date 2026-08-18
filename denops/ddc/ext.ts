@@ -820,7 +820,7 @@ export function createGatherAbortError(): Error {
  * Returns a Promise that rejects with a DdcCallbackCancelError-named error
  * as soon as the given AbortSignal is (or becomes) aborted.
  */
-function createAbortPromise(
+export function createAbortPromise(
   signal: AbortSignal,
 ): {
   promise: Promise<never>;
