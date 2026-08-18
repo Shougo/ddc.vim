@@ -24,15 +24,13 @@ jobs:
           deno-version: ${{ env.DENO_VERSION }}
 
       - name: Check Type
-        run: |
-          find denops -name "*.ts"| xargs deno test --unstable --no-run -A
+        run: deno task check
 
-      - name: Check with deno lint
-        run: deno lint denops
+      - name: Check Lint
+        run: deno task lint
 
       - name: Check Format
-        run: |
-          deno fmt --check denops Makefile .github
+        run: deno task fmt --check
 
   deno-test:
     runs-on: ubuntu-latest
@@ -43,8 +41,7 @@ jobs:
           deno-version: ${{ env.DENO_VERSION }}
 
       - name: Test
-        run: |
-          grep -rl Deno.test denops| xargs deno test --unstable -A
+        run: deno task test
         timeout-minutes: 5
 
   deno-test-publish:
