@@ -181,17 +181,27 @@ export async function getPreviewer(
     return { kind: "empty" };
   }
 
-  const previewer = await source.getPreviewer({
-    denops,
-    context,
-    options,
-    sourceOptions,
-    sourceParams,
-    item,
-    previewContext,
-  });
+  try {
+    return await source.getPreviewer({
+      denops,
+      context,
+      options,
+      sourceOptions,
+      sourceParams,
+      item,
+      previewContext,
+    });
+  } catch (e: unknown) {
+    if (!isDdcCallbackCancelError(e)) {
+      await printError(
+        denops,
+        e,
+        `source: ${source.name} "getPreviewer()" failed`,
+      );
+    }
 
-  return previewer;
+    return { kind: "empty" };
+  }
 }
 
 export async function filterItems(
@@ -243,7 +253,7 @@ export async function filterItems(
     const resolved: ResolvedFilter[] = [];
     for (const [filter, filterOptions, filterParams] of resolvedList) {
       if (!filter) {
-        return [];
+        continue;
       }
       resolved.push([filter, filterOptions, filterParams]);
     }
@@ -380,13 +390,13 @@ export async function filterItems(
   cdd = await runMatchersConcurrently(filters.matchers, cdd);
 
   if (sourceOptions.matcherKey !== "") {
-    cdd = cdd.map((c) => (
-      {
-        ...c,
-        // @ts-ignore: Restore matcherKey
-        word: c.__word,
-      }
-    ));
+    cdd = cdd.map((c) => {
+      const { __word: _word, ...item } = c as Item & { __word?: string };
+      return {
+        ...item,
+        word: _word ?? item.word,
+      };
+    });
   }
 
   cdd = await callFilters(filters.sorters, cdd);
@@ -439,7 +449,7 @@ export async function onEvent(
       userSource,
     );
     if (!source) {
-      return;
+      continue;
     }
 
     await callSourceOnEvent(
@@ -810,18 +820,32 @@ export function createGatherAbortError(): Error {
  * Returns a Promise that rejects with a DdcCallbackCancelError-named error
  * as soon as the given AbortSignal is (or becomes) aborted.
  */
-export function createAbortPromise(signal: AbortSignal): Promise<never> {
-  return new Promise<never>((_, rej) => {
+function createAbortPromise(
+  signal: AbortSignal,
+): {
+  promise: Promise<never>;
+  cleanup: () => void;
+} {
+  let listener: (() => void) | undefined;
+
+  const promise = new Promise<never>((_, reject) => {
     if (signal.aborted) {
-      rej(createGatherAbortError());
+      reject(createGatherAbortError());
       return;
     }
-    signal.addEventListener(
-      "abort",
-      () => rej(createGatherAbortError()),
-      { once: true },
-    );
+
+    listener = () => reject(createGatherAbortError());
+    signal.addEventListener("abort", listener, { once: true });
   });
+
+  return {
+    promise,
+    cleanup: () => {
+      if (listener) {
+        signal.removeEventListener("abort", listener);
+      }
+    },
+  };
 }
 
 export async function callSourceGather<
@@ -862,10 +886,13 @@ export async function callSourceGather<
       return await gatherPromise;
     }
 
-    // Race the gather against an abort promise so that when the signal fires
-    // the gather is abandoned immediately (even if the source does not check
-    // the signal itself).
-    return await Promise.race([gatherPromise, createAbortPromise(signal)]);
+    const abort = createAbortPromise(signal);
+
+    try {
+      return await Promise.race([gatherPromise, abort.promise]);
+    } finally {
+      abort.cleanup();
+    }
   } catch (e: unknown) {
     if (
       isDdcCallbackCancelError(e) ||
