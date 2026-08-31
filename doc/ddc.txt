@@ -196,30 +196,45 @@ hideOnEvents
 
                                                *ddc-option-matcherConcurrency*
 matcherConcurrency	(number)
-		The maximum number of concurrent tasks used when running
-		matchers in parallel.
+		The maximum number of item chunks processed concurrently
+		when running matchers.
 
-		When this value is greater than 1, ddc splits the current item
-		list into (at most "matcherConcurrency") equal-sized chunks
-		and runs all configured matchers on every chunk concurrently
-		via "Promise.all".  The final result is the concatenation of
-		the per-chunk results, preserving the original item order.
+		When this value is greater than 1, ddc splits the current
+		item list into at most "matcherConcurrency" chunks.  The
+		configured matcher pipeline is then run independently for
+		each chunk, and the chunk processing is executed concurrently
+		using "Promise.all".
 
-		Parallel execution is only activated when ALL of the following
-		conditions hold:
-		  1. "matcherConcurrency" > 1
-		  2. Every matcher in the active filter list has declared
-		     itself parallel-safe by |ddc-filter-option-parallelSafe|.
-		  3. Every chunk returns exactly the same number of items as it
-		     received (i.e. no filter removes or adds items during
-		     the parallel pass).
+		The results are concatenated in the original chunk order.
+		Therefore, the original item order is preserved as long as
+		the matchers themselves preserve the order within each chunk.
 
-		If any condition is not met, or if any chunk throws an
-		exception, ddc falls back transparently to the normal
-		sequential matcher execution.
+		Parallel execution is used only when all of the following
+		conditions are met:
+
+		  1. "matcherConcurrency" is greater than 1.
+		  2. Every matcher in the active filter list has been resolved
+		     successfully.
+		  3. Every matcher has set
+		     |ddc-filter-option-parallelSafe| to v:true.
+
+		After parallel execution, ddc verifies that every chunk
+		returned the same number of items as it received.  If a
+		matcher removes or adds an item, the parallel result is
+		discarded and the matcher pipeline is run again sequentially
+		for the complete item list.
+
+		If processing any chunk throws an exception, ddc also falls
+		back to sequential execution for the complete item list.
+
+		If a matcher cannot be resolved, ddc returns an empty item list,
+		as in the normal matcher execution path.
+
+		NOTE: The filter options are resolved once before the parallel
+		execution and reused for all chunks.
 
 		NOTE: The default value is 1, which preserves the existing
-		sequential behaviour completely.
+		sequential behavior completely.
 
 		Default: 1
 
