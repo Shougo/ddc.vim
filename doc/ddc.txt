@@ -987,15 +987,23 @@ FILTER OPTIONS                                            *ddc-filter-options*
 
                                               *ddc-filter-option-parallelSafe*
 parallelSafe		(boolean)
-		Set this to v:true on a filter when the filter processes each
-		item independently and does not rely on the order of items or
-		the total item count.  A typical use-case is a filter that
-		only annotates items with highlight information without
-		removing any of them.
+		Set this to v:true when the filter can be safely executed
+		as part of an independently processed item chunk.
 
-		When this option is v:true and |ddc-option-matcherConcurrency|
-		is greater than 1, ddc may run this matcher concurrently on
-		independent item chunks for improved performance.
+		A parallel-safe matcher must not depend on items outside its
+		input item, the order of other items, or the total number of
+		items.  It must also avoid shared mutable state that could be
+		accessed concurrently.
+
+		The matcher should not add or remove items when used with
+		|ddc-option-matcherConcurrency|.  If any chunk returns a
+		different number of items from the number it received, ddc
+		discards the parallel result and reruns the matcher pipeline
+		sequentially.
+
+		When this option is v:true and
+		|ddc-option-matcherConcurrency| is greater than 1, ddc may
+		process item chunks concurrently.
 
 		Default: v:false
 
