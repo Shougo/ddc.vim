@@ -876,8 +876,14 @@ maxKeywordLength	(number)
 
                                                   *ddc-source-option-maxItems*
 maxItems		(number)
-		If there are more items than this value, ddc will ignore the
-		filtering.
+		The maximum number of items retained for the source.
+
+		Matchers and sorters are applied before this limit.  After
+		the items have been sorted, ddc keeps only the first
+		"maxItems" items.  Converters are applied after the limit.
+
+		This is useful for limiting the number of items passed to
+		converters and displayed by the completion UI.
 
 		Default: 500
 
