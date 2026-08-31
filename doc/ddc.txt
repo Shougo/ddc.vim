@@ -358,11 +358,13 @@ ddc#enable([{opts}])
 
 		{opts} is dictionary and it has the following keys.
 
-		"context_filetype": Use context based filetype.
-
-			"context_filetype": Use "context_filetype.vim" plugin.
-			"treesitter": Use |treesitter| feature in Neovim.
-			"none": Use current buffer 'filetype'.
+		"context_filetype": Specifies how the context filetype is
+		detected.
+		
+			"context_filetype": Use the "context_filetype.vim"
+			plugin.
+			"treesitter": Use the |treesitter| feature in Neovim.
+			"none": Use the current buffer 'filetype'.
 
 			Default: "none"
 
@@ -714,7 +716,7 @@ NOTE: The name is named by file name.
 ------------------------------------------------------------------------------
 UI OPTIONS                                                    *ddc-ui-options*
 
-Undefined now
+Currently undefined.
 
 ------------------------------------------------------------------------------
 UI PARAMS                                                      *ddc-ui-params*
