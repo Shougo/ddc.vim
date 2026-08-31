@@ -260,9 +260,10 @@ export async function filterItems(
     return callResolvedFilters(resolved, items);
   }
 
-  // Run matchers concurrently when all of them declare parallelSafe = true and
-  // matcherConcurrency > 1.  Falls back to sequential execution when any
-  // safety condition is not met or any chunk throws an exception.
+  // Run the matcher pipeline concurrently for independent item chunks
+  // when all matchers declare parallelSafe = true and
+  // matcherConcurrency > 1. Falls back to sequential execution when
+  // a chunk throws or changes the number of items.
   async function runMatchersConcurrently(
     matcherFilters: UserFilter[],
     items: Item[],
