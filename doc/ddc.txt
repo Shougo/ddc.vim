@@ -738,7 +738,7 @@ cacheTimeout			(number)
 		Default: 0
 
                                                 *ddc-source-option-converters*
-converters		(string[])
+converters		(dictionary[] or string[])
 		It is a list of elements like |ddc-source-option-matchers|.
 		They change items attributes.
 		Items will be processed in the order you specify here.
@@ -756,7 +756,7 @@ dup			(string)		(Optional)
 		Default: "ignore"
 
                                             *ddc-source-option-dynamicFilters*
-dynamicFilters
+dynamicFilters		(function)
 		It is the function which overwrites
 		|ddc-source-option-matchers| and |ddc-source-option-sorters|
 		and |ddc-source-option-converters| after gather items.
@@ -783,7 +783,7 @@ forceCompletionPattern	(string)
 		Default: ''
 
                                                *ddc-source-option-hideTimeout*
-hideTimeout			(number)
+hideTimeout		(number)
 		The |ddc-source-attribute-gather| timeout for ddc.vim which
 		will hide the UI if the gathering process takes longer than
 		the specified time.
@@ -830,8 +830,8 @@ matcherKey		(string)
 		Default: ""
 
                                                   *ddc-source-option-matchers*
-matchers		(string[])
-		It is a list of elements which are formatted as:
+matchers		(dictionary[] or string[])
+		It is a list of filter names or dictionaries formatted as:
 >
 		#{
 		    name: {filter-name},
@@ -868,7 +868,7 @@ maxItems		(number)
 
                                    *ddc-source-option-maxManualCompleteLength*
 maxManualCompleteLength	(number)
-		The mamimum length of keyword required for manual completion.
+		The maximum length of keyword required for manual completion.
 
 		Default: 80
 
@@ -902,7 +902,7 @@ preview		(boolean)
 replaceSourceInputPattern
 		It defines the regexp pattern to remove a match in the source
 		input text.
-		It is useful when if you use non-forward-matching filter
+		It is useful when you use non-forward-matching filter
 		algorithms (e.g., fuzzy matching).
 
 		NOTE: It is JavaScript regexp.
@@ -911,7 +911,7 @@ replaceSourceInputPattern
 		Default: ''
 
                                                    *ddc-source-option-sorters*
-sorters			(string[])
+sorters			(dictionary[] or string[])
 		It is a list of elements like |ddc-source-option-matchers|.
 		They sort items.
 		Items will be processed in the order you specify here.
@@ -929,7 +929,7 @@ timeout			(number)
 
                                            *ddc-source-option-volatilePattern*
 volatilePattern		(string)
-		If it don't match the input, ddc ignores
+		If it doesn't match the input, ddc ignores
 		|ddc-source-option-isVolatile|.
 		NOTE: It is JavaScript regexp.
 
