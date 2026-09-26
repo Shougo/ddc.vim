@@ -432,8 +432,9 @@ ddc#skip_next_complete()
 
                                                             *ddc#syntax#get()*
 ddc#syntax#get()
-		Get current syntax groups.
-		NOTE: "nvim-treesitter" is used if it is installed.
+		Get the syntax groups at the cursor position. In Neovim,
+		|treesitter| is used when available; otherwise Vim syntax
+		groups are used.
 
                                                              *ddc#syntax#in()*
 ddc#syntax#in({checks})
@@ -748,7 +749,8 @@ recommended configuration, you should write it in the documentation instead.
 
                                               *ddc-source-option-cacheTimeout*
 cacheTimeout			(number)
-		The cached result timeout in seconds.
+		The timeout in seconds for caching the result returned by the
+		source.
 		If it is positive number, the result is cached until timeout
 		or manual completion.
 		It is useful for slow sources.
@@ -802,9 +804,9 @@ forceCompletionPattern	(string)
 
                                                *ddc-source-option-hideTimeout*
 hideTimeout		(number)
-		The |ddc-source-attribute-gather| timeout for ddc.vim which
-		will hide the UI if the gathering process takes longer than
-		the specified time.
+		The |ddc-source-attribute-gather| timeout in milliseconds for
+		ddc.vim which will hide the UI if the gathering process takes
+		longer than the specified time.
 
 		Default: 200
 
@@ -815,7 +817,8 @@ keywordPattern
 		NOTE: "\k" is expanded according to the current 'iskeyword'
 		option.
 		NOTE: "[:keyword:]" is also expanded according to 'iskeyword'.
-		NOTE: The source/filter must convert 'iskeyword' to use it.
+		NOTE: The source or filter implementation must expand Vim's
+		'iskeyword' value when interpreting this pattern.
 
 		Default: '\k*'
 
