@@ -712,7 +712,7 @@ NOTE: The default UI is empty.  You need to configure it to use ddc.
 
 The UIs must put under "denops/@ddc-uis/*.ts".
 
-NOTE: The name is named by file name.
+NOTE: The name is derived from the file name.
 
 ------------------------------------------------------------------------------
 UI OPTIONS                                                    *ddc-ui-options*
@@ -739,7 +739,7 @@ configure them to use ddc.
 
 The sources must put under "denops/@ddc-sources/*.ts".
 
-NOTE: The name is named by file name.
+NOTE: The name is derived from the file name.
 
 ------------------------------------------------------------------------------
 SOURCE OPTIONS                                            *ddc-source-options*
@@ -949,7 +949,7 @@ sorters			(dictionary[] or string[])
                                                    *ddc-source-option-timeout*
 timeout			(number)
 		The |ddc-source-attribute-gather| timeout for completion in
-		milli seconds.
+		milliseconds.
 		If the gathering process takes longer than the specified time,
 		it will be aborted.
 
@@ -995,7 +995,7 @@ configure them to use ddc.
 
 The filters must put under "denops/@ddc-filters/*.ts".
 
-NOTE: The name is named by file name.
+NOTE: The name is derived from the file name.
 
 ------------------------------------------------------------------------------
 FILTER OPTIONS                                            *ddc-filter-options*
