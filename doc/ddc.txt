@@ -361,7 +361,7 @@ ddc#enable([{opts}])
 		"context_filetype": Specifies how the context filetype is
 		detected.
 		
-			"context_filetype": Use the "context_filetype.vim"
+			"context_filetype": Use the |context_filetype.vim|
 			plugin.
 			"treesitter": Use the |treesitter| feature in Neovim.
 			"none": Use the current buffer 'filetype'.
@@ -410,8 +410,8 @@ ddc#hide([{event}])
 <
                                                       *ddc#on_complete_done()*
 ddc#on_complete_done({completed_item})
-		It must be called when completion item is completed.
-		The UI calls the API.
+		The UI must call this function when a completion item is
+		completed.
 
                                                               *ddc#on_event()*
 ddc#on_event({event})
@@ -821,13 +821,13 @@ keywordPattern
 
                                                 *ddc-source-option-ignoreCase*
 ignoreCase		(boolean)
-		If it is True, ddc ignores case.
+		If enabled, ddc ignores case.
 
 		Default: v:false
 
                                                 *ddc-source-option-isVolatile*
 isVolatile		(boolean)
-		If it is True, ddc refresh items always.
+		If it is v:true, ddc refresh items always.
 		NOTE: If the source depends user input, you must enable the
 		flag.
 
@@ -1059,7 +1059,7 @@ show			(function)			(Required)
                                                 *ddc-source-ui-skipCompletion*
 skipCompletion		(function)			(Optional)
 		Called to skip current completion.
-		It returns True, to skip completion.
+		It returns v:true, to skip completion.
 
                                                      *ddc-ui-attribute-onInit*
 onInit			(function)			(Optional)
