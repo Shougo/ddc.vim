@@ -118,8 +118,8 @@ backspaceCompletion
 
                                                    *ddc-option-cmdlineSources*
 cmdlineSources
-		It is a list of elements like |ddc-option-sources| or the
-		dictionary.
+		It is a list of source names or source dictionaries in the
+		same format as |ddc-option-sources|.
 		The dictionary key is command line type from |getcmdtype()|.
 		The dictionary value is a list of elements like
 		|ddc-option-sources|.
@@ -240,8 +240,8 @@ matcherConcurrency	(number)
 
                                                       *ddc-option-postFilters*
 postFilters
-		It is a list of filter names or filter dictionaries in the
-		same format as |ddc-source-option-matchers|.
+		It is a list of filter names or filter dictionaries in the same
+		format as the elements of |ddc-source-option-matchers|.
 		It is applied after all source-specific matchers, sorters, and
 		converters have been processed. It is useful for applying a
 		common sorter to items gathered from multiple sources.
