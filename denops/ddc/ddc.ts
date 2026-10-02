@@ -716,13 +716,8 @@ export class Ddc {
         return;
       }
 
-      const [currentInput, currentMode] = await collect(denops, (denops) => [
-        // ddc#util#get_input always returns a string; cast for type inference.
-        denops.call("ddc#util#get_input", context.event) as Promise<string>,
-        fn.mode(denops),
-      ]);
-      if (context.input !== currentInput || context.mode !== currentMode) {
-        // Input is changed.  Skip invalid completion.
+      const currentMode = await fn.mode(denops);
+      if (context.mode !== currentMode) {
         await this.hide(denops, context, options);
         return;
       }
