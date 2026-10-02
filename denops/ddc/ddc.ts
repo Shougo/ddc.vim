@@ -32,7 +32,7 @@ import type { Denops } from "@denops/std";
 import * as autocmd from "@denops/std/autocmd";
 import * as op from "@denops/std/option";
 import * as fn from "@denops/std/function";
-import { batch, collect } from "@denops/std/batch";
+import { batch } from "@denops/std/batch";
 
 import { assertEquals } from "@std/assert/equals";
 
