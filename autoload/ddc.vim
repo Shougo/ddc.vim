@@ -8,7 +8,6 @@ function ddc#disable() abort
   augroup END
 
   call ddc#disable_cmdline_completion()
-  call ddc#disable_terminal_completion()
 endfunction
 
 function ddc#enable_cmdline_completion() abort
@@ -38,6 +37,8 @@ function ddc#enable_terminal_completion() abort
   call ddc#denops#_notify('registerTerminalAutocmds', [])
 endfunction
 function ddc#disable_terminal_completion() abort
+  call ddc#enable()
+
   call ddc#denops#_notify('unregisterTerminalAutocmds', [])
 endfunction
 
