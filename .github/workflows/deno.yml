@@ -14,11 +14,16 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   deno-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6.1.0
+        with:
+          persist-credentials: false
       - uses: denoland/setup-deno@v2.0.5
         with:
           deno-version: ${{ env.DENO_VERSION }}
@@ -36,6 +41,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6.1.0
+        with:
+          persist-credentials: false
       - uses: denoland/setup-deno@v2.0.5
         with:
           deno-version: ${{ env.DENO_VERSION }}
@@ -48,6 +55,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6.1.0
+        with:
+          persist-credentials: false
       - uses: denoland/setup-deno@v2.0.5
         with:
           deno-version: ${{ env.DENO_VERSION }}

@@ -1,0 +1,31 @@
+# Dependabot: updates of the Deno dependencies and of the GitHub Actions,
+# once a week, of releases at least 7 days old (time for a broken or malicious
+# release to be found), each in one pull request.
+version: 2
+updates:
+  - package-ecosystem: deno
+    directories:
+      - "/"
+      - "/denops/@ddu-sources/ddc"
+      - "/denops/ddc"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+      # Our own packages: at once.
+      exclude:
+        - "@shougo/*"
+    groups:
+      deno:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns:
+          - "*"
